@@ -9,7 +9,7 @@
 
 ## 1. TÓM TẮT THIẾT KẾ
 
-Feature bổ sung module `login-history` vào hệ thống, tích hợp logging vào 5 endpoint Sign-in hiện có và tạo 10 endpoint mới. Thiết kế tuân thủ kiến trúc feature-based hiện tại, sử dụng **Event Emitter pattern** để tách biệt logging logic khỏi authentication logic — chuẩn bị cho migration sang message queue ở phase sau.
+Feature bổ sung module `login-history` vào hệ thống, tích hợp logging vào 5 endpoint Sign-in hiện có và tạo 8 endpoint mới. Thiết kế tuân thủ kiến trúc feature-based hiện tại, sử dụng **Event Emitter pattern** để tách biệt logging logic khỏi authentication logic — chuẩn bị cho migration sang message queue ở phase sau.
 
 **Tech Stack (Confirmed):**
 
@@ -239,19 +239,13 @@ KnownDeviceSchema.index(
 ```typescript
 // Thêm vào schema User hiện có (src/modules/auth/models/user.model.ts)
 
-// --- UNLOCK VIA EMAIL (Phase 2) ---
-tempPasswordHash:     { type: String, default: null },
-tempPasswordExpAt:    { type: Date, default: null },
-tempPasswordUsed:     { type: Boolean, default: false },
-mustChangePassword:   { type: Boolean, default: false },
-
-// --- ADMIN DISABLE (Phase 5) ---
+// --- ADMIN DISABLE (Phase 4) ---
 accountStatus:        { type: String, enum: ['ACTIVE', 'DISABLED'], default: 'ACTIVE', index: true },
 disabledAt:           { type: Date, default: null },
 disabledBy:           { type: Schema.Types.ObjectId, ref: 'User', default: null },
 disabledReason:       { type: String, default: null },
 
-// --- AUDIT (Phase 5) ---
+// --- AUDIT (Phase 4) ---
 lastUnlockedAt:       { type: Date, default: null },
 lastUnlockedBy:       { type: Schema.Types.ObjectId, ref: 'User', default: null },
 ```
@@ -260,8 +254,6 @@ lastUnlockedBy:       { type: Schema.Types.ObjectId, ref: 'User', default: null 
 
 | Key Pattern | Value | TTL | Mục đích |
 |---|---|---|---|
-| `unlock:rate:{email}` | Counter (number) | 1 giờ | Rate limit unlock request: 3/giờ |
-| `unlock:cooldown:{email}` | `"1"` | 60s | Cooldown giữa 2 lần gửi unlock email |
 | `anomaly:alert:{userId}` | Counter (number) | 24 giờ | Rate limit email cảnh báo: 5/ngày |
 | `known:devices:{userId}` | JSON string `[{fingerprint, ip, country}]` | 24 giờ | Cache known devices cho anomaly check |
 
@@ -297,96 +289,7 @@ interface LoginEventPayload {
 
 ---
 
-### 4.2 `POST /api/v1/auth/unlock-request` — Yêu cầu unlock qua email
-
-**Request:**
-```json
-{
-  "email": "user@example.com"
-}
-```
-
-**Joi Validation:**
-```typescript
-const unlockRequestSchema = Joi.object({
-  email: Joi.string().email().required().trim().lowercase()
-});
-```
-
-**Response Success (200):**
-```json
-{
-  "statusCode": 200,
-  "message": "If this email is registered, an unlock email has been sent",
-  "data": {
-    "cooldown": 60
-  }
-}
-```
-
-> Response message generic — không tiết lộ email tồn tại hay không.
-
-**Response Error (429 — Rate Limit):**
-```json
-{
-  "statusCode": 429,
-  "message": "Too many unlock requests. Please try again later"
-}
-```
-
-**Response Error (400 — Cooldown):**
-```json
-{
-  "statusCode": 400,
-  "message": "Please wait 45 seconds before requesting again"
-}
-```
-
----
-
-### 4.3 `POST /api/v1/auth/unlock-verify` — Đăng nhập bằng mật khẩu tạm
-
-**Request:**
-```json
-{
-  "email": "user@example.com",
-  "tempPassword": "aB3$xY9#mK2!"
-}
-```
-
-**Joi Validation:**
-```typescript
-const unlockVerifySchema = Joi.object({
-  email: Joi.string().email().required().trim().lowercase(),
-  tempPassword: Joi.string().required().min(12)
-});
-```
-
-**Response Success (200):**
-```json
-{
-  "statusCode": 200,
-  "message": "Login successful. You must change your password",
-  "data": {
-    "accessToken": "eyJhbGc...",
-    "idToken": "eyJhbGc...",
-    "mustChangePassword": true
-  }
-}
-```
-> `refreshToken` set vào httpOnly cookie — nhất quán với Sign-in.
-
-**Response Error (401):**
-```json
-{
-  "statusCode": 401,
-  "message": "Invalid or expired temporary password"
-}
-```
-
----
-
-### 4.4 `GET /api/v1/me/login-history` — User xem danh sách
+### 4.2 `GET /api/v1/me/login-history` — User xem danh sách
 
 **Query Parameters:**
 
@@ -444,7 +347,7 @@ const listHistorySchema = Joi.object({
 
 ---
 
-### 4.5 `GET /api/v1/me/login-history/:id` — User xem chi tiết
+### 4.3 `GET /api/v1/me/login-history/:id` — User xem chi tiết
 
 **Response Success (200):**
 ```json
@@ -484,7 +387,7 @@ const listHistorySchema = Joi.object({
 
 ---
 
-### 4.6 `GET /api/v1/admin/login-history` — Admin xem toàn bộ
+### 4.4 `GET /api/v1/admin/login-history` — Admin xem toàn bộ
 
 **Query Parameters:** *(bao gồm tất cả params của user + thêm)*
 
@@ -538,13 +441,13 @@ const listHistorySchema = Joi.object({
 
 ---
 
-### 4.7 `GET /api/v1/admin/login-history/:id` — Admin chi tiết
+### 4.5 `GET /api/v1/admin/login-history/:id` — Admin chi tiết
 
-Giống 4.5 nhưng: IP **đầy đủ**, thêm field `user` object, không check ownership.
+Giống 4.3 nhưng: IP **đầy đủ**, thêm field `user` object, không check ownership.
 
 ---
 
-### 4.8 `POST /api/v1/admin/users/:userId/unlock` — Admin unlock
+### 4.6 `POST /api/v1/admin/users/:userId/unlock` — Admin unlock
 
 **Request:** Không cần body. `userId` từ URL param.
 
@@ -576,7 +479,7 @@ Giống 4.5 nhưng: IP **đầy đủ**, thêm field `user` object, không check
 
 ---
 
-### 4.9 `POST /api/v1/admin/users/:userId/disable` — Admin khoá vĩnh viễn
+### 4.7 `POST /api/v1/admin/users/:userId/disable` — Admin khoá vĩnh viễn
 
 **Request:**
 ```json
@@ -614,7 +517,7 @@ const disableSchema = Joi.object({
 
 ---
 
-### 4.10 `POST /api/v1/admin/users/:userId/enable` — Admin mở khoá
+### 4.8 `POST /api/v1/admin/users/:userId/enable` — Admin mở khoá
 
 **Request:** Không cần body.
 
@@ -633,7 +536,7 @@ const disableSchema = Joi.object({
 
 ---
 
-### 4.11 `GET /api/v1/admin/login-history/export` — Export CSV
+### 4.9 `GET /api/v1/admin/login-history/export` — Export CSV
 
 **Query Parameters:** Giống 4.6 (tất cả filter params), bỏ `page` và `limit` (thay bằng max 10,000).
 
@@ -676,40 +579,6 @@ id,email,status,failureReason,loginMethod,ipAddress,country,city,deviceType,os,b
       - Check anomaly (Redis cache → fallback MongoDB)
       - Nếu anomaly → gửi email cảnh báo (non-blocking)
       - Update known_devices (MongoDB + Redis cache)
-```
-
-### 5.2 Luồng unlock qua email (Phase 2)
-
-```
-1. Client gửi POST /auth/unlock-request { email }
-2. Unlock Controller:
-   a. Check cooldown (Redis key unlock:cooldown:{email})
-   b. Check rate limit (Redis key unlock:rate:{email} — max 3/giờ)
-   c. Find user by email
-   d. Nếu user không tồn tại → return generic success (chống enumeration)
-   e. Nếu accountStatus === DISABLED → return error "Account suspended"
-   f. Generate temp password (12+ chars, crypto.randomBytes)
-   g. Hash temp password (bcrypt, cost 12)
-   h. Save to user: tempPasswordHash, tempPasswordExpAt = now + 15min, tempPasswordUsed = false
-   i. Invalidate current password: KHÔNG xoá — temp password là kênh song song
-   j. Gửi email via Nodemailer (non-blocking)
-   k. Set Redis cooldown 60s + increment rate counter
-   l. Return generic success
-
-3. Client gửi POST /auth/unlock-verify { email, tempPassword }
-4. Unlock Controller:
-   a. Find user by email
-   b. Check tempPasswordExpAt > now → nếu hết hạn → error (KHÔNG tăng lockout counter)
-   c. Check tempPasswordUsed === false → nếu đã dùng → error
-   d. Compare tempPassword vs tempPasswordHash (bcrypt)
-   e. Nếu sai → error (KHÔNG tăng lockout counter)
-   f. Nếu đúng:
-      - Set tempPasswordUsed = true
-      - Set mustChangePassword = true
-      - Reset lockout: failedAttempts = 0, lockUntil = null
-      - Generate tokens (accessToken, idToken, refreshToken)
-      - Emit login.success event
-      - Return tokens + mustChangePassword = true
 ```
 
 ---
@@ -786,75 +655,7 @@ sequenceDiagram
     end
 ```
 
-### 6.2 Unlock qua Email
-
-```mermaid
-sequenceDiagram
-    participant C as Client
-    participant UC as Unlock Controller
-    participant US as Unlock Service
-    participant RD as Redis
-    participant DB as MongoDB
-    participant EM as Email
-
-    C->>UC: POST /auth/unlock-request {email}
-
-    UC->>RD: GET unlock:cooldown:{email}
-    alt Cooldown active
-        UC-->>C: 400 "Please wait X seconds"
-    end
-
-    UC->>RD: GET unlock:rate:{email}
-    alt Rate limit exceeded (≥3)
-        UC-->>C: 429 "Too many requests"
-    end
-
-    UC->>US: processUnlockRequest(email)
-    US->>DB: findOne({email}) from users
-
-    alt User not found
-        US-->>UC: return (generic success — chống enumeration)
-        UC-->>C: 200 "If registered, email sent"
-    else Account DISABLED
-        US-->>UC: throw AppError
-        UC-->>C: 400 "Account suspended. Contact support"
-    else Account NOT locked
-        US-->>UC: throw AppError
-        UC-->>C: 400 "Account is not locked"
-    else Valid
-        US->>US: generateTempPassword() — crypto.randomBytes
-        US->>US: bcrypt.hash(tempPassword, 12)
-        US->>DB: updateOne({email}, {tempPasswordHash, tempPasswordExpAt, tempPasswordUsed: false})
-        US->>EM: sendUnlockEmail(email, tempPassword)
-        US->>RD: SET unlock:cooldown:{email} (TTL 60s)
-        US->>RD: INCR unlock:rate:{email} (TTL 1h)
-        UC-->>C: 200 "If registered, email sent"
-    end
-
-    Note over C: User nhận email, copy temp password
-
-    C->>UC: POST /auth/unlock-verify {email, tempPassword}
-    UC->>US: verifyTempPassword(email, tempPassword)
-    US->>DB: findOne({email}) from users
-
-    alt Temp password expired
-        US-->>UC: throw AppError(401)
-        UC-->>C: 401 "Invalid or expired temporary password"
-    else Already used
-        US-->>UC: throw AppError(401)
-        UC-->>C: 401 "Invalid or expired temporary password"
-    else Wrong temp password
-        US-->>UC: throw AppError(401)
-        UC-->>C: 401 "Invalid or expired temporary password"
-    else Valid
-        US->>DB: update user: tempPasswordUsed=true, mustChangePassword=true
-        US->>DB: reset lockout: failedAttempts=0, lockUntil=null
-        US->>US: generateTokens(user)
-        UC-->>C: 200 {accessToken, idToken, mustChangePassword: true} + cookie
-    end
-```
-
-### 6.3 Admin Disable Account
+### 6.2 Admin Disable Account
 
 ```mermaid
 sequenceDiagram
@@ -899,18 +700,15 @@ sequenceDiagram
 |---|---|
 | **EC-01**: Email không tồn tại | `userId: null` trong LoginHistory document. Auth controller emit event với `failureReason: 'ACCOUNT_NOT_FOUND'`. Response: generic "Invalid credentials". |
 | **EC-02**: Email chưa verify | Check `user.emailVerified` trước credentials check. `failureReason: 'EMAIL_NOT_VERIFIED'`. Response nhất quán Sign-in. |
-| **EC-05**: Account DISABLED cố đăng nhập | Check `user.accountStatus === 'DISABLED'` **trước** check lockout. Priority: DISABLED > LOCKED > credentials. |
-| **EC-06**: Account DISABLED cố unlock email | `unlock.service.ts` check `accountStatus` trước khi generate temp password. Reject với "Account suspended". |
-| **EC-07**: Temp password hết hạn | Check `user.tempPasswordExpAt > new Date()`. Nếu hết hạn → reject. **KHÔNG increment** `failedAttempts` (lockout counter). |
-| **EC-08**: Temp password replay | Check `user.tempPasswordUsed === false`. Set `true` ngay sau bcrypt compare thành công, **trước** generate tokens. |
-| **EC-10**: OTP cooldown active | Sign-in đã handle. Login History chỉ ghi log `failureReason: 'COOLDOWN_ACTIVE'` qua event. |
-| **EC-13**: GeoIP fail | `geoip.util.ts` wrap trong try-catch. Default: `{ country: 'UNKNOWN', city: 'UNKNOWN' }`. Winston log warning. |
-| **EC-14**: User-Agent rỗng | `userAgent.util.ts` return defaults `{ deviceType: 'UNKNOWN', os: 'UNKNOWN', browser: 'UNKNOWN' }`. Vẫn lưu raw string. |
-| **EC-15**: Ghi log DB fail | Event handler wrap toàn bộ trong try-catch. `logger.error()` via Winston. **KHÔNG re-throw** — response đã trả cho client. |
-| **EC-16**: Redis down → anomaly fail | `anomalyDetection.service.ts`: try Redis → catch → fallback query MongoDB. Nếu cả 2 fail → skip anomaly, log error. |
-| **EC-17**: Admin unlock account đang DISABLED | `adminAction.service.ts` check `accountStatus`. Nếu DISABLED → throw AppError(400, "Use /enable instead"). Phân biệt rõ unlock (reset lockout) vs enable (DISABLED → ACTIVE). |
-| **EC-21**: VPN user → spam cảnh báo | Redis counter `anomaly:alert:{userId}` với TTL 24h. `INCR` mỗi lần gửi. Nếu ≥ 5 → skip gửi email, chỉ log. |
-| **EC-22**: Export > 10,000 | `exportCsv.service.ts`: query với `limit(10000)`. Nếu count > 10,000 → response header `X-Truncated: true`. |
+| **EC-04**: Account DISABLED cố đăng nhập | Check `user.accountStatus === 'DISABLED'` **trước** check lockout. Priority: DISABLED > LOCKED > credentials. |
+| **EC-05**: OTP cooldown active | Sign-in đã handle. Login History chỉ ghi log `failureReason: 'COOLDOWN_ACTIVE'` qua event. |
+| **EC-08**: GeoIP fail | `geoip.util.ts` wrap trong try-catch. Default: `{ country: 'UNKNOWN', city: 'UNKNOWN' }`. Winston log warning. |
+| **EC-09**: User-Agent rỗng | `userAgent.util.ts` return defaults `{ deviceType: 'UNKNOWN', os: 'UNKNOWN', browser: 'UNKNOWN' }`. Vẫn lưu raw string. |
+| **EC-10**: Ghi log DB fail | Event handler wrap toàn bộ trong try-catch. `logger.error()` via Winston. **KHÔNG re-throw** — response đã trả cho client. |
+| **EC-11**: Redis down → anomaly fail | `anomalyDetection.service.ts`: try Redis → catch → fallback query MongoDB. Nếu cả 2 fail → skip anomaly, log error. |
+| **EC-12**: Admin unlock account đang DISABLED | `adminAction.service.ts` check `accountStatus`. Nếu DISABLED → throw AppError(400, "Use /enable instead"). Phân biệt rõ unlock (reset lockout) vs enable (DISABLED → ACTIVE). |
+| **EC-16**: VPN user → spam cảnh báo | Redis counter `anomaly:alert:{userId}` với TTL 24h. `INCR` mỗi lần gửi. Nếu ≥ 5 → skip gửi email, chỉ log. |
+| **EC-17**: Export > 10,000 | `exportCsv.service.ts`: query với `limit(10000)`. Nếu count > 10,000 → response header `X-Truncated: true`. |
 
 ---
 
@@ -1004,27 +802,6 @@ Chỉ cần thay **1 lớp** (emitter → producer). Toàn bộ handler logic gi
 | IPv6 | Mask 4 group cuối: `2001:0db8:85a3:0000:0000:8a2e:0370:7334` → `2001:0db8:85a3:0000:xxxx:xxxx:xxxx:xxxx` |
 | Input rỗng/null | Return `UNKNOWN` |
 
-### 9.4 Temp Password Generator
-
-| Thuộc tính | Mô tả |
-|---|---|
-| Độ dài | Mặc định 16 ký tự (tối thiểu 12) |
-| Thành phần bắt buộc | Ít nhất 1 chữ hoa, 1 chữ thường, 1 số, 1 ký tự đặc biệt (`!@#$%^&*`) |
-| Random source | **Crypto-secure random** (KHÔNG dùng Math.random hay tương đương) |
-| Shuffle | Sau khi đảm bảo đủ thành phần → shuffle mảng ký tự → join thành string |
-
-**Thuật toán:**
-
-| Bước | Hành động |
-|---|---|
-| 1 | Random 1 ký tự chữ hoa (A-Z) |
-| 2 | Random 1 ký tự chữ thường (a-z) |
-| 3 | Random 1 ký tự số (0-9) |
-| 4 | Random 1 ký tự đặc biệt (!@#$%^&*) |
-| 5 | Fill phần còn lại (length - 4) từ tập tất cả ký tự trên |
-| 6 | Shuffle toàn bộ mảng (crypto-secure) |
-| 7 | Join thành string → return |
-
 ---
 
 ## 10. ADMIN AUTH MIDDLEWARE
@@ -1047,7 +824,7 @@ JWT Auth Middleware → Admin Auth Middleware → Controller
    authId, roles)
 ```
 
-Tất cả admin endpoints (Phase 4, 5) đều chain 2 middleware này trước controller.
+Tất cả admin endpoints (Phase 3, 4) đều chain 2 middleware này trước controller.
 
 ---
 
@@ -1057,13 +834,13 @@ Tất cả admin endpoints (Phase 4, 5) đều chain 2 middleware này trước 
 
 | Collection | Index | Type | Mục đích |
 |---|---|---|---|
-| `login_histories` | `{ userId: 1, createdAt: -1 }` | Compound | User xem lịch sử (Phase 3) |
+| `login_histories` | `{ userId: 1, createdAt: -1 }` | Compound | User xem lịch sử (Phase 2) |
 | `login_histories` | `{ userId: 1, status: 1, createdAt: -1 }` | Compound | User filter theo status |
-| `login_histories` | `{ ipAddress: 1, createdAt: -1 }` | Compound | Admin search theo IP (Phase 4) |
-| `login_histories` | `{ usernameAttempted: 1, createdAt: -1 }` | Compound | Admin search theo email (Phase 4) |
+| `login_histories` | `{ ipAddress: 1, createdAt: -1 }` | Compound | Admin search theo IP (Phase 3) |
+| `login_histories` | `{ usernameAttempted: 1, createdAt: -1 }` | Compound | Admin search theo email (Phase 3) |
 | `login_histories` | `{ createdAt: -1 }` | Single | Admin listing mặc định |
-| `login_histories` | `{ createdAt: 1 }` | TTL (3 năm) | Auto-delete expired data (Phase 7) |
-| `known_devices` | `{ userId: 1, deviceFingerprint: 1 }` | Compound | Anomaly check device (Phase 6) |
+| `login_histories` | `{ createdAt: 1 }` | TTL (3 năm) | Auto-delete expired data (Phase 6) |
+| `known_devices` | `{ userId: 1, deviceFingerprint: 1 }` | Compound | Anomaly check device (Phase 5) |
 | `known_devices` | `{ userId: 1, ipAddress: 1 }` | Compound | Anomaly check IP |
 | `known_devices` | `{ userId: 1, country: 1 }` | Compound | Anomaly check country |
 | `known_devices` | `{ lastSeenAt: 1 }` | TTL (90 ngày) | Auto-delete inactive devices |
@@ -1073,10 +850,8 @@ Tất cả admin endpoints (Phase 4, 5) đều chain 2 middleware này trước 
 
 | Key | TTL | Phase |
 |---|---|---|
-| `unlock:cooldown:{email}` | 60s | 2 |
-| `unlock:rate:{email}` | 1 giờ | 2 |
-| `anomaly:alert:{userId}` | 24 giờ | 6 |
-| `known:devices:{userId}` | 24 giờ | 6 |
+| `anomaly:alert:{userId}` | 24 giờ | 5 |
+| `known:devices:{userId}` | 24 giờ | 5 |
 
 ---
 
@@ -1090,10 +865,8 @@ Tất cả admin endpoints (Phase 4, 5) đều chain 2 middleware này trước 
 | 400 | `ACCOUNT_NOT_LOCKED` | Admin unlock account không bị lock | "Account is not locked" |
 | 400 | `ALREADY_DISABLED` | Admin disable account đã disable | "Account already disabled" |
 | 400 | `ALREADY_ACTIVE` | Admin enable account đang active | "Account is already active" |
-| 400 | `COOLDOWN_ACTIVE` | Unlock request trong cooldown | "Please wait X seconds" |
 | 400 | `USE_ENABLE_INSTEAD` | Admin unlock account DISABLED | "Account is disabled. Use /enable" |
 | 401 | `INVALID_CREDENTIALS` | Sai password/OTP/magic link | "Invalid credentials" |
-| 401 | `INVALID_TEMP_PASSWORD` | Sai/hết hạn/đã dùng temp password | "Invalid or expired temporary password" |
 | 403 | `ACCESS_DENIED` | Không đủ quyền | "Access denied" |
 | 403 | `NOT_OWNER` | User xem record người khác | "Access denied" |
 | 404 | `NOT_FOUND` | Record/User không tìm thấy | "Not found" |
