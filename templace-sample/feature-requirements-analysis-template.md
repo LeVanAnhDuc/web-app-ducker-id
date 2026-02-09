@@ -28,16 +28,9 @@
 - **{Role N}:** {Mô tả ngắn}
 
 **Bối cảnh kỹ thuật:**
+{Liệt kê ngắn gọn 1-2 dòng: tech stack chính + hạ tầng đã có. KHÔNG viết bảng chi tiết — bảng chi tiết nằm ở System Design.}
 
-| Hạng mục | Hiện trạng |
-|---|---|
-| Backend | {vd: Node.js + Express} |
-| Database | {vd: MongoDB} |
-| Cache | {vd: Redis — đã có / chưa có} |
-| Email | {vd: Nodemailer — đã có / chưa có} |
-| Kiến trúc | {vd: Client-Server, 2 repos} |
-| Hạ tầng đặc biệt | {vd: Chưa có Message Queue} |
-| Tính năng đã implement liên quan | {vd: Sign-in đã có progressive lockout, rate limiting} |
+> 📎 Chi tiết tech stack: xem **[System Design](./{feature-name}-system-design.md) Section 1**.
 
 ---
 
@@ -150,14 +143,9 @@
 
 ## 7. PHÂN PHA TRIỂN KHAI
 
-> 📎 **Tách file riêng:** Xem chi tiết tại **[{feature-name}-wbs.md](./{feature-name}-wbs.md)**
->
-> **Tóm tắt:** {N} phases · {N} tasks · ~{X} giờ · ~{Y} tuần ({level} dev)
+> 📎 Xem chi tiết tại **[{feature-name}-wbs.md](./{feature-name}-wbs.md)**
 
-| Phase | Tên | Giờ |
-|---|---|---|
-| 1 | {Tên phase} | {X}h |
-| N | {Tên phase} | {X}h |
+*KHÔNG copy bảng phases/giờ vào đây — dữ liệu chỉ nằm ở WBS để tránh không đồng bộ khi cập nhật.*
 
 ---
 
@@ -221,30 +209,33 @@ Bước 4            → Chuyển sang Technical Design
 | 4. Non-Functional Requirements | ✅ | Chọn NFR phù hợp |
 | 5. Edge Cases | ✅ | Càng chi tiết càng tốt |
 | 6. API Endpoints | ✅ | Nếu feature có API |
-| 7. Phân pha (tóm tắt) | ✅ | Link tới WBS riêng |
+| 7. Phân pha | ✅ | Chỉ link tới WBS — KHÔNG copy bảng phases/giờ |
 | 8. Giả định | ✅ | Luôn có |
 | 9. Rủi ro | ✅ | Luôn có |
 | 10. Cross-reference | ⬜ | Chỉ khi bổ sung lên feature khác |
 | 11. Câu hỏi | ⬜ | Chỉ ở bản Draft |
 
-## Ranh giới FRA vs Technical Design
+## Ranh giới FRA vs Technical Design vs WBS
 
-| Nội dung | FRA ✅ | Technical Design ✅ |
-|---|---|---|
-| Dữ liệu cần lưu (field, kiểu, enum) | ✅ | ✅ (chi tiết hơn) |
-| Quy tắc nghiệp vụ | ✅ | ✅ (translate sang logic) |
-| Edge cases & cách xử lý | ✅ Mức nghiệp vụ | ✅ Mức implementation |
-| API endpoint overview | ✅ | ✅ (request/response body) |
-| Database schema chi tiết | ❌ | ✅ |
-| Sequence diagram | ❌ | ✅ |
-| Tên hàm, class, module | ❌ | ✅ |
-| Pseudo-code / logic flow | ❌ | ✅ |
+| Nội dung | FRA ✅ | System Design ✅ | WBS ✅ |
+|---|---|---|---|
+| User stories, business rules | ✅ Nguồn gốc | Tham chiếu FRA | Tham chiếu FRA |
+| Edge cases & cách xử lý | ✅ Nguồn gốc | Tham chiếu FRA | Tham chiếu FRA |
+| Tech stack chi tiết | ❌ Tóm tắt 1 dòng | ✅ Nguồn gốc | ❌ |
+| API endpoint overview | ✅ Bảng ngắn | ✅ Chi tiết request/response | ❌ |
+| Database schema, Redis keys | ❌ | ✅ Nguồn gốc | ❌ |
+| Sequence diagrams | ❌ | ✅ Nguồn gốc | ❌ |
+| Error codes mapping | ❌ | ✅ Nguồn gốc | ❌ |
+| Timeline, ước tính giờ | ❌ Link WBS | ❌ | ✅ Nguồn gốc |
+| Definition of Done | ❌ | ❌ | ✅ Tham chiếu FRA |
+
+**Nguyên tắc chống trùng lặp:** Mỗi nội dung chỉ có **1 nguồn gốc**. Các tài liệu khác dùng **tham chiếu** (link), KHÔNG copy.
 
 ## Feature bổ sung lên feature đã implement
 
 Khi feature mới bổ sung/mở rộng feature cũ:
 - **Section 1:** Ghi rõ feature này thêm gì, KHÔNG thay đổi gì.
-- **Bối cảnh kỹ thuật:** Liệt kê rõ hạ tầng/tính năng đã có sẵn từ feature cũ.
+- **Bối cảnh kỹ thuật:** Tóm tắt 1-2 dòng + link System Design (KHÔNG viết bảng chi tiết).
 - **FR:** Có section riêng mô tả tương tác với feature cũ + ghi rõ "KHÔNG thay đổi cơ chế đó".
 - **NFR:** Ghi "nhất quán với {Feature X}" thay vì định nghĩa lại.
 - **Edge Cases:** Ghi "nhất quán với {Feature X}" khi xử lý giống feature cũ.

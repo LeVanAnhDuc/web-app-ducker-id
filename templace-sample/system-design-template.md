@@ -190,15 +190,7 @@ Ví dụ:
 }
 ```
 
-**Response Errors:**
-
-| Status | Condition | Message |
-|---|---|---|
-| {400} | {Điều kiện} | "{Error message}" |
-| {401} | {Điều kiện} | "{Error message}" |
-| {403} | {Điều kiện} | "{Error message}" |
-| {404} | {Điều kiện} | "{Error message}" |
-| {429} | {Điều kiện} | "{Error message}" |
+> Response errors: xem **Section 11 — Error Codes Mapping**.
 
 ---
 
@@ -208,37 +200,13 @@ Ví dụ:
 
 ---
 
-## 5. DATA FLOW
-
-*Mô tả luồng dữ liệu chi tiết cho các luồng xử lý chính. Dùng numbered steps + nhánh điều kiện.*
-
-### 5.1 {Tên luồng chính} — {Mô tả ngắn}
-
-```
-1. Client gửi {METHOD} {path}
-2. Router → Controller
-3. Controller:
-   a. Validate input → nếu fail → return error
-   b. {Bước xử lý} → nếu {điều kiện lỗi} → {xử lý lỗi}
-   c. {Bước xử lý tiếp}
-   d. Return response
-4. {Xử lý async/background nếu có}:
-   a. {Bước 1}
-   b. {Bước 2}
-   c. Error handling: {mô tả}
-```
-
-### 5.2 {Tên luồng thứ 2}
-
-*Lặp lại. Mỗi luồng quan trọng 1 section.*
-
----
-
-## 6. SEQUENCE DIAGRAMS
+## 5. SEQUENCE DIAGRAMS
 
 *Vẽ Mermaid sequence diagram cho các luồng chính. Bao gồm cả nhánh lỗi (alt/else).*
 
-### 6.1 {Tên luồng — vd: Luồng chính Happy Path + Error Cases}
+*KHÔNG viết thêm Data Flow dạng text — sequence diagrams đã thể hiện đầy đủ luồng xử lý. Viết cả hai sẽ gây trùng lặp.*
+
+### 5.1 {Tên luồng — vd: Luồng chính Happy Path + Error Cases}
 
 ```mermaid
 sequenceDiagram
@@ -271,25 +239,24 @@ sequenceDiagram
     Note over CT,EX: {Ghi chú về async processing nếu có}
 ```
 
-### 6.2 {Tên luồng thứ 2}
+### 5.2 {Tên luồng thứ 2}
 
 *Lặp lại cho mỗi luồng quan trọng.*
 
 ---
 
-## 7. EDGE CASE → DESIGN MAPPING
+## 6. EDGE CASE HANDLING
 
-*Mapping từ edge cases trong FRA sang quyết định thiết kế cụ thể. Dev đọc bảng này biết ngay xử lý ở đâu, như thế nào.*
+> 📎 Danh sách edge cases: xem **[FRA Section 5](./{feature-name}-feature-requirements-analysis.md)**.
+> Tất cả edge cases đã được xử lý trong Sequence Diagrams (Section 5) và Error Codes (Section {N cuối}).
 
-| FRA Edge Case | Quyết định thiết kế |
-|---|---|
-| **EC-{XX}**: {Tên tình huống} | {Mô tả cụ thể: check ở đâu, return gì, ảnh hưởng gì đến data model, thứ tự priority nếu conflict với case khác} |
+*KHÔNG copy bảng edge cases từ FRA vào đây — FRA là nguồn gốc duy nhất. System Design chỉ thể hiện cách xử lý qua Sequence Diagrams và Error Codes.*
 
 ---
 
-## 8. EVENT / ASYNC DESIGN — [Tuỳ chọn: nếu feature có xử lý async, event-driven, hoặc background job]
+## 7. EVENT / ASYNC DESIGN — [Tuỳ chọn: nếu feature có xử lý async, event-driven, hoặc background job]
 
-### 8.1 {Tên component — vd: Event Emitter / Message Producer}
+### 7.1 {Tên component — vd: Event Emitter / Message Producer}
 
 | Thuộc tính | Mô tả |
 |---|---|
@@ -298,7 +265,7 @@ sequenceDiagram
 | Payload | {Tham chiếu interface ở Section 4} |
 | Async behavior | {Fire-and-forget / await result / ...} |
 
-### 8.2 {Tên handler — vd: Event Handler / Consumer / Worker}
+### 7.2 {Tên handler — vd: Event Handler / Consumer / Worker}
 
 **Handler `{event.name}`:**
 
@@ -309,7 +276,7 @@ sequenceDiagram
 
 > **Nguyên tắc:** {Mô tả nguyên tắc error handling chung — vd: wrap try-catch, KHÔNG throw, chỉ log}
 
-### 8.3 Migration Path — [Tuỳ chọn: nếu thiết kế dự phòng chuyển đổi architecture]
+### 7.3 Migration Path — [Tuỳ chọn: nếu thiết kế dự phòng chuyển đổi architecture]
 
 | Hiện tại | Tương lai | Thay đổi cần thiết |
 |---|---|---|
@@ -317,11 +284,11 @@ sequenceDiagram
 
 ---
 
-## 9. UTILS / HELPER DESIGN — [Tuỳ chọn: nếu feature cần utility functions dùng chung]
+## 8. UTILS / HELPER DESIGN — [Tuỳ chọn: nếu feature cần utility functions dùng chung]
 
 *Mô tả input/output/behavior — language-agnostic. KHÔNG viết code.*
 
-### 9.1 {Tên Utility — vd: GeoIP Lookup}
+### 8.1 {Tên Utility — vd: GeoIP Lookup}
 
 | Thuộc tính | Mô tả |
 |---|---|
@@ -331,9 +298,9 @@ sequenceDiagram
 | Error handling | {Behavior khi lỗi — vd: return default values} |
 | Ghi chú | {Edge cases đặc biệt} |
 
-### 9.N {Tên Utility tiếp theo}
+### 8.N {Tên Utility tiếp theo}
 
-*Lặp lại cấu trúc 9.1.*
+*Lặp lại cấu trúc 8.1.*
 
 **Thuật toán:** *(nếu logic phức tạp cần mô tả bước)*
 
@@ -344,9 +311,9 @@ sequenceDiagram
 
 ---
 
-## 10. MIDDLEWARE DESIGN — [Tuỳ chọn: nếu feature cần middleware mới]
+## 9. MIDDLEWARE DESIGN — [Tuỳ chọn: nếu feature cần middleware mới]
 
-### 10.1 {Tên Middleware — vd: Admin Auth Middleware}
+### 9.1 {Tên Middleware — vd: Admin Auth Middleware}
 
 | Thuộc tính | Mô tả |
 |---|---|
@@ -366,27 +333,21 @@ sequenceDiagram
 
 ---
 
-## 11. INDEX STRATEGY TỔNG HỢP — [Tuỳ chọn: gộp lại nếu có nhiều collection/table]
+## 10. DATABASE INDEXES — [Tuỳ chọn: gộp lại nếu có nhiều collection/table]
 
 *Bảng tổng hợp tất cả indexes mới cần tạo. Dev/DBA dùng bảng này để review performance.*
-
-### Database Indexes
 
 | Collection/Table | Index | Type | Mục đích / Query |
 |---|---|---|---|
 | `{collection}` | `{ field1: 1, field2: -1 }` | {Compound/Single/TTL/Unique/Text} | {Query hoặc Phase nào dùng} |
 
-### Cache Keys Summary — [Tuỳ chọn: nếu dùng Redis/cache]
-
-| Key Pattern | TTL | Phase/Feature |
-|---|---|---|
-| `{key pattern}` | {TTL} | {Phase hoặc mô tả} |
+> Cache keys: xem **Section 3.X — Cache Key Design**. KHÔNG lặp lại ở đây.
 
 ---
 
-## 12. ERROR CODES MAPPING
+## 11. ERROR CODES MAPPING
 
-*Bảng tổng hợp tất cả error responses của feature. FE dùng bảng này để handle errors.*
+*Bảng tổng hợp tất cả error responses của feature. FE dùng bảng này để handle errors. Đây là nguồn gốc duy nhất cho error codes — KHÔNG viết bảng error riêng trong mỗi API endpoint (Section 4).*
 
 | HTTP Status | Error Code | Khi nào | Response Message |
 |---|---|---|---|
@@ -418,18 +379,17 @@ FRA (What)  →  WBS (Organize)  →  TDD (How)  →  Implementation
 
 | # | Section | Bắt buộc | Khi nào dùng |
 |---|---|---|---|
-| 1 | Tóm tắt + Tech Stack | ✅ | Luôn có |
+| 1 | Tóm tắt + Tech Stack | ✅ | Luôn có — nguồn gốc duy nhất cho tech stack chi tiết |
 | 2 | Kiến trúc (Architecture + Patterns) | ✅ | Luôn có |
-| 3 | Data Models | ✅ | Luôn có nếu feature có data persistence |
-| 4 | API Design | ✅ | Luôn có nếu feature có API |
-| 5 | Data Flow | ✅ | Luôn có — mô tả luồng chính |
-| 6 | Sequence Diagrams | ✅ | Luôn có — ít nhất 1 diagram cho happy path + errors |
-| 7 | Edge Case → Design Mapping | ✅ | Luôn có — bridge giữa FRA và TDD |
-| 8 | Event / Async Design | ⬜ | Khi feature có event-driven, background job, message queue |
-| 9 | Utils / Helper Design | ⬜ | Khi feature cần utility functions dùng chung |
-| 10 | Middleware Design | ⬜ | Khi feature cần middleware mới |
-| 11 | Index Strategy | ⬜ | Khi có ≥ 2 collections/tables hoặc query phức tạp cần review index |
-| 12 | Error Codes Mapping | ✅ | Luôn có — FE cần bảng này |
+| 3 | Data Models + Cache Keys | ✅ | Luôn có nếu feature có data persistence |
+| 4 | API Design | ✅ | Luôn có nếu feature có API. Error tables → link Section 11 |
+| 5 | Sequence Diagrams | ✅ | Luôn có — thay thế Data Flow (KHÔNG viết cả hai) |
+| 6 | Edge Case Handling | ✅ | Chỉ link FRA — KHÔNG copy bảng edge cases |
+| 7 | Event / Async Design | ⬜ | Khi feature có event-driven, background job, message queue |
+| 8 | Utils / Helper Design | ⬜ | Khi feature cần utility functions dùng chung |
+| 9 | Middleware Design | ⬜ | Khi feature cần middleware mới |
+| 10 | Database Indexes | ⬜ | Khi có query phức tạp. Cache keys → link Section 3.X |
+| 11 | Error Codes Mapping | ✅ | Nguồn gốc duy nhất cho errors — FE dùng bảng này |
 
 ## Nguyên tắc viết TDD
 
@@ -442,6 +402,13 @@ FRA (What)  →  WBS (Organize)  →  TDD (How)  →  Implementation
 ### Nhưng đủ chi tiết để implement
 - Dev đọc TDD phải biết **chính xác**: tạo bao nhiêu tables/collections, mỗi cái có fields gì, index gì, API nào trả response gì, error nào throw khi nào.
 - Không quá abstract ("tạo service xử lý logic") — phải cụ thể ("check accountStatus trước check lockout, priority: DISABLED > LOCKED > credentials").
+
+### Chống trùng lặp
+- **Edge cases:** FRA là nguồn gốc → TDD chỉ link, KHÔNG copy bảng.
+- **Error codes:** Chỉ nằm ở Section 11 → API sections chỉ link, KHÔNG viết bảng error riêng.
+- **Cache keys:** Chỉ nằm ở Section 3.X → KHÔNG lặp lại ở Section 10.
+- **Data flow:** Chỉ dùng Sequence Diagrams → KHÔNG viết thêm Data Flow dạng text.
+- **Tech stack:** TDD là nguồn gốc chi tiết → FRA chỉ tóm tắt 1 dòng.
 
 ### Ranh giới TDD vs Code
 | TDD mô tả ✅ | Code implement ✅ (không nằm trong TDD) |
@@ -459,16 +426,18 @@ FRA (What)  →  WBS (Organize)  →  TDD (How)  →  Implementation
 | Thêm fields vào model hiện có | Section 3.N "Cập nhật Model hiện có" — chỉ liệt kê fields MỚI |
 | Tích hợp logic vào endpoint hiện có | Section 4.0 "Endpoints sửa đổi" — mô tả thay đổi, KHÔNG viết lại toàn bộ endpoint |
 | Dùng middleware hiện có | Ghi trong bảng Tech Stack: "Hiện có". Không viết lại |
-| Thêm middleware mới | Section 10 + ghi rõ vị trí trong chain |
-| Dùng error codes hiện có | Section 12 — liệt kê cả cũ + mới, đánh dấu mới |
+| Thêm middleware mới | Section 9 + ghi rõ vị trí trong chain |
+| Dùng error codes hiện có | Section 11 — liệt kê cả cũ + mới, đánh dấu mới |
 
 ## Checklist trước khi submit TDD
 
 - [ ] Mỗi field trong Data Model có type + required + default + index rõ ràng
-- [ ] Mỗi API endpoint có request + response + tất cả error cases
-- [ ] Mỗi edge case từ FRA đều có mapping sang design decision (Section 7)
+- [ ] Mỗi API endpoint có request + response. Errors chỉ nằm ở Section 11 (KHÔNG viết bảng error riêng mỗi endpoint)
+- [ ] Edge cases tham chiếu FRA (KHÔNG copy bảng edge cases vào TDD)
 - [ ] Sequence diagrams cover ít nhất: 1 happy path + tất cả error branches
-- [ ] Data Flow mô tả đủ chi tiết để dev implement mà không cần hỏi lại
-- [ ] Error codes mapping đầy đủ — FE có thể dùng làm reference
+- [ ] KHÔNG có Data Flow dạng text (sequence diagrams đã đủ)
+- [ ] Error codes mapping đầy đủ tại Section 11 — FE có thể dùng làm reference
+- [ ] Cache keys chỉ nằm ở Section 3.X (KHÔNG lặp lại ở Section 10)
 - [ ] Index strategy đã xem xét các query quan trọng từ use cases
 - [ ] Nếu có async/event → migration path được mô tả rõ
+- [ ] **Không có nội dung trùng lặp** giữa các sections trong cùng tài liệu

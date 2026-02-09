@@ -36,16 +36,16 @@
 | | **Tổng Phase 1** | **~{X}h** |
 
 **Definition of Done:**
-- {Tiêu chí 1 — mô tả kết quả có thể verify được}
-- {Tiêu chí 2}
-- {Tiêu chí N}
+- {Tiêu chí ngắn gọn — tham chiếu FRA/System Design thay vì copy chi tiết}
+- *Ví dụ: "API hoạt động đúng theo **FRA FR-02** (tất cả branches)."*
+- *Ví dụ: "Model có đủ fields mới (xem **System Design Section 3.1**)."*
 
 ---
 
 ## 🔷 PHASE 2 — {Tên phase}
 
-**Scope:** {Mô tả}  
-**APIs liên quan:** {Endpoints}  
+**Scope:** {Mô tả}
+**APIs liên quan:** {Endpoints}
 **Tham chiếu FRA:** {FR-0X}
 
 | Task | Mô tả | Ước tính |
@@ -55,7 +55,7 @@
 | | **Tổng Phase 2** | **~{X}h** |
 
 **Definition of Done:**
-- {Tiêu chí}
+- {Tiêu chí ngắn gọn — tham chiếu FRA/System Design}
 
 ---
 
@@ -129,6 +129,7 @@ Phase N ({Tên}) ←── phụ thuộc {Phase X + Y} hoàn thành
 
 3. **Mỗi phase phải có Definition of Done:**
    - Liệt kê các tiêu chí **có thể verify** (không mơ hồ).
+   - **Tham chiếu FRA/System Design** thay vì copy business rules — tránh trùng lặp và mất đồng bộ.
    - Dev và reviewer dùng DoD để confirm phase hoàn thành.
 
 ## Cấu trúc mỗi Phase
@@ -169,6 +170,19 @@ Phase N ({Tên}) ←── phụ thuộc {Phase X + Y} hoàn thành
 | Setup hạ tầng mới (queue, worker) | 3–4h |
 
 *Ước tính dựa trên junior dev. Điều chỉnh theo level thực tế của team.*
+
+## Chống trùng lặp
+
+| Nội dung | Cách viết trong WBS |
+|---|---|
+| Business rules / edge cases | Tham chiếu **FRA** — KHÔNG copy chi tiết |
+| Model fields / API spec | Tham chiếu **System Design** — KHÔNG copy |
+| Timeline / giờ | WBS là nguồn gốc — FRA KHÔNG copy bảng phases |
+| Definition of Done | Viết ngắn gọn + link FRA/System Design sections |
+
+**Nguyên tắc:** WBS chỉ chứa thông tin về **phân chia task + timeline**. Tất cả chi tiết nghiệp vụ và kỹ thuật → tham chiếu FRA/System Design.
+
+---
 
 ## Mối quan hệ giữa FRA → WBS → Technical Design
 
