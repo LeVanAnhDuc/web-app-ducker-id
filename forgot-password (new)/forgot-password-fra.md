@@ -20,19 +20,9 @@ Tính năng cho phép user **đặt lại mật khẩu** khi quên, thông qua *
 - **System:** Gửi email, xác thực token/OTP, reset password, ghi log sự kiện.
 
 **Bối cảnh kỹ thuật:**
+Node.js + Express · MongoDB · Redis · Nodemailer · Bcrypt · Joi — tất cả đã có sẵn. Tái sử dụng OTP pattern từ Sign-in, password validation từ Signup, Event Emitter từ Login History.
 
-| Hạng mục | Hiện trạng |
-|---|---|
-| Backend | Node.js + Express (viết thuần) |
-| Database | MongoDB + Mongoose |
-| Cache | Redis (đã có — OTP, rate limiting, lockout) |
-| Email | Nodemailer (đã có) |
-| Kiến trúc | Client-Server, 2 repos |
-| Password hashing | Bcrypt (đã có — từ Signup) |
-| Password validation | Joi schema — min 8 chars (đã có — từ Signup) |
-| Lockout hiện tại | Progressive lockout (password) + Fixed 15m (OTP) — đã implement trong Sign-in |
-| Account status | `ACTIVE` / `DISABLED` — đã implement trong Login History |
-| Unlock qua Email | Mật khẩu tạm + reset lockout — đã implement trong Login History |
+> 📎 Chi tiết tech stack: xem **[System Design](./forgot-password-tdd.md) Section 1**.
 
 ---
 
@@ -235,17 +225,7 @@ Các sự kiện cần ghi vào `login_histories` collection:
 
 ## 7. PHÂN PHA TRIỂN KHAI
 
-> 📎 **Tách file riêng:** Xem chi tiết tại **[forgot-password-wbs.md](./forgot-password-wbs.md)**
->
-> **Tóm tắt:** 5 phases · ~100 giờ · ~2.5 tuần (1 junior dev)
-
-| Phase | Tên | Giờ |
-|---|---|---|
-| 1 | Reset qua Link (gửi + verify + đặt mật khẩu) | 24h |
-| 2 | Reset qua OTP (gửi + verify + đặt mật khẩu) | 23h |
-| 3 | Rate Limiting + Validation + Edge Cases | 16h |
-| 4 | Ghi log vào Login History | 18h |
-| 5 | Email Templates + Cleanup temp data | 16h |
+> 📎 Xem chi tiết tại **[forgot-password-wbs.md](./forgot-password-wbs.md)**
 
 ---
 

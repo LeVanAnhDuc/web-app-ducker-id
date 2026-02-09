@@ -29,8 +29,8 @@
 
 **Definition of Done:**
 
-- Mọi lần đăng nhập (3 phương thức × thành công/thất bại) đều được ghi vào MongoDB.
-- Ghi log fail không block login response.
+- Logging hoạt động đúng theo **FRA FR-01, FR-02** (3 phương thức × thành công/thất bại).
+- Ghi log fail không block login response (xem **FRA NFR-03**).
 - Unit test + integration test pass.
 
 ---
@@ -54,9 +54,8 @@
 
 **Definition of Done:**
 
-- User xem được danh sách lịch sử (phân trang, lọc theo thời gian/trạng thái).
-- Bấm vào 1 dòng → xem chi tiết đầy đủ.
-- IP hiển thị masked. Chỉ xem được lịch sử của chính mình.
+- API hoạt động đúng theo **FRA FR-04** (danh sách + chi tiết).
+- IP masked, ownership check (xem **System Design Section 4.2, 4.3**).
 
 ---
 
@@ -79,9 +78,8 @@
 
 **Definition of Done:**
 
-- Admin xem, filter, search lịch sử đăng nhập toàn hệ thống (bao gồm deleted users).
-- IP hiển thị đầy đủ. "[Deleted User]" hiển thị đúng.
-- User thường truy cập admin API → bị reject 403.
+- API hoạt động đúng theo **FRA FR-05** (admin view + filter nâng cao).
+- Phân quyền admin đúng (xem **System Design Section 9**).
 
 ---
 
@@ -106,11 +104,9 @@
 
 **Definition of Done:**
 
-- Admin unlock tài khoản bị lock (reset lockout) — phân biệt với enable.
-- Admin disable tài khoản → user không đăng nhập được bất kỳ phương thức nào, không tự unlock qua email được.
-- Admin enable tài khoản bị DISABLED → user đăng nhập lại bình thường.
-- Export CSV ≤ 10,000 bản ghi hoạt động đúng.
-- Mọi admin action đều có audit log.
+- API hoạt động đúng theo **FRA FR-03, FR-05** (unlock/disable/enable/export).
+- Phân biệt unlock vs enable (xem **System Design Section 4.6, 4.7, 4.8**).
+- Export CSV ≤ 10,000 bản ghi (xem **FRA EC-17**).
 
 ---
 
@@ -133,10 +129,8 @@
 
 **Definition of Done:**
 
-- Đăng nhập từ thiết bị/IP/quốc gia mới → user nhận email cảnh báo.
-- Rate limit 5 email/user/ngày hoạt động đúng.
-- Redis down → fallback MongoDB, không block login.
-- Known devices được cache Redis, update sau mỗi login thành công.
+- Anomaly detection hoạt động đúng theo **FRA FR-06** (thiết bị/IP/quốc gia mới).
+- Rate limit + fallback đúng (xem **System Design Section 7.2**).
 
 ---
 
@@ -157,9 +151,8 @@
 
 **Definition of Done:**
 
-- Cron job chạy hàng ngày, dọn dẹp log > 3 năm (configurable).
-- Health check endpoint trả về trạng thái DB, Redis, collection size.
-- TTL index hoặc cron cleanup hoạt động đúng.
+- Data retention hoạt động đúng theo **FRA NFR-04** (3 năm, configurable).
+- TTL index hoặc cron cleanup đúng (xem **System Design Section 10**).
 
 ---
 
@@ -183,11 +176,8 @@
 
 **Definition of Done:**
 
-- Toàn bộ logging & email chạy async qua Bull queue.
-- Feature flag cho phép switch giữa sync/async.
-- Login response time < 200ms.
-- Zero data loss (DLQ cho failed events).
-- Load test pass: 100 concurrent logins.
+- Async queue hoạt động đúng theo **FRA NFR-01, NFR-03, NFR-05**.
+- Migration path đúng (xem **System Design Section 7.3**).
 
 ---
 

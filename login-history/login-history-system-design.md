@@ -375,15 +375,7 @@ const listHistorySchema = Joi.object({
 }
 ```
 
-**Response Error (404):**
-```json
-{ "statusCode": 404, "message": "Login history record not found" }
-```
-
-**Response Error (403):** — user cố xem record của user khác:
-```json
-{ "statusCode": 403, "message": "Access denied" }
-```
+> Response errors: xem **Section 11 — Error Codes Mapping**.
 
 ---
 
@@ -464,18 +456,7 @@ Giống 4.3 nhưng: IP **đầy đủ**, thêm field `user` object, không check
 }
 ```
 
-**Response Error (400):** — Account bị DISABLED, cần enable thay vì unlock:
-```json
-{
-  "statusCode": 400,
-  "message": "Account is disabled. Use /enable endpoint instead"
-}
-```
-
-**Response Error (400):** — Account không bị lock:
-```json
-{ "statusCode": 400, "message": "Account is not locked" }
-```
+> Response errors: xem **Section 11 — Error Codes Mapping**.
 
 ---
 
@@ -510,10 +491,7 @@ const disableSchema = Joi.object({
 }
 ```
 
-**Response Error (400):** — Đã bị disable rồi:
-```json
-{ "statusCode": 400, "message": "Account is already disabled" }
-```
+> Response errors: xem **Section 11 — Error Codes Mapping**.
 
 ---
 
@@ -554,38 +532,11 @@ id,email,status,failureReason,loginMethod,ipAddress,country,city,deviceType,os,b
 
 ---
 
-## 5. DATA FLOW
-
-### 5.1 Luồng ghi log đăng nhập (Phase 1)
-
-```
-1. Client gửi POST /login
-2. Express Router → Auth Controller
-3. Auth Controller:
-   a. Validate input (Joi) → nếu fail → emit login.failed + return error
-   b. Check account lock → nếu locked → emit login.failed + return error
-   c. Check account status → nếu DISABLED → emit login.failed + return error
-   d. Verify credentials → nếu sai → emit login.failed + return error
-   e. Credentials đúng → emit login.success
-   f. Return tokens response
-4. Login Event Handler (lắng nghe event):
-   a. Extract IP từ req (req.ip hoặc x-forwarded-for)
-   b. Parse User-Agent → device_type, os, browser (ua-parser-js)
-   c. GeoIP lookup → country, city (geoip-lite)
-   d. Build LoginHistory document
-   e. Try: save to MongoDB
-   f. Catch: log error via Winston → KHÔNG throw (không block response)
-   g. Nếu status === SUCCESS:
-      - Check anomaly (Redis cache → fallback MongoDB)
-      - Nếu anomaly → gửi email cảnh báo (non-blocking)
-      - Update known_devices (MongoDB + Redis cache)
-```
-
 ---
 
-## 6. SEQUENCE DIAGRAMS
+## 5. SEQUENCE DIAGRAMS
 
-### 6.1 Login với Logging + Anomaly Detection (Luồng chính)
+### 5.1 Login với Logging + Anomaly Detection (Luồng chính)
 
 ```mermaid
 sequenceDiagram
@@ -655,7 +606,7 @@ sequenceDiagram
     end
 ```
 
-### 6.2 Admin Disable Account
+### 5.2 Admin Disable Account
 
 ```mermaid
 sequenceDiagram
@@ -692,29 +643,16 @@ sequenceDiagram
 
 ---
 
-## 7. EDGE CASE → DESIGN MAPPING
+## 6. EDGE CASE HANDLING
 
-*Mapping edge cases từ FRA sang quyết định thiết kế cụ thể.*
-
-| FRA Edge Case | Quyết định thiết kế |
-|---|---|
-| **EC-01**: Email không tồn tại | `userId: null` trong LoginHistory document. Auth controller emit event với `failureReason: 'ACCOUNT_NOT_FOUND'`. Response: generic "Invalid credentials". |
-| **EC-02**: Email chưa verify | Check `user.emailVerified` trước credentials check. `failureReason: 'EMAIL_NOT_VERIFIED'`. Response nhất quán Sign-in. |
-| **EC-04**: Account DISABLED cố đăng nhập | Check `user.accountStatus === 'DISABLED'` **trước** check lockout. Priority: DISABLED > LOCKED > credentials. |
-| **EC-05**: OTP cooldown active | Sign-in đã handle. Login History chỉ ghi log `failureReason: 'COOLDOWN_ACTIVE'` qua event. |
-| **EC-08**: GeoIP fail | `geoip.util.ts` wrap trong try-catch. Default: `{ country: 'UNKNOWN', city: 'UNKNOWN' }`. Winston log warning. |
-| **EC-09**: User-Agent rỗng | `userAgent.util.ts` return defaults `{ deviceType: 'UNKNOWN', os: 'UNKNOWN', browser: 'UNKNOWN' }`. Vẫn lưu raw string. |
-| **EC-10**: Ghi log DB fail | Event handler wrap toàn bộ trong try-catch. `logger.error()` via Winston. **KHÔNG re-throw** — response đã trả cho client. |
-| **EC-11**: Redis down → anomaly fail | `anomalyDetection.service.ts`: try Redis → catch → fallback query MongoDB. Nếu cả 2 fail → skip anomaly, log error. |
-| **EC-12**: Admin unlock account đang DISABLED | `adminAction.service.ts` check `accountStatus`. Nếu DISABLED → throw AppError(400, "Use /enable instead"). Phân biệt rõ unlock (reset lockout) vs enable (DISABLED → ACTIVE). |
-| **EC-16**: VPN user → spam cảnh báo | Redis counter `anomaly:alert:{userId}` với TTL 24h. `INCR` mỗi lần gửi. Nếu ≥ 5 → skip gửi email, chỉ log. |
-| **EC-17**: Export > 10,000 | `exportCsv.service.ts`: query với `limit(10000)`. Nếu count > 10,000 → response header `X-Truncated: true`. |
+> 📎 Danh sách edge cases: xem **[FRA Section 5](./login-history-feature-requirements-analysis.md)**.
+> Tất cả edge cases đã được xử lý trong Sequence Diagrams (Section 5) và Error Codes (Section 11).
 
 ---
 
-## 8. EVENT EMITTER DESIGN (Prep cho Message Queue)
+## 7. EVENT EMITTER DESIGN (Prep cho Message Queue)
 
-### 8.1 Emitter — Singleton
+### 7.1 Emitter — Singleton
 
 | Thuộc tính | Mô tả |
 |---|---|
@@ -725,7 +663,7 @@ sequenceDiagram
 
 Auth controller gọi emitter sau khi xử lý xong authentication. Emitter publish event — **không chờ** handler hoàn thành trước khi trả response cho client.
 
-### 8.2 Handler — Xử lý event
+### 7.2 Handler — Xử lý event
 
 **Handler `login.success`:**
 
@@ -750,7 +688,7 @@ Auth controller gọi emitter sau khi xử lý xong authentication. Emitter publ
 
 > Không check anomaly cho login failed — lockout đã xử lý ở Sign-in.
 
-### 8.3 Migration path sang Message Queue (Phase 8 WBS)
+### 7.3 Migration path sang Message Queue (Phase 8 WBS)
 
 | Trước (Event Emitter) | Sau (Message Queue) |
 |---|---|
@@ -762,9 +700,9 @@ Chỉ cần thay **1 lớp** (emitter → producer). Toàn bộ handler logic gi
 
 ---
 
-## 9. UTILS DESIGN
+## 8. UTILS DESIGN
 
-### 9.1 GeoIP Lookup
+### 8.1 GeoIP Lookup
 
 | Thuộc tính | Mô tả |
 |---|---|
@@ -774,7 +712,7 @@ Chỉ cần thay **1 lớp** (emitter → producer). Toàn bộ handler logic gi
 | Error handling | Mọi lỗi → return `{ country: 'UNKNOWN', city: 'UNKNOWN' }` |
 | Ghi chú | IP private / localhost → return UNKNOWN. Không block login flow. |
 
-### 9.2 User-Agent Parser
+### 8.2 User-Agent Parser
 
 | Thuộc tính | Mô tả |
 |---|---|
@@ -792,7 +730,7 @@ Chỉ cần thay **1 lớp** (emitter → producer). Toàn bộ handler logic gi
 | `undefined` / `null` / empty | `DESKTOP` (hầu hết parser không trả device type cho desktop) |
 | Giá trị khác | `UNKNOWN` |
 
-### 9.3 IP Mask
+### 8.3 IP Mask
 
 | Thuộc tính | Mô tả |
 |---|---|
@@ -804,7 +742,7 @@ Chỉ cần thay **1 lớp** (emitter → producer). Toàn bộ handler logic gi
 
 ---
 
-## 10. ADMIN AUTH MIDDLEWARE
+## 9. ADMIN AUTH MIDDLEWARE
 
 | Thuộc tính | Mô tả |
 |---|---|
@@ -828,7 +766,7 @@ Tất cả admin endpoints (Phase 3, 4) đều chain 2 middleware này trước 
 
 ---
 
-## 11. INDEX STRATEGY TỔNG HỢP
+## 10. INDEX STRATEGY TỔNG HỢP
 
 ### MongoDB Indexes
 
@@ -846,16 +784,11 @@ Tất cả admin endpoints (Phase 3, 4) đều chain 2 middleware này trước 
 | `known_devices` | `{ lastSeenAt: 1 }` | TTL (90 ngày) | Auto-delete inactive devices |
 | `users` | `{ accountStatus: 1 }` | Single | Admin query disabled accounts |
 
-### Redis Keys Summary
-
-| Key | TTL | Phase |
-|---|---|---|
-| `anomaly:alert:{userId}` | 24 giờ | 5 |
-| `known:devices:{userId}` | 24 giờ | 5 |
+> Redis keys: xem **Section 3.4 — Redis Key Design**. KHÔNG lặp lại ở đây.
 
 ---
 
-## 12. ERROR CODES MAPPING
+## 11. ERROR CODES MAPPING
 
 | HTTP Status | AppError Code | Khi nào | Response message |
 |---|---|---|---|

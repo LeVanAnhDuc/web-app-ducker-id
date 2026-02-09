@@ -34,14 +34,9 @@
 | | **Tổng Phase 1** | **~24h** |
 
 **Definition of Done:**
-- User request reset link → nhận email → click link → đặt mật khẩu mới thành công.
-- Token single-use (dùng lần 2 → reject).
-- Token expired 15 phút → reject.
-- Mật khẩu mới trùng cũ → reject.
-- Email không tồn tại → generic response (không leak).
-- Account LOCKED → reject với hướng dẫn dùng Unlock.
-- Account DISABLED → reject.
-- Temp password fields cleared sau reset thành công.
+- API hoạt động đúng theo **FRA FR-01, FR-02, FR-04, FR-05** (tất cả branches).
+- Anti-enumeration + LOCKED/DISABLED check đúng (xem **FRA EC-01 → EC-04**).
+- Unit test + integration test pass.
 
 ---
 
@@ -64,12 +59,8 @@
 | | **Tổng Phase 2** | **~23h** |
 
 **Definition of Done:**
-- User request OTP → nhận email → nhập OTP → verify → đặt mật khẩu mới thành công.
-- OTP single-use, expired 15 phút.
-- Sai 5 lần → khoá 15 phút.
-- Reset session token expired 15 phút.
-- Mật khẩu trùng cũ → reject.
-- Anti-enumeration + LOCKED/DISABLED check hoạt động.
+- API hoạt động đúng theo **FRA FR-01, FR-03, FR-04, FR-05** (tất cả branches).
+- OTP lockout + session token đúng (xem **TDD Section 4.4, 4.5**).
 
 ---
 
@@ -90,10 +81,8 @@
 | | **Tổng Phase 3** | **~16h** |
 
 **Definition of Done:**
-- Cooldown 60s: gửi lại trong 60s → 400 "Wait X seconds".
-- Rate limit: gửi lần 4 trong 15 phút → 429.
-- Request link lần 2 → token cũ bị invalidate, chỉ token mới valid.
-- OTP 5 lần sai → khoá 15 phút. Auto-reset sau 15 phút (Redis TTL).
+- Cooldown + rate limit hoạt động đúng theo **FRA FR-01** và **FRA EC-14 → EC-17**.
+- OTP lockout đúng (xem **TDD Section 3.1** — Redis keys).
 
 ---
 
@@ -114,10 +103,8 @@
 | | **Tổng Phase 4** | **~18h** |
 
 **Definition of Done:**
-- Mỗi sự kiện trong bảng FR-06 (FRA) đều được ghi vào login_histories.
-- Ghi log fail → không block flow chính.
-- Admin có thể thấy PASSWORD_RESET events trong Login History dashboard.
-- Failure reasons ghi đúng cho từng loại lỗi.
+- Ghi log đúng theo **FRA FR-06** (tất cả sự kiện trong bảng).
+- Event Emitter hoạt động đúng (xem **TDD Section 7**).
 
 ---
 
@@ -138,10 +125,7 @@
 | | **Tổng Phase 5** | **~16h** |
 
 **Definition of Done:**
-- Email templates responsive, có warning, có expiry info.
-- Sau reset thành công: tất cả Redis keys liên quan bị xoá.
-- Temp password fields (từ unlock) bị clear.
-- Không có orphan keys trong Redis.
+- Cleanup đúng theo **FRA FR-05** và **FRA EC-24** (clear temp fields + Redis keys).
 - End-to-end test pass cho cả 2 flows.
 
 ---

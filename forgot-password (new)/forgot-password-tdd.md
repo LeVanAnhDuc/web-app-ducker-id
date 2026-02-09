@@ -143,15 +143,7 @@ Feature tạo module `forgot-password` mới với 5 endpoints. Tái sử dụng
 
 > Message **generic** — trả cùng response dù email tồn tại hay không.
 
-**Response Errors:**
-
-| Status | Condition | Message |
-|---|---|---|
-| 400 | Email format invalid | "Invalid email format" |
-| 400 | Cooldown active (<60s) | "Please wait X seconds before requesting again" |
-| 400 | Account LOCKED | "Account is locked. Please use Unlock feature or wait for auto-unlock" |
-| 400 | Account DISABLED | "Account suspended. Contact support" |
-| 429 | Rate limit exceeded (≥3/15min) | "Too many requests. Please try again later" |
+> Response errors: xem **Section 9 — Error Codes Mapping**.
 
 ---
 
@@ -180,7 +172,7 @@ Feature tạo module `forgot-password` mới với 5 endpoints. Tái sử dụng
 }
 ```
 
-**Response Errors:** Giống 4.1.
+> Response errors: xem **Section 9 — Error Codes Mapping**.
 
 ---
 
@@ -220,15 +212,7 @@ Feature tạo module `forgot-password` mới với 5 endpoints. Tái sử dụng
 }
 ```
 
-**Response Errors:**
-
-| Status | Condition | Message |
-|---|---|---|
-| 400 | confirmPassword ≠ newPassword | "Passwords do not match" |
-| 400 | Mật khẩu mới trùng mật khẩu cũ | "New password must be different from current password" |
-| 400 | Password validation fail | "Password does not meet requirements" |
-| 401 | Token invalid hoặc expired | "Invalid or expired reset link" |
-| 404 | User not found (email) | "Invalid or expired reset link" *(generic — không tiết lộ)* |
+> Response errors: xem **Section 9 — Error Codes Mapping**.
 
 ---
 
@@ -263,13 +247,7 @@ Feature tạo module `forgot-password` mới với 5 endpoints. Tái sử dụng
 }
 ```
 
-**Response Errors:**
-
-| Status | Condition | Message |
-|---|---|---|
-| 400 | OTP locked (≥5 fails) | "Too many failed attempts. Please try again in 15 minutes" |
-| 400 | OTP expired | "OTP expired. Please request a new one" |
-| 401 | OTP sai | "Invalid OTP. X attempts remaining" |
+> Response errors: xem **Section 9 — Error Codes Mapping**.
 
 ---
 
@@ -307,103 +285,13 @@ Feature tạo module `forgot-password` mới với 5 endpoints. Tái sử dụng
 }
 ```
 
-**Response Errors:**
-
-| Status | Condition | Message |
-|---|---|---|
-| 400 | confirmPassword ≠ newPassword | "Passwords do not match" |
-| 400 | Mật khẩu trùng cũ | "New password must be different from current password" |
-| 400 | Password validation fail | "Password does not meet requirements" |
-| 401 | Session token invalid/expired | "Session expired. Please start the reset process again" |
+> Response errors: xem **Section 9 — Error Codes Mapping**.
 
 ---
 
-## 5. DATA FLOW
+## 5. SEQUENCE DIAGRAMS
 
-### 5.1 Reset Link Flow (API #1 → #3)
-
-```
-1. Client gửi POST /forgot-password/send-link { email }
-2. Controller:
-   a. Validate email format (Joi)
-   b. Check cooldown (Redis GET reset:cooldown:{email})
-      → nếu active → 400 "Please wait X seconds"
-   c. Check rate limit (Redis GET reset:rate:{email})
-      → nếu ≥ 3 → 429 "Too many requests"
-   d. Find user by email (MongoDB)
-      → nếu không tồn tại / email chưa verify → return generic 200 (anti-enum)
-   e. Check accountStatus
-      → DISABLED → 400 "Account suspended"
-   f. Check lockout status (Sign-in lockout fields)
-      → LOCKED → 400 "Account is locked"
-   g. Generate reset token (64 bytes = 128 hex, crypto-secure)
-   h. Hash token → Redis SET reset:token:{email} (TTL 15 min) — overwrite cũ nếu có
-   i. Gửi email chứa reset link (non-blocking)
-   j. Redis SET reset:cooldown:{email} (TTL 60s)
-   k. Redis INCR reset:rate:{email} (TTL 15 min nếu key mới)
-   l. Return 200 generic response
-
-3. User click link → Client mở trang đặt mật khẩu mới
-4. Client gửi POST /forgot-password/verify-link { email, token, newPassword, confirmPassword }
-5. Controller:
-   a. Validate input (Joi — token format, password schema từ Signup)
-   b. Validate confirmPassword === newPassword
-   c. Redis GET reset:token:{email}
-      → không có → 401 "Invalid or expired"
-   d. Compare token hash
-      → không khớp → 401 "Invalid or expired"
-   e. Find user by email (MongoDB)
-   f. Bcrypt compare newPassword vs user.password (current)
-      → trùng → 400 "Must be different"
-   g. Bcrypt hash newPassword
-   h. MongoDB updateOne: set password = new hash
-   i. Clear temp password fields: tempPasswordHash=null, tempPasswordUsed=false, mustChangePassword=false
-   j. Redis DEL reset:token:{email}
-   k. Emit event 'password.reset.success' → Login History handler ghi log
-   l. Return 200 "Password reset successful"
-```
-
-### 5.2 OTP Flow (API #2 → #4 → #5)
-
-```
-1. Client gửi POST /forgot-password/send-otp { email }
-2. Controller: (giống bước 2a–2f của 5.1)
-   g. Generate OTP 6 số (crypto-secure)
-   h. Bcrypt hash OTP → Redis SET reset:otp:{email} (TTL 15 min) — overwrite cũ
-   i. Gửi email chứa OTP (non-blocking)
-   j–l. Set cooldown, increment rate, return 200
-
-3. Client gửi POST /forgot-password/verify-otp { email, otp }
-4. Controller:
-   a. Validate input (Joi — otp: 6 digits, trim)
-   b. Redis GET reset:otp:failed:{email}
-      → ≥ 5 → 400 "Too many attempts" + emit login event FAILED
-   c. Redis GET reset:otp:{email}
-      → không có → 400 "OTP expired" + emit login event FAILED
-   d. Bcrypt compare OTP
-      → sai → Redis INCR reset:otp:failed:{email} (TTL 15 min)
-            → emit login event FAILED (WRONG_RESET_OTP)
-            → 401 "Invalid OTP. X remaining"
-      → đúng:
-   e. Generate reset session token (32 bytes = 64 hex, crypto-secure)
-   f. Redis SET reset:session:{email} = token (TTL 15 min)
-   g. Redis DEL reset:otp:{email}, reset:otp:failed:{email}
-   h. Emit event 'password.reset.otp.verified' → log SUCCESS
-   i. Return 200 { resetSessionToken, expiresIn: 900 }
-
-5. Client gửi POST /forgot-password/reset-password { email, resetSessionToken, newPassword, confirmPassword }
-6. Controller:
-   a. Validate input (Joi — password schema Signup, confirmPassword match)
-   b. Redis GET reset:session:{email}
-      → không có / không khớp → 401 "Session expired"
-   c–l. (Giống bước 5e–5l của 5.1: find user, check trùng, hash, update, clear temp, DEL session, emit, return)
-```
-
----
-
-## 6. SEQUENCE DIAGRAMS
-
-### 6.1 Reset Link Flow
+### 5.1 Reset Link Flow
 
 ```mermaid
 sequenceDiagram
@@ -474,7 +362,7 @@ sequenceDiagram
     end
 ```
 
-### 6.2 OTP Flow — Verify OTP Step
+### 5.2 OTP Flow — Verify OTP Step
 
 ```mermaid
 sequenceDiagram
@@ -517,7 +405,7 @@ sequenceDiagram
     end
 ```
 
-### 6.3 Set New Password (Dùng chung cho cả OTP flow bước cuối)
+### 5.3 Set New Password (Dùng chung cho cả OTP flow bước cuối)
 
 ```mermaid
 sequenceDiagram
@@ -556,26 +444,16 @@ sequenceDiagram
 
 ---
 
-## 7. EDGE CASE → DESIGN MAPPING
+## 6. EDGE CASE HANDLING
 
-| FRA Edge Case | Quyết định thiết kế |
-|---|---|
-| **EC-01**: Email không tồn tại | `findOne({email})` trả null → return 200 generic. **KHÔNG** ghi log (vì không có userId). |
-| **EC-03**: Account DISABLED | Check `user.accountStatus === 'DISABLED'` **trước** check lockout. Priority: DISABLED → LOCKED → proceed. |
-| **EC-04**: Account LOCKED | Check lockout status (failedAttempts, lockUntil từ Sign-in). Nếu locked → reject. **Khác** với Login History Unlock (cho phép unlock khi locked). |
-| **EC-06**: Link dùng lần 2 | Redis `DEL reset:token:{email}` ngay sau verify thành công. Lần 2 → `GET` trả null → 401. |
-| **EC-09**: OTP sai 5 lần | Redis `INCR reset:otp:failed:{email}` mỗi lần sai. Check `≥ 5` trước khi verify. TTL 15 phút auto-reset. |
-| **EC-11**: Mật khẩu trùng | `bcrypt.compare(newPassword, user.password)` trước hash mới. Nếu match → 400. |
-| **EC-14**: Request link nhiều lần | Redis `SET reset:token:{email}` overwrite key cũ. Chỉ token mới nhất valid. |
-| **EC-18**: Email preview consume link | Reset link chứa token trong URL nhưng **không auto-verify**. Client mở trang form → user phải submit POST request. Token không bị consume khi GET page. |
-| **EC-20**: Reset xong nhưng vẫn bị lock | Đúng hành vi. Forgot Password chỉ `updateOne({password})`. **KHÔNG** reset `failedAttempts` hay `lockUntil`. UI hiển thị: "Password reset successful. Note: Your account is currently locked. Please use Unlock or wait." |
-| **EC-24**: Clear temp password fields | Khi update password thành công: set `tempPasswordHash=null`, `tempPasswordUsed=false`, `mustChangePassword=false` trong cùng `updateOne()`. |
+> 📎 Danh sách edge cases: xem **[FRA Section 5](./forgot-password-fra.md)**.
+> Tất cả edge cases đã được xử lý trong Sequence Diagrams (Section 5) và Error Codes (Section 9).
 
 ---
 
-## 8. EVENT DESIGN (Tái sử dụng Login History Event Emitter)
+## 7. EVENT DESIGN (Tái sử dụng Login History Event Emitter)
 
-### 8.1 Events mới
+### 7.1 Events mới
 
 | Event | Khi nào | Payload bổ sung |
 |---|---|---|
@@ -583,7 +461,7 @@ sequenceDiagram
 | `password.reset.otp.verified` | Verify OTP thành công (chưa đặt mật khẩu) | `{ resetMethod: 'OTP' }` |
 | `password.reset.failed` | Bất kỳ lỗi nào trong flow reset | `{ failureReason: '...' }` |
 
-### 8.2 Handler — Ghi log vào login_histories
+### 7.2 Handler — Ghi log vào login_histories
 
 | Event | LoginHistory status | loginMethod | failureReason |
 |---|---|---|---|
@@ -595,7 +473,7 @@ sequenceDiagram
 
 ---
 
-## 9. UTILS DESIGN — Tái sử dụng
+## 8. UTILS DESIGN — Tái sử dụng
 
 | Utility | Nguồn | Ghi chú |
 |---|---|---|
@@ -611,7 +489,7 @@ sequenceDiagram
 
 ---
 
-## 10. ERROR CODES MAPPING
+## 9. ERROR CODES MAPPING
 
 | HTTP Status | Error Code | Khi nào | Message |
 |---|---|---|---|

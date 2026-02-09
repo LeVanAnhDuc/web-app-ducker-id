@@ -21,17 +21,9 @@ Tính năng ghi nhận **mọi lần đăng nhập** (thành công & thất bạ
 - **System:** Ghi log tự động mọi sự kiện đăng nhập. Gửi cảnh báo email khi phát hiện bất thường.
 
 **Bối cảnh kỹ thuật:**
+Node.js + Express · MongoDB · Redis · Nodemailer · JWT — tất cả đã implement trong Sign-in. Phase cuối bổ sung Bull + Redis (message queue).
 
-| Hạng mục | Hiện trạng |
-|---|---|
-| Backend | Node.js + Express (viết thuần, không framework auth) |
-| Database | MongoDB |
-| Cache/Counter | Redis (đã có sẵn — dùng cho OTP, magic link, rate limiting trong Sign-in) |
-| Email | Nodemailer (đã có sẵn) |
-| Kiến trúc | Client-Server, mỗi bên 1 repo riêng |
-| Message Queue | Chưa có — sẽ triển khai phase cuối (Bull + Redis) |
-| Lockout hiện tại | Progressive lockout (password), Fixed lockout 15 phút (OTP) — **đã implement trong Sign-in** |
-| Rate limiting hiện tại | Per IP cho login, per email cho OTP/Magic Link, cooldown 60s — **đã implement trong Sign-in** |
+> 📎 Chi tiết tech stack: xem **[System Design](./login-history-system-design.md) Section 1**.
 
 ---
 
@@ -295,21 +287,11 @@ Tính năng ghi nhận **mọi lần đăng nhập** (thành công & thất bạ
 
 ## 7. PHÂN PHA TRIỂN KHAI
 
-> 📎 **Tách file riêng:** Xem chi tiết tại **[login-history-wbs.md](./login-history-wbs.md)**
->
-> **Tóm tắt:** 7 phases · 62 tasks · ~144 giờ · ~3.5 tuần (1 junior dev)
+> 📎 Xem chi tiết tại **[login-history-wbs.md](./login-history-wbs.md)**
 >
 > **Lưu ý:** Tính năng Unlock qua Email đã được tách thành feature riêng — xem [unlock-account](../unlock-account/).
 
-| Phase | Tên | Giờ |
-|---|---|---|
-| 1 | Ghi log cơ bản (5 endpoints) | 24h |
-| 2 | User xem lịch sử | 18h |
-| 3 | Admin xem lịch sử | 19h |
-| 4 | Admin: Unlock + Disable/Enable + Export | 25h |
-| 5 | Cảnh báo bất thường | 19h |
-| 6 | Data Lifecycle | 13h |
-| 7 | Async Queue (Bull + Redis) | 26h |
+*KHÔNG copy bảng phases/giờ vào đây — dữ liệu chỉ nằm ở WBS để tránh không đồng bộ khi cập nhật.*
 
 ---
 
