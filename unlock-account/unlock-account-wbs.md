@@ -31,9 +31,9 @@
 | | **Tổng Phase 1** | **~8h** |
 
 **Definition of Done:**
-- User model có đủ 5 fields mới, migration chạy thành công.
-- Utility generate mật khẩu tạm: output luôn có ít nhất 1 chữ hoa, 1 chữ thường, 1 số, 1 ký tự đặc biệt, đúng 16 ký tự.
-- Constants file chứa tất cả giá trị cấu hình (không magic number/string).
+- User model có đủ 5 fields mới (xem **System Design Section 3.1**).
+- Utility generate mật khẩu tạm hoạt động đúng (xem **System Design Section 7.1**).
+- Constants file không có magic number/string.
 - Email template render đúng cả EN và VI.
 
 ---
@@ -52,13 +52,9 @@
 | | **Tổng Phase 2** | **~7h** |
 
 **Definition of Done:**
-- API `POST /auth/unlock-request` hoạt động đúng theo luồng trong FRA.
-- Cooldown 60s hoạt động (request lần 2 trong vòng 60s → 400).
-- Rate limit 3/giờ hoạt động (request lần 4 trong 1 giờ → 429).
-- Email không tồn tại → response generic 200 (chống enumeration).
-- Account DISABLED → response 400 "Account suspended".
-- Account không bị lock → response 400 "Account is not locked".
-- Account bị lock → gửi email + response 200.
+- API hoạt động đúng theo **FRA FR-02** (tất cả branches).
+- Cooldown + Rate limit hoạt động đúng.
+- Chống user enumeration (generic response).
 
 ---
 
@@ -78,11 +74,10 @@
 | | **Tổng Phase 3** | **~7h** |
 
 **Definition of Done:**
-- API `POST /auth/unlock-verify` hoạt động đúng theo luồng trong FRA.
-- Mật khẩu tạm đúng → login thành công + `mustChangePassword = true` + lockout reset.
-- Mật khẩu tạm hết hạn / đã dùng / sai → reject 401 generic message. **KHÔNG tăng lockout counter.**
-- Middleware `forceChangePassword` chặn mọi endpoint (trừ change password + logout) khi `mustChangePassword = true`.
-- Đổi mật khẩu thành công → clear tất cả temp password fields + `mustChangePassword = false`.
+- API hoạt động đúng theo **FRA FR-03, FR-04** (tất cả branches).
+- Temp password sai/hết hạn/đã dùng → reject 401. **KHÔNG tăng lockout counter.**
+- Middleware `forceChangePassword` hoạt động đúng (xem **System Design Section 8.1**).
+- Change password endpoint clear đúng các temp password fields.
 
 ---
 
@@ -102,8 +97,7 @@
 
 **Definition of Done:**
 - Unit test coverage ≥ 80% cho unlock service, verify service, temp password utility.
-- Integration test cover full happy path: lock → unlock request → verify → change password.
-- Integration test cover edge cases: expired, used, replay, rate limit, cooldown, DISABLED account.
+- Integration test cover full happy path + edge cases (xem **FRA Section 5**).
 - Tất cả test pass.
 
 ---

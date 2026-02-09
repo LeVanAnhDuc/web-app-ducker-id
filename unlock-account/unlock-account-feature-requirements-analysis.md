@@ -20,18 +20,9 @@ Tính năng cho phép user **tự mở khoá tài khoản sớm** qua email khi 
 - **System:** Gửi email chứa mật khẩu tạm, xác thực mật khẩu tạm, reset lockout state, bắt buộc đổi mật khẩu.
 
 **Bối cảnh kỹ thuật:**
+Node.js + Express · MongoDB · Redis · Nodemailer · JWT + bcrypt — tất cả đã implement trong Sign-in.
 
-| Hạng mục | Hiện trạng |
-|---|---|
-| Backend | Node.js + Express (viết thuần, không framework auth) |
-| Database | MongoDB |
-| Cache/Counter | Redis (đã có sẵn — dùng cho OTP, magic link, rate limiting trong Sign-in) |
-| Email | Nodemailer (đã có sẵn) |
-| Kiến trúc | Client-Server, mỗi bên 1 repo riêng |
-| Lockout hiện tại | Progressive lockout (password), Fixed lockout 15 phút (OTP) — **đã implement trong Sign-in** |
-| Rate limiting hiện tại | Per IP cho login, per email cho OTP/Magic Link, cooldown 60s — **đã implement trong Sign-in** |
-| JWT | accessToken, idToken, refreshToken — **đã implement trong Sign-in** |
-| Password hashing | bcrypt (cost factor ≥ 12) — **đã implement trong Sign-in** |
+> 📎 Chi tiết tech stack: xem **[System Design](./unlock-account-system-design.md) Section 1**.
 
 ---
 
@@ -207,16 +198,7 @@ Tính năng cho phép user **tự mở khoá tài khoản sớm** qua email khi 
 
 ## 7. PHÂN PHA TRIỂN KHAI
 
-> 📎 **Tách file riêng:** Xem chi tiết tại **[unlock-account-wbs.md](./unlock-account-wbs.md)**
->
-> **Tóm tắt:** 4 phases · 18 tasks · ~27h · ~3.5 ngày (1 junior dev)
-
-| Phase | Tên | Giờ |
-|---|---|---|
-| 1 | Hạ tầng: User model + Utility + Email template | 8h |
-| 2 | Unlock Request (API + Rate limit) | 7h |
-| 3 | Unlock Verify (API + Reset lockout + Force change password) | 7h |
-| 4 | Testing (Unit + Integration) | 5h |
+> 📎 Xem chi tiết tại **[unlock-account-wbs.md](./unlock-account-wbs.md)**
 
 ---
 

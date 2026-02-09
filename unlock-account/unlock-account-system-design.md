@@ -155,15 +155,7 @@ Feature bổ sung module `unlock-account` vào hệ thống, tạo 2 endpoint m�
 
 > Response message generic — không tiết lộ email tồn tại hay không.
 
-**Response Errors:**
-
-| Status | Condition | Message |
-|---|---|---|
-| 400 | Cooldown active (< 60s since last request) | "Please wait {remaining} seconds before requesting again" |
-| 400 | Account is not locked | "Account is not locked" |
-| 400 | Account is DISABLED | "Account suspended. Please contact support" |
-| 422 | Validation failed (invalid email format) | "Validation failed" |
-| 429 | Rate limit exceeded (≥ 3 requests/hour) | "Too many unlock requests. Please try again later" |
+> Response errors: xem **Section 10 — Error Codes Mapping**.
 
 ---
 
@@ -210,81 +202,13 @@ Feature bổ sung module `unlock-account` vào hệ thống, tạo 2 endpoint m�
 
 > `refreshToken` set vào httpOnly cookie — nhất quán với Sign-in.
 
-**Response Errors:**
-
-| Status | Condition | Message |
-|---|---|---|
-| 401 | Temp password expired (> 15 min) | "Invalid or expired temporary password" |
-| 401 | Temp password already used | "Invalid or expired temporary password" |
-| 401 | Wrong temp password | "Invalid or expired temporary password" |
-| 401 | User not found | "Invalid or expired temporary password" |
-| 422 | Validation failed | "Validation failed" |
-
-> Tất cả error cases trả cùng 1 message generic — chống enumeration.
+> Response errors: xem **Section 10 — Error Codes Mapping**. Tất cả error cases trả cùng 1 message generic — chống enumeration.
 
 ---
 
-## 5. DATA FLOW
+## 5. SEQUENCE DIAGRAMS
 
-### 5.1 Luồng Unlock Request
-
-```
-1. Client gửi POST /auth/unlock-request { email }
-2. Router → Unlock Controller
-3. Controller:
-   a. Validate input (Joi) → nếu fail → return 422
-   b. Check cooldown (Redis key unlock:cooldown:{email})
-      → nếu active → return 400 "Please wait X seconds"
-   c. Check rate limit (Redis key unlock:rate:{email})
-      → nếu ≥ 3 → return 429 "Too many requests"
-   d. Find user by email in MongoDB
-   e. Nếu user không tồn tại → return generic success 200 (chống enumeration)
-   f. Nếu user.emailVerified === false → return generic success 200 (chống enumeration)
-   g. Nếu user.accountStatus === 'DISABLED' → return 400 "Account suspended"
-   h. Check lockout state (failedAttempts, lockUntil)
-      → nếu không bị lock → return 400 "Account is not locked"
-   i. Generate temp password (16 chars, crypto-secure, mixed characters)
-   j. Hash temp password (bcrypt, cost 12)
-   k. Update user in MongoDB:
-      - tempPasswordHash = hashed value
-      - tempPasswordExpAt = now + 15 minutes
-      - tempPasswordUsed = false
-   l. Gửi email unlock qua Nodemailer (non-blocking — fire and forget with retry)
-   m. Set Redis cooldown: unlock:cooldown:{email} = "1" (TTL 60s)
-   n. Increment Redis rate counter: INCR unlock:rate:{email} (TTL 1h, set on first INCR)
-   o. Return 200 generic success
-```
-
-### 5.2 Luồng Unlock Verify
-
-```
-1. Client gửi POST /auth/unlock-verify { email, tempPassword }
-2. Router → Unlock Controller
-3. Controller:
-   a. Validate input (Joi) → nếu fail → return 422
-   b. Find user by email in MongoDB
-   c. Nếu user không tồn tại → return 401 generic error
-   d. Check tempPasswordExpAt > now
-      → nếu hết hạn hoặc null → return 401 (KHÔNG tăng lockout counter)
-   e. Check tempPasswordUsed === false
-      → nếu đã dùng → return 401
-   f. Compare tempPassword với tempPasswordHash (bcrypt)
-      → nếu sai → return 401 (KHÔNG tăng lockout counter)
-   g. Nếu đúng → update user in MongoDB:
-      - tempPasswordUsed = true
-      - mustChangePassword = true
-      - Reset lockout: failedAttempts = 0, lockUntil = null
-   h. Generate tokens (accessToken, idToken, refreshToken)
-      — nhất quán với Sign-in token generation
-   i. Set refreshToken vào httpOnly cookie
-   j. Return 200 { accessToken, idToken, mustChangePassword: true }
-```
-
----
-
-## 6. SEQUENCE DIAGRAMS
-
-### 6.1 Unlock Request Flow
+### 5.1 Unlock Request Flow
 
 ```mermaid
 sequenceDiagram
@@ -333,7 +257,7 @@ sequenceDiagram
     end
 ```
 
-### 6.2 Unlock Verify Flow
+### 5.2 Unlock Verify Flow
 
 ```mermaid
 sequenceDiagram
@@ -370,26 +294,16 @@ sequenceDiagram
 
 ---
 
-## 7. EDGE CASE → DESIGN MAPPING
+## 6. EDGE CASE HANDLING
 
-| FRA Edge Case | Quyết định thiết kế |
-|---|---|
-| **EC-01**: Account không bị lock | `unlock.service.ts` check `failedAttempts` và `lockUntil`. Nếu không bị lock → throw AppError(400, "Account is not locked"). |
-| **EC-02**: Account bị DISABLED | `unlock.service.ts` check `accountStatus === 'DISABLED'` **trước** check lockout. Priority: DISABLED > LOCKED check. Reject với "Account suspended". |
-| **EC-03**: Temp password hết hạn | Check `user.tempPasswordExpAt > new Date()`. Nếu hết hạn hoặc null → throw AppError(401). **KHÔNG increment** `failedAttempts` (lockout counter). |
-| **EC-04**: Temp password replay | Check `user.tempPasswordUsed === false`. Set `true` ngay sau bcrypt compare thành công, **trước** generate tokens — atomic update. |
-| **EC-05**: Email không đến | Client hiển thị "Kiểm tra thư rác" + nút "Gửi lại". Rate limit 3/giờ. Auto-unlock vẫn hoạt động song song. |
-| **EC-06**: Spam unlock request | Redis counter `unlock:rate:{email}` với TTL 1 giờ. `INCR` mỗi lần request thành công. Nếu ≥ 3 → throw AppError(429). Cooldown 60s ngăn request liên tiếp. |
-| **EC-07**: Sai temp password | Throw AppError(401, "Invalid or expired temporary password"). **KHÔNG increment** `failedAttempts`. Response message generic — không phân biệt sai/hết hạn/đã dùng. |
-| **EC-08**: Email không tồn tại | Return 200 generic success. **KHÔNG** gửi email. **KHÔNG** tiết lộ email tồn tại hay không. |
-| **EC-11**: Nhiều unlock request | Mỗi lần gửi → overwrite `tempPasswordHash`, `tempPasswordExpAt`, reset `tempPasswordUsed = false`. Chỉ mật khẩu tạm cuối cùng hoạt động. |
-| **EC-12**: Redis down | **Fail-close**: throw AppError(503, "Service temporarily unavailable"). Log error. User vẫn có thể chờ auto-unlock. |
+> 📎 Danh sách edge cases: xem **[FRA Section 5](./unlock-account-feature-requirements-analysis.md)**.
+> Tất cả edge cases đã được xử lý trong Sequence Diagrams (Section 5) và Error Codes (Section 10).
 
 ---
 
-## 8. UTILS / HELPER DESIGN
+## 7. UTILS / HELPER DESIGN
 
-### 8.1 Temp Password Generator
+### 7.1 Temp Password Generator
 
 | Thuộc tính | Mô tả |
 |---|---|
@@ -418,9 +332,9 @@ sequenceDiagram
 
 ---
 
-## 9. MIDDLEWARE DESIGN
+## 8. MIDDLEWARE DESIGN
 
-### 9.1 Force Change Password Middleware
+### 8.1 Force Change Password Middleware
 
 | Thuộc tính | Mô tả |
 |---|---|
@@ -448,26 +362,18 @@ Tất cả endpoint khác → reject 403.
 
 ---
 
-## 10. INDEX STRATEGY TỔNG HỢP
-
-### Database Indexes
+## 9. DATABASE INDEXES
 
 | Collection | Index | Type | Mục đích |
 |---|---|---|---|
 | `users` | `{ accountStatus: 1 }` | Single | Check DISABLED status khi unlock request |
 
 > Các index hiện có trên `users` collection (email unique, etc.) đã đủ cho query trong feature này.
-
-### Redis Keys Summary
-
-| Key Pattern | TTL | Mục đích |
-|---|---|---|
-| `unlock:cooldown:{email}` | 60s | Cooldown giữa 2 lần gửi unlock email |
-| `unlock:rate:{email}` | 1 giờ | Rate limit: tối đa 3 unlock requests / giờ |
+> Redis keys: xem **Section 3.2**.
 
 ---
 
-## 11. ERROR CODES MAPPING
+## 10. ERROR CODES MAPPING
 
 | HTTP Status | Error Code | Khi nào | Response Message |
 |---|---|---|---|
