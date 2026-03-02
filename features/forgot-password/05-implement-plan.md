@@ -10,8 +10,8 @@
 | Mục          | Giá trị        |
 | ------------ | -------------- |
 | Tổng số task | 29             |
-| Hoàn thành   | 11/29          |
-| Tiến độ      | 38%            |
+| Hoàn thành   | 18/29          |
+| Tiến độ      | 62%            |
 | Ngày bắt đầu | 02/03/2026     |
 
 ---
@@ -237,7 +237,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.5, 3.8, 3.9
 - **Ước lượng:** 3h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-005, TASK-006, TASK-009
 - **Checklist:**
   - [ ] Tạo file `modules/forgot-password/forgot-password.service.ts`
@@ -268,7 +268,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.5, 3.8
 - **Ước lượng:** 2h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-005, TASK-007, TASK-012 (cùng file service)
 - **Checklist:**
   - [ ] `sendMagicLink(req)`:
@@ -295,7 +295,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.5, 3.8, 3.10
 - **Ước lượng:** 2h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-004, TASK-005, TASK-012 (cùng file service)
 - **Checklist:**
   - [ ] `resetPassword(req)`:
@@ -317,7 +317,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.4
 - **Ước lượng:** 1.5h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-003, TASK-010, TASK-012, TASK-013, TASK-014
 - **Checklist:**
   - [ ] Tạo file `modules/forgot-password/forgot-password.controller.ts`
@@ -336,7 +336,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.6
 - **Ước lượng:** 0.5h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-015
 - **Checklist:**
   - [ ] Tạo file `modules/forgot-password/forgot-password.module.ts`
@@ -357,7 +357,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.10
 - **Ước lượng:** 1h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-004
 - **Checklist:**
   - [ ] Đọc `middlewares/auth.ts` để hiểu flow verify JWT hiện tại
@@ -375,7 +375,7 @@
 
 - **Tham chiếu:** TL2 - NF-08
 - **Ước lượng:** 1h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done (đã hoàn thành từ TASK-010)
 - **Depends on:** TASK-012, TASK-013, TASK-014 (cần biết tất cả message keys)
 - **Checklist:**
   - [ ] Tạo/sửa file `i18n/locales/en/forgotPassword.json` (hoặc namespace phù hợp)
