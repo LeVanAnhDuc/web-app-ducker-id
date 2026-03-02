@@ -10,8 +10,8 @@
 | Mục          | Giá trị        |
 | ------------ | -------------- |
 | Tổng số task | 29             |
-| Hoàn thành   | 0/29           |
-| Tiến độ      | 0%             |
+| Hoàn thành   | 11/29          |
+| Tiến độ      | 38%            |
 | Ngày bắt đầu | 02/03/2026     |
 
 ---
@@ -24,7 +24,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.3, 3.9
 - **Ước lượng:** 1h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** Không có (task đầu tiên)
 - **Checklist:**
   - [ ] Thêm `FORGOT_PASSWORD_OTP_CONFIG` vào `constants/config.ts` (LENGTH, EXPIRY_MINUTES, COOLDOWN_SECONDS, MAX_FAILED_ATTEMPTS, MAX_RESEND_ATTEMPTS, LOCKOUT_DURATION_MINUTES)
@@ -46,7 +46,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.4
 - **Ước lượng:** 1h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-001
 - **Checklist:**
   - [ ] Tạo file `types/modules/forgot-password.ts`
@@ -62,7 +62,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.4, TL2 - Mục 2.3
 - **Ước lượng:** 1h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-001
 - **Checklist:**
   - [ ] Tạo file `validators/schemas/forgot-password.ts`
@@ -82,7 +82,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.3, 3.10
 - **Ước lượng:** 1h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** Không có
 - **Checklist:**
   - [ ] Thêm field `passwordChangedAt: { type: Date, default: null }` vào `models/authentication.ts`
@@ -101,7 +101,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.7.3
 - **Ước lượng:** 1.5h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-001
 - **Checklist:**
   - [ ] Tạo file `modules/forgot-password/repositories/reset-token.repository.ts`
@@ -123,7 +123,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.7.1
 - **Ước lượng:** 1h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-001
 - **Checklist:**
   - [ ] Tạo file `modules/forgot-password/repositories/otp-forgot-password.repository.ts`
@@ -141,7 +141,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.7.2
 - **Ước lượng:** 1.5h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-001
 - **Checklist:**
   - [ ] Tạo file `modules/forgot-password/repositories/magic-link-forgot-password.repository.ts`
@@ -162,7 +162,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.6
 - **Ước lượng:** 1h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done (merged với TASK-009)
 - **Depends on:** Không có
 - **Checklist:**
   - [ ] Clone `modules/send-email/templates/login-otp.tsx` → `forgot-password-otp.tsx`
@@ -179,7 +179,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.6
 - **Ước lượng:** 0.5h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done (merged với TASK-008)
 - **Depends on:** TASK-008
 - **Checklist:**
   - [ ] Thêm `FORGOT_PASSWORD_OTP = "FORGOT_PASSWORD_OTP"` vào `EmailType` enum trong `send-email.types.ts`
@@ -199,7 +199,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.6
 - **Ước lượng:** 1h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-001 (cần RATE_LIMIT_CONFIG + REDIS_KEYS)
 - **Checklist:**
   - [ ] Thêm getter `forgotPasswordOtpByIp` vào `RateLimiterMiddleware` — 10 req/IP/15min
@@ -218,7 +218,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.6
 - **Ước lượng:** 0.5h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done (merged vào TASK-001)
 - **Depends on:** Không có (đã merge vào TASK-001, nhưng tách ra cho rõ ràng)
 - **Checklist:**
   - [ ] Verify `RATE_LIMIT_CONFIG.FORGOT_PASSWORD` đã được thêm ở TASK-001
