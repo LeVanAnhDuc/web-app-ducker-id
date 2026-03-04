@@ -338,90 +338,71 @@ Response 401 (reset token sai / hết hạn):
 
 ---
 
-## 3.6. Cấu trúc files mới & thay đổi
+## 3.6. Cấu trúc files
 
-### Files MỚI cần tạo
-
-```
-SERVER:
-server/src/modules/forgot-password/
-├── forgot-password.controller.ts       # 5 route handlers
-├── forgot-password.service.ts          # Business logic
-├── forgot-password.module.ts           # DI wiring, export router
-└── repositories/
-    ├── otp-forgot-password.repository.ts     # Clone từ otp-login.repository.ts
-    ├── magic-link-forgot-password.repository.ts  # Clone từ magic-link-login.repository.ts
-    └── reset-token.repository.ts             # Mới - quản lý reset token
-
-server/src/modules/send-email/templates/
-└── forgot-password-otp.tsx             # Clone từ login-otp.tsx, đổi text
-
-server/src/types/modules/
-└── forgot-password.ts                  # Request/Response types
-
-server/src/validators/schemas/
-└── forgot-password.ts                  # Joi schemas cho 5 endpoints
-
-CLIENT:
-client/src/dataSources/ForgotPassword/
-└── index.ts                            # API functions (sendOtp, verifyOtp, sendMagicLink, verifyMagicLink, resetPassword)
-```
-
-### Files CẦN SỬA
+### Server
 
 ```
-SERVER:
-server/src/constants/config.ts
-  → Thêm FORGOT_PASSWORD_OTP_CONFIG, FORGOT_PASSWORD_MAGIC_LINK_CONFIG, FORGOT_PASSWORD_RESET_TOKEN_CONFIG
+server/src/
+├── modules/forgot-password/
+│   ├── forgot-password.controller.ts       # 5 route handlers
+│   ├── forgot-password.service.ts          # Business logic
+│   ├── forgot-password.module.ts           # DI wiring, export router
+│   ├── repositories/
+│   │   ├── otp-forgot-password.repository.ts          # Redis: OTP CRUD
+│   │   ├── magic-link-forgot-password.repository.ts   # Redis: magic link CRUD
+│   │   └── reset-token.repository.ts                  # Redis: reset token CRUD
+│   └── swagger/
+│       ├── index.ts                        # Swagger export
+│       ├── paths.ts                        # OpenAPI paths
+│       └── schemas.ts                      # OpenAPI schemas
+├── modules/send-email/templates/
+│   └── forgot-password-otp.tsx             # Forgot password OTP email template
+├── types/modules/
+│   └── forgot-password.ts                  # Request/Response types
+├── validators/schemas/
+│   └── forgot-password.ts                  # Joi schemas cho 5 endpoints
+├── repositories/
+│   └── authentication.repository.ts        # Có method updatePassword(authId, hashedPassword)
+├── middlewares/
+│   └── auth.guard.ts                       # Kiểm tra passwordChangedAt sau khi reset password
+└── i18n/locales/
+    ├── en/forgotPassword.json              # English messages
+    └── vi/forgotPassword.json             # Vietnamese messages
+```
 
-server/src/constants/infrastructure.ts
-  → Thêm REDIS_KEYS.FORGOT_PASSWORD (OTP, cooldown, failed, resend, magic link, reset token)
-  → Thêm REDIS_KEYS.RATE_LIMIT.FORGOT_PASSWORD (IP, email)
+### Client
 
-server/src/constants/enums.ts
-  → Thêm LOGIN_METHODS.FORGOT_PASSWORD = "forgot-password"
-  → Thêm LOGIN_FAIL_REASONS.INVALID_RESET_TOKEN = "invalid_reset_token"
-
-server/src/modules/send-email/send-email.types.ts
-  → Thêm EmailType.FORGOT_PASSWORD_OTP
-  → Thêm ForgotPasswordOtpData interface
-  → Thêm vào EmailDataMap
-
-server/src/modules/send-email/send-email.service.ts
-  → Thêm case FORGOT_PASSWORD_OTP trong renderTemplate() và getSubject()
-
-server/src/modules/send-email/send-email.i18n.ts (nếu có)
-  → Thêm translation key cho email subject
-
-server/src/repositories/authentication/index.ts
-  → Thêm method updatePassword(authId, hashedPassword)
-
-server/src/middlewares/rate-limiter.ts
-  → Thêm 4 getters: forgotPasswordOtpByIp, forgotPasswordOtpByEmail,
-    forgotPasswordMagicLinkByIp, forgotPasswordMagicLinkByEmail, forgotPasswordResetByIp
-
-server/src/routes/v1/index.ts
-  → Mount: v1Router.use("/auth/forgot-password", forgotPasswordRouter)
-
-server/src/i18n/locales/en/*.json
-  → Thêm namespace "forgotPassword" cho error/success messages
-
-server/src/i18n/locales/vi/*.json
-  → Thêm namespace "forgotPassword" cho error/success messages
-
-CLIENT:
-client/src/views/ForgotPasswordOtp/mains/OtpStepForm/index.tsx
-  → Thay TODO bằng API call thực tế (sendOtp, verifyOtp)
-
-client/src/views/ForgotPasswordMagicLink/hooks/useMagicLink.ts
-  → Thay TODO bằng API call thực tế (sendMagicLink)
-
-client/src/views/ResetPassword/mains/ResetPasswordForm/index.tsx
-  → Thay TODO bằng API call thực tế (resetPassword)
-  → Xử lý magic link verify khi có query param method=magic-link
-
-client/src/views/ResetPassword/index.tsx
-  → Xử lý thêm logic verify magic link token khi đến từ email link
+```
+client/src/
+├── app/[locale]/(authen)/
+│   ├── forgot-password/
+│   │   ├── page.tsx                        # Chọn phương thức khôi phục
+│   │   ├── otp/page.tsx                    # Nhập OTP
+│   │   └── magic-link/page.tsx             # Chờ magic link
+│   └── reset-password/
+│       └── page.tsx                        # Đặt mật khẩu mới
+├── views/
+│   ├── ForgotPassword/                     # Trang chọn phương thức
+│   ├── ForgotPasswordOtp/                  # Trang nhập OTP
+│   ├── ForgotPasswordMagicLink/            # Trang chờ magic link
+│   └── ResetPassword/                      # Trang đặt mật khẩu mới
+├── forms/ForgotPassword/
+│   ├── index.ts                            # Form props + zodResolver
+│   ├── data.ts                             # Default values
+│   └── validations.ts                      # Zod schemas
+├── forms/ResetPassword/
+│   ├── index.ts
+│   ├── data.ts
+│   └── validations.ts
+├── dataSources/ForgotPassword/
+│   └── index.ts                            # API functions (sendOtp, verifyOtp, sendMagicLink, verifyMagicLink, resetPassword)
+├── constants/
+│   ├── forgotPassword.ts                   # ForgotPassword-specific constants
+│   └── fieldNames/ForgotPassword.ts        # Field name constants
+└── locales/
+    ├── en/forgotPassword.json
+    └── vi/forgotPassword.json
 ```
 
 ---
@@ -602,25 +583,6 @@ if (auth.passwordChangedAt && tokenIssuedAt < auth.passwordChangedAt) {
 
 ---
 
-## 3.13. Thứ tự implement đề xuất
+## 3.13. Trạng thái implement
 
-```
-1. Constants & Config (config, infrastructure, enums)
-2. Types (forgot-password.ts)
-3. Repository: ResetTokenRepository
-4. Repository: OtpForgotPasswordRepository
-5. Repository: MagicLinkForgotPasswordRepository
-6. Auth Repository: thêm updatePassword + passwordChangedAt
-7. Email: template + types + service update
-8. Validator schemas
-9. Rate limiter: thêm getters mới
-10. Service: ForgotPasswordService
-11. Controller: ForgotPasswordController
-12. Module wiring + Route mount
-13. i18n translations (EN + VI)
-14. Client: dataSources API functions
-15. Client: OtpStepForm integration
-16. Client: MagicLink integration
-17. Client: ResetPassword integration
-18. Auth middleware: kiểm tra passwordChangedAt
-```
+✅ Tất cả server-side và client-side đã được implement đầy đủ.

@@ -112,7 +112,7 @@ server/src/
 │           ├── otp-block.tsx        # OTP display block (large, dashed border)
 │           ├── info-box.tsx         # Info/warning/danger box component
 │           └── cta-button.tsx       # Call-to-action button (gradient)
-├── services/
+├── core/
 │   ├── EmailTransport.ts            # Abstract class (interface)
 │   └── implements/
 │       └── NodemailerTransport.ts   # Gmail SMTP implementation (singleton, pool)

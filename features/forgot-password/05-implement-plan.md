@@ -10,8 +10,8 @@
 | Mục          | Giá trị        |
 | ------------ | -------------- |
 | Tổng số task | 29             |
-| Hoàn thành   | 18/29          |
-| Tiến độ      | 62%            |
+| Hoàn thành   | 19/29          |
+| Tiến độ      | 66%            |
 | Ngày bắt đầu | 02/03/2026     |
 
 ---
@@ -87,11 +87,11 @@
 - **Checklist:**
   - [ ] Thêm field `passwordChangedAt: { type: Date, default: null }` vào `models/authentication.ts`
   - [ ] Thêm field `passwordChangedAt` vào `types/modules/authentication.ts` (AuthenticationDocument interface)
-  - [ ] Thêm method `updatePassword(authId: string, hashedPassword: string): Promise<void>` vào `repositories/authentication/index.ts` — update cả `password` và `passwordChangedAt: new Date()`
+  - [ ] Thêm method `updatePassword(authId: string, hashedPassword: string): Promise<void>` vào `repositories/authentication.repository.ts` — update cả `password` và `passwordChangedAt: new Date()`
 - **Files sẽ tạo/sửa:**
   - `server/src/models/authentication.ts` (sửa)
   - `server/src/types/modules/authentication.ts` (sửa)
-  - `server/src/repositories/authentication/index.ts` (sửa)
+  - `server/src/repositories/authentication.repository.ts` (sửa)
 
 ---
 
@@ -344,10 +344,10 @@
   - [ ] Instantiate: ForgotPasswordService (inject authRepo, loginHistoryService, 3 repos)
   - [ ] Instantiate: ForgotPasswordController (inject service)
   - [ ] Export `forgotPasswordRouter = controller.router`
-  - [ ] Mount trong `routes/v1/index.ts`: `v1Router.use("/auth/forgot-password", forgotPasswordRouter)`
+  - [ ] Mount trong `loaders/modules.loader.ts`: `v1Router.use("/auth/forgot-password", forgotPasswordRouter)`
 - **Files sẽ tạo/sửa:**
   - `server/src/modules/forgot-password/forgot-password.module.ts` (tạo mới)
-  - `server/src/routes/v1/index.ts` (sửa)
+  - `server/src/loaders/modules.loader.ts` (sửa)
 
 ---
 
@@ -360,13 +360,13 @@
 - **Trạng thái:** ✅ Done
 - **Depends on:** TASK-004
 - **Checklist:**
-  - [ ] Đọc `middlewares/auth.ts` để hiểu flow verify JWT hiện tại
+  - [ ] Đọc `middlewares/auth.guard.ts` để hiểu flow verify JWT hiện tại
   - [ ] Sau khi verify access token thành công, lấy auth record từ DB/cache
   - [ ] Kiểm tra: nếu `auth.passwordChangedAt` tồn tại VÀ `tokenIssuedAt < passwordChangedAt.getTime() / 1000` → throw `UnauthorizedError("Password changed. Please login again.")`
   - [ ] Thêm i18n key cho error message
   - [ ] Test: login → reset password → gọi API với old token → phải bị reject
 - **Files sẽ tạo/sửa:**
-  - `server/src/middlewares/auth.ts` (sửa)
+  - `server/src/middlewares/auth.guard.ts` (sửa)
 - **Test cần pass:** TC-05.1 (session invalidation), NF-04
 
 ---
@@ -409,7 +409,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.6
 - **Ước lượng:** 1h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-016 (backend API phải sẵn sàng)
 - **Checklist:**
   - [ ] Tạo file `client/src/dataSources/ForgotPassword/index.ts`

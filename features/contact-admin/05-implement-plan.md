@@ -10,8 +10,8 @@
 | Mục           | Giá trị    |
 | ------------- | ---------- |
 | Tổng số task  | 16         |
-| Hoàn thành    | 0/16       |
-| Tiến độ       | 0%         |
+| Hoàn thành    | 11/16      |
+| Tiến độ       | 69%        |
 | Ngày bắt đầu | 04/03/2026 |
 
 ---
@@ -24,7 +24,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.8
 - **Ước lượng:** 15m
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** Không có
 - **Checklist:**
   - [ ] `yarn add multer` trong server/
@@ -39,7 +39,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.6
 - **Ước lượng:** 30m
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** Không có
 - **Checklist:**
   - [ ] Thêm `CONTACT_CATEGORIES`, `CONTACT_PRIORITIES`, `CONTACT_STATUSES` vào `enums.ts`
@@ -56,7 +56,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.6
 - **Ước lượng:** 30m
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-002
 - **Checklist:**
   - [ ] Tạo `ContactDocument` interface (Mongoose document type)
@@ -70,7 +70,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.3
 - **Ước lượng:** 45m
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-002, TASK-003
 - **Checklist:**
   - [ ] Tạo ContactSchema với tất cả fields từ TL3 Mục 3.3
@@ -89,7 +89,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.7.1
 - **Ước lượng:** 45m
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** Không có
 - **Checklist:**
   - [ ] Tạo `OptionalAuthGuard` class (tương tự AuthGuard)
@@ -104,7 +104,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.7.2
 - **Ước lượng:** 1h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-001
 - **Checklist:**
   - [ ] Configure disk storage: destination = `/uploads/contacts/{YYYY-MM-DD}/`
@@ -122,7 +122,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.4, TL2 - Mục 2.3
 - **Ước lượng:** 30m
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-002
 - **Checklist:**
   - [ ] Tạo `submitContactSchema` với Joi
@@ -140,7 +140,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.7.6
 - **Ước lượng:** 15m
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-002
 - **Checklist:**
   - [ ] Thêm `public readonly contactByIp: RateLimitRequestHandler`
@@ -154,7 +154,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.6
 - **Ước lượng:** 30m
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-004
 - **Checklist:**
   - [ ] Extends MongoDBRepository<ContactDocument>
@@ -167,7 +167,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.5, 3.7.3, 3.7.7, 3.7.8
 - **Ước lượng:** 1.5h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-009
 - **Checklist:**
   - [ ] Implement `submitContact(req)` method
@@ -185,7 +185,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.7.3, 3.7.4, 3.7.5
 - **Ước lượng:** 1h 15m
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-005, TASK-006, TASK-007, TASK-008, TASK-010
 - **Checklist:**
   - [ ] Tạo ContactAdminController: constructor(service, rl, optionalAuth)

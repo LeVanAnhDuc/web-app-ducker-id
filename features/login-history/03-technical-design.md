@@ -129,8 +129,7 @@ server/src/
 ├── models/
 │   └── login-history.ts             # Mongoose schema + indexes + TTL
 ├── repositories/
-│   └── login-history/
-│       └── index.ts                 # CRUD operations (create)
+│   └── login-history.repository.ts  # CRUD operations (create)
 └── types/modules/
     └── login-history.ts             # TypeScript types (LoginHistoryDocument, LoginEventPayload, etc.)
 ```

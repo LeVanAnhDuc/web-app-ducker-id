@@ -98,7 +98,7 @@ server/src/
 │       ├── paths.ts             # OpenAPI path definition
 │       └── schemas.ts           # OpenAPI schema (LogoutResponse)
 └── middlewares/
-    └── auth.ts                  # authenticate middleware (shared)
+    └── auth.guard.ts            # authenticate middleware (shared)
 ```
 
 ---
@@ -107,7 +107,7 @@ server/src/
 
 | Dependency     | Loại     | Mô tả                                   | Ghi chú                  |
 | -------------- | -------- | ---------------------------------------- | ------------------------ |
-| authenticate   | Internal | Middleware xác thực Bearer token          | middlewares/auth.ts      |
+| authenticate   | Internal | Middleware xác thực Bearer token          | middlewares/auth.guard.ts |
 | Logger         | Internal | Ghi log logout events                    | utils/logger             |
 
 ---

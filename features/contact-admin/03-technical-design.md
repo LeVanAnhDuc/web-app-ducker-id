@@ -226,27 +226,23 @@ Response 429 (Rate Limited):
 ```
 server/src/
 ├── models/
-│   └── contact.ts                          // Mongoose schema (MỚI)
+│   └── contact.ts                          // Mongoose schema
 │
 ├── modules/
 │   └── contact-admin/
-│       ├── contact-admin.controller.ts     // Route handlers (MỚI)
-│       ├── contact-admin.service.ts        // Business logic (MỚI)
-│       ├── contact-admin.module.ts         // DI setup (MỚI)
-│       ├── repositories/
-│       │   └── contact.repository.ts       // MongoDB repository (MỚI)
-│       └── swagger/
-│           ├── index.ts                    // Swagger export (MỚI)
-│           ├── paths.ts                    // API paths (MỚI)
-│           └── schemas.ts                  // Request/Response schemas (MỚI)
+│       ├── contact-admin.controller.ts     // Route handlers
+│       ├── contact-admin.service.ts        // Business logic
+│       ├── contact-admin.module.ts         // DI setup
+│       └── repositories/
+│           └── contact.repository.ts       // MongoDB repository
 │
 ├── middlewares/
-│   └── optional-auth.guard.ts              // OptionalAuthGuard class (MỚI)
-│   └── file-upload.ts                      // Multer config (MỚI)
+│   ├── optional-auth.guard.ts              // OptionalAuthGuard class
+│   └── file-upload.ts                      // Multer config
 │
 ├── validators/
 │   └── schemas/
-│       └── contact-admin.ts                // Joi validation (MỚI)
+│       └── contact-admin.ts                // Joi validation
 │
 ├── constants/
 │   ├── enums.ts                            // Thêm CONTACT_CATEGORIES, CONTACT_PRIORITIES, CONTACT_STATUSES
@@ -256,10 +252,10 @@ server/src/
 │
 ├── types/
 │   └── modules/
-│       └── contact-admin.ts                // TypeScript types (MỚI)
+│       └── contact-admin.ts                // TypeScript types
 │
 └── loaders/
-    └── modules.loader.ts                   // Thêm createContactAdminModule, mount route
+    └── modules.loader.ts                   // createContactAdminModule + v1Router.use("/contact", contactAdminRouter)
 ```
 
 ### Files chỉnh sửa (EDIT):
@@ -271,7 +267,7 @@ server/src/
 | `constants/infrastructure.ts` | Thêm `REDIS_KEYS.RATE_LIMIT.CONTACT`                                                               |
 | `constants/config.ts`         | Thêm `RATE_LIMIT_CONFIG.CONTACT`, `CONTACT_CONFIG`                                                 |
 | `middlewares/rate-limiter.ts` | Thêm `public readonly contactByIp` property + khởi tạo trong constructor                           |
-| `loaders/modules.loader.ts`   | Import `createContactAdminModule`, tạo module, thêm `v1Router.use("/contact", contactAdminRouter)` |
+| `loaders/modules.loader.ts`   | Import `createContactAdminModule`, `OptionalAuthGuard`, tạo module, thêm `v1Router.use("/contact", contactAdminRouter)` |
 | `server/package.json`         | Thêm dependency `multer`, `@types/multer`                                                          |
 
 ---
@@ -342,7 +338,6 @@ server/src/
 
 **Deployment steps:**
 
-1. `yarn add multer @types/multer` (và uuid nếu chưa có)
-2. Tạo thư mục `uploads/contacts/` trên server
-3. Deploy code mới
-4. MongoDB tự tạo collection và indexes khi có document đầu tiên
+1. Tạo thư mục `uploads/contacts/` trên server (nếu chưa có)
+2. Deploy code mới
+3. MongoDB tự tạo collection và indexes khi có document đầu tiên

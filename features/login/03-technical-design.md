@@ -284,20 +284,24 @@ server/src/
 │   ├── login.module.ts              # DI setup, export router & service
 │   ├── login.controller.ts          # Route handlers + rate limiting
 │   ├── login.service.ts             # Business logic (password, OTP, magic link)
-│   └── repositories/
-│       ├── otp-login.repository.ts       # Redis: OTP CRUD
-│       ├── magic-link-login.repository.ts # Redis: magic link CRUD
-│       └── failed-attempts.repository.ts  # Redis: lockout management
+│   ├── repositories/
+│   │   ├── otp-login.repository.ts       # Redis: OTP CRUD
+│   │   ├── magic-link-login.repository.ts # Redis: magic link CRUD
+│   │   └── failed-attempts.repository.ts  # Redis: lockout management
+│   └── swagger/
+│       ├── index.ts                      # Swagger export
+│       ├── paths.ts                      # OpenAPI paths
+│       └── schemas.ts                    # OpenAPI schemas
 ├── modules/login-history/
 │   ├── login-history.module.ts
 │   └── login-history.service.ts     # Ghi và query lịch sử
 ├── models/
 │   ├── authentication.ts            # Mongoose schema: auths
 │   └── login-history.ts             # Mongoose schema: login_histories
-├── repositories/authentication/
-│   └── index.ts                     # Auth CRUD operations
+├── repositories/
+│   └── authentication.repository.ts # Auth CRUD operations
 ├── middlewares/
-│   └── auth.ts                      # JWT authenticate middleware
+│   └── auth.guard.ts                # JWT authenticate middleware
 ├── utils/token/
 │   ├── jwt.ts                       # Token generate & verify
 │   └── auth-response.ts             # Format token response
@@ -320,19 +324,26 @@ client/src/
 │       ├── magic-link/page.tsx      # Step 2c: Magic link waiting
 │       └── alternative/page.tsx     # Chọn phương thức khác
 ├── views/
+│   ├── Login/mains/EmailStepForm/         # Email step form component
 │   ├── LoginPassword/mains/PasswordStepForm/  # Password form component
 │   ├── LoginOtp/mains/OtpStepForm/            # OTP form component
-│   └── LoginMagicLink/mains/MagicLinkForm/    # Magic link component
+│   ├── LoginMagicLink/mains/MagicLinkForm/    # Magic link component
+│   └── LoginAlternative/mains/AlternativeOptions/  # Alt methods component
 ├── forms/Login/
 │   ├── index.ts                     # Form props + zodResolver
 │   ├── data.ts                      # Default values
 │   └── validations.ts              # Zod schemas (email, password)
+├── dataSources/Login/
+│   └── index.ts                    # API call functions (login endpoints)
 ├── hooks/
 │   ├── useCountdown.ts             # Countdown timer cho resend
-│   └── useApiQuery.ts              # API request hook
+│   ├── useApiQuery.ts              # API request hook
+│   └── useFieldProps.ts            # Field props helper
 ├── libs/
 │   └── axios.ts                    # Axios instance + interceptors
 ├── constants/
+│   ├── login.ts                    # Login-specific constants
+│   ├── fieldNames/Login.ts         # Field name constants
 │   └── routes.ts                   # Route path constants
 ├── locales/
 │   ├── en/login.json               # English translations

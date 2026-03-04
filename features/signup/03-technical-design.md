@@ -275,10 +275,10 @@ server/src/
 │       └── schemas.ts                    # OpenAPI schemas
 ├── models/
 │   ├── authentication.ts                 # Mongoose schema: auths
-│   └── user.ts                           # Mongoose schema: users (*)
+│   └── user.ts                           # Mongoose schema: users
 ├── repositories/
-│   ├── authentication/index.ts           # Auth CRUD
-│   └── user/index.ts                     # User CRUD (*)
+│   ├── authentication.repository.ts      # Auth CRUD
+│   └── user.repository.ts                # User CRUD
 ├── validators/schemas/
 │   └── signup.ts                         # Joi schemas (5 schemas)
 ├── types/modules/

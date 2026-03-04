@@ -63,7 +63,7 @@ unlock-rate:{email}       → request count (TTL: 1 giờ)
 ### Endpoint 1: Request Unlock
 
 ```
-POST /api/v1/auth/unlock-account/request
+POST /api/v1/auth/unlock/request
 
 Request Body:
 {
@@ -85,7 +85,7 @@ Response 429: Rate limit exceeded (3 req/email/giờ)
 ### Endpoint 2: Verify Unlock
 
 ```
-POST /api/v1/auth/unlock-account/verify
+POST /api/v1/auth/unlock/verify
 
 Request Body:
 {
@@ -116,7 +116,7 @@ Response 429: Login rate limit (shared loginByIp)
 ### Request Unlock Flow
 
 ```
-1. Client gửi POST /unlock-account/request { email }
+1. Client gửi POST /unlock/request { email }
 2. Server: Joi validate email format
 3. Server: Kiểm tra cooldown (Redis: unlock-cooldown:{email})
    → Nếu còn cooldown → throw 400 "Please wait X seconds"
@@ -145,7 +145,7 @@ Response 429: Login rate limit (shared loginByIp)
 ### Verify Unlock Flow
 
 ```
-1. Client gửi POST /unlock-account/verify { email, tempPassword }
+1. Client gửi POST /unlock/verify { email, tempPassword }
 2. Server: Rate limiter loginByIp
 3. Server: Joi validate { email, tempPassword (min 12) }
 4. Server: Tìm auth record theo email
