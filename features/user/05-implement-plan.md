@@ -10,8 +10,8 @@
 | Mục          | Giá trị    |
 | ------------ | ---------- |
 | Tổng số task | 24         |
-| Hoàn thành   | 0/24       |
-| Tiến độ      | 0%         |
+| Hoàn thành   | 12/24      |
+| Tiến độ      | 50%        |
 | Ngày bắt đầu | 04/03/2026 |
 
 ---
@@ -28,12 +28,12 @@
 
 - **Tham chiếu:** TL3 - Mục 3.7
 - **Ước lượng:** 0.5h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** Không có
 - **Checklist:**
-  - [ ] Thêm `USER_CONFIG` với `AVATAR_MAX_SIZE_BYTES` (10MB), `AVATAR_UPLOAD_DIR`, `BASE_URL`
-  - [ ] Thêm `RATE_LIMIT_CONFIG.USER.UPDATE_PROFILE.PER_IP` (10 req / 900s)
-  - [ ] Thêm `RATE_LIMIT_CONFIG.USER.UPLOAD_AVATAR.PER_IP` (5 req / 900s)
+  - [x] Thêm `USER_CONFIG` với `AVATAR_MAX_SIZE_BYTES` (10MB), `AVATAR_UPLOAD_DIR`, `BASE_URL`
+  - [x] Thêm `RATE_LIMIT_CONFIG.USER.UPDATE_PROFILE.PER_IP` (10 req / 900s)
+  - [x] Thêm `RATE_LIMIT_CONFIG.USER.UPLOAD_AVATAR.PER_IP` (5 req / 900s)
 - **Files sẽ tạo/sửa:**
   - `server/src/constants/config.ts` (sửa)
 
@@ -43,11 +43,11 @@
 
 - **Tham chiếu:** TL3 - Mục 3.7
 - **Ước lượng:** 0.5h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** Không có
 - **Checklist:**
-  - [ ] Thêm `REDIS_KEYS.RATE_LIMIT.USER.UPDATE_IP = "rate-limit:user-update:ip:"`
-  - [ ] Thêm `REDIS_KEYS.RATE_LIMIT.USER.AVATAR_IP = "rate-limit:user-avatar:ip:"`
+  - [x] Thêm `REDIS_KEYS.RATE_LIMIT.USER.UPDATE_IP = "rate-limit:user-update:ip:"`
+  - [x] Thêm `REDIS_KEYS.RATE_LIMIT.USER.AVATAR_IP = "rate-limit:user-avatar:ip:"`
 - **Files sẽ tạo/sửa:**
   - `server/src/constants/infrastructure.ts` (sửa)
 
@@ -57,15 +57,15 @@
 
 - **Tham chiếu:** TL3 - Mục 3.7
 - **Ước lượng:** 1h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-001
 - **Checklist:**
-  - [ ] Định nghĩa `AVATAR_ALLOWED_MIME_TYPES` (image/jpeg, png, webp, gif, avif)
-  - [ ] Định nghĩa `AVATAR_ALLOWED_EXTENSIONS` (.jpg, .jpeg, .png, .webp, .gif, .avif)
-  - [ ] Tạo `avatarStorage` — disk storage, lưu vào `uploads/avatars/{uuid}{ext}`, `fs.mkdirSync` recursive
-  - [ ] Tạo `avatarFileFilter` — validate cả MIME type VÀ extension, throw `BadRequestError` nếu không hợp lệ
-  - [ ] Export `uploadAvatar: RequestHandler` — wrap `upload.single("avatar")`, handle `LIMIT_FILE_SIZE` → 400
-  - [ ] Handle trường hợp không có file (req.file undefined) — xử lý ở controller
+  - [x] Định nghĩa `AVATAR_ALLOWED_MIME_TYPES` (image/jpeg, png, webp, gif, avif)
+  - [x] Định nghĩa `AVATAR_ALLOWED_EXTENSIONS` (.jpg, .jpeg, .png, .webp, .gif, .avif)
+  - [x] Tạo `avatarStorage` — disk storage, lưu vào `uploads/avatars/{uuid}{ext}`, `fs.mkdirSync` recursive
+  - [x] Tạo `avatarFileFilter` — validate cả MIME type VÀ extension, throw `BadRequestError` nếu không hợp lệ
+  - [x] Export `uploadAvatar: RequestHandler` — wrap `upload.single("avatar")`, handle `LIMIT_FILE_SIZE` → 400
+  - [x] Handle trường hợp không có file (req.file undefined) — xử lý ở controller
 - **Files sẽ tạo/sửa:**
   - `server/src/middlewares/file-upload.ts` (sửa)
 - **Test cần pass:** TC-03.3, TC-03.4, TC-03.5, TC-03.6, TC-03.7, TC-03.8
@@ -76,14 +76,14 @@
 
 - **Tham chiếu:** TL3 - Mục 3.7
 - **Ước lượng:** 1h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-001, TASK-002
 - **Checklist:**
-  - [ ] Khai báo `public readonly updateProfileByIp: RateLimitRequestHandler`
-  - [ ] Khai báo `public readonly uploadAvatarByIp: RateLimitRequestHandler`
-  - [ ] Khởi tạo trong constructor: `RATE_LIMIT_CONFIG.USER.UPDATE_PROFILE.PER_IP`, Redis key `USER.UPDATE_IP`
-  - [ ] Khởi tạo trong constructor: `RATE_LIMIT_CONFIG.USER.UPLOAD_AVATAR.PER_IP`, Redis key `USER.AVATAR_IP`
-  - [ ] i18n handler key: `"user:errors.rateLimitExceeded"`
+  - [x] Khai báo `public readonly updateProfileByIp: RateLimitRequestHandler`
+  - [x] Khai báo `public readonly uploadAvatarByIp: RateLimitRequestHandler`
+  - [x] Khởi tạo trong constructor: `RATE_LIMIT_CONFIG.USER.UPDATE_PROFILE.PER_IP`, Redis key `USER.UPDATE_IP`
+  - [x] Khởi tạo trong constructor: `RATE_LIMIT_CONFIG.USER.UPLOAD_AVATAR.PER_IP`, Redis key `USER.AVATAR_IP`
+  - [x] i18n handler key: `"user:errors.rateLimitExceeded"`
 - **Files sẽ tạo/sửa:**
   - `server/src/middlewares/rate-limiter.ts` (sửa)
 - **Test cần pass:** TL2 - Mục 2.5 (rate limit rows)
@@ -94,11 +94,11 @@
 
 - **Tham chiếu:** TL3 - Mục 3.7
 - **Ước lượng:** 0.5h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** Không có
 - **Checklist:**
-  - [ ] Tìm kiếm trong `server/src/` xem `express.static` đã được setup chưa
-  - [ ] Nếu chưa: thêm `app.use("/uploads", express.static(path.join(process.cwd(), "uploads")))` vào app setup
+  - [x] Tìm kiếm trong `server/src/` xem `express.static` đã được setup chưa
+  - [x] Nếu chưa: thêm `app.use("/uploads", express.static(path.join(process.cwd(), "uploads")))` vào app setup
   - [ ] Verify: upload 1 file test, truy cập URL → file được serve đúng
 - **Files sẽ tạo/sửa:**
   - `server/src/loaders/app.loader.ts` hoặc `server/src/app.ts` (sửa nếu cần)
@@ -111,17 +111,17 @@
 
 - **Tham chiếu:** TL3 - Mục 3.6
 - **Ước lượng:** 1h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** Không có
 - **Checklist:**
-  - [ ] Thêm `GetMyProfileRequest` (extends AuthRequest)
-  - [ ] Thêm `UpdateProfileRequest` (extends AuthRequest, body: UpdateProfileData)
-  - [ ] Thêm `UploadAvatarRequest` (extends AuthRequest, file: Express.Multer.File)
-  - [ ] Thêm `GetPublicProfileRequest` (extends Request, params: { id: string })
-  - [ ] Thêm `UpdateProfileData` type (partial của các field có thể update)
-  - [ ] Thêm `MyProfileResponse` (full profile fields + email)
-  - [ ] Thêm `PublicProfileResponse` (_id, fullName, avatar, gender)
-  - [ ] Thêm `UploadAvatarResponse` ({ avatarUrl: string })
+  - [x] Thêm `GetMyProfileRequest` (extends AuthRequest)
+  - [x] Thêm `UpdateProfileRequest` (extends AuthRequest, body: UpdateProfileData)
+  - [x] Thêm `UploadAvatarRequest` (extends AuthRequest, file: Express.Multer.File)
+  - [x] Thêm `GetPublicProfileRequest` (extends Request, params: { id: string })
+  - [x] Thêm `UpdateProfileData` type (partial của các field có thể update)
+  - [x] Thêm `MyProfileResponse` (full profile fields + email)
+  - [x] Thêm `PublicProfileResponse` (_id, fullName, avatar, gender)
+  - [x] Thêm `UploadAvatarResponse` ({ avatarUrl: string })
 - **Files sẽ tạo/sửa:**
   - `server/src/types/modules/user.ts` (sửa)
 
@@ -131,14 +131,14 @@
 
 - **Tham chiếu:** TL3 - Mục 3.7
 - **Ước lượng:** 1.5h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-006
 - **Checklist:**
-  - [ ] `findById(userId: string): Promise<UserDocument | null>` — `.findById().lean()`
-  - [ ] `updateById(userId: string, data: Partial<UpdateProfileData>): Promise<UserDocument | null>` — `.findByIdAndUpdate({ $set: data }, { new: true }).lean()`
-  - [ ] `updateAvatar(userId: string, avatarPath: string): Promise<void>` — `.findByIdAndUpdate({ $set: { avatar: avatarPath } })`
-  - [ ] `findPublicById(userId: string): Promise<PublicUserRecord | null>` — `.findById().select("fullName avatar gender").lean()`
-  - [ ] Verify: tất cả methods dùng `.lean()` để tối ưu performance
+  - [x] `findById(userId: string): Promise<UserDocument | null>` — `.findById().lean()`
+  - [x] `updateById(userId: string, data: Partial<UpdateProfileData>): Promise<UserDocument | null>` — `.findByIdAndUpdate({ $set: data }, { new: true }).lean()`
+  - [x] `updateAvatar(userId: string, avatarPath: string): Promise<void>` — `.findByIdAndUpdate({ $set: { avatar: avatarPath } })`
+  - [x] `findPublicById(userId: string): Promise<PublicUserRecord | null>` — `.findById().select("fullName avatar gender").lean()`
+  - [x] Verify: tất cả methods dùng `.lean()` để tối ưu performance
 - **Files sẽ tạo/sửa:**
   - `server/src/repositories/user.repository.ts` (sửa)
 - **Test cần pass:** TC-01.6, TC-02.12, TC-04.7
@@ -149,17 +149,17 @@
 
 - **Tham chiếu:** TL2 - Mục 2.3, TL3 - Mục 3.7
 - **Ước lượng:** 1.5h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** Không có
 - **Checklist:**
-  - [ ] `updateProfileSchema`:
+  - [x] `updateProfileSchema`:
     - `fullName`: optional string, min 2, max 100, pattern `SAFE_FULLNAME_PATTERN`
     - `phone`: optional string, không được empty (`min(1)`), regex format
     - `address`: optional string, max 500, pattern `SAFE_ADDRESS_PATTERN`
     - `dateOfBirth`: optional ISO string, custom validate: không tương lai + tuổi <= 100 năm
     - `gender`: optional enum (`male|female|other|prefer_not_to_say`)
     - `stripUnknown: true` để ignore unknown fields (TC-02.10)
-  - [ ] `getPublicProfileSchema` (params):
+  - [x] `getPublicProfileSchema` (params):
     - `id`: string, regex `/^[a-fA-F0-9]{24}$/`, required
 - **Files sẽ tạo/sửa:**
   - `server/src/validators/schemas/user.ts` (tạo mới)
@@ -171,12 +171,12 @@
 
 - **Tham chiếu:** TL2 - NF-06
 - **Ước lượng:** 1h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** Không có
 - **Checklist:**
-  - [ ] `locales/en/user.json`: success messages (getProfile, updateProfile, uploadAvatar, getPublicProfile) + error messages (rateLimitExceeded, notFound, invalidId, noFileUploaded)
-  - [ ] `locales/vi/user.json`: tương tự bằng tiếng Việt
-  - [ ] Đăng ký namespace `user` trong i18n config server (nếu cần)
+  - [x] `locales/en/user.json`: success messages (getProfile, updateProfile, uploadAvatar, getPublicProfile) + error messages (rateLimitExceeded, notFound, invalidId, noFileUploaded)
+  - [x] `locales/vi/user.json`: tương tự bằng tiếng Việt
+  - [x] Đăng ký namespace `user` trong i18n config server (nếu cần)
 - **Files sẽ tạo/sửa:**
   - `server/src/locales/en/user.json` (tạo mới)
   - `server/src/locales/vi/user.json` (tạo mới)
@@ -187,14 +187,14 @@
 
 - **Tham chiếu:** TL3 - Mục 3.5
 - **Ước lượng:** 2h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-006, TASK-007, TASK-009
 - **Checklist:**
-  - [ ] `getMyProfile(userId, email)`: gọi `userRepo.findById()`, throw `NotFoundError` nếu null, build `avatarUrl` từ `BASE_URL`, merge `email`
-  - [ ] `updateMyProfile(userId, email, data)`: gọi `userRepo.updateById()`, throw `NotFoundError` nếu null, return updated profile với full URL
-  - [ ] `updateAvatar(userId, filePath)`: gọi `userRepo.updateAvatar()`, build + return full `avatarUrl`
-  - [ ] `getPublicProfile(userId)`: gọi `userRepo.findPublicById()`, throw `NotFoundError` nếu null, build `avatarUrl`
-  - [ ] Helper private `buildAvatarUrl(path: string | null): string | null`
+  - [x] `getMyProfile(userId, email)`: gọi `userRepo.findById()`, throw `NotFoundError` nếu null, build `avatarUrl` từ `BASE_URL`, merge `email`
+  - [x] `updateMyProfile(userId, email, data)`: gọi `userRepo.updateById()`, throw `NotFoundError` nếu null, return updated profile với full URL
+  - [x] `updateAvatar(userId, filePath)`: gọi `userRepo.updateAvatar()`, build + return full `avatarUrl`
+  - [x] `getPublicProfile(userId)`: gọi `userRepo.findPublicById()`, throw `NotFoundError` nếu null, build `avatarUrl`
+  - [x] Helper private `buildAvatarUrl(path: string | null): string | null`
 - **Files sẽ tạo/sửa:**
   - `server/src/modules/user/user.service.ts` (tạo mới)
 - **Test cần pass:** TC-01.1, TC-01.2, TC-02.1, TC-02.2, TC-02.3, TC-03.1, TC-03.2, TC-04.1, TC-04.4, TC-04.5
@@ -205,17 +205,17 @@
 
 - **Tham chiếu:** TL3 - Mục 3.4, 3.5
 - **Ước lượng:** 1.5h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-003, TASK-004, TASK-008, TASK-010
 - **Checklist:**
-  - [ ] `GET /me` — middleware chain: `auth.middleware`, `asyncHandler(getMyProfile)`
-  - [ ] `PATCH /me` — chain: `rl.updateProfileByIp`, `auth.middleware`, `validate(updateProfileSchema, "body")`, `asyncHandler(updateMyProfile)`
-  - [ ] `POST /me/avatar` — chain: `rl.uploadAvatarByIp`, `auth.middleware`, `uploadAvatar`, `asyncHandler(uploadAvatar)`
-  - [ ] `GET /:id` — chain: `validate(getPublicProfileSchema, "params")`, `asyncHandler(getPublicProfile)`
-  - [ ] Handler `getMyProfile`: gọi service, return `HandlerResult` với `STATUS_CODES.OK`
-  - [ ] Handler `updateMyProfile`: gọi service, return `HandlerResult` với `STATUS_CODES.OK`
-  - [ ] Handler `uploadAvatarHandler`: check `req.file` — nếu không có → throw `BadRequestError("user:errors.noFileUploaded")`; gọi service, return `HandlerResult`
-  - [ ] Handler `getPublicProfile`: gọi service, return `HandlerResult` với `STATUS_CODES.OK`
+  - [x] `GET /me` — middleware chain: `auth.middleware`, `asyncHandler(getMyProfile)`
+  - [x] `PATCH /me` — chain: `rl.updateProfileByIp`, `auth.middleware`, `validate(updateProfileSchema, "body")`, `asyncHandler(updateMyProfile)`
+  - [x] `POST /me/avatar` — chain: `rl.uploadAvatarByIp`, `auth.middleware`, `uploadAvatar`, `asyncHandler(uploadAvatar)`
+  - [x] `GET /:id` — chain: `validate(getPublicProfileSchema, "params")`, `asyncHandler(getPublicProfile)`
+  - [x] Handler `getMyProfile`: gọi service, return `HandlerResult` với `STATUS_CODES.OK`
+  - [x] Handler `updateMyProfile`: gọi service, return `HandlerResult` với `STATUS_CODES.OK`
+  - [x] Handler `uploadAvatarHandler`: check `req.file` — nếu không có → throw `BadRequestError("user:errors.noFileUploaded")`; gọi service, return `HandlerResult`
+  - [x] Handler `getPublicProfile`: gọi service, return `HandlerResult` với `STATUS_CODES.OK`
 - **Files sẽ tạo/sửa:**
   - `server/src/modules/user/user.controller.ts` (tạo mới)
 - **Test cần pass:** TC-01.4, TC-01.5, TC-02.11, TC-03.7, TC-03.9, TC-04.2, TC-04.3
@@ -226,13 +226,13 @@
 
 - **Tham chiếu:** TL3 - Mục 3.6
 - **Ước lượng:** 0.5h + 0.5h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-011
 - **Checklist:**
-  - [ ] Tạo `createUserModule(auth, rateLimiter)` — wire DI: UserRepository → UserService → UserController
-  - [ ] Return `{ userRouter: controller.router }`
-  - [ ] Import `createUserModule` trong `modules.loader.ts`
-  - [ ] Khởi tạo và mount: `v1Router.use("/users", userRouter)`
+  - [x] Tạo `createUserModule(auth, rateLimiter)` — wire DI: UserRepository → UserService → UserController
+  - [x] Return `{ userRouter: controller.router }`
+  - [x] Import `createUserModule` trong `modules.loader.ts`
+  - [x] Khởi tạo và mount: `v1Router.use("/users", userRouter)`
 - **Files sẽ tạo/sửa:**
   - `server/src/modules/user/user.module.ts` (tạo mới)
   - `server/src/loaders/modules.loader.ts` (sửa)
