@@ -264,7 +264,7 @@ Response 429: Rate limit exceeded
 1. User chọn phương thức magic link → Client gửi POST /magic-link/send { email }
 2. Server: Kiểm tra cooldown (60s) và resend count (max 3)
 3. Server: Generate 64 bytes random → hex encode → hash → lưu Redis (TTL 15 phút)
-4. Server: Gửi email chứa link: {CLIENT_URL}/auth/magic-link?token={hex}&email={email}
+4. Server: Gửi email chứa link: {CLIENT_URL}/login/verify-magic-link?token={hex}&email={email}
 5. User click link trong email → Browser mở trang verify
 6. Client gửi POST /magic-link/verify { email, token }
 7. Server: Lấy token hash từ Redis → compare
