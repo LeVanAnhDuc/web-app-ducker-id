@@ -10,8 +10,8 @@
 | Mục           | Giá trị    |
 | ------------- | ---------- |
 | Tổng số task  | 33         |
-| Hoàn thành    | 20/33      |
-| Tiến độ       | 61%        |
+| Hoàn thành    | 25/33      |
+| Tiến độ       | 76%        |
 | Ngày bắt đầu | 04/03/2026 |
 
 ---
@@ -237,7 +237,7 @@
 
 - **Tham chiếu:** TL1 - US-01, US-03
 - **Ước lượng:** 3h 15m
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-011
 - **Checklist:**
   - [ ] Thay TODO fake API call bằng actual Axios POST (multipart/form-data)
@@ -511,7 +511,7 @@ Sau khi hoàn thành Phase 2 (Backend) và Phase 3 (Frontend), chạy các skill
 
 - **Tham chiếu:** TL1 - US-05, US-06, US-07, US-08
 - **Ước lượng:** 1h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-023
 - **Checklist:**
   - [ ] Thêm `getAdminContacts(params: AdminContactsQuery)` → `GET /api/v1/admin/contacts`
@@ -528,7 +528,7 @@ Sau khi hoàn thành Phase 2 (Backend) và Phase 3 (Frontend), chạy các skill
 
 - **Tham chiếu:** TL1 - US-05, TL2 - TC-05.x
 - **Ước lượng:** 3h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-026
 - **Checklist:**
   - [ ] Tạo `app/[locale]/(admin)/admin/contacts/page.tsx` (Server Component)
@@ -558,7 +558,7 @@ Sau khi hoàn thành Phase 2 (Backend) và Phase 3 (Frontend), chạy các skill
 
 - **Tham chiếu:** TL1 - US-06, US-07, TL2 - TC-06.x, TC-07.x
 - **Ước lượng:** 3h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-026
 - **Checklist:**
   - [ ] Tạo `app/[locale]/(admin)/admin/contacts/[id]/page.tsx` (Server Component)
@@ -585,7 +585,7 @@ Sau khi hoàn thành Phase 2 (Backend) và Phase 3 (Frontend), chạy các skill
 
 - **Tham chiếu:** TL1 - US-08, TL2 - TC-08.x
 - **Ước lượng:** 2h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-026
 - **Checklist:**
   - [ ] Tạo `app/[locale]/(dashboard)/contacts/me/page.tsx` (Server Component)
