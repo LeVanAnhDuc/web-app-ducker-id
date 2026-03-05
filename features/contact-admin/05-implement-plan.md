@@ -9,9 +9,9 @@
 
 | Mục           | Giá trị    |
 | ------------- | ---------- |
-| Tổng số task  | 16         |
-| Hoàn thành    | 13/16      |
-| Tiến độ       | 81%        |
+| Tổng số task  | 33         |
+| Hoàn thành    | 13/33      |
+| Tiến độ       | 39%        |
 | Ngày bắt đầu | 04/03/2026 |
 
 ---
@@ -309,25 +309,431 @@ Sau khi hoàn thành Phase 2 (Backend) và Phase 3 (Frontend), chạy các skill
 
 ---
 
+---
+
+### Phase 5: Setup & Foundation — v2.0
+
+#### TASK-017: Thêm types mới vào `contact-admin.ts`
+
+- **Tham chiếu:** TL3 - Mục 3.8
+- **Ước lượng:** 1h
+- **Trạng thái:** ⬜ Todo
+- **Depends on:** Không có
+- **Checklist:**
+  - [ ] Thêm `AdminContactsQuery` interface (14 filter/sort params)
+  - [ ] Thêm `MyContactsQuery` interface (page, limit, sortBy, sortOrder)
+  - [ ] Thêm `ContactAttachmentResponse` interface (thêm `previewUrl: string | null`)
+  - [ ] Thêm `ContactListItem` interface (table view fields, không có message/ipAddress/attachments detail)
+  - [ ] Thêm `ContactDetailItem extends ContactListItem` (full fields + attachments array)
+  - [ ] Thêm `UserContactItem` interface (limited fields — không có email, ipAddress, userId)
+  - [ ] Thêm `PaginatedResult<T>` interface (`{ items: T[], meta: { total, page, limit, totalPages } }`)
+  - [ ] Export tất cả types mới
+- **Files sẽ tạo/sửa:**
+  - `server/src/types/modules/contact-admin.ts` (sửa)
+
+---
+
+#### TASK-018: Thêm Joi schemas mới vào `validators/schemas/contact-admin.ts`
+
+- **Tham chiếu:** TL3 - Mục 3.7, TL2 - Mục 2.3
+- **Ước lượng:** 1h
+- **Trạng thái:** ⬜ Todo
+- **Depends on:** TASK-017
+- **Checklist:**
+  - [ ] Thêm `contactIdParamSchema`: `id` required, ObjectId pattern `/^[a-fA-F0-9]{24}$/`
+  - [ ] Thêm `updateContactStatusSchema`: `status` required, enum: new|processing|resolved
+  - [ ] Thêm `adminListContactsQuerySchema`: tất cả 13 params (page, limit, status, category, priority, email, ticketNumber, userId (ObjectId), search, fromDate, toDate, sortBy, sortOrder) — tất cả optional, `.options({ stripUnknown: true })`
+  - [ ] Custom validation: `toDate >= fromDate` khi cả hai đều có
+  - [ ] Thêm `myContactsQuerySchema`: page, limit, sortBy (chỉ `createdAt`), sortOrder
+  - [ ] Export tất cả schemas mới
+- **Files sẽ tạo/sửa:**
+  - `server/src/validators/schemas/contact-admin.ts` (sửa)
+- **Test cần pass:** TC-05.13, TC-06.6, TC-07.6, TC-07.7
+
+---
+
+#### TASK-019: Tạo `internals/query-builder.ts`
+
+- **Tham chiếu:** TL3 - Mục 3.5
+- **Ước lượng:** 1.5h
+- **Trạng thái:** ⬜ Todo
+- **Depends on:** TASK-017
+- **Checklist:**
+  - [ ] Tạo function `buildContactFilter(query: AdminContactsQuery): FilterQuery<ContactDocument>`
+  - [ ] Exact match: `status`, `category`, `priority`
+  - [ ] `userId`: convert thành `new Types.ObjectId(userId)` nếu có
+  - [ ] Partial match (case-insensitive regex): `email`, `ticketNumber`
+  - [ ] `search`: `$or: [{ subject: regex }, { email: regex }, { ticketNumber: regex }]`
+  - [ ] Date range: `createdAt: { $gte: fromDate, $lte: toDate }` — chỉ thêm field nếu có value
+  - [ ] Chỉ include field vào filter khi value tồn tại (không undefined)
+  - [ ] Export function
+- **Files sẽ tạo/sửa:**
+  - `server/src/modules/contact-admin/internals/query-builder.ts` (tạo mới)
+
+---
+
+### Phase 6: Backend Development — v2.0
+
+#### TASK-020: Cập nhật `contact.repository.ts`
+
+- **Tham chiếu:** TL3 - Mục 3.7
+- **Ước lượng:** 2h
+- **Trạng thái:** ⬜ Todo
+- **Depends on:** TASK-017, TASK-019
+- **Checklist:**
+  - [ ] Thêm `findAll(filter, options: { skip, limit, sort }): Promise<{ data: ContactDocument[], total: number }>`
+    - [ ] `Promise.all([this.db.find(..., { skip, limit, sort, lean: true }), this.db.countDocuments(filter)])`
+  - [ ] Thêm `findById(id: string): Promise<ContactDocument | null>`
+    - [ ] `this.db.findById(id)` — trả về null nếu không tìm thấy (không throw)
+  - [ ] Thêm `updateStatus(id: string, status: ContactStatus): Promise<ContactDocument | null>`
+    - [ ] `this.db.findByIdAndUpdate(id, { $set: { status } }, { new: true })` — trả về updated doc hoặc null
+  - [ ] Thêm `findByUser(userId: string, options: { skip, limit, sort }): Promise<{ data: ContactDocument[], total: number }>`
+    - [ ] Filter: `{ userId: new Types.ObjectId(userId) }`
+    - [ ] `Promise.all([find, count])`
+- **Files sẽ tạo/sửa:**
+  - `server/src/modules/contact-admin/repositories/contact.repository.ts` (sửa)
+
+---
+
+#### TASK-021: Cập nhật `contact-admin.service.ts`
+
+- **Tham chiếu:** TL3 - Mục 3.5, TL3 - Mục 3.6
+- **Ước lượng:** 2h
+- **Trạng thái:** ⬜ Todo
+- **Depends on:** TASK-019, TASK-020
+- **Checklist:**
+  - [ ] Thêm `getContactList(query: AdminContactsQuery): Promise<PaginatedResult<ContactListItem>>`
+    - [ ] Cap limit 100, tính skip, build sort object
+    - [ ] `buildContactFilter(query)` → gọi `repo.findAll()`
+    - [ ] Map document → `ContactListItem`: bỏ `message`, `ipAddress`, tính `attachmentCount = doc.attachments.length`
+    - [ ] Return `{ items, meta }`
+  - [ ] Thêm `getContactDetail(id: string): Promise<ContactDetailItem>`
+    - [ ] `repo.findById(id)` → throw `NotFoundError` nếu null
+    - [ ] Map → `ContactDetailItem`: giữ tất cả fields + map attachments với `buildPreviewUrl()`
+  - [ ] Thêm `updateContactStatus(id: string, status: ContactStatus): Promise<ContactListItem>`
+    - [ ] `repo.updateStatus(id, status)` → throw `NotFoundError` nếu null
+    - [ ] Map updated doc → `ContactListItem`
+  - [ ] Thêm `getMyContacts(userId: string, query: MyContactsQuery): Promise<PaginatedResult<UserContactItem>>`
+    - [ ] Cap limit 100, tính skip, build sort
+    - [ ] `repo.findByUser(userId, { skip, limit, sort })`
+    - [ ] Map → `UserContactItem`: chỉ `_id`, `ticketNumber`, `subject`, `category`, `priority`, `status`, `attachmentCount`, `createdAt`
+  - [ ] Thêm private `buildPreviewUrl(attachment: ContactAttachment): string | null` (theo TL3 Mục 3.6)
+  - [ ] Thêm private `mapToContactListItem(doc: ContactDocument): ContactListItem`
+- **Files sẽ tạo/sửa:**
+  - `server/src/modules/contact-admin/contact-admin.service.ts` (sửa)
+- **Test cần pass:** TC-05.1~09, TC-06.1~04, TC-07.1~04, TC-08.1~05
+
+---
+
+#### TASK-022: Cập nhật `contact-admin.controller.ts`
+
+- **Tham chiếu:** TL3 - Mục 3.7, TL3 - Mục 3.4
+- **Ước lượng:** 2h
+- **Trạng thái:** ⬜ Todo
+- **Depends on:** TASK-018, TASK-021
+- **Checklist:**
+  - [ ] Constructor nhận thêm `auth: AuthGuard` và `adminGuard: AdminGuard`
+  - [ ] Thêm `public readonly adminRouter = Router()`
+  - [ ] Thêm `public readonly userContactRouter = Router()`
+  - [ ] `initAdminRoutes()`:
+    - [ ] `GET /` → `auth.middleware` → `adminGuard.middleware` → `validate(adminListContactsQuerySchema, 'query')` → `asyncHandler(this.getContactList)`
+    - [ ] `GET /:id` → `auth.middleware` → `adminGuard.middleware` → `validate(contactIdParamSchema, 'params')` → `asyncHandler(this.getContactDetail)`
+    - [ ] `PATCH /:id/status` → `auth.middleware` → `adminGuard.middleware` → `validate(contactIdParamSchema, 'params')` → `validate(updateContactStatusSchema, 'body')` → `asyncHandler(this.updateContactStatus)`
+  - [ ] `initUserRoutes()`:
+    - [ ] `GET /me` → `auth.middleware` → `validate(myContactsQuerySchema, 'query')` → `asyncHandler(this.getMyContacts)`
+  - [ ] Handler `getContactList`: gọi service, return `HandlerResult` với message `'contactAdmin:success.getContactList'`
+  - [ ] Handler `getContactDetail`: lấy `req.params.id`, gọi service, return `HandlerResult`
+  - [ ] Handler `updateContactStatus`: lấy `req.params.id` + `req.body.status`, gọi service, return `HandlerResult`
+  - [ ] Handler `getMyContacts`: lấy `userId` từ `req.user.userId`, gọi service, return `HandlerResult`
+- **Files sẽ tạo/sửa:**
+  - `server/src/modules/contact-admin/contact-admin.controller.ts` (sửa)
+- **Test cần pass:** TC-05.11 (403), TC-05.12 (401), TC-06.7 (403), TC-07.8 (403), TC-08.6 (401)
+
+---
+
+#### TASK-023: Cập nhật `contact-admin.module.ts` và `modules.loader.ts`
+
+- **Tham chiếu:** TL3 - Mục 3.7
+- **Ước lượng:** 0.5h
+- **Trạng thái:** ⬜ Todo
+- **Depends on:** TASK-022
+- **Checklist:**
+  - [ ] `createContactAdminModule()` nhận thêm `auth: AuthGuard`, `adminGuard: AdminGuard`
+  - [ ] Truyền vào constructor `ContactAdminController(service, auth, adminGuard, rl, optionalAuth)`
+  - [ ] Export thêm `contactAdminQueryAdminRouter` và `contactAdminQueryUserRouter`
+  - [ ] `modules.loader.ts`: truyền `auth, adminGuard` vào `createContactAdminModule()`
+  - [ ] Mount: `v1Router.use('/admin/contacts', contactAdminQueryAdminRouter)`
+  - [ ] Mount: `v1Router.use('/auth/contacts', contactAdminQueryUserRouter)`
+  - [ ] Verify server khởi động không lỗi
+- **Files sẽ tạo/sửa:**
+  - `server/src/modules/contact-admin/contact-admin.module.ts` (sửa)
+  - `server/src/loaders/modules.loader.ts` (sửa)
+
+---
+
+#### TASK-024: Review server v2.0 — Code, Security, Performance
+
+- **Tham chiếu:** Skills: review-code, review-security, review-performance
+- **Ước lượng:** 3h
+- **Trạng thái:** ⬜ Todo
+- **Depends on:** TASK-023
+- **Checklist:**
+  - [ ] **review-code**: pattern consistency với login-history v2.0, naming, no dead code, mapToContactListItem reuse
+  - [ ] **review-security**: user isolation (`/auth/contacts/me` chỉ trả data của chính user), admin authZ không bị bypass, input sanitization qua Joi, ObjectId validation trước khi query
+  - [ ] **review-performance**: `lean()` trong repo, `Promise.all` cho count+find, index `{ userId: 1 }` và `{ status: 1, createdAt: -1 }` được dùng
+  - [ ] Fix tất cả issues tìm được
+
+---
+
+#### TASK-025: Swagger cho 4 endpoints mới
+
+- **Tham chiếu:** Skill: doc-standards-api, TL3 - Mục 3.4
+- **Ước lượng:** 1.5h
+- **Trạng thái:** ⬜ Todo
+- **Depends on:** TASK-023
+- **Checklist:**
+  - [ ] Thêm vào `swagger/schemas.ts`: `ContactListItem`, `ContactDetailItem`, `ContactAttachmentResponse`, `UserContactItem`, `PaginatedContactsResponse`, `UpdateContactStatusBody`
+  - [ ] Thêm vào `swagger/paths.ts`:
+    - [ ] `GET /admin/contacts` — tất cả query params, response 200/400/401/403
+    - [ ] `GET /admin/contacts/{id}` — params id, response 200/400/401/403/404
+    - [ ] `PATCH /admin/contacts/{id}/status` — params + body, response 200/400/401/403/404
+    - [ ] `GET /auth/contacts/me` — query params, response 200/401
+  - [ ] Register trong swagger config chính
+- **Files sẽ tạo/sửa:**
+  - `server/src/modules/contact-admin/swagger/schemas.ts` (sửa)
+  - `server/src/modules/contact-admin/swagger/paths.ts` (sửa)
+
+---
+
+### Phase 7: Frontend Development — v2.0
+
+#### TASK-026: Tạo `dataSources/ContactAdmin/index.ts` (bổ sung)
+
+- **Tham chiếu:** TL1 - US-05, US-06, US-07, US-08
+- **Ước lượng:** 1h
+- **Trạng thái:** ⬜ Todo
+- **Depends on:** TASK-023
+- **Checklist:**
+  - [ ] Thêm `getAdminContacts(params: AdminContactsQuery)` → `GET /api/v1/admin/contacts`
+  - [ ] Thêm `getAdminContactDetail(id: string)` → `GET /api/v1/admin/contacts/:id`
+  - [ ] Thêm `updateContactStatus(id: string, status: string)` → `PATCH /api/v1/admin/contacts/:id/status`
+  - [ ] Thêm `getMyContacts(params: MyContactsQuery)` → `GET /api/v1/auth/contacts/me`
+  - [ ] Tạo TypeScript types client-side tương ứng
+- **Files sẽ tạo/sửa:**
+  - `client/src/dataSources/ContactAdmin/index.ts` (sửa)
+
+---
+
+#### TASK-027: Tạo Admin Contact List page và view
+
+- **Tham chiếu:** TL1 - US-05, TL2 - TC-05.x
+- **Ước lượng:** 3h
+- **Trạng thái:** ⬜ Todo
+- **Depends on:** TASK-026
+- **Checklist:**
+  - [ ] Tạo `app/[locale]/(admin)/admin/contacts/page.tsx` (Server Component)
+    - [ ] Check admin role server-side, redirect nếu không phải admin
+    - [ ] `getMessages()`, render `<AdminContactsView />`
+  - [ ] Tạo `views/AdminContacts/index.tsx`
+  - [ ] Tạo `views/AdminContacts/mains/AdminContactsTable/` (Client Component)
+    - [ ] shadcn Table hiển thị: ticketNumber, email, subject, category, priority, status badge, attachmentCount, createdAt
+    - [ ] Mỗi row click → navigate đến detail page
+    - [ ] Loading skeleton, empty state
+  - [ ] Tạo `views/AdminContacts/mains/AdminContactsFilters/` (Client Component)
+    - [ ] React Hook Form: status select, category select, priority select, email input, ticketNumber input, search text, date range pickers
+    - [ ] Submit → cập nhật query params → trigger refetch
+  - [ ] Tạo `views/AdminContacts/mains/AdminContactsPagination/`
+    - [ ] shadcn Pagination, offset-based
+- **Files sẽ tạo/sửa:**
+  - `client/src/app/[locale]/(admin)/admin/contacts/page.tsx` (tạo mới)
+  - `client/src/views/AdminContacts/index.tsx` (tạo mới)
+  - `client/src/views/AdminContacts/mains/AdminContactsTable/index.tsx` (tạo mới)
+  - `client/src/views/AdminContacts/mains/AdminContactsFilters/index.tsx` (tạo mới)
+  - `client/src/views/AdminContacts/mains/AdminContactsPagination/index.tsx` (tạo mới)
+- **Test cần pass:** TC-05.1, TC-05.2, TC-05.3, TC-05.8 (empty state), TC-05.9
+
+---
+
+#### TASK-028: Tạo Admin Contact Detail page và view
+
+- **Tham chiếu:** TL1 - US-06, US-07, TL2 - TC-06.x, TC-07.x
+- **Ước lượng:** 3h
+- **Trạng thái:** ⬜ Todo
+- **Depends on:** TASK-026
+- **Checklist:**
+  - [ ] Tạo `app/[locale]/(admin)/admin/contacts/[id]/page.tsx` (Server Component)
+  - [ ] Tạo `views/AdminContactDetail/index.tsx`
+  - [ ] Tạo `views/AdminContactDetail/mains/ContactDetailCard/` (Client Component)
+    - [ ] Hiển thị: ticketNumber, email, subject, category, priority, ipAddress, createdAt, updatedAt, message (full text)
+    - [ ] Status badge + dropdown để thay đổi status (gọi `updateContactStatus()`)
+    - [ ] Loading state khi update status
+    - [ ] Toast thành công/thất bại khi update
+  - [ ] Tạo `views/AdminContactDetail/mains/ContactAttachments/` (Client Component)
+    - [ ] Render danh sách attachments
+    - [ ] Image files: hiển thị `<img src={previewUrl} />` với lightbox/modal khi click
+    - [ ] Non-image files: hiển thị icon + tên file + size (không có preview)
+- **Files sẽ tạo/sửa:**
+  - `client/src/app/[locale]/(admin)/admin/contacts/[id]/page.tsx` (tạo mới)
+  - `client/src/views/AdminContactDetail/index.tsx` (tạo mới)
+  - `client/src/views/AdminContactDetail/mains/ContactDetailCard/index.tsx` (tạo mới)
+  - `client/src/views/AdminContactDetail/mains/ContactAttachments/index.tsx` (tạo mới)
+- **Test cần pass:** TC-06.1, TC-06.2, TC-06.3, TC-07.1, TC-07.2, TC-07.3
+
+---
+
+#### TASK-029: Tạo User My Contacts page và view
+
+- **Tham chiếu:** TL1 - US-08, TL2 - TC-08.x
+- **Ước lượng:** 2h
+- **Trạng thái:** ⬜ Todo
+- **Depends on:** TASK-026
+- **Checklist:**
+  - [ ] Tạo `app/[locale]/(dashboard)/contacts/me/page.tsx` (Server Component)
+  - [ ] Tạo `views/MyContacts/index.tsx`
+  - [ ] Tạo `views/MyContacts/mains/MyContactsTable/` (Client Component)
+    - [ ] Hiển thị: ticketNumber, subject, category, priority, status badge, attachmentCount, createdAt
+    - [ ] Loading skeleton, empty state với message khuyến khích liên hệ
+  - [ ] Tạo `views/MyContacts/mains/MyContactsPagination/`
+- **Files sẽ tạo/sửa:**
+  - `client/src/app/[locale]/(dashboard)/contacts/me/page.tsx` (tạo mới)
+  - `client/src/views/MyContacts/index.tsx` (tạo mới)
+  - `client/src/views/MyContacts/mains/MyContactsTable/index.tsx` (tạo mới)
+  - `client/src/views/MyContacts/mains/MyContactsPagination/index.tsx` (tạo mới)
+- **Test cần pass:** TC-08.1, TC-08.2, TC-08.3, TC-08.4
+
+---
+
+#### TASK-030: Review client v2.0 — Code, Security
+
+- **Tham chiếu:** Skills: review-code, review-security
+- **Ước lượng:** 1.5h
+- **Trạng thái:** ⬜ Todo
+- **Depends on:** TASK-027, TASK-028, TASK-029
+- **Checklist:**
+  - [ ] **review-code**: component reuse giữa Admin/User views (pagination, table patterns), React Hook Form patterns, tanstack-query usage
+  - [ ] **review-security**: Admin pages protected khỏi non-admin, image preview không XSS (dùng `<img>` không dùng `dangerouslySetInnerHTML`), status update không expose raw errors
+
+---
+
+### Phase 8: Testing & QA — v2.0
+
+#### TASK-031: Unit test — `query-builder.ts` và `buildPreviewUrl()`
+
+- **Tham chiếu:** TL2 - Mục 2.3, NF-09
+- **Ước lượng:** 1.5h
+- **Trạng thái:** ⬜ Todo
+- **Depends on:** TASK-019, TASK-021
+- **Checklist:**
+  - [ ] Test `buildContactFilter()`: từng filter riêng lẻ (status, category, priority, userId, email, ticketNumber)
+  - [ ] Test `search` ($or logic với 3 fields)
+  - [ ] Test date range: fromDate only, toDate only, cả hai
+  - [ ] Test empty query → empty filter `{}`
+  - [ ] Test `buildPreviewUrl()`: image/jpeg → URL, image/png → URL, application/pdf → null, text/plain → null, UNKNOWN → null
+- **Files sẽ tạo/sửa:**
+  - `server/src/modules/contact-admin/internals/query-builder.test.ts` (tạo mới)
+  - `server/src/modules/contact-admin/contact-admin.service.test.ts` (sửa — thêm buildPreviewUrl tests)
+
+---
+
+#### TASK-032: Unit test — service methods v2.0
+
+- **Tham chiếu:** TL2 - TC-05~08
+- **Ước lượng:** 2h
+- **Trạng thái:** ⬜ Todo
+- **Depends on:** TASK-021
+- **Checklist:**
+  - [ ] Mock `ContactRepository`
+  - [ ] Test `getContactList()`: happy path, empty result, cap limit=100, attachmentCount tính đúng, message field không trong response
+  - [ ] Test `getContactDetail()`: happy path với attachments (image có previewUrl, PDF không có), 404 khi không tìm thấy, guest contact (userId null)
+  - [ ] Test `updateContactStatus()`: happy path update, 404 khi không tìm thấy
+  - [ ] Test `getMyContacts()`: happy path, chỉ data của userId đó, empty result
+- **Files sẽ tạo/sửa:**
+  - `server/src/modules/contact-admin/__tests__/contact-admin.service.test.ts` (sửa)
+
+---
+
+#### TASK-033: Integration tests — 4 endpoints v2.0
+
+- **Tham chiếu:** TL2 - TC-05~08
+- **Ước lượng:** 3h
+- **Trạng thái:** ⬜ Todo
+- **Depends on:** TASK-023, TASK-031, TASK-032
+- **Checklist:**
+  - [ ] Setup: seed contacts (admin user + regular user A + regular user B)
+  - [ ] **GET /admin/contacts:**
+    - [ ] TC-05.1: 200, trả về list + meta, không có message field
+    - [ ] TC-05.2: filter status=new → chỉ contacts đó
+    - [ ] TC-05.3: search text → partial match
+    - [ ] TC-05.5: pagination page=2 → đúng records
+    - [ ] TC-05.11: user thường → 403
+    - [ ] TC-05.12: không có token → 401
+    - [ ] TC-05.13: status=invalid → 400
+  - [ ] **GET /admin/contacts/:id:**
+    - [ ] TC-06.1: 200 + full fields + attachments với previewUrl
+    - [ ] TC-06.2: image có previewUrl, PDF không có
+    - [ ] TC-06.5: id không tồn tại → 404
+    - [ ] TC-06.6: id không hợp lệ → 400
+  - [ ] **PATCH /admin/contacts/:id/status:**
+    - [ ] TC-07.1: 200, status cập nhật, updatedAt thay đổi
+    - [ ] TC-07.5: id không tồn tại → 404
+    - [ ] TC-07.6: status invalid → 400
+    - [ ] TC-07.8: user thường → 403
+  - [ ] **GET /auth/contacts/me:**
+    - [ ] TC-08.1: 200, chỉ contacts của user đó
+    - [ ] TC-08.5: user A không thấy contacts của user B
+    - [ ] TC-08.6: không có token → 401
+- **Files sẽ tạo/sửa:**
+  - `server/src/modules/contact-admin/__tests__/contact-admin.integration.test.ts` (sửa)
+
+---
+
 ## Dependency Graph
 
 ```
-TASK-001 (dependencies) ──────────────────► TASK-006 (multer middleware)
-                                                          │
-TASK-002 (constants) ──┬──► TASK-003 (types) ──► TASK-004 (model) ──► TASK-009 (repo) ──► TASK-010 (service)
-                       │                                                                        │
-                       ├──► TASK-007 (validation)                                               │
-                       │                                                                        │
-                       └──► TASK-008 (rate limiter)                                             │
-                                                                                                │
-TASK-005 (optional auth) ──────────────────────────────────────────────────────────────────┐     │
-                                                                                           ▼     ▼
-                                                                                    TASK-011 (controller + module + mount)
-                                                                                           │
-                                                                    ┌──────────────┬───────┼────────────┐
-                                                                    ▼              ▼       ▼            ▼
-                                                              TASK-012 (i18n) TASK-013 (swagger) TASK-014 (frontend) TASK-015 (unit tests)
-                                                                                                                          │
-                                                                                                                          ▼
-                                                                                                                    TASK-016 (integration tests)
+=== v1.0 (Tasks 001–016) ===
+
+TASK-001 ──────────────────────────────────────────────────────► TASK-006 (multer)
+                                                                        │
+TASK-002 ──┬──► TASK-003 ──► TASK-004 ──► TASK-009 ──► TASK-010 ──────┤
+           ├──► TASK-007                                                │
+           └──► TASK-008                                                │
+                                                                        │
+TASK-005 (optional auth) ──────────────────────────────────────────────┤
+                                                                        ▼
+                                                             TASK-011 (controller + module + mount)
+                                                                        │
+                                          ┌─────────────┬──────────────┼────────────┐
+                                          ▼             ▼              ▼            ▼
+                                     TASK-012       TASK-013      TASK-014      TASK-015
+                                      (i18n)       (swagger)    (frontend)   (unit tests)
+                                                                                    │
+                                                                                    ▼
+                                                                             TASK-016 (integration)
+
+=== v2.0 (Tasks 017–033) ===
+
+TASK-017 (types) ──┬──► TASK-018 (Joi schemas) ──────────────────────────────┐
+                   └──► TASK-019 (query-builder) ──► TASK-020 (repo) ─────────┤
+                                                                               ▼
+                                                                     TASK-021 (service)
+                                                                               │
+                                                              ┌────────────────┤
+                                                              ▼                ▼
+                                                    TASK-018 (schemas)   TASK-022 (controller)
+                                                                               │
+                                                                          TASK-023 (module+loader)
+                                                                               │
+                                                            ┌──────────────────┼──────────────────┐
+                                                            ▼                  ▼                  ▼
+                                                      TASK-024 (review)  TASK-025 (swagger)  TASK-026 (dataSources)
+                                                                                                   │
+                                                                              ┌────────────────────┼──────────────┐
+                                                                              ▼                    ▼              ▼
+                                                                        TASK-027 (admin list) TASK-028 (admin detail) TASK-029 (user own)
+                                                                              │
+                                                                              └──► TASK-030 (review client)
+
+TASK-019 ──► TASK-031 (unit test query-builder + previewUrl)
+TASK-021 ──► TASK-032 (unit test service)
+TASK-023 + TASK-031 + TASK-032 ──► TASK-033 (integration tests)
 ```

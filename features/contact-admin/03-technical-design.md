@@ -4,340 +4,488 @@
 
 ## 3.1. Tổng quan kỹ thuật (Technical Overview)
 
-Feature Contact Admin sử dụng kiến trúc module hiện tại của server (Controller → Service → Repository) với MongoDB để lưu trữ yêu cầu liên hệ. File upload sử dụng `multer` lưu trữ local disk. Rate limiting dùng `RateLimiterMiddleware` class (khởi tạo trong constructor, truyền qua DI). Endpoint cho phép cả guest (không cần auth) và user đã đăng nhập gửi yêu cầu. Client (Next.js) gọi API qua Axios instance hiện tại.
+Contact Admin module gồm hai phần:
+
+- **v1.0 (đã implement):** `POST /contact/submit` — Guest/User gửi yêu cầu liên hệ, lưu vào MongoDB collection `contacts`.
+- **v2.0 (scope mới):** Query & Update API — thêm routes cho Admin xem danh sách, xem chi tiết, cập nhật status; và User xem contact của chính mình. Reuse `AdminGuard` đã tạo từ login-history v2.0.
 
 ---
 
 ## 3.2. Kiến trúc tổng quan (Architecture Overview)
 
 ```
+=== SUBMIT FLOW (v1.0 - không đổi) ===
+
 Client (Next.js)
-  │
-  ├─ ContactAdmin Form (đã có UI)
-  │   └─ POST /api/v1/contact/submit  (multipart/form-data)
-  │
-  ▼
-Server (Express)
-  │
-  ├─ RateLimiterMiddleware.contactByIp (public readonly, khởi tạo trong constructor)
-  │   └─ 5 req / 15 phút / IP
-  │
-  ├─ OptionalAuthGuard (extends AuthGuard, không throw nếu không có token)
-  │
-  ├─ Multer Middleware (file upload → local disk)
-  │
-  ├─ Validation Middleware (Joi schema)
-  │
-  ├─ ContactAdmin Controller
-  │   └─ POST /submit → returns HandlerResult
-  │
-  ├─ ContactAdmin Service
-  │   ├─ Generate ticket number
-  │   ├─ Sanitize input
-  │   └─ Save to MongoDB
-  │
-  └─ ContactAdmin Repository (MongoDBRepository)
-      └─ MongoDB: contacts collection
+  └─ POST /api/v1/contact/submit  (multipart/form-data)
+       │
+   RateLimiterMiddleware.contactByIp → OptionalAuthGuard → Multer → Joi → Controller → Service → Repository
+       │
+   MongoDB: contacts collection
+
+=== QUERY & UPDATE FLOW (v2.0 - mới) ===
+
+Admin Client
+    │
+    ├── GET /api/v1/admin/contacts?page=1&status=new
+    │       │
+    │   AuthGuard → AdminGuard → validate(query) → ContactAdminController.getContactList()
+    │       │                                             │
+    │       │                               ContactAdminService.getContactList(query)
+    │       │                                             │
+    │       │                               ContactRepository.findAll(filter, pagination)
+    │       │                                             │
+    │       │                               Format → ContactListItem[] (không có message, không có attachments detail)
+    │       │
+    ├── GET /api/v1/admin/contacts/:id
+    │       │
+    │   AuthGuard → AdminGuard → validate(params) → ContactAdminController.getContactDetail()
+    │       │                                              │
+    │       │                                ContactAdminService.getContactDetail(id)
+    │       │                                              │
+    │       │                                ContactRepository.findById(id)
+    │       │                                              │
+    │       │                                buildPreviewUrl(attachment) → ContactDetailItem
+    │       │
+    └── PATCH /api/v1/admin/contacts/:id/status
+            │
+        AuthGuard → AdminGuard → validate(params+body) → ContactAdminController.updateContactStatus()
+                                                               │
+                                                 ContactAdminService.updateContactStatus(id, status)
+                                                               │
+                                                 ContactRepository.updateStatus(id, status)
+                                                               │
+                                                 Return updated ContactListItem
+
+User Client (đã đăng nhập)
+    │
+    └── GET /api/v1/auth/contacts/me?page=1&limit=10
+            │
+        AuthGuard → validate(query) → ContactAdminController.getMyContacts()
+                                             │
+                                 ContactAdminService.getMyContacts(userId, query)
+                                             │
+                                 ContactRepository.findByUser(userId, filter, pagination)
+                                             │
+                                 Format → UserContactItem[] (limited fields)
 ```
 
 ---
 
 ## 3.3. Data Model
 
-### Collection mới: `contacts`
+### Collection: `contacts` (không thay đổi schema)
 
 ```typescript
-// server/src/models/contact.ts
 {
-  ticketNumber: {
-    type: String,
-    required: true,
-    unique: true,
-    index: true
-    // Format: "TK-{timestamp}-{random4chars}" VD: "TK-20260303-A1B2"
-  },
-  userId: {
-    type: ObjectId,
-    ref: "User",
-    required: false,
-    index: true
-    // null nếu guest, có giá trị nếu user đã đăng nhập
-  },
-  email: {
-    type: String,
-    required: false,
-    trim: true, lowercase: true
-    // Optional - guest có thể không cung cấp
-  },
-  subject: {
-    type: String,
-    required: true,
-    trim: true,
-    minlength: 5, maxlength: 200
-  },
-  category: {
-    type: String,
-    required: true,
-    enum: ["account", "technical", "feature", "billing", "security", "other"]
-  },
-  priority: {
-    type: String,
-    required: true,
-    enum: ["low", "medium", "high"],
-    default: "medium"
-  },
-  message: {
-    type: String,
-    required: true,
-    trim: true,
-    minlength: 20, maxlength: 5000
-  },
-  attachments: [{
-    originalName: String,    // Tên file gốc
-    fileName: String,        // Tên file sau khi lưu (unique)
-    mimeType: String,        // MIME type
-    size: Number,            // Kích thước (bytes)
-    path: String             // Đường dẫn file trên disk
-  }],
-  status: {
-    type: String,
-    enum: ["new", "processing", "resolved"],
-    default: "new",
-    index: true
-  },
-  ipAddress: {
-    type: String
-    // Lưu IP của người gửi để phục vụ audit
-  }
+  ticketNumber:  String (unique, index),
+  userId:        ObjectId | undefined,
+  email:         String | undefined,
+  subject:       String,
+  category:      String,   // account|technical|feature|billing|security|other
+  priority:      String,   // low|medium|high
+  message:       String,
+  attachments:   [{ originalName, fileName, mimeType, size, path }],
+  status:        String,   // new|processing|resolved
+  ipAddress:     String | undefined,
+  createdAt:     Date,
+  updatedAt:     Date      // auto via timestamps: true
 }
-// timestamps: true → createdAt, updatedAt
-// collection: "contacts"
 ```
 
-### Indexes
+### Indexes (không thay đổi)
 
 ```
-1. ticketNumber: unique index (đảm bảo không trùng)
-2. userId: sparse index (chỉ index khi có giá trị)
-3. status: regular index (phục vụ query admin sau này)
-4. createdAt: -1 (sắp xếp mới nhất trước)
-5. Compound: { status: 1, createdAt: -1 } (admin filter theo status)
+ticketNumber: unique index
+userId: sparse index
+status: index
+createdAt: -1
+{ status: 1, createdAt: -1 } compound
 ```
 
 ---
 
 ## 3.4. API Design
 
-### Endpoint: Submit Contact Request
+### Admin — GET danh sách contacts
 
 ```
-POST /api/v1/contact/submit
+GET /api/v1/admin/contacts
+Authorization: Bearer {idToken}   (role = admin)
+```
 
-Headers (optional):
-  Authorization: Bearer {token}    // Optional - nếu user đã đăng nhập
-  Content-Type: multipart/form-data
+**Query Parameters:**
 
-Request Body (form-data):
-  email:       string (optional) — Email liên hệ
-  subject:     string (required) — Tiêu đề, min 5, max 200 ký tự
-  category:    string (required) — Enum: account|technical|feature|billing|security|other
-  priority:    string (optional) — Enum: low|medium|high. Default: "medium"
-  message:     string (required) — Nội dung, min 20, max 5000 ký tự
-  attachments: File[] (optional) — Tối đa 5 files, mỗi file max 5MB
-                                    Accepted: jpg, jpeg, png, gif, pdf, doc, docx
+| Param        | Type   | Default   | Mô tả                                                                    |
+| ------------ | ------ | --------- | ------------------------------------------------------------------------ |
+| page         | number | 1         | Trang hiện tại (>= 1)                                                    |
+| limit        | number | 20        | Số records/trang (1–100, tự động cap 100)                               |
+| status       | string | -         | `new` \| `processing` \| `resolved`                                      |
+| category     | string | -         | `account` \| `technical` \| `feature` \| `billing` \| `security` \| `other` |
+| priority     | string | -         | `low` \| `medium` \| `high`                                              |
+| email        | string | -         | Partial match, case-insensitive                                           |
+| ticketNumber | string | -         | Partial match, case-insensitive                                           |
+| userId       | string | -         | ObjectId 24 ký tự — exact match                                          |
+| search       | string | -         | Text search trên `subject`, `email`, `ticketNumber` (OR logic)            |
+| fromDate     | string | -         | ISO 8601 date                                                             |
+| toDate       | string | -         | ISO 8601 date, phải >= fromDate                                          |
+| sortBy       | string | createdAt | `createdAt` \| `priority` \| `status` \| `category`                     |
+| sortOrder    | string | desc      | `asc` \| `desc`                                                          |
 
-Response 201 (Created):
+**Response 200:**
+
+```json
 {
-  "timestamp": "2026-03-03T10:00:00.000Z",
-  "route": "/api/v1/contact/submit",
-  "message": "contactAdmin:success.submitted",
   "data": {
-    "ticketNumber": "TK-20260303-A1B2"
-  }
-}
-
-Response 400 (Validation Error):
-{
-  "timestamp": "...",
-  "route": "/api/v1/contact/submit",
-  "error": {
-    "code": "VALIDATION_ERROR",
-    "message": "Validation failed",
-    "fields": [
-      { "field": "subject", "message": "Subject is required" },
-      { "field": "message", "message": "Message must be at least 20 characters" }
-    ]
-  }
-}
-
-Response 400 (File Error):
-{
-  "timestamp": "...",
-  "route": "/api/v1/contact/submit",
-  "error": {
-    "code": "FILE_UPLOAD_ERROR",
-    "message": "File size exceeds 5MB limit"
-  }
-}
-
-Response 429 (Rate Limited):
-{
-  "timestamp": "...",
-  "route": "/api/v1/contact/submit",
-  "error": {
-    "code": "TOO_MANY_REQUESTS",
-    "message": "Too many contact requests. Please try again later."
-  }
+    "items": [
+      {
+        "_id": "abc123",
+        "ticketNumber": "TK-20260305-A1B2",
+        "email": "user@example.com",
+        "subject": "Cannot login to my account",
+        "category": "account",
+        "priority": "high",
+        "status": "new",
+        "userId": "def456",
+        "attachmentCount": 2,
+        "createdAt": "2026-03-05T08:00:00.000Z",
+        "updatedAt": "2026-03-05T08:00:00.000Z"
+      }
+    ],
+    "meta": { "total": 42, "page": 1, "limit": 20, "totalPages": 3 }
+  },
+  "message": "contactAdmin:success.getContactList",
+  "status": "success",
+  "reasonStatusCode": "OK"
 }
 ```
+
+---
+
+### Admin — GET chi tiết contact
+
+```
+GET /api/v1/admin/contacts/:id
+Authorization: Bearer {idToken}   (role = admin)
+```
+
+**Response 200:**
+
+```json
+{
+  "data": {
+    "_id": "abc123",
+    "ticketNumber": "TK-20260305-A1B2",
+    "email": "user@example.com",
+    "subject": "Cannot login to my account",
+    "category": "account",
+    "priority": "high",
+    "status": "new",
+    "userId": "def456",
+    "message": "I have been trying to login for 3 days but keep getting an error...",
+    "ipAddress": "192.168.1.100",
+    "attachmentCount": 2,
+    "attachments": [
+      {
+        "originalName": "screenshot.png",
+        "fileName": "uuid-1.png",
+        "mimeType": "image/png",
+        "size": 204800,
+        "previewUrl": "http://localhost:3000/uploads/contacts/2026-03-05/uuid-1.png"
+      },
+      {
+        "originalName": "report.pdf",
+        "fileName": "uuid-2.pdf",
+        "mimeType": "application/pdf",
+        "size": 512000,
+        "previewUrl": null
+      }
+    ],
+    "createdAt": "2026-03-05T08:00:00.000Z",
+    "updatedAt": "2026-03-05T08:00:00.000Z"
+  },
+  "message": "contactAdmin:success.getContactDetail",
+  "status": "success",
+  "reasonStatusCode": "OK"
+}
+```
+
+> **Ghi chú:** `previewUrl` chỉ có giá trị với image MIME types (`image/jpeg`, `image/jpg`, `image/png`, `image/gif`). Các loại file khác → `previewUrl: null`.
+
+---
+
+### Admin — PATCH cập nhật status
+
+```
+PATCH /api/v1/admin/contacts/:id/status
+Authorization: Bearer {idToken}   (role = admin)
+Content-Type: application/json
+```
+
+**Request Body:**
+```json
+{ "status": "processing" }
+```
+
+**Response 200:** Trả về `ContactListItem` đã được cập nhật (cùng shape với GET list item).
+
+**Response 404:** Contact không tồn tại.
+
+---
+
+### User — GET contact của chính mình
+
+```
+GET /api/v1/auth/contacts/me
+Authorization: Bearer {idToken}
+```
+
+**Query Parameters:** `page`, `limit`, `sortBy` (`createdAt`), `sortOrder` — không có filter theo fields khác.
+
+**Response 200:**
+
+```json
+{
+  "data": {
+    "items": [
+      {
+        "_id": "abc123",
+        "ticketNumber": "TK-20260305-A1B2",
+        "subject": "Cannot login to my account",
+        "category": "account",
+        "priority": "high",
+        "status": "new",
+        "attachmentCount": 2,
+        "createdAt": "2026-03-05T08:00:00.000Z"
+      }
+    ],
+    "meta": { "total": 5, "page": 1, "limit": 20, "totalPages": 1 }
+  },
+  "message": "contactAdmin:success.getMyContacts",
+  "status": "success",
+  "reasonStatusCode": "OK"
+}
+```
+
+> **Ghi chú:** User chỉ thấy contacts của chính mình. Fields bị ẩn: `email`, `ipAddress`, `message`, `attachments`, `userId`.
 
 ---
 
 ## 3.5. Luồng xử lý chính (Main Flow)
 
+### Submit Flow (không đổi — v1.0)
 ```
-1. Client gửi POST /api/v1/contact/submit (multipart/form-data)
-2. RateLimiterMiddleware.contactByIp kiểm tra IP → vượt 5 req/15 phút → trả 429
-3. OptionalAuthGuard middleware:
-   - Nếu có Authorization header → verify token → set req.user
-   - Nếu không có header hoặc token invalid → req.user = undefined, gọi next()
-4. Multer middleware xử lý file upload:
-   - Validate MIME type, kích thước, số lượng
-   - Lưu file vào /uploads/contacts/{date}/
-   - Nếu lỗi → trả 400 (file error)
-5. Joi Validation middleware validate body fields
-   - Nếu lỗi → trả 400 (validation error)
-6. Controller handler gọi Service.submitContact(data, files, user?)
-7. Service:
-   a. Generate ticket number duy nhất
-   b. Sanitize text fields (chống XSS)
-   c. Build contact document:
-      - Nếu req.user có → gắn userId, lấy email từ auth nếu không cung cấp
-      - Nếu guest → userId = null
-   d. Gọi Repository.create(document)
-8. Repository lưu vào MongoDB
-9. Controller trả HandlerResult { data: { ticketNumber }, message, statusCode: 201 }
+POST /contact/submit → RateLimiter → OptionalAuth → Multer → Joi → Service → Repo → 201
+```
+
+### Admin List Flow (v2.0)
+```
+1. GET /admin/contacts + query params
+2. AuthGuard → AdminGuard (403 nếu không phải admin)
+3. validate(adminListContactsQuerySchema, 'query') → 400 nếu invalid
+4. Service.getContactList(query):
+   a. Cap limit tại 100, tính skip
+   b. buildContactFilter(query) → Mongoose FilterQuery
+      - search: $or [ subject, email, ticketNumber ] regex
+      - Các filter khác: exact/partial match
+      - createdAt range: $gte/$lte
+   c. Repo.findAll(filter, { skip, limit, sort })
+      - Promise.all([find(), countDocuments()])
+   d. Map → ContactListItem[] (loại bỏ message, attachments detail, ipAddress)
+      - attachmentCount = doc.attachments.length
+   e. Return { items, meta }
+```
+
+### Admin Detail Flow (v2.0)
+```
+1. GET /admin/contacts/:id
+2. AuthGuard → AdminGuard
+3. validate(contactIdParamSchema, 'params') → 400 nếu invalid ObjectId
+4. Service.getContactDetail(id):
+   a. Repo.findById(id) → 404 nếu không tìm thấy
+   b. Map → ContactDetailItem:
+      - Giữ tất cả fields của ContactListItem
+      - Thêm: message, ipAddress
+      - Map attachments: thêm previewUrl = buildPreviewUrl(attachment)
+        - Image MIME types → `{BASE_URL}/{relativePath}`
+        - Others → null
+   c. Return ContactDetailItem
+```
+
+### Admin Update Status Flow (v2.0)
+```
+1. PATCH /admin/contacts/:id/status
+2. AuthGuard → AdminGuard
+3. validate(contactIdParamSchema, 'params') + validate(updateContactStatusSchema, 'body')
+4. Service.updateContactStatus(id, status):
+   a. Repo.updateStatus(id, status) → 404 nếu không tìm thấy
+   b. Return updated ContactListItem
+```
+
+### User My Contacts Flow (v2.0)
+```
+1. GET /auth/contacts/me + query params
+2. AuthGuard → lấy userId từ req.user.userId
+3. validate(myContactsQuerySchema, 'query')
+4. Service.getMyContacts(userId, query):
+   a. Cap limit, tính skip
+   b. Filter: { userId: new ObjectId(userId) }
+   c. Repo.findByUser(userId, { skip, limit, sort })
+   d. Map → UserContactItem[] (limited fields)
+   e. Return { items, meta }
 ```
 
 ---
 
-## 3.6. Cấu trúc files mới
+## 3.6. Preview URL Logic
+
+```typescript
+const IMAGE_MIME_TYPES = new Set(['image/jpeg', 'image/jpg', 'image/png', 'image/gif']);
+
+function buildPreviewUrl(attachment: ContactAttachment): string | null {
+  if (!IMAGE_MIME_TYPES.has(attachment.mimeType)) return null;
+  // path được lưu dạng: "uploads/contacts/2026-03-05/uuid.png"
+  const relativePath = attachment.path.replace(/\\/g, '/');
+  const normalizedPath = relativePath.includes('uploads/')
+    ? relativePath.substring(relativePath.indexOf('uploads/'))
+    : relativePath;
+  return `${BASE_URL}/${normalizedPath}`;
+}
+```
+
+---
+
+## 3.7. Cấu trúc file (File Structure)
 
 ```
 server/src/
-├── models/
-│   └── contact.ts                          // Mongoose schema
+├── modules/contact-admin/
+│   ├── contact-admin.module.ts        # Updated: inject auth, adminGuard; export adminRouter + userContactRouter
+│   ├── contact-admin.service.ts       # Updated: thêm getContactList(), getContactDetail(), updateContactStatus(), getMyContacts()
+│   ├── contact-admin.controller.ts    # Updated: thêm adminRouter + userContactRouter với 4 routes mới
+│   └── internals/
+│       └── query-builder.ts           # NEW: buildContactFilter(query) → FilterQuery<ContactDocument>
+│   └── repositories/
+│       └── contact.repository.ts      # Updated: thêm findAll(), findById(), updateStatus(), findByUser()
 │
-├── modules/
-│   └── contact-admin/
-│       ├── contact-admin.controller.ts     // Route handlers
-│       ├── contact-admin.service.ts        // Business logic
-│       ├── contact-admin.module.ts         // DI setup
-│       └── repositories/
-│           └── contact.repository.ts       // MongoDB repository
+├── types/modules/
+│   └── contact-admin.ts               # Updated: thêm query types, response types (ContactListItem, ContactDetailItem, UserContactItem, PaginatedResult<T>)
 │
-├── middlewares/
-│   ├── optional-auth.guard.ts              // OptionalAuthGuard class
-│   └── file-upload.ts                      // Multer config
-│
-├── validators/
-│   └── schemas/
-│       └── contact-admin.ts                // Joi validation
-│
-├── constants/
-│   ├── enums.ts                            // Thêm CONTACT_CATEGORIES, CONTACT_PRIORITIES, CONTACT_STATUSES
-│   ├── models.ts                           // Thêm CONTACT: "Contact"
-│   ├── infrastructure.ts                   // Thêm REDIS_KEYS.RATE_LIMIT.CONTACT
-│   └── config.ts                           // Thêm RATE_LIMIT_CONFIG.CONTACT, CONTACT_CONFIG
-│
-├── types/
-│   └── modules/
-│       └── contact-admin.ts                // TypeScript types
-│
-└── loaders/
-    └── modules.loader.ts                   // createContactAdminModule + v1Router.use("/contact", contactAdminRouter)
+└── validators/schemas/
+    └── contact-admin.ts               # Updated: thêm adminListContactsQuerySchema, myContactsQuerySchema, updateContactStatusSchema, contactIdParamSchema
 ```
 
-### Files chỉnh sửa (EDIT):
-
-| File                          | Thay đổi                                                                                           |
-| ----------------------------- | -------------------------------------------------------------------------------------------------- |
-| `constants/enums.ts`          | Thêm `CONTACT_CATEGORIES`, `CONTACT_PRIORITIES`, `CONTACT_STATUSES`                                |
-| `constants/models.ts`         | Thêm `CONTACT: "Contact"`                                                                          |
-| `constants/infrastructure.ts` | Thêm `REDIS_KEYS.RATE_LIMIT.CONTACT`                                                               |
-| `constants/config.ts`         | Thêm `RATE_LIMIT_CONFIG.CONTACT`, `CONTACT_CONFIG`                                                 |
-| `middlewares/rate-limiter.ts` | Thêm `public readonly contactByIp` property + khởi tạo trong constructor                           |
-| `loaders/modules.loader.ts`   | Import `createContactAdminModule`, `OptionalAuthGuard`, tạo module, thêm `v1Router.use("/contact", contactAdminRouter)` |
-| `server/package.json`         | Thêm dependency `multer`, `@types/multer`                                                          |
-
----
-
-## 3.7. Chi tiết thiết kế từng component
-
-### 3.7.1. OptionalAuthGuard
-
+**modules.loader.ts — thay đổi:**
 ```typescript
-// server/src/middlewares/optional-auth.guard.ts
-// Extends AuthGuard hoặc implement CanActivate tương tự
-// Khác với AuthGuard: KHÔNG throw error nếu không có token hoặc token invalid
-// - Nếu có valid token → set req.user (giống AuthGuard)
-// - Nếu không có token hoặc invalid → req.user = undefined, gọi next()
-// Expose middleware getter giống AuthGuard pattern
-```
+// createContactAdminModule nhận thêm auth và adminGuard
+const { contactAdminRouter, contactAdminQueryAdminRouter, contactAdminQueryUserRouter }
+  = createContactAdminModule(auth, adminGuard, rateLimiter, optionalAuth);
 
-### 3.7.2. File Upload Middleware (Multer)
-
-```typescript
-// server/src/middlewares/file-upload.ts
-// - Storage: disk storage tại /uploads/contacts/{YYYY-MM-DD}/
-// - File naming: {uuid}.{ext}
-// - File filter: chỉ cho phép jpg, jpeg, png, gif, pdf, doc, docx
-// - Limits: maxFileSize 5MB, maxCount 5
-// - MIME type validation thực sự (không chỉ extension)
-```
-
-### 3.7.3. Ticket Number Generation
-
-```typescript
-// Format: "TK-{YYYYMMDD}-{RANDOM}"
-// RANDOM: 4 ký tự uppercase alphanumeric
-// Collision handling: kiểm tra unique trong DB, retry nếu trùng (tối đa 3 lần)
-```
-
-### 3.7.4. Input Sanitization
-
-```typescript
-// Sanitize fields: subject, message
-// Strip HTML tags
-// Encode special characters
-// Sử dụng thư viện sanitize-html hoặc xử lý thủ công bằng regex
+// Routes mới
+v1Router.use('/admin/contacts', contactAdminQueryAdminRouter);
+v1Router.use('/auth/contacts', contactAdminQueryUserRouter);
+// Route cũ vẫn giữ nguyên
+v1Router.use('/contact', contactAdminRouter);
 ```
 
 ---
 
-## 3.8. Dependencies & Integrations
+## 3.8. TypeScript Types (bổ sung)
 
-| Dependency | Loại     | Mô tả                                 | Cần cài đặt                        |
-| ---------- | -------- | ------------------------------------- | ---------------------------------- |
-| `multer`   | npm      | Xử lý multipart/form-data file upload | Có (yarn add multer @types/multer) |
-| `uuid`     | npm      | Generate unique file names            | Kiểm tra nếu đã có                 |
-| MongoDB    | Internal | Lưu trữ contact documents             | Không                              |
-| Redis      | Internal | Rate limiting store                   | Không                              |
+```typescript
+// Query params cho Admin list
+export interface AdminContactsQuery {
+  page?: number;
+  limit?: number;
+  status?: ContactStatus;
+  category?: ContactCategory;
+  priority?: ContactPriority;
+  email?: string;
+  ticketNumber?: string;
+  userId?: string;
+  search?: string;
+  fromDate?: string;
+  toDate?: string;
+  sortBy?: 'createdAt' | 'priority' | 'status' | 'category';
+  sortOrder?: 'asc' | 'desc';
+}
+
+// Query params cho User own contacts
+export interface MyContactsQuery {
+  page?: number;
+  limit?: number;
+  sortBy?: 'createdAt';
+  sortOrder?: 'asc' | 'desc';
+}
+
+// Attachment trong response detail (thêm previewUrl)
+export interface ContactAttachmentResponse {
+  originalName: string;
+  fileName: string;
+  mimeType: string;
+  size: number;
+  previewUrl: string | null;
+}
+
+// Response item cho Admin list (table view)
+export interface ContactListItem {
+  _id: string;
+  ticketNumber: string;
+  email: string | null;
+  subject: string;
+  category: ContactCategory;
+  priority: ContactPriority;
+  status: ContactStatus;
+  userId: string | null;
+  attachmentCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Response item cho Admin detail (full)
+export interface ContactDetailItem extends ContactListItem {
+  message: string;
+  ipAddress: string | null;
+  attachments: ContactAttachmentResponse[];
+}
+
+// Response item cho User own contacts (limited fields)
+export interface UserContactItem {
+  _id: string;
+  ticketNumber: string;
+  subject: string;
+  category: ContactCategory;
+  priority: ContactPriority;
+  status: ContactStatus;
+  attachmentCount: number;
+  createdAt: string;
+}
+
+// Paginated wrapper (reuse từ login-history nếu extracted to shared types)
+export interface PaginatedResult<T> {
+  items: T[];
+  meta: { total: number; page: number; limit: number; totalPages: number };
+}
+```
 
 ---
 
-## 3.9. Migration & Deployment Strategy
+## 3.9. Dependencies & Integrations
 
-**Feature flag:** Không cần. API endpoint mới, không ảnh hưởng feature hiện có.
+| Dependency  | Loại     | Mô tả                                                                 | Ghi chú                              |
+| ----------- | -------- | --------------------------------------------------------------------- | ------------------------------------ |
+| MongoDB     | Internal | Query, update contacts collection                                     | Mongoose ODM, indexes đã có          |
+| AuthGuard   | Internal | Verify idToken, set req.user                                          | Existing                             |
+| AdminGuard  | Internal | Check req.user.roles === 'admin', throw 403                           | Reuse từ login-history v2.0          |
+| Joi         | Library  | Validate query params, body, params                                   | Existing pattern                     |
+| BASE_URL    | Config   | Build previewUrl cho image attachments                                | `USER_CONFIG.BASE_URL` hoặc tương đương |
+
+---
+
+## 3.10. Migration & Deployment Strategy
+
+**Không cần migration:** Collection `contacts` và indexes không thay đổi.
 
 **Rollback plan:**
-
-- Xóa route `/api/v1/contact` khỏi v1Router trong modules.loader.ts
-- Collection `contacts` vẫn giữ lại (không mất data)
-- Xóa thư mục uploads/contacts nếu cần
-
-**Deployment steps:**
-
-1. Tạo thư mục `uploads/contacts/` trên server (nếu chưa có)
-2. Deploy code mới
-3. MongoDB tự tạo collection và indexes khi có document đầu tiên
+- Revert deployment → 4 routes mới bị xóa, submit flow không ảnh hưởng
+- Dữ liệu trong MongoDB vẫn nguyên vẹn

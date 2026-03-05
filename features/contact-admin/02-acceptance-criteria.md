@@ -67,6 +67,62 @@
 | TC-04.3 | 🟡 Edge  | **GIVEN** nhiều user gửi yêu cầu đồng thời **WHEN** hệ thống xử lý **THEN** mỗi yêu cầu có ticket number duy nhất, không trùng lặp                                                        | ⚪         |
 | TC-04.4 | 🔴 Error | **GIVEN** DB index bị lỗi **WHEN** hệ thống cố tạo yêu cầu với ticket number trùng **THEN** hệ thống retry với ticket number mới hoặc trả về lỗi phù hợp                                   | ⚪         |
 
+### US-05: Admin xem danh sách tất cả contact
+
+| ID      | Loại     | Scenario                                                                                                                                                                                                   | Trạng thái |
+| ------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| TC-05.1 | 🟢 Happy | **GIVEN** admin đã đăng nhập, có contacts trong DB **WHEN** GET /admin/contacts **THEN** trả về danh sách phân trang với fields: `_id`, `ticketNumber`, `email`, `subject`, `category`, `priority`, `status`, `userId`, `attachmentCount`, `createdAt`, `updatedAt` | ⚪ |
+| TC-05.2 | 🟢 Happy | **GIVEN** admin muốn filter **WHEN** GET /admin/contacts?status=new&category=technical **THEN** chỉ trả về contacts thỏa mãn cả hai điều kiện (AND logic) | ⚪ |
+| TC-05.3 | 🟢 Happy | **GIVEN** admin muốn search **WHEN** GET /admin/contacts?search=TK-20260303 **THEN** trả về contacts có ticketNumber, subject, hoặc email khớp (partial, case-insensitive) | ⚪ |
+| TC-05.4 | 🟢 Happy | **GIVEN** admin muốn sort **WHEN** GET /admin/contacts?sortBy=priority&sortOrder=desc **THEN** contacts được sort theo priority giảm dần (high → medium → low) | ⚪ |
+| TC-05.5 | 🟢 Happy | **GIVEN** có 35 contacts **WHEN** GET /admin/contacts?page=2&limit=10 **THEN** trả về records 11–20, meta: `{ total: 35, page: 2, limit: 10, totalPages: 4 }` | ⚪ |
+| TC-05.6 | 🟢 Happy | **GIVEN** admin filter theo createdAt range **WHEN** GET /admin/contacts?fromDate=2026-01-01&toDate=2026-01-31 **THEN** chỉ trả về contacts trong khoảng đó | ⚪ |
+| TC-05.7 | 🟢 Happy | **GIVEN** admin filter theo userId **WHEN** GET /admin/contacts?userId=abc123 **THEN** chỉ trả về contacts của user đó | ⚪ |
+| TC-05.8 | 🟡 Edge  | **GIVEN** không có contact nào trong DB **WHEN** GET /admin/contacts **THEN** trả về `{ items: [], meta: { total: 0, ... } }`, không phải 404 | ⚪ |
+| TC-05.9 | 🟡 Edge  | **GIVEN** filter không khớp bất kỳ record nào **WHEN** GET /admin/contacts?status=resolved **THEN** trả về empty array, không báo lỗi | ⚪ |
+| TC-05.10 | 🟡 Edge | **GIVEN** limit=500 (vượt max) **WHEN** GET /admin/contacts **THEN** tự động cap về 100 | ⚪ |
+| TC-05.11 | 🔴 Error | **GIVEN** user thường gọi API **WHEN** GET /admin/contacts **THEN** 403 Forbidden | ⚪ |
+| TC-05.12 | 🔴 Error | **GIVEN** không có token **WHEN** GET /admin/contacts **THEN** 401 Unauthorized | ⚪ |
+| TC-05.13 | 🔴 Error | **GIVEN** status=invalid_value **WHEN** GET /admin/contacts **THEN** 400 Bad Request với message mô tả field lỗi | ⚪ |
+| TC-05.14 | 🔴 Error | **GIVEN** MongoDB timeout **WHEN** GET /admin/contacts **THEN** 500, lỗi được log | ⚪ |
+
+### US-06: Admin xem chi tiết một contact
+
+| ID      | Loại     | Scenario                                                                                                                                                                                                   | Trạng thái |
+| ------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| TC-06.1 | 🟢 Happy | **GIVEN** contact tồn tại **WHEN** GET /admin/contacts/:id **THEN** trả về full fields: tất cả fields của list + `message` (đầy đủ), `ipAddress`, `attachments` array với `previewUrl` cho image files | ⚪ |
+| TC-06.2 | 🟢 Happy | **GIVEN** contact có 2 ảnh và 1 PDF đính kèm **WHEN** GET /admin/contacts/:id **THEN** response: ảnh có `previewUrl` là URL hợp lệ, PDF có `previewUrl: null` | ⚪ |
+| TC-06.3 | 🟢 Happy | **GIVEN** contact không có file đính kèm **WHEN** GET /admin/contacts/:id **THEN** `attachments: []` | ⚪ |
+| TC-06.4 | 🟡 Edge  | **GIVEN** contact là của guest (không có userId) **WHEN** GET /admin/contacts/:id **THEN** trả về `userId: null`, vẫn hiển thị đầy đủ thông tin | ⚪ |
+| TC-06.5 | 🔴 Error | **GIVEN** id không tồn tại **WHEN** GET /admin/contacts/:id **THEN** 404 Not Found | ⚪ |
+| TC-06.6 | 🔴 Error | **GIVEN** id có format không hợp lệ (không phải ObjectId 24 ký tự) **WHEN** GET /admin/contacts/:id **THEN** 400 Bad Request | ⚪ |
+| TC-06.7 | 🔴 Error | **GIVEN** user thường gọi API **WHEN** GET /admin/contacts/:id **THEN** 403 Forbidden | ⚪ |
+
+### US-07: Admin cập nhật trạng thái contact
+
+| ID      | Loại     | Scenario                                                                                                                                                                         | Trạng thái |
+| ------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| TC-07.1 | 🟢 Happy | **GIVEN** contact có status=new **WHEN** PATCH /admin/contacts/:id/status với body `{ status: "processing" }` **THEN** 200, contact được update, response trả về contact đã update | ⚪ |
+| TC-07.2 | 🟢 Happy | **GIVEN** contact có status=processing **WHEN** PATCH với `{ status: "resolved" }` **THEN** 200, status cập nhật thành công | ⚪ |
+| TC-07.3 | 🟢 Happy | **GIVEN** admin update **WHEN** PATCH thành công **THEN** `updatedAt` được cập nhật tự động | ⚪ |
+| TC-07.4 | 🟡 Edge  | **GIVEN** contact đã resolved **WHEN** PATCH với `{ status: "new" }` **THEN** 200, cho phép đổi về new (không lock workflow) | ⚪ |
+| TC-07.5 | 🔴 Error | **GIVEN** id không tồn tại **WHEN** PATCH /admin/contacts/:id/status **THEN** 404 Not Found | ⚪ |
+| TC-07.6 | 🔴 Error | **GIVEN** body `{ status: "invalid" }` **WHEN** PATCH **THEN** 400 Bad Request | ⚪ |
+| TC-07.7 | 🔴 Error | **GIVEN** body rỗng hoặc thiếu field status **WHEN** PATCH **THEN** 400 Bad Request | ⚪ |
+| TC-07.8 | 🔴 Error | **GIVEN** user thường gọi API **WHEN** PATCH **THEN** 403 Forbidden | ⚪ |
+
+### US-08: User xem danh sách contact của chính mình
+
+| ID      | Loại     | Scenario                                                                                                                                                                         | Trạng thái |
+| ------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| TC-08.1 | 🟢 Happy | **GIVEN** user đã đăng nhập, có contacts **WHEN** GET /auth/contacts/me **THEN** chỉ trả về contacts của userId đó, fields: `ticketNumber`, `subject`, `category`, `priority`, `status`, `attachmentCount`, `createdAt` | ⚪ |
+| TC-08.2 | 🟢 Happy | **GIVEN** user sort **WHEN** GET /auth/contacts/me?sortBy=createdAt&sortOrder=asc **THEN** trả về sort đúng | ⚪ |
+| TC-08.3 | 🟢 Happy | **GIVEN** user có 15 contacts **WHEN** GET /auth/contacts/me?page=2&limit=5 **THEN** trả về records 6–10, meta đúng | ⚪ |
+| TC-08.4 | 🟡 Edge  | **GIVEN** user chưa có contact nào **WHEN** GET /auth/contacts/me **THEN** `{ items: [], meta: { total: 0, ... } }` | ⚪ |
+| TC-08.5 | 🟡 Edge  | **GIVEN** user A đăng nhập **WHEN** GET /auth/contacts/me **THEN** không thấy bất kỳ contact nào của user B | ⚪ |
+| TC-08.6 | 🔴 Error | **GIVEN** không có token **WHEN** GET /auth/contacts/me **THEN** 401 Unauthorized | ⚪ |
+| TC-08.7 | 🔴 Error | **GIVEN** MongoDB timeout **WHEN** GET /auth/contacts/me **THEN** 500, lỗi được log | ⚪ |
+
 ---
 
 ## 2.3. Validation Rules
@@ -79,6 +135,36 @@
 | priority   | Phải thuộc: low, medium, high. Mặc định: medium                  | "Mức độ ưu tiên không hợp lệ"              | Client + Server |
 | message    | Required, min 20 ký tự, max 5000 ký tự                           | "Nội dung là bắt buộc" / "Nội dung tối thiểu 20 ký tự" | Client + Server |
 | attachments | Optional, mỗi file max 5MB, tối đa 5 files, chỉ chấp nhận: jpg, jpeg, png, gif, pdf, doc, docx | "File quá lớn" / "Loại file không hỗ trợ" / "Tối đa 5 files" | Server          |
+
+**Query params (GET /admin/contacts & GET /auth/contacts/me):**
+
+| Param      | Rule                                                                                       | Validate tại |
+| ---------- | ------------------------------------------------------------------------------------------ | ------------ |
+| page       | Optional, integer >= 1, default: 1                                                         | Controller   |
+| limit      | Optional, integer 1–100, default: 20, tự động cap tại 100                                 | Controller   |
+| status     | Optional, enum: new \| processing \| resolved                                              | Controller   |
+| category   | Optional, enum: account \| technical \| feature \| billing \| security \| other           | Controller   |
+| priority   | Optional, enum: low \| medium \| high                                                      | Controller   |
+| email      | Optional, string, trim (chỉ Admin API)                                                     | Controller   |
+| ticketNumber | Optional, string, trim (chỉ Admin API)                                                   | Controller   |
+| userId     | Optional, valid ObjectId 24 ký tự (chỉ Admin API)                                         | Controller   |
+| search     | Optional, string, trim — tìm trong subject, email, ticketNumber (chỉ Admin API)            | Controller   |
+| fromDate   | Optional, ISO 8601 date string                                                             | Controller   |
+| toDate     | Optional, ISO 8601 date string, phải >= fromDate nếu cả hai đều có                        | Controller   |
+| sortBy     | Optional, enum: createdAt \| priority \| status \| category, default: createdAt           | Controller   |
+| sortOrder  | Optional, enum: asc \| desc, default: desc                                                 | Controller   |
+
+**Body (PATCH /admin/contacts/:id/status):**
+
+| Field  | Rule                                         | Validate tại |
+| ------ | -------------------------------------------- | ------------ |
+| status | Required, enum: new \| processing \| resolved | Controller   |
+
+**Params (:id):**
+
+| Param | Rule                                         | Validate tại |
+| ----- | -------------------------------------------- | ------------ |
+| id    | Required, valid ObjectId pattern `/^[a-fA-F0-9]{24}$/` | Controller |
 
 ---
 
@@ -112,6 +198,10 @@
 | NF-03 | Security      | File upload được validate MIME type thực sự (không chỉ extension)      |
 | NF-04 | Reliability   | Nếu upload file thất bại, yêu cầu liên hệ vẫn được lưu (không mất dữ liệu text) |
 | NF-05 | i18n          | Error messages hỗ trợ đa ngôn ngữ thông qua i18n                      |
+| NF-06 | Security      | Admin API: chỉ role `admin` mới được gọi, trả về 403 với role khác    |
+| NF-07 | Security      | User API `/auth/contacts/me`: user chỉ thấy contacts của chính mình   |
+| NF-08 | Performance   | Query API response time < 500ms với dataset 100k records (có index)    |
+| NF-09 | Data          | `previewUrl` trong attachments: chỉ sinh URL cho image files (jpg/jpeg/png/gif), non-image trả về `null` |
 
 ---
 
@@ -120,6 +210,10 @@
 - [ ] Tất cả 🟢 Happy Path scenario: ✅ Pass
 - [ ] Tất cả 🟡 Edge Case scenario: ✅ Pass
 - [ ] Tất cả 🔴 Error Case scenario: ✅ Pass
-- [ ] Tất cả Non-functional Criteria đạt yêu cầu
+- [ ] Tất cả Non-functional Criteria đạt yêu cầu (NF-01 đến NF-09)
+- [ ] Admin không thể truy cập User API và ngược lại
+- [ ] User chỉ thấy contacts của chính mình (isolation)
+- [ ] Image preview URL hoạt động đúng, PDF/DOC không có previewUrl
 - [ ] Unit test coverage >= 90%
+- [ ] Swagger/OpenAPI cập nhật cho 4 endpoints mới
 - [ ] Không có bug severity Critical hoặc High còn open
