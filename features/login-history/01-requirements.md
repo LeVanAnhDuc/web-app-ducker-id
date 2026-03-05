@@ -74,7 +74,7 @@ Không thể theo dõi ai đăng nhập, từ đâu, bằng thiết bị gì, v�
 - Chuẩn bị fields `isAnomaly`, `anomalyReasons` cho tương lai
 
 **Query API (v2.0 — scope mới):**
-- `GET /auth/login-history` — User xem lịch sử đăng nhập của chính mình
+- `GET /login-history` — User xem lịch sử đăng nhập của chính mình
 - `GET /admin/login-history` — Admin xem toàn bộ lịch sử (có thể filter theo userId)
 - Pagination: offset-based (`page`, `limit`)
 - Filter: `status`, `method`, `deviceType`, `clientType`, `country`, `city`, `os`, `browser`, `ip`, `createdAt` (from/to)

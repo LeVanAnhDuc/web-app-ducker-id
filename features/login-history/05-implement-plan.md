@@ -198,7 +198,7 @@
   - [ ] Khởi tạo `LoginHistoryController`, export `loginHistoryUserRouter` và `loginHistoryAdminRouter`
   - [ ] Trong `modules.loader.ts`: import `AdminGuard`, khởi tạo `adminGuard = new AdminGuard()`
   - [ ] Cập nhật call `createLoginHistoryModule(auth, adminGuard)` — truyền thêm guards
-  - [ ] Mount: `v1Router.use('/auth/login-history', loginHistoryUserRouter)`
+  - [ ] Mount: `v1Router.use('/login-history', loginHistoryUserRouter)`
   - [ ] Mount: `v1Router.use('/admin/login-history', loginHistoryAdminRouter)`
   - [ ] Verify server khởi động không lỗi, routes được log
 - **Files sẽ tạo/sửa:**
@@ -230,7 +230,7 @@
 - **Checklist:**
   - [ ] Tạo `server/src/modules/login-history/swagger/` folder
   - [ ] Viết `schemas.ts`: `LoginHistoryItem`, `LoginHistoryAdminItem`, `PaginatedLoginHistoryResponse`, `PaginatedAdminLoginHistoryResponse`
-  - [ ] Viết `paths.ts`: `GET /auth/login-history` (tất cả query params, response 200/400/401), `GET /admin/login-history` (query params + userId, response 200/400/401/403)
+  - [ ] Viết `paths.ts`: `GET /login-history` (tất cả query params, response 200/400/401), `GET /admin/login-history` (query params + userId, response 200/400/401/403)
   - [ ] Viết `index.ts`: export paths + schemas
   - [ ] Register trong swagger config chính
 - **Files sẽ tạo/sửa:**
@@ -253,7 +253,7 @@
   - [ ] Tạo function `getMyLoginHistory(params: LoginHistoryQueryParams): Promise<ResponsePattern<PaginatedLoginHistoryResponse>>`
   - [ ] Tạo function `getAdminLoginHistory(params: AdminLoginHistoryQueryParams): Promise<ResponsePattern<PaginatedAdminLoginHistoryResponse>>`
   - [ ] Dùng Axios instance từ `libs/axios.ts`
-  - [ ] Endpoint: `GET /api/v1/auth/login-history` và `GET /api/v1/admin/login-history`
+  - [ ] Endpoint: `GET /api/v1/login-history` và `GET /api/v1/admin/login-history`
   - [ ] Params truyền qua `{ params: { ... } }` trong axios config
   - [ ] Tạo types client-side tương ứng (hoặc import từ shared types nếu có)
 - **Files sẽ tạo/sửa:**
@@ -398,7 +398,7 @@
 - **Depends on:** TASK-009, TASK-016, TASK-017, TASK-018
 - **Checklist:**
   - [ ] Setup: seed test data (user records + admin records từ nhiều users)
-  - [ ] **GET /auth/login-history:**
+  - [ ] **GET /login-history:**
     - [ ] TC-04.1: 200 + IP masked, không có fields nhạy cảm
     - [ ] TC-04.2: filter status=failed → chỉ failed records
     - [ ] TC-04.6: pagination page=2 → đúng records

@@ -32,7 +32,7 @@ Calling Modules                     Login History Module
 
 Client (Web)
     │
-    ├── GET /api/v1/auth/login-history?page=1&limit=20&status=failed
+    ├── GET /api/v1/login-history?page=1&limit=20&status=failed
     │       │
     │   AuthGuard.middleware (verify idToken → req.user)
     │       │
@@ -109,7 +109,7 @@ Client (Web)
 ### User API — Xem lịch sử của chính mình
 
 ```
-GET /api/v1/auth/login-history
+GET /api/v1/login-history
 Authorization: Bearer {idToken}
 ```
 
@@ -213,7 +213,7 @@ Authorization: Bearer {idToken}   (phải có role = 'admin')
 
 ### Query Flow — User (v2.0)
 ```
-1. GET /api/v1/auth/login-history + query params
+1. GET /api/v1/login-history + query params
 2. AuthGuard → verify idToken → set req.user { userId, roles, ... }
 3. validate(loginHistoryQuerySchema, 'query') → Joi validation → 400 nếu invalid
 4. LoginHistoryController.getMyHistory():
@@ -301,7 +301,7 @@ const { loginHistoryService, loginHistoryUserRouter, loginHistoryAdminRouter }
   = createLoginHistoryModule(auth, adminGuard, rateLimiter);
 
 // Mount routes mới
-v1Router.use('/auth/login-history', loginHistoryUserRouter);
+v1Router.use('/login-history', loginHistoryUserRouter);
 v1Router.use('/admin/login-history', loginHistoryAdminRouter);
 ```
 
