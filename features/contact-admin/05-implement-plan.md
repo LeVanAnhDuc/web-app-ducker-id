@@ -10,8 +10,8 @@
 | Mục           | Giá trị    |
 | ------------- | ---------- |
 | Tổng số task  | 16         |
-| Hoàn thành    | 11/16      |
-| Tiến độ       | 69%        |
+| Hoàn thành    | 13/16      |
+| Tiến độ       | 81%        |
 | Ngày bắt đầu | 04/03/2026 |
 
 ---
@@ -203,7 +203,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.4
 - **Ước lượng:** 30m
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-011
 - **Checklist:**
   - [ ] Thêm namespace `contactAdmin` cho server i18n
@@ -217,7 +217,7 @@
 
 - **Tham chiếu:** Skill: doc-standards-api
 - **Ước lượng:** 1h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-011
 - **Checklist:**
   - [ ] Tạo swagger schemas: SubmitContactRequest, SubmitContactResponse, ErrorResponse
