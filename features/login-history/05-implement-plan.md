@@ -10,8 +10,8 @@
 | Mục          | Giá trị    |
 | ------------ | ---------- |
 | Tổng số task | 19         |
-| Hoàn thành   | 9/19       |
-| Tiến độ      | 47%        |
+| Hoàn thành   | 12/19      |
+| Tiến độ      | 63%        |
 | Ngày bắt đầu | 05/03/2026 |
 
 ---
@@ -247,7 +247,7 @@
 
 - **Tham chiếu:** TL1 - US-04, US-05
 - **Ước lượng:** 1h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-009 (server routes phải tồn tại)
 - **Checklist:**
   - [ ] Tạo function `getMyLoginHistory(params: LoginHistoryQueryParams): Promise<ResponsePattern<PaginatedLoginHistoryResponse>>`
@@ -265,7 +265,7 @@
 
 - **Tham chiếu:** TL1 - US-04, TL2 - TC-04.x
 - **Ước lượng:** 3h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-012
 - **Checklist:**
   - [ ] Tạo `app/[locale]/(dashboard)/login-history/page.tsx` (Server Component)
@@ -298,7 +298,7 @@
 
 - **Tham chiếu:** TL1 - US-05, TL2 - TC-05.x
 - **Ước lượng:** 3h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-012
 - **Checklist:**
   - [ ] Tạo `app/[locale]/(admin)/admin/login-history/page.tsx` (Server Component)
