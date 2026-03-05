@@ -10,8 +10,8 @@
 | Mục          | Giá trị    |
 | ------------ | ---------- |
 | Tổng số task | 19         |
-| Hoàn thành   | 0/19       |
-| Tiến độ      | 0%         |
+| Hoàn thành   | 9/19       |
+| Tiến độ      | 47%        |
 | Ngày bắt đầu | 05/03/2026 |
 
 ---
@@ -28,7 +28,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.8
 - **Ước lượng:** 1h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** Không có
 - **Checklist:**
   - [ ] Thêm interface `PaginationParams { page, limit }`
@@ -47,7 +47,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.7, TL2 - TC-05.9
 - **Ước lượng:** 1h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** Không có
 - **Checklist:**
   - [ ] Tạo class `AdminGuard` theo pattern của `auth.guard.ts`
@@ -65,7 +65,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.7, TL2 - Mục 2.3
 - **Ước lượng:** 1.5h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-001
 - **Checklist:**
   - [ ] Import Joi và các enum values từ `constants/enums`
@@ -84,7 +84,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.7
 - **Ước lượng:** 1.5h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-001
 - **Checklist:**
   - [ ] Tạo function `buildLoginHistoryFilter(query: LoginHistoryAdminQuery, userId?: string): FilterQuery<LoginHistoryDocument>`
@@ -102,7 +102,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.6, TL2 - NF-04
 - **Ước lượng:** 0.5h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** Không có
 - **Checklist:**
   - [ ] Thêm function `maskIp(ip: string): string`
@@ -122,7 +122,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.7, TL3 - Mục 3.5
 - **Ước lượng:** 2h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-001, TASK-004
 - **Checklist:**
   - [ ] Thêm method `findByUser(userId: string, filter: FilterQuery<LoginHistoryDocument>, options: { skip: number, limit: number, sort: Record<string, 1 | -1> }): Promise<{ data: LoginHistoryDocument[], total: number }>`
@@ -139,7 +139,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.5, TL3 - Mục 3.8
 - **Ước lượng:** 2h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-001, TASK-004, TASK-005, TASK-006
 - **Checklist:**
   - [ ] Thêm method `getMyLoginHistory(userId: string, query: LoginHistoryQuery): Promise<PaginatedResult<LoginHistoryItem>>`
@@ -166,7 +166,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.7, TL3 - Mục 3.4
 - **Ước lượng:** 2h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-002, TASK-003, TASK-007
 - **Checklist:**
   - [ ] Tạo class `LoginHistoryController`
@@ -191,7 +191,7 @@
 
 - **Tham chiếu:** TL3 - Mục 3.7
 - **Ước lượng:** 1h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-008
 - **Checklist:**
   - [ ] Cập nhật `createLoginHistoryModule()`: nhận thêm tham số `auth: AuthGuard`, `adminGuard: AdminGuard`

@@ -10,8 +10,8 @@
 | Mục           | Giá trị    |
 | ------------- | ---------- |
 | Tổng số task  | 33         |
-| Hoàn thành    | 13/33      |
-| Tiến độ       | 39%        |
+| Hoàn thành    | 20/33      |
+| Tiến độ       | 61%        |
 | Ngày bắt đầu | 04/03/2026 |
 
 ---
@@ -317,7 +317,7 @@ Sau khi hoàn thành Phase 2 (Backend) và Phase 3 (Frontend), chạy các skill
 
 - **Tham chiếu:** TL3 - Mục 3.8
 - **Ước lượng:** 1h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** Không có
 - **Checklist:**
   - [ ] Thêm `AdminContactsQuery` interface (14 filter/sort params)
@@ -337,7 +337,7 @@ Sau khi hoàn thành Phase 2 (Backend) và Phase 3 (Frontend), chạy các skill
 
 - **Tham chiếu:** TL3 - Mục 3.7, TL2 - Mục 2.3
 - **Ước lượng:** 1h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-017
 - **Checklist:**
   - [ ] Thêm `contactIdParamSchema`: `id` required, ObjectId pattern `/^[a-fA-F0-9]{24}$/`
@@ -356,7 +356,7 @@ Sau khi hoàn thành Phase 2 (Backend) và Phase 3 (Frontend), chạy các skill
 
 - **Tham chiếu:** TL3 - Mục 3.5
 - **Ước lượng:** 1.5h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-017
 - **Checklist:**
   - [ ] Tạo function `buildContactFilter(query: AdminContactsQuery): FilterQuery<ContactDocument>`
@@ -378,7 +378,7 @@ Sau khi hoàn thành Phase 2 (Backend) và Phase 3 (Frontend), chạy các skill
 
 - **Tham chiếu:** TL3 - Mục 3.7
 - **Ước lượng:** 2h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-017, TASK-019
 - **Checklist:**
   - [ ] Thêm `findAll(filter, options: { skip, limit, sort }): Promise<{ data: ContactDocument[], total: number }>`
@@ -399,7 +399,7 @@ Sau khi hoàn thành Phase 2 (Backend) và Phase 3 (Frontend), chạy các skill
 
 - **Tham chiếu:** TL3 - Mục 3.5, TL3 - Mục 3.6
 - **Ước lượng:** 2h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-019, TASK-020
 - **Checklist:**
   - [ ] Thêm `getContactList(query: AdminContactsQuery): Promise<PaginatedResult<ContactListItem>>`
@@ -429,7 +429,7 @@ Sau khi hoàn thành Phase 2 (Backend) và Phase 3 (Frontend), chạy các skill
 
 - **Tham chiếu:** TL3 - Mục 3.7, TL3 - Mục 3.4
 - **Ước lượng:** 2h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-018, TASK-021
 - **Checklist:**
   - [ ] Constructor nhận thêm `auth: AuthGuard` và `adminGuard: AdminGuard`
@@ -455,7 +455,7 @@ Sau khi hoàn thành Phase 2 (Backend) và Phase 3 (Frontend), chạy các skill
 
 - **Tham chiếu:** TL3 - Mục 3.7
 - **Ước lượng:** 0.5h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-022
 - **Checklist:**
   - [ ] `createContactAdminModule()` nhận thêm `auth: AuthGuard`, `adminGuard: AdminGuard`
