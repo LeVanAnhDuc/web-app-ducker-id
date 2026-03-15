@@ -83,7 +83,7 @@ User Client (đã đăng nhập)
   email:         String | undefined,
   subject:       String,
   category:      String,   // account|technical|feature|billing|security|other
-  priority:      String,   // low|medium|high
+  priority:      String,   // low|medium|high — auto-assigned by system (default: "medium")
   message:       String,
   attachments:   [{ originalName, fileName, mimeType, size, path }],
   status:        String,   // new|processing|resolved
@@ -122,7 +122,7 @@ Authorization: Bearer {idToken}   (role = admin)
 | limit        | number | 20        | Số records/trang (1–100, tự động cap 100)                               |
 | status       | string | -         | `new` \| `processing` \| `resolved`                                      |
 | category     | string | -         | `account` \| `technical` \| `feature` \| `billing` \| `security` \| `other` |
-| priority     | string | -         | `low` \| `medium` \| `high`                                              |
+| priority     | string | -         | `low` \| `medium` \| `high` (chỉ Admin filter — không nhận từ submit form) |
 | email        | string | -         | Partial match, case-insensitive                                           |
 | ticketNumber | string | -         | Partial match, case-insensitive                                           |
 | userId       | string | -         | ObjectId 24 ký tự — exact match                                          |
@@ -144,7 +144,6 @@ Authorization: Bearer {idToken}   (role = admin)
         "email": "user@example.com",
         "subject": "Cannot login to my account",
         "category": "account",
-        "priority": "high",
         "status": "new",
         "userId": "def456",
         "attachmentCount": 2,
@@ -179,7 +178,6 @@ Authorization: Bearer {idToken}   (role = admin)
     "email": "user@example.com",
     "subject": "Cannot login to my account",
     "category": "account",
-    "priority": "high",
     "status": "new",
     "userId": "def456",
     "message": "I have been trying to login for 3 days but keep getting an error...",
@@ -253,7 +251,6 @@ Authorization: Bearer {idToken}
         "ticketNumber": "TK-20260305-A1B2",
         "subject": "Cannot login to my account",
         "category": "account",
-        "priority": "high",
         "status": "new",
         "attachmentCount": 2,
         "createdAt": "2026-03-05T08:00:00.000Z"
@@ -434,7 +431,6 @@ export interface ContactListItem {
   email: string | null;
   subject: string;
   category: ContactCategory;
-  priority: ContactPriority;
   status: ContactStatus;
   userId: string | null;
   attachmentCount: number;
@@ -455,7 +451,6 @@ export interface UserContactItem {
   ticketNumber: string;
   subject: string;
   category: ContactCategory;
-  priority: ContactPriority;
   status: ContactStatus;
   attachmentCount: number;
   createdAt: string;

@@ -29,7 +29,7 @@ User không có cách nào liên hệ trực tiếp với Admin khi gặp vấn 
 
 - Cung cấp API endpoint cho user gửi yêu cầu liên hệ đến Admin
 - Lưu trữ tất cả các yêu cầu liên hệ vào database để Admin quản lý
-- Hỗ trợ phân loại yêu cầu theo danh mục (category) và mức độ ưu tiên (priority)
+- Hỗ trợ phân loại yêu cầu theo danh mục (category); mức độ ưu tiên (priority) được hệ thống tự động gán
 - Hỗ trợ đính kèm file kèm theo yêu cầu liên hệ
 - Áp dụng rate limiting để chống spam
 - Cung cấp API cho Admin xem danh sách toàn bộ contact (phân trang, filter tất cả fields, sort)
@@ -54,7 +54,7 @@ User không có cách nào liên hệ trực tiếp với Admin khi gặp vấn 
 | ID    | User Story                                                                                                         | Ghi chú                                |
 | ----- | ------------------------------------------------------------------------------------------------------------------ | -------------------------------------- |
 | US-01 | Là một **guest/user**, tôi muốn **gửi yêu cầu liên hệ đến admin** để **được hỗ trợ giải quyết vấn đề**          | Cả guest và user đều có thể gửi        |
-| US-02 | Là một **guest/user**, tôi muốn **chọn danh mục và mức độ ưu tiên** để **admin phân loại và xử lý nhanh hơn**     | Categories: account, technical, feature, billing, security, other |
+| US-02 | Là một **guest/user**, tôi muốn **chọn danh mục** để **admin phân loại yêu cầu** | Categories: account, technical, feature, billing, security, other. Priority được hệ thống tự động gán (mặc định: medium) |
 | US-03 | Là một **guest/user**, tôi muốn **đính kèm file** để **minh họa rõ hơn vấn đề tôi đang gặp**                     | Hỗ trợ hình ảnh/tài liệu               |
 | US-04 | Là một **admin**, tôi muốn **hệ thống lưu trữ tất cả yêu cầu liên hệ** để **xem xét và xử lý sau**              | Có thuộc tính trạng thái (status)       |
 | US-05 | Là một **admin**, tôi muốn **xem danh sách tất cả contact** (phân trang, filter, sort) để **nắm bắt tổng quan và ưu tiên xử lý** | Table view với các fields chính |
@@ -76,10 +76,10 @@ User không có cách nào liên hệ trực tiếp với Admin khi gặp vấn 
 **Admin & User Query API (v2.0 — scope mới):**
 - `GET /api/v1/admin/contacts` — Admin xem danh sách tất cả contact (table view)
   - Pagination: offset-based (page, limit)
-  - Filter: `status`, `category`, `priority`, `email`, `ticketNumber`, `createdAt` range, `userId`
+  - Filter: `status`, `category`, `priority`, `email`, `ticketNumber`, `createdAt` range, `userId` (priority vẫn filter được vì field tồn tại trong DB)
   - Search: text search trên `subject`, `email`, `ticketNumber`
   - Sort: `createdAt`, `priority`, `status`, `category` (asc/desc), mặc định `createdAt desc`
-  - Response fields (table): `_id`, `ticketNumber`, `email`, `subject`, `category`, `priority`, `status`, `userId`, `attachmentCount`, `createdAt`, `updatedAt`
+  - Response fields (table): `_id`, `ticketNumber`, `email`, `subject`, `category`, `status`, `userId`, `attachmentCount`, `createdAt`, `updatedAt`
 - `GET /api/v1/admin/contacts/:id` — Admin xem chi tiết một contact
   - Full fields: tất cả fields của table + `message`, `attachments` (với `previewUrl` cho image files), `ipAddress`
 - `PATCH /api/v1/admin/contacts/:id/status` — Admin cập nhật status
@@ -87,7 +87,7 @@ User không có cách nào liên hệ trực tiếp với Admin khi gặp vấn 
 - `GET /api/v1/auth/contacts/me` — User xem danh sách contact mình đã gửi
   - Filter theo `userId` từ token (không thể xem của người khác)
   - Pagination + sort
-  - Response fields: `ticketNumber`, `subject`, `category`, `priority`, `status`, `attachmentCount`, `createdAt`
+  - Response fields: `ticketNumber`, `subject`, `category`, `status`, `attachmentCount`, `createdAt`
 
 ### Ngoài phạm vi (Out of Scope)
 
@@ -105,7 +105,8 @@ User không có cách nào liên hệ trực tiếp với Admin khi gặp vấn 
 - Thông báo email/push khi có yêu cầu mới
 - Admin reply qua hệ thống (thread messages)
 - Download file đính kèm
-- Dashboard thống kê (chart theo category, priority, status)
+- Dashboard thống kê (chart theo category, status)
+- Tự động gán priority dựa trên nội dung yêu cầu (AI classification)
 
 ---
 
