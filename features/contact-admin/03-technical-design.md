@@ -6,7 +6,7 @@
 
 Contact Admin module gồm hai phần:
 
-- **v1.0 (đã implement):** `POST /contact/submit` — Guest/User gửi yêu cầu liên hệ, lưu vào MongoDB collection `contacts`.
+- **v1.0 (đã implement):** `POST /contact/submit` — Guest/User gửi yêu cầu liên hệ (fields: email?, subject, message), lưu vào MongoDB collection `contacts`. Category và priority được server tự gán (default: "other" và "medium").
 - **v2.0 (scope mới):** Query & Update API — thêm routes cho Admin xem danh sách, xem chi tiết, cập nhật status; và User xem contact của chính mình. Reuse `AdminGuard` đã tạo từ login-history v2.0.
 
 ---
@@ -47,13 +47,23 @@ Admin Client
     │       │                                              │
     │       │                                buildPreviewUrl(attachment) → ContactDetailItem
     │       │
-    └── PATCH /api/v1/admin/contacts/:id/status
+    ├── PATCH /api/v1/admin/contacts/:id/status
+    │       │
+    │   AuthGuard → AdminGuard → validate(params+body) → ContactAdminController.updateContactStatus()
+    │                                                          │
+    │                                            ContactAdminService.updateContactStatus(id, status)
+    │                                                          │
+    │                                            ContactRepository.updateStatus(id, status)
+    │                                                          │
+    │                                            Return updated ContactListItem
+    │
+    └── PATCH /api/v1/admin/contacts/:id/category
             │
-        AuthGuard → AdminGuard → validate(params+body) → ContactAdminController.updateContactStatus()
+        AuthGuard → AdminGuard → validate(params+body) → ContactAdminController.updateContactCategory()
                                                                │
-                                                 ContactAdminService.updateContactStatus(id, status)
+                                                 ContactAdminService.updateContactCategory(id, category)
                                                                │
-                                                 ContactRepository.updateStatus(id, status)
+                                                 ContactRepository.updateCategory(id, category)
                                                                │
                                                  Return updated ContactListItem
 
@@ -82,7 +92,7 @@ User Client (đã đăng nhập)
   userId:        ObjectId | undefined,
   email:         String | undefined,
   subject:       String,
-  category:      String,   // account|technical|feature|billing|security|other
+  category:      String,   // account|technical|feature|billing|security|other — auto-assigned by system (default: "other")
   priority:      String,   // low|medium|high — auto-assigned by system (default: "medium")
   message:       String,
   attachments:   [{ originalName, fileName, mimeType, size, path }],
@@ -231,6 +241,25 @@ Content-Type: application/json
 
 ---
 
+### Admin — PATCH cập nhật category
+
+```
+PATCH /api/v1/admin/contacts/:id/category
+Authorization: Bearer {idToken}   (role = admin)
+Content-Type: application/json
+```
+
+**Request Body:**
+```json
+{ "category": "technical" }
+```
+
+**Response 200:** Trả về `ContactListItem` đã được cập nhật.
+
+**Response 404:** Contact không tồn tại.
+
+---
+
 ### User — GET contact của chính mình
 
 ```
@@ -319,6 +348,16 @@ POST /contact/submit → RateLimiter → OptionalAuth → Multer → Joi → Ser
    b. Return updated ContactListItem
 ```
 
+### Admin Update Category Flow (v2.0)
+```
+1. PATCH /admin/contacts/:id/category
+2. AuthGuard → AdminGuard
+3. validate(contactIdParamSchema, 'params') + validate(updateContactCategorySchema, 'body')
+4. Service.updateContactCategory(id, category):
+   a. Repo.updateCategory(id, category) → 404 nếu không tìm thấy
+   b. Return updated ContactListItem
+```
+
 ### User My Contacts Flow (v2.0)
 ```
 1. GET /auth/contacts/me + query params
@@ -359,7 +398,7 @@ server/src/
 ├── modules/contact-admin/
 │   ├── contact-admin.module.ts        # Updated: inject auth, adminGuard; export adminRouter + userContactRouter
 │   ├── contact-admin.service.ts       # Updated: thêm getContactList(), getContactDetail(), updateContactStatus(), getMyContacts()
-│   ├── contact-admin.controller.ts    # Updated: thêm adminRouter + userContactRouter với 4 routes mới
+│   ├── contact-admin.controller.ts    # Updated: thêm adminRouter + userContactRouter với 5 routes mới (bao gồm PATCH category)
 │   └── internals/
 │       └── query-builder.ts           # NEW: buildContactFilter(query) → FilterQuery<ContactDocument>
 │   └── repositories/
@@ -369,7 +408,7 @@ server/src/
 │   └── contact-admin.ts               # Updated: thêm query types, response types (ContactListItem, ContactDetailItem, UserContactItem, PaginatedResult<T>)
 │
 └── validators/schemas/
-    └── contact-admin.ts               # Updated: thêm adminListContactsQuerySchema, myContactsQuerySchema, updateContactStatusSchema, contactIdParamSchema
+    └── contact-admin.ts               # Updated: thêm adminListContactsQuerySchema, myContactsQuerySchema, updateContactStatusSchema, updateContactCategorySchema, contactIdParamSchema
 ```
 
 **modules.loader.ts — thay đổi:**

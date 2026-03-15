@@ -28,7 +28,7 @@
 
 | ID      | Loại     | Scenario                                                                                                                                                                                       | Trạng thái |
 | ------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| TC-01.1 | 🟢 Happy | **GIVEN** guest truy cập trang liên hệ **WHEN** điền đầy đủ email, subject, category, message và submit **THEN** hệ thống trả về 201 với ticket number, yêu cầu được lưu vào DB với status "new", priority = "medium" (auto) | ⚪         |
+| TC-01.1 | 🟢 Happy | **GIVEN** guest truy cập trang liên hệ **WHEN** điền đầy đủ email, subject, message và submit **THEN** hệ thống trả về 201 với ticket number, yêu cầu được lưu vào DB với status "new", category = "other" (auto), priority = "medium" (auto) | ⚪         |
 | TC-01.2 | 🟢 Happy | **GIVEN** user đã đăng nhập **WHEN** gửi yêu cầu liên hệ (email tự động lấy từ tài khoản) **THEN** hệ thống trả về 201, yêu cầu được lưu với userId liên kết                                  | ⚪         |
 | TC-01.3 | 🟡 Edge  | **GIVEN** guest gửi form **WHEN** không điền email (email optional) **THEN** hệ thống vẫn chấp nhận và lưu yêu cầu, email = null                                                               | ⚪         |
 | TC-01.4 | 🟡 Edge  | **GIVEN** user gửi form **WHEN** subject hoặc message chứa ký tự đặc biệt (HTML tags, script tags) **THEN** hệ thống sanitize input và lưu an toàn, không bị XSS                              | ⚪         |
@@ -36,13 +36,12 @@
 | TC-01.6 | 🔴 Error | **GIVEN** hệ thống hoạt động bình thường **WHEN** MongoDB bị down trong lúc lưu yêu cầu **THEN** hệ thống trả về 500 Internal Server Error với thông báo phù hợp                               | ⚪         |
 | TC-01.7 | 🔴 Error | **GIVEN** guest gửi form **WHEN** request body trống hoàn toàn **THEN** hệ thống trả về 400 Bad Request với chi tiết validation errors                                                          | ⚪         |
 
-### US-02: Là một guest/user, tôi muốn chọn danh mục để admin phân loại yêu cầu
+### US-02: Hệ thống tự gán category và priority khi user submit
 
 | ID      | Loại     | Scenario                                                                                                                                                                            | Trạng thái |
 | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| TC-02.1 | 🟢 Happy | **GIVEN** user điền form liên hệ **WHEN** chọn category = "technical" và submit **THEN** hệ thống lưu đúng category vào DB, priority tự động = "medium" (default)                   | ⚪         |
-| TC-02.2 | 🟡 Edge  | **GIVEN** user gửi request trực tiếp qua API **WHEN** category = "invalid_category" (giá trị không hợp lệ) **THEN** hệ thống trả về 400 với thông báo category không hợp lệ         | ⚪         |
-| TC-02.3 | 🔴 Error | **GIVEN** user gửi form **WHEN** thiếu field category (required) **THEN** hệ thống trả về 400 Bad Request: "category is required"                                                    | ⚪         |
+| TC-02.1 | 🟢 Happy | **GIVEN** user submit form liên hệ **WHEN** không gửi field category **THEN** hệ thống tự gán category = "other" (default), priority = "medium" (default)                          | ⚪         |
+| TC-02.2 | 🟡 Edge  | **GIVEN** user cố gửi category qua API trực tiếp **WHEN** payload có field category **THEN** hệ thống bỏ qua giá trị đó, vẫn dùng default "other"                                  | ⚪         |
 
 ### US-03: Là một guest/user, tôi muốn đính kèm file để minh họa rõ hơn vấn đề tôi đang gặp
 
@@ -60,7 +59,7 @@
 
 | ID      | Loại     | Scenario                                                                                                                                                                                    | Trạng thái |
 | ------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
-| TC-04.1 | 🟢 Happy | **GIVEN** user gửi yêu cầu liên hệ thành công **WHEN** admin truy vấn DB **THEN** yêu cầu tồn tại trong collection với đầy đủ thông tin: email, subject, category, message, priority="medium" (auto), status="new", createdAt | ⚪         |
+| TC-04.1 | 🟢 Happy | **GIVEN** user gửi yêu cầu liên hệ thành công **WHEN** admin truy vấn DB **THEN** yêu cầu tồn tại trong collection với đầy đủ thông tin: email, subject, message, category="other" (auto), priority="medium" (auto), status="new", createdAt | ⚪         |
 | TC-04.2 | 🟢 Happy | **GIVEN** yêu cầu được tạo **WHEN** kiểm tra dữ liệu trong DB **THEN** có timestamps (createdAt, updatedAt), có ticket number duy nhất                                                     | ⚪         |
 | TC-04.3 | 🟡 Edge  | **GIVEN** nhiều user gửi yêu cầu đồng thời **WHEN** hệ thống xử lý **THEN** mỗi yêu cầu có ticket number duy nhất, không trùng lặp                                                        | ⚪         |
 | TC-04.4 | 🔴 Error | **GIVEN** DB index bị lỗi **WHEN** hệ thống cố tạo yêu cầu với ticket number trùng **THEN** hệ thống retry với ticket number mới hoặc trả về lỗi phù hợp                                   | ⚪         |
@@ -96,6 +95,17 @@
 | TC-06.6 | 🔴 Error | **GIVEN** id có format không hợp lệ (không phải ObjectId 24 ký tự) **WHEN** GET /admin/contacts/:id **THEN** 400 Bad Request | ⚪ |
 | TC-06.7 | 🔴 Error | **GIVEN** user thường gọi API **WHEN** GET /admin/contacts/:id **THEN** 403 Forbidden | ⚪ |
 
+### US-09: Admin cập nhật danh mục (category) của contact
+
+| ID      | Loại     | Scenario                                                                                                                                                                         | Trạng thái |
+| ------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| TC-09.1 | 🟢 Happy | **GIVEN** contact có category="other" (auto) **WHEN** PATCH /admin/contacts/:id/category với body `{ category: "technical" }` **THEN** 200, category được cập nhật, response trả về contact đã update | ⚪ |
+| TC-09.2 | 🟢 Happy | **GIVEN** admin update category **WHEN** PATCH thành công **THEN** `updatedAt` được cập nhật tự động | ⚪ |
+| TC-09.3 | 🔴 Error | **GIVEN** id không tồn tại **WHEN** PATCH /admin/contacts/:id/category **THEN** 404 Not Found | ⚪ |
+| TC-09.4 | 🔴 Error | **GIVEN** body `{ category: "invalid" }` **WHEN** PATCH **THEN** 400 Bad Request | ⚪ |
+| TC-09.5 | 🔴 Error | **GIVEN** body rỗng hoặc thiếu field category **WHEN** PATCH **THEN** 400 Bad Request | ⚪ |
+| TC-09.6 | 🔴 Error | **GIVEN** user thường gọi API **WHEN** PATCH **THEN** 403 Forbidden | ⚪ |
+
 ### US-07: Admin cập nhật trạng thái contact
 
 | ID      | Loại     | Scenario                                                                                                                                                                         | Trạng thái |
@@ -129,7 +139,7 @@
 | ---------- | ----------------------------------------------------------------- | ------------------------------------------ | --------------- |
 | email      | Phải đúng format email, optional (cho phép rỗng)                  | "Email không hợp lệ"                       | Client + Server |
 | subject    | Required, min 5 ký tự, max 200 ký tự                             | "Tiêu đề là bắt buộc" / "Tiêu đề tối thiểu 5 ký tự" | Client + Server |
-| category   | Required, phải thuộc: account, technical, feature, billing, security, other | "Danh mục là bắt buộc" / "Danh mục không hợp lệ" | Client + Server |
+| category   | **Không nhận từ client.** Hệ thống tự gán, mặc định: "other"    | —                                          | Server (auto)   |
 | priority   | **Không nhận từ client.** Hệ thống tự gán, mặc định: "medium"   | —                                          | Server (auto)   |
 | message    | Required, min 20 ký tự, max 5000 ký tự                           | "Nội dung là bắt buộc" / "Nội dung tối thiểu 20 ký tự" | Client + Server |
 | attachments | Optional, mỗi file max 5MB, tối đa 5 files, chỉ chấp nhận: jpg, jpeg, png, gif, pdf, doc, docx | "File quá lớn" / "Loại file không hỗ trợ" / "Tối đa 5 files" | Server          |
@@ -157,6 +167,12 @@
 | Field  | Rule                                         | Validate tại |
 | ------ | -------------------------------------------- | ------------ |
 | status | Required, enum: new \| processing \| resolved | Controller   |
+
+**Body (PATCH /admin/contacts/:id/category):**
+
+| Field    | Rule                                                                              | Validate tại |
+| -------- | --------------------------------------------------------------------------------- | ------------ |
+| category | Required, enum: account \| technical \| feature \| billing \| security \| other  | Controller   |
 
 **Params (:id):**
 
@@ -213,5 +229,5 @@
 - [ ] User chỉ thấy contacts của chính mình (isolation)
 - [ ] Image preview URL hoạt động đúng, PDF/DOC không có previewUrl
 - [ ] Unit test coverage >= 90%
-- [ ] Swagger/OpenAPI cập nhật cho 4 endpoints mới
+- [ ] Swagger/OpenAPI cập nhật cho 5 endpoints mới (bao gồm PATCH category)
 - [ ] Không có bug severity Critical hoặc High còn open

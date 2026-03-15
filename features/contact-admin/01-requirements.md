@@ -29,12 +29,13 @@ User không có cách nào liên hệ trực tiếp với Admin khi gặp vấn 
 
 - Cung cấp API endpoint cho user gửi yêu cầu liên hệ đến Admin
 - Lưu trữ tất cả các yêu cầu liên hệ vào database để Admin quản lý
-- Hỗ trợ phân loại yêu cầu theo danh mục (category); mức độ ưu tiên (priority) được hệ thống tự động gán
+- Category (danh mục) và priority (mức độ ưu tiên) được hệ thống tự động gán khi submit (category mặc định: "other", priority mặc định: "medium"); user không chọn
 - Hỗ trợ đính kèm file kèm theo yêu cầu liên hệ
 - Áp dụng rate limiting để chống spam
 - Cung cấp API cho Admin xem danh sách toàn bộ contact (phân trang, filter tất cả fields, sort)
 - Cung cấp API cho Admin xem chi tiết một contact (message đầy đủ + image preview attachments)
 - Cung cấp API cho Admin cập nhật trạng thái contact (new → processing → resolved)
+- Cung cấp API cho Admin cập nhật danh mục (category) của contact
 - Cung cấp API cho User xem danh sách contact mình đã gửi (phân trang, sort)
 
 ---
@@ -54,13 +55,14 @@ User không có cách nào liên hệ trực tiếp với Admin khi gặp vấn 
 | ID    | User Story                                                                                                         | Ghi chú                                |
 | ----- | ------------------------------------------------------------------------------------------------------------------ | -------------------------------------- |
 | US-01 | Là một **guest/user**, tôi muốn **gửi yêu cầu liên hệ đến admin** để **được hỗ trợ giải quyết vấn đề**          | Cả guest và user đều có thể gửi        |
-| US-02 | Là một **guest/user**, tôi muốn **chọn danh mục** để **admin phân loại yêu cầu** | Categories: account, technical, feature, billing, security, other. Priority được hệ thống tự động gán (mặc định: medium) |
+| US-02 | ~~Là một **guest/user**, tôi muốn **chọn danh mục**~~ → **Hệ thống tự gán category mặc định** khi user submit | Category mặc định: "other"; Priority mặc định: "medium" — cả hai đều do hệ thống gán, user không chọn |
 | US-03 | Là một **guest/user**, tôi muốn **đính kèm file** để **minh họa rõ hơn vấn đề tôi đang gặp**                     | Hỗ trợ hình ảnh/tài liệu               |
 | US-04 | Là một **admin**, tôi muốn **hệ thống lưu trữ tất cả yêu cầu liên hệ** để **xem xét và xử lý sau**              | Có thuộc tính trạng thái (status)       |
 | US-05 | Là một **admin**, tôi muốn **xem danh sách tất cả contact** (phân trang, filter, sort) để **nắm bắt tổng quan và ưu tiên xử lý** | Table view với các fields chính |
 | US-06 | Là một **admin**, tôi muốn **xem chi tiết một contact** để **đọc nội dung đầy đủ và xem ảnh đính kèm**           | Full message + image preview            |
 | US-07 | Là một **admin**, tôi muốn **cập nhật trạng thái contact** (new/processing/resolved) để **theo dõi tiến độ xử lý** | Chỉ update field status                |
 | US-08 | Là một **user đã đăng nhập**, tôi muốn **xem danh sách contact mình đã gửi** để **theo dõi trạng thái yêu cầu**  | Filter theo userId của chính mình       |
+| US-09 | Là một **admin**, tôi muốn **cập nhật danh mục (category) của contact** để **phân loại yêu cầu sau khi xem xét** | Chỉ update field category; chỉ admin mới có quyền |
 
 ---
 
@@ -84,6 +86,8 @@ User không có cách nào liên hệ trực tiếp với Admin khi gặp vấn 
   - Full fields: tất cả fields của table + `message`, `attachments` (với `previewUrl` cho image files), `ipAddress`
 - `PATCH /api/v1/admin/contacts/:id/status` — Admin cập nhật status
   - Body: `{ status: 'new' | 'processing' | 'resolved' }`
+- `PATCH /api/v1/admin/contacts/:id/category` — Admin cập nhật category
+  - Body: `{ category: 'account' | 'technical' | 'feature' | 'billing' | 'security' | 'other' }`
 - `GET /api/v1/auth/contacts/me` — User xem danh sách contact mình đã gửi
   - Filter theo `userId` từ token (không thể xem của người khác)
   - Pagination + sort
