@@ -10,8 +10,8 @@
 | Mục          | Giá trị    |
 | ------------ | ---------- |
 | Tổng số task | 24         |
-| Hoàn thành   | 12/24      |
-| Tiến độ      | 50%        |
+| Hoàn thành   | 14/24      |
+| Tiến độ      | 58%        |
 | Ngày bắt đầu | 04/03/2026 |
 
 ---
@@ -270,19 +270,20 @@
 
 ### Phase 3: Frontend Development
 
-#### TASK-015: Tạo dataSources/User/index.ts
+#### TASK-015: Tạo requests/user.ts và types/User/index.ts
 
 - **Tham chiếu:** TL3 - Mục 3.6
 - **Ước lượng:** 1h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** Không có (có thể làm song song với backend)
 - **Checklist:**
-  - [ ] `getMyProfile()` — GET `/api/v1/users/me`, return `MyProfileResponse`
-  - [ ] `updateMyProfile(data)` — PATCH `/api/v1/users/me`, body JSON, return `MyProfileResponse`
-  - [ ] `uploadAvatar(file)` — POST `/api/v1/users/me/avatar`, FormData `avatar`, return `{ avatarUrl }`
-  - [ ] `getPublicProfile(id)` — GET `/api/v1/users/${id}`, return `PublicProfileResponse`
+  - [x] `getMyProfile()` — GET `/api/v1/users/me`, return `MyProfileResponse`
+  - [x] `updateMyProfile(data)` — PATCH `/api/v1/users/me`, body JSON, return `MyProfileResponse`
+  - [x] `uploadAvatar(file)` — POST `/api/v1/users/me/avatar`, FormData `avatar`, return `{ avatarUrl }`
+  - [x] `getPublicProfile(id)` — GET `/api/v1/users/${id}`, return `PublicProfileResponse`
 - **Files sẽ tạo/sửa:**
-  - `client/src/dataSources/User/index.ts` (tạo mới)
+  - `client/src/requests/user.ts` (tạo mới — dùng `requests/` theo convention thực tế của dự án)
+  - `client/src/types/User/index.ts` (tạo mới)
 
 ---
 
@@ -290,16 +291,17 @@
 
 - **Tham chiếu:** TL2 - Mục 2.3, TL3 - Mục 3.6
 - **Ước lượng:** 1h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** Không có
 - **Checklist:**
-  - [ ] `forms/UpdateProfile/validations.ts`: Zod schema partial, `fullName` min2/max100/pattern, `phone` no-empty, `dateOfBirth` no-future/age<=100, `gender` enum, `address` max500
-  - [ ] `forms/UpdateProfile/index.ts`: field props (label, name, placeholder, type)
-  - [ ] `forms/UpdateProfile/data.ts`: default values (empty strings / undefined)
+  - [x] `forms/UpdateProfile/validations.ts`: Zod schema partial, `fullName` min2/max100/pattern, `phone` no-empty, `dateOfBirth` no-future/age<=100, `gender` enum, `address` max500
+  - [x] `forms/UpdateProfile/index.ts`: form props (UseFormProps với zodResolver + defaultValues)
+  - [x] `forms/UpdateProfile/data.ts`: default values (undefined cho tất cả optional fields)
 - **Files sẽ tạo/sửa:**
   - `client/src/forms/UpdateProfile/validations.ts` (tạo mới)
   - `client/src/forms/UpdateProfile/index.ts` (tạo mới)
   - `client/src/forms/UpdateProfile/data.ts` (tạo mới)
+  - `client/src/schemas/index.ts` (sửa — thêm `profileDateOfBirthSchema`)
 
 ---
 
