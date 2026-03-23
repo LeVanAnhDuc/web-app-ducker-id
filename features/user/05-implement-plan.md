@@ -10,8 +10,8 @@
 | Mục          | Giá trị    |
 | ------------ | ---------- |
 | Tổng số task | 24         |
-| Hoàn thành   | 16/24      |
-| Tiến độ      | 66%        |
+| Hoàn thành   | 17/24      |
+| Tiến độ      | 70%        |
 | Ngày bắt đầu | 04/03/2026 |
 
 ---
@@ -243,12 +243,12 @@
 
 - **Tham chiếu:** Skill: doc-standards-api, TL3 - Mục 3.4
 - **Ước lượng:** 2h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-012
 - **Checklist:**
-  - [ ] Tạo Swagger spec cho cả 4 endpoints
-  - [ ] Document tất cả response codes (200, 400, 401, 404, 422, 429, 500)
-  - [ ] Tạo Postman collection với test scenarios từ TL2
+  - [x] Tạo Swagger spec cho cả 4 endpoints
+  - [x] Document tất cả response codes (200, 400, 401, 404, 422, 429, 500)
+  - [x] Tạo Postman collection với test scenarios từ TL2
 - **Files sẽ tạo/sửa:**
   - `server/src/modules/user/swagger/` (tạo mới)
 
