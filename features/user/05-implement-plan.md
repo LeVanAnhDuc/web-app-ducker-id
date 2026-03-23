@@ -10,8 +10,8 @@
 | Mục          | Giá trị    |
 | ------------ | ---------- |
 | Tổng số task | 24         |
-| Hoàn thành   | 14/24      |
-| Tiến độ      | 58%        |
+| Hoàn thành   | 15/24      |
+| Tiến độ      | 62%        |
 | Ngày bắt đầu | 04/03/2026 |
 
 ---
@@ -309,14 +309,17 @@
 
 - **Tham chiếu:** TL2 - NF-06
 - **Ước lượng:** 0.5h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** Không có
 - **Checklist:**
-  - [ ] `locales/en/user.json`: labels, placeholders, success/error toasts, field validation messages
-  - [ ] `locales/vi/user.json`: tương tự bằng tiếng Việt
+  - [x] `locales/en/user.json`: labels, placeholders, success toasts, field validation messages
+  - [x] `locales/vi/user.json`: tương tự bằng tiếng Việt
+  - [x] Đăng ký namespace `user` trong `locales/en/index.ts` và `locales/vi/index.ts`
 - **Files sẽ tạo/sửa:**
   - `client/src/locales/en/user.json` (tạo mới)
   - `client/src/locales/vi/user.json` (tạo mới)
+  - `client/src/locales/en/index.ts` (sửa)
+  - `client/src/locales/vi/index.ts` (sửa)
 
 ---
 
