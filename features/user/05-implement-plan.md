@@ -10,8 +10,8 @@
 | Mục          | Giá trị    |
 | ------------ | ---------- |
 | Tổng số task | 24         |
-| Hoàn thành   | 17/24      |
-| Tiến độ      | 70%        |
+| Hoàn thành   | 18/24      |
+| Tiến độ      | 75%        |
 | Ngày bắt đầu | 04/03/2026 |
 
 ---
@@ -258,13 +258,13 @@
 
 - **Tham chiếu:** Skill: review-code, review-performance, review-security
 - **Ước lượng:** 3h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-013
 - **Checklist:**
-  - [ ] Review code: naming, structure, dead code, reusability
-  - [ ] Review performance: `.lean()` trên tất cả queries, `.select()` chỉ lấy field cần thiết
-  - [ ] Review security: MIME type validation thực tế, path traversal safe, public profile không lộ nhạy cảm, rate limit đúng chỗ
-  - [ ] Fix tất cả issues tìm được
+  - [x] Review code: naming, structure, dead code, reusability
+  - [x] Review performance: `.lean()` trên tất cả queries, `.select()` chỉ lấy field cần thiết
+  - [x] Review security: MIME type validation thực tế, path traversal safe, public profile không lộ nhạy cảm, rate limit đúng chỗ
+  - [x] Fix tất cả issues tìm được
 
 ---
 
