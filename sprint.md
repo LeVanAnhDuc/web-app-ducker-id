@@ -12,7 +12,7 @@
 | Tổng số feature               | 11       |
 | Đang làm                      | 4        |
 | Chưa bắt đầu                  | 7        |
-| Tổng task đã xong / tổng task | 71 / 228 |
+| Tổng task đã xong / tổng task | 72 / 228 |
 | Tiến độ toàn dự án            | ~30%     |
 
 ---
@@ -24,7 +24,7 @@
 | [Contact Admin](features/contact-admin/05-implement-plan.md)     |      25      |    33     |   76%   | TASK-029             | TASK-030       | 🔄 Đang làm     |
 | [Forgot Password](features/forgot-password/05-implement-plan.md) |      19      |    29     |   66%   | TASK-018             | TASK-019       | 🔄 Đang làm     |
 | [Login History](features/login-history/05-implement-plan.md)     |      12      |    19     |   63%   | TASK-014             | TASK-015       | 🔄 Đang làm     |
-| [User Profile](features/user/05-implement-plan.md)               |      15      |    24     |   62%   | TASK-017             | TASK-018       | 🔄 Đang làm     |
+| [User Profile](features/user/05-implement-plan.md)               |      16      |    24     |   66%   | TASK-018             | TASK-019       | 🔄 Đang làm     |
 | [Logout](features/logout/05-implement-plan.md)                   |      0       |     5     |   0%    | —                    | TASK-001       | ⬜ Chưa bắt đầu |
 | [Token Refresh](features/token/05-implement-plan.md)             |      0       |     4     |   0%    | —                    | TASK-001       | ⬜ Chưa bắt đầu |
 | [Signup](features/signup/05-implement-plan.md)                   |      0       |    13     |   0%    | —                    | TASK-001       | ⬜ Chưa bắt đầu |

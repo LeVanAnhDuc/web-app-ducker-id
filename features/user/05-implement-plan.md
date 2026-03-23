@@ -10,8 +10,8 @@
 | Mục          | Giá trị    |
 | ------------ | ---------- |
 | Tổng số task | 24         |
-| Hoàn thành   | 15/24      |
-| Tiến độ      | 62%        |
+| Hoàn thành   | 16/24      |
+| Tiến độ      | 66%        |
 | Ngày bắt đầu | 04/03/2026 |
 
 ---
@@ -327,15 +327,15 @@
 
 - **Tham chiếu:** TL1 - US-01, TL3 - Mục 3.6
 - **Ước lượng:** 2h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-015, TASK-017
 - **Checklist:**
-  - [ ] Tạo `app/[locale]/(dashboard)/profile/page.tsx` — server component, redirect nếu chưa login
-  - [ ] Tạo `views/UserProfile/index.tsx` — server component, gọi `getMyProfile()`, pass data xuống client
-  - [ ] Tạo `views/UserProfile/mains/ProfileCard/index.tsx` — hiển thị avatar, fullName, phone, address, dateOfBirth, gender, email, createdAt
-  - [ ] Avatar hiển thị với fallback (nếu null hiển thị placeholder)
+  - [x] Tạo `app/[locale]/(private)/(dashboard)/profile/page.tsx` — server component, auth qua (private)/layout.tsx
+  - [x] Tạo `views/UserProfile/index.tsx` — async server component, render ProfileCard
+  - [x] Tạo `views/UserProfile/mains/ProfileCard/index.tsx` — client component, useQuery fetch profile, hiển thị avatar + 6 fields
+  - [x] Avatar hiển thị với fallback (initials từ fullName nếu avatar null)
 - **Files sẽ tạo/sửa:**
-  - `client/src/app/[locale]/(dashboard)/profile/page.tsx` (tạo mới)
+  - `client/src/app/[locale]/(private)/(dashboard)/profile/page.tsx` (tạo mới)
   - `client/src/views/UserProfile/index.tsx` (tạo mới)
   - `client/src/views/UserProfile/mains/ProfileCard/index.tsx` (tạo mới)
 - **Test cần pass:** TC-01.1, TC-01.2
