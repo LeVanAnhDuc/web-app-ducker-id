@@ -248,7 +248,8 @@ BƯỚC 3: HOÀN TẤT ĐĂNG KÝ
 26. Server: Hash password (bcrypt, salt rounds 10)
 27. Server: Tạo auth record (MongoDB: auths) với verifiedEmail=true
 28. Server: Tạo user record (MongoDB: users) với authId reference
-29. Server: Generate JWT tokens (access 8h + refresh 7d)
+29. Server: generateAuthTokensResponse({ userId, authId, email, roles: 'user', fullName, avatar: null })
+    (fullName từ req.body, avatar: null vì user mới chưa có avatar)
 30. Server: Cleanup session data (Redis)
 31. Server: Trả về user info + tokens
 32. Client: Lưu tokens → redirect vào app

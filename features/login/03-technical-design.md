@@ -22,8 +22,9 @@ Client (Next.js)                          Server (Express)
 │ /login/otp          │                   │    ↓                            │
 │   OtpStepForm       │                   │  LoginService                   │
 │                     │                   │    ├── AuthRepository (MongoDB) │
-│ /login/magic-link   │                   │    ├── OtpLoginRepo (Redis)     │
-│   MagicLinkForm     │                   │    ├── MagicLinkRepo (Redis)    │
+│ /login/magic-link   │                   │    ├── UserRepository (MongoDB) │
+│   MagicLinkForm     │                   │    ├── OtpLoginRepo (Redis)     │
+│                     │                   │    ├── MagicLinkRepo (Redis)    │
 │                     │                   │    ├── FailedAttemptsRepo(Redis)│
 │ /login/alternative  │                   │    └── LoginHistoryService      │
 │   AlternativeMethods│                   │          ↓                      │
@@ -237,10 +238,12 @@ Response 429: Rate limit exceeded
 8. Server: Kiểm tra isActive, verifiedEmail
 9. Server: bcrypt.compare(password, hashedPassword)
 10. Nếu sai → tăng failed attempts, tính lockout duration nếu vượt ngưỡng
-11. Nếu đúng → reset failed attempts → generateAuthTokens(userId, authId, email, roles)
-12. Server: Ghi login history (async, non-blocking)
-13. Server: Trả về { accessToken, refreshToken, idToken, expiresIn }
-14. Client: Lưu tokens → redirect vào app
+11. Nếu đúng → reset failed attempts
+12. userRepo.findByAuthId(authId) → { fullName, avatar }
+13. generateAuthTokens(userId, authId, email, roles, fullName, avatar)
+14. Server: Ghi login history (async, non-blocking)
+15. Server: Trả về { accessToken, refreshToken, idToken, expiresIn }
+16. Client: Lưu tokens → redirect vào app
 ```
 
 ### OTP Login Flow
@@ -254,8 +257,10 @@ Response 429: Rate limit exceeded
 6. Client gửi POST /otp/verify { email, otp }
 7. Server: Lấy OTP hash từ Redis → compare
 8. Nếu sai → tăng failed attempts (max 5 → lockout 15 phút)
-9. Nếu đúng → xóa OTP khỏi Redis → generateAuthTokens
-10. Ghi login history → trả tokens
+9. Nếu đúng → xóa OTP khỏi Redis
+10. userRepo.findByAuthId(authId) → { fullName, avatar }
+11. generateAuthTokens(userId, authId, email, roles, fullName, avatar)
+12. Ghi login history → trả tokens
 ```
 
 ### Magic Link Login Flow
@@ -268,8 +273,10 @@ Response 429: Rate limit exceeded
 5. User click link trong email → Browser mở trang verify
 6. Client gửi POST /magic-link/verify { email, token }
 7. Server: Lấy token hash từ Redis → compare
-8. Nếu đúng → xóa token khỏi Redis (single-use) → generateAuthTokens
-9. Ghi login history → trả tokens
+8. Nếu đúng → xóa token khỏi Redis (single-use)
+9. userRepo.findByAuthId(authId) → { fullName, avatar }
+10. generateAuthTokens(userId, authId, email, roles, fullName, avatar)
+11. Ghi login history → trả tokens
 ```
 
 ---

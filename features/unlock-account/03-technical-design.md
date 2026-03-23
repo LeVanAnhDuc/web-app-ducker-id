@@ -26,6 +26,7 @@ Client                                 Server (Express)
 │            │  + cookie               │   ├── AuthRepository (MongoDB)         │
 │            │                         │   │     ├── storeTempPassword          │
 └────────────┘                         │   │     └── markTempPasswordUsed       │
+                                       │   ├── UserRepository (MongoDB)         │
                                        │   ├── FailedAttemptsRepo (Redis)       │
                                        │   │     └── resetAll                   │
                                        │   ├── LoginHistoryService              │
@@ -161,9 +162,10 @@ Response 429: Login rate limit (shared loginByIp)
 9. Server: failedAttemptsRepo.resetAll(email) — async với retry (non-blocking)
 10. Server: authRepo.markTempPasswordUsed(authId)
 11. Server: loginHistoryService.recordSuccessfulLogin({ userId, email, method: password })
-12. Server: generateAuthTokensResponse(payload) → { accessToken, refreshToken, idToken, expiresIn }
-13. Server: Set refreshToken cookie
-14. Server: Return { accessToken, idToken, expiresIn } (refreshToken trong cookie, không trong body)
+12. Server: userRepo.findByAuthId(authId) → { fullName, avatar }
+13. Server: generateAuthTokensResponse({ userId, authId, email, roles, fullName, avatar })
+14. Server: Set refreshToken cookie
+15. Server: Return { accessToken, idToken, expiresIn } (refreshToken trong cookie, không trong body)
 ```
 
 ---

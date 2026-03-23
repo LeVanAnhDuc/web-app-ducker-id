@@ -45,10 +45,12 @@ TOKEN_EXPIRY = {
 
 ```typescript
 {
-  userId: string,    // User's auth ID
-  authId: string,    // Auth record ID
-  email:  string,    // User's email
-  roles:  string     // User's role (user/admin)
+  userId:   string,          // User's auth ID
+  authId:   string,          // Auth record ID
+  email:    string,          // User's email
+  roles:    string,          // User's role (user/admin)
+  fullName: string,          // User's full name (from users collection)
+  avatar:   string | null    // User's avatar URL (null nếu chưa có)
 }
 ```
 
@@ -97,7 +99,7 @@ Response 403: Refresh token hết hạn hoặc không hợp lệ
       - jwt.verify(token, JWT_REFRESH_SECRET)
       - Nếu expired → throw ForbiddenError (403)
       - Nếu invalid → throw ForbiddenError (403)
-      - Return decoded payload { userId, authId, email, roles }
+      - Return decoded payload { userId, authId, email, roles, fullName, avatar }
    d. generateAuthTokensResponse(payload):
       - generateAccessToken(payload) → sign với JWT_ACCESS_SECRET, exp 8h
       - generateRefreshToken(payload) → sign với JWT_REFRESH_SECRET, exp 7d
