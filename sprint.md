@@ -1,6 +1,6 @@
 # Sprint Progress
 
-> Cập nhật lần cuối: 23/03/2026 (TASK-014 User Profile done)
+> Cập nhật lần cuối: 23/03/2026 (TASK-019 User Profile done)
 > Nguồn: các file `docs/features/*/05-implement-plan.md`
 
 ---
@@ -12,8 +12,8 @@
 | Tổng số feature               | 11       |
 | Đang làm                      | 4        |
 | Chưa bắt đầu                  | 7        |
-| Tổng task đã xong / tổng task | 74 / 228 |
-| Tiến độ toàn dự án            | ~32%     |
+| Tổng task đã xong / tổng task | 76 / 228 |
+| Tiến độ toàn dự án            | ~33%     |
 
 ---
 
@@ -24,7 +24,7 @@
 | [Contact Admin](features/contact-admin/05-implement-plan.md)     |      25      |    33     |   76%   | TASK-029             | TASK-030       | 🔄 Đang làm     |
 | [Forgot Password](features/forgot-password/05-implement-plan.md) |      19      |    29     |   66%   | TASK-018             | TASK-019       | 🔄 Đang làm     |
 | [Login History](features/login-history/05-implement-plan.md)     |      12      |    19     |   63%   | TASK-014             | TASK-015       | 🔄 Đang làm     |
-| [User Profile](features/user/05-implement-plan.md)               |      18      |    24     |   75%   | TASK-014             | TASK-019       | 🔄 Đang làm     |
+| [User Profile](features/user/05-implement-plan.md)               |      20      |    24     |   83%   | TASK-019             | TASK-021       | 🔄 Đang làm     |
 | [Logout](features/logout/05-implement-plan.md)                   |      0       |     5     |   0%    | —                    | TASK-001       | ⬜ Chưa bắt đầu |
 | [Token Refresh](features/token/05-implement-plan.md)             |      0       |     4     |   0%    | —                    | TASK-001       | ⬜ Chưa bắt đầu |
 | [Signup](features/signup/05-implement-plan.md)                   |      0       |    13     |   0%    | —                    | TASK-001       | ⬜ Chưa bắt đầu |

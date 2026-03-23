@@ -10,8 +10,8 @@
 | Mục          | Giá trị    |
 | ------------ | ---------- |
 | Tổng số task | 24         |
-| Hoàn thành   | 18/24      |
-| Tiến độ      | 75%        |
+| Hoàn thành   | 20/24      |
+| Tiến độ      | 83%        |
 | Ngày bắt đầu | 04/03/2026 |
 
 ---
@@ -346,14 +346,14 @@
 
 - **Tham chiếu:** TL1 - US-02, TL3 - Mục 3.6
 - **Ước lượng:** 2.5h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-016, TASK-018
 - **Checklist:**
-  - [ ] Thêm "Edit" toggle vào `ProfileCard` — switch giữa view mode và edit mode
-  - [ ] Edit mode: React Hook Form + Zod schema, pre-fill từ current profile data
-  - [ ] Submit: gọi `updateMyProfile()`, toast success hoặc error
-  - [ ] Optimistic update hoặc refetch sau khi PATCH thành công
-  - [ ] Disable submit khi form không dirty
+  - [x] Thêm "Edit" toggle vào `ProfileCard` — switch giữa view mode và edit mode
+  - [x] Edit mode: React Hook Form + Zod schema, pre-fill từ current profile data
+  - [x] Submit: gọi `updateMyProfile()`, toast success hoặc error
+  - [x] Optimistic update hoặc refetch sau khi PATCH thành công
+  - [x] Disable submit khi form không dirty
 - **Files sẽ tạo/sửa:**
   - `client/src/views/UserProfile/mains/ProfileCard/index.tsx` (sửa)
 - **Test cần pass:** TC-02.1, TC-02.2, TC-02.3, TC-02.4, TC-02.5, TC-02.8, TC-02.9, TC-02.10
@@ -364,15 +364,15 @@
 
 - **Tham chiếu:** TL1 - US-03, TL3 - Mục 3.6
 - **Ước lượng:** 2h
-- **Trạng thái:** ⬜ Todo
+- **Trạng thái:** ✅ Done
 - **Depends on:** TASK-015, TASK-018
 - **Checklist:**
-  - [ ] Tạo `views/UserProfile/mains/AvatarUpload/index.tsx`
-  - [ ] File input ẩn, trigger bằng click vào avatar/button
-  - [ ] Client-side validate: MIME type + size trước khi upload
-  - [ ] Preview ảnh mới trước khi submit (URL.createObjectURL)
-  - [ ] Gọi `uploadAvatar(file)`, toast success/error
-  - [ ] Cập nhật avatar hiển thị sau khi upload thành công
+  - [x] Tạo `views/UserProfile/mains/AvatarUpload/index.tsx`
+  - [x] File input ẩn, trigger bằng click vào avatar/button
+  - [x] Client-side validate: MIME type + size trước khi upload
+  - [x] Preview ảnh mới trước khi submit (URL.createObjectURL)
+  - [x] Gọi `uploadAvatar(file)`, toast success/error
+  - [x] Cập nhật avatar hiển thị sau khi upload thành công
 - **Files sẽ tạo/sửa:**
   - `client/src/views/UserProfile/mains/AvatarUpload/index.tsx` (tạo mới)
 - **Test cần pass:** TC-03.1, TC-03.2, TC-03.3, TC-03.5, TC-03.6, TC-03.7
