@@ -13,22 +13,30 @@ Feature Unlock Account cho phép user bị lock tài khoản (do nhập sai mậ
 ```
 Client                                 Server (Express)
 ┌────────────┐                         ┌────────────────────────────────────────┐
-│ POST       │                         │ Rate Limiter                           │
+│ POST       │                         │ Rate Limiter (loginByIp — chỉ /verify)│
 │ /request   │──{ email }───────────▶  │   ↓                                   │
-│            │                         │ Validation (Joi)                       │
+│            │                         │ Validation (bodyPipe + Joi)            │
 │            │◀──{ success: true }     │   ↓                                   │
 │            │                         │ UnlockAccountController                │
 │            │                         │   ↓                                   │
 │ POST       │                         │ UnlockAccountService                   │
-│ /verify    │──{ email, tempPwd }──▶  │   ├── UnlockAccountRepo (Redis)       │
-│            │                         │   │     ├── cooldown                   │
-│            │◀──{ tokens }            │   │     └── rate limit                 │
-│            │  + cookie               │   ├── AuthRepository (MongoDB)         │
-│            │                         │   │     ├── storeTempPassword          │
-└────────────┘                         │   │     └── markTempPasswordUsed       │
-                                       │   ├── UserRepository (MongoDB)         │
-                                       │   ├── FailedAttemptsRepo (Redis)       │
-                                       │   │     └── resetAll                   │
+│ /verify    │──{ email, tempPwd }──▶  │   ├── UnlockAccountHelper             │
+│            │                         │   │     ├── checkCooldown              │
+│            │◀──{ tokens }            │   │     ├── checkRateLimit             │
+│            │  + cookie               │   │     ├── ensureAuthExists           │
+│            │                         │   │     ├── ensureTempPasswordValid    │
+│            │                         │   │     └── generateTempPassword       │
+└────────────┘                         │   ├── RedisUnlockAccountRepo (Redis)   │
+                                       │   │     ├── cooldown                   │
+                                       │   │     └── rate limit                 │
+                                       │   ├── AuthenticationService (MongoDB)  │
+                                       │   │     ├── storeTempPassword          │
+                                       │   │     ├── markTempPasswordUsed       │
+                                       │   │     ├── findByEmail               │
+                                       │   │     └── findUserByAuthId          │
+                                       │   ├── LoginService                     │
+                                       │   │     ├── checkLockout              │
+                                       │   │     └── resetFailedAttempts       │
                                        │   ├── LoginHistoryService              │
                                        │   └── SendEmailService                 │
                                        └────────────────────────────────────────┘
@@ -52,9 +60,9 @@ Client                                 Server (Express)
 ### Redis Keys
 
 ```
-unlock-token:{email}      → (reserved for future use)
-unlock-cooldown:{email}   → cooldown flag (TTL: 60 giây)
-unlock-rate:{email}       → request count (TTL: 1 giờ)
+login-unlock-token:{email}   → (reserved for future use)
+unlock-cooldown:{email}      → cooldown flag (TTL: 60 giây)
+unlock-rate:{email}          → request count (TTL: 1 giờ)
 ```
 
 ---
@@ -73,7 +81,7 @@ Request Body:
 
 Response 200:
 {
-  "message": "If this email is registered, an unlock email has been sent",
+  "message": "unlockAccount:success.unlockEmailSent",
   "data": {
     "success": true
   }
@@ -96,11 +104,11 @@ Request Body:
 
 Response 200:
 {
-  "message": "Account unlocked successfully. You must change your password",
+  "message": "unlockAccount:success.accountUnlocked",
   "data": {
     "accessToken": "string — JWT",
     "idToken": "string — JWT",
-    "expiresIn": 28800
+    "expiresIn": number
   }
 }
 
@@ -118,54 +126,55 @@ Response 429: Login rate limit (shared loginByIp)
 
 ```
 1. Client gửi POST /unlock/request { email }
-2. Server: Joi validate email format
-3. Server: Kiểm tra cooldown (Redis: unlock-cooldown:{email})
-   → Nếu còn cooldown → throw 400 "Please wait X seconds"
-4. Server: Kiểm tra rate limit (Redis: unlock-rate:{email})
-   → Increment counter, nếu > 3 → throw 429
-5. Server: Tìm auth record theo email (MongoDB)
-   → Nếu không tồn tại → set cooldown, return { success: true } (không tiết lộ)
+2. Server: bodyPipe(unlockRequestSchema) — Joi validate email format
+3. Server: checkCooldown() — kiểm tra cooldown (Redis: unlock-cooldown:{email})
+   → Nếu còn cooldown → throw BadRequestError "unlockAccount:errors.unlockCooldown"
+4. Server: checkRateLimit() — kiểm tra rate limit (Redis: unlock-rate:{email})
+   → Increment counter, nếu > 3 → throw TooManyRequestsError
+5. Server: authenticationService.findByEmail(email)
+   → Nếu không tồn tại → setCooldown, return toUnlockRequestDto() (không tiết lộ)
 6. Server: Kiểm tra auth.isActive
-   → Nếu false → throw 400 "Account has been suspended"
-7. Server: Kiểm tra account có bị lock không (Redis: FailedAttemptsRepo.checkLockout)
-   → Nếu không bị lock → throw 400 "Account is not locked"
+   → Nếu false → throw BadRequestError "unlockAccount:errors.accountDisabled"
+7. Server: loginService.checkLockout(email)
+   → Nếu không bị lock → throw BadRequestError "unlockAccount:errors.accountNotLocked"
 8. Server: generateTempPassword():
    a. Lấy 1 ký tự random từ mỗi nhóm (uppercase, lowercase, number, special)
    b. Fill phần còn lại từ ALL_CHARS
    c. Shuffle toàn bộ string (Fisher-Yates)
    → Result: 16 ký tự, đảm bảo chứa đủ 4 loại
 9. Server: hashValue(tempPassword) → bcrypt hash
-10. Server: authRepo.storeTempPassword(authId, hash, expAt = now + 15 min)
-11. Server: sendEmailService.send(UNLOCK_TEMP_PASSWORD, {
+10. Server: authenticationService.storeTempPassword(authId, hash, expAt = now + 15 min)
+11. Server: emailService.send(EmailType.UNLOCK_TEMP_PASSWORD, {
       email, data: { tempPassword, loginUrl }, locale
-    }) — fire-and-forget
-12. Server: Set cooldown 60 giây
-13. Server: Return { success: true }
+    }) — fire-and-forget (không await)
+12. Server: unlockAccountRepo.setCooldown(email) — 60 giây
+13. Server: Return toUnlockRequestDto() → { success: true }
 ```
 
 ### Verify Unlock Flow
 
 ```
 1. Client gửi POST /unlock/verify { email, tempPassword }
-2. Server: Rate limiter loginByIp
-3. Server: Joi validate { email, tempPassword (min 12) }
-4. Server: Tìm auth record theo email
-   → Không tồn tại → throw 401
-5. Server: Kiểm tra tempPasswordHash có tồn tại
-   → Null → throw 401
-6. Server: Kiểm tra tempPasswordExpAt
-   → Hết hạn → throw 401 "Temporary password has expired"
-7. Server: Kiểm tra tempPasswordUsed
-   → True → throw 401
-8. Server: bcrypt.compare(tempPassword, tempPasswordHash)
-   → Không khớp → throw 401
-9. Server: failedAttemptsRepo.resetAll(email) — async với retry (non-blocking)
-10. Server: authRepo.markTempPasswordUsed(authId)
-11. Server: loginHistoryService.recordSuccessfulLogin({ userId, email, method: password })
-12. Server: userRepo.findByAuthId(authId) → { fullName, avatar }
-13. Server: generateAuthTokensResponse({ userId, authId, email, roles, fullName, avatar })
-14. Server: Set refreshToken cookie
-15. Server: Return { accessToken, idToken, expiresIn } (refreshToken trong cookie, không trong body)
+2. Server: Rate limiter loginByIp (middleware)
+3. Server: bodyPipe(unlockVerifySchema) — Joi validate { email, tempPassword (min 12) }
+4. Server: ensureAuthExists() — tìm auth record theo email
+   → Không tồn tại → throw UnauthorizedError
+5. Server: ensureTempPasswordValid() — kiểm tra tuần tự:
+   a. tempPasswordHash có tồn tại → null → throw UnauthorizedError
+   b. tempPasswordExpAt → hết hạn → throw UnauthorizedError "tempPasswordExpired"
+   c. tempPasswordUsed → true → throw UnauthorizedError
+   d. isValidHashedValue(tempPassword, hash) → không khớp → throw UnauthorizedError
+6. Server: withRetry(() => loginService.resetFailedAttempts(email)) — non-blocking
+7. Server: authenticationService.markTempPasswordUsed(authId)
+8. Server: loginHistoryService.recordSuccessfulLogin({
+     userId, usernameAttempted: email, loginMethod: LOGIN_METHODS.PASSWORD, req
+   }) — fire-and-forget (không await)
+9. Server: authenticationService.findUserByAuthId(authId) → user
+   → Nếu không tìm thấy → throw NotFoundError
+10. Server: generateAuthTokensResponse({ userId, authId, email, roles, fullName, avatar })
+11. Server: toUnlockVerifyDto(tokensResponse) → { accessToken, refreshToken, idToken, expiresIn }
+12. Controller: tách refreshToken ra khỏi responseData, set cookie
+13. Server: Return { accessToken, idToken, expiresIn } (refreshToken trong cookie, không trong body)
 ```
 
 ---
@@ -175,15 +184,33 @@ Response 429: Login rate limit (shared loginByIp)
 ```
 server/src/
 ├── modules/unlock-account/
-│   ├── unlock-account.module.ts         # DI setup, export router & service
-│   ├── unlock-account.controller.ts     # Route handlers: /request, /verify
-│   ├── unlock-account.service.ts        # Business logic (request, verify, generateTempPassword)
-│   └── repositories/
-│       └── unlock-account.repository.ts # Redis: cooldown + rate limit
+│   ├── unlock-account.module.ts         # DI setup (factory function), export router & service
+│   ├── unlock-account.controller.ts     # Route handlers: unlockRequest, unlockVerify
+│   ├── unlock-account.routes.ts         # Route wiring: createUnlockAccountRoutes(controller, rateLimiter)
+│   ├── unlock-account.service.ts        # Business logic (unlockRequest, unlockVerify)
+│   ├── unlock-account.helper.ts         # Pure functions: checkCooldown, checkRateLimit,
+│   │                                    #   ensureAuthExists, ensureTempPasswordValid,
+│   │                                    #   generateTempPassword
+│   ├── repositories/
+│   │   └── unlock-account.repository.ts # Redis: cooldown + rate limit
+│   │                                    #   type UnlockAccountRepository (contract)
+│   │                                    #   class RedisUnlockAccountRepository (implementation)
+│   └── dtos/
+│       ├── index.ts                     # Barrel export
+│       ├── unlock-request.dto.ts        # UnlockRequestDto + toUnlockRequestDto()
+│       └── unlock-verify.dto.ts         # UnlockVerifyDto + toUnlockVerifyDto()
 ├── validators/schemas/
 │   └── unlock-account.ts               # Joi schemas (unlockRequestSchema, unlockVerifySchema)
 ├── types/modules/
-│   └── unlock-account.ts               # TypeScript interfaces (UnlockRequestBody, UnlockVerifyBody)
+│   └── unlock-account.ts               # TypeScript interfaces (UnlockRequestBody, UnlockVerifyBody,
+│                                        #   UnlockRequest, UnlockVerifyRequest)
+├── constants/
+│   ├── modules/
+│   │   ├── login-history/index.ts       # LOGIN_METHODS (dùng bởi unlock verify)
+│   │   └── token/index.ts              # REFRESH_TOKEN (cookie name)
+│   └── redis/
+│       └── store/index.ts              # Redis key prefixes: LOGIN.UNLOCK_TOKEN,
+│                                        #   LOGIN.UNLOCK_COOLDOWN, LOGIN.UNLOCK_RATE
 └── i18n/locales/
     ├── en/unlockAccount.json            # English messages
     └── vi/unlockAccount.json            # Vietnamese messages
@@ -193,16 +220,20 @@ server/src/
 
 ## 3.7. Dependencies & Integrations
 
-| Dependency              | Loại     | Mô tả                                             | Ghi chú                          |
-| ----------------------- | -------- | -------------------------------------------------- | -------------------------------- |
-| MongoDB                 | Internal | Lưu temp password hash trong auth record           | authRepo.storeTempPassword       |
-| Redis                   | Internal | Cooldown + rate limit                              | UnlockAccountRepository          |
-| bcrypt                  | Library  | Hash + verify temp password                         | Salt rounds: 10                  |
-| crypto                  | Library  | Sinh temp password (randomBytes)                    | Node.js built-in                 |
-| FailedAttemptsRepo      | Internal | Kiểm tra lockout + reset failed attempts            | Từ login module                  |
-| LoginHistoryService     | Internal | Ghi login history sau unlock thành công             | method: password                 |
-| SendEmailService        | Internal | Gửi email chứa temp password                       | Type: UNLOCK_TEMP_PASSWORD       |
-| express-rate-limit      | Library  | Rate limit verify endpoint (shared loginByIp)       | Middleware                       |
+| Dependency                | Loại     | Mô tả                                                      | Ghi chú                                                        |
+| ------------------------- | -------- | ----------------------------------------------------------- | -------------------------------------------------------------- |
+| MongoDB                   | Internal | Lưu temp password hash trong auth record                    | Qua AuthenticationService                                      |
+| Redis                     | Internal | Cooldown + rate limit                                       | RedisUnlockAccountRepository                                   |
+| bcrypt                    | Library  | Hash + verify temp password                                 | hashValue(), isValidHashedValue() từ @/utils/crypto/bcrypt     |
+| crypto                    | Library  | Sinh temp password (randomBytes)                            | Node.js built-in                                               |
+| AuthenticationService     | Internal | findByEmail, storeTempPassword, markTempPasswordUsed, findUserByAuthId | Từ modules/authentication                               |
+| LoginService              | Internal | checkLockout + resetFailedAttempts                          | Từ modules/login                                               |
+| LoginHistoryService       | Internal | Ghi login history sau unlock thành công                     | loginMethod: LOGIN_METHODS.PASSWORD                            |
+| SendEmailService          | Internal | Gửi email chứa temp password                               | EmailType.UNLOCK_TEMP_PASSWORD — từ @/services/email           |
+| RateLimiterMiddleware     | Internal | Rate limit verify endpoint (loginByIp)                      | Từ @/middlewares, truyền vào routes factory                    |
+| bodyPipe                  | Internal | Joi validation middleware                                   | Từ @/middlewares (pipes/validation.pipe)                       |
+| withRetry                 | Utility  | Retry cho resetFailedAttempts (non-blocking)                | Từ @/utils/retry                                               |
+| generateAuthTokensResponse| Utility  | Sinh JWT tokens (accessToken, refreshToken, idToken)        | Từ @/utils/token                                               |
 
 ---
 

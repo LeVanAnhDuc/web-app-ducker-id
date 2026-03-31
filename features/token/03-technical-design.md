@@ -12,16 +12,20 @@ Feature Token Refresh cung cấp endpoint để làm mới access token và id t
 
 ```
 Client                              Server (Express)
-┌──────────┐                        ┌──────────────────────────────────┐
-│ Axios    │                        │ TokenController                  │
-│ intercep │──Cookie: refreshToken─▶│   ↓                              │
-│ tor      │                        │ TokenService.refreshAccessToken() │
-│ (on 401) │                        │   ├── verifyRefreshToken(cookie)  │
-│          │◀──{ accessToken,       │   └── generateAuthTokensResponse()│
-│          │    idToken,            │         ├── sign accessToken      │
-│          │    expiresIn }         │         ├── sign refreshToken     │
-└──────────┘                        │         └── sign idToken          │
-                                    └──────────────────────────────────┘
+┌──────────┐                        ┌───────────────────────────────────────┐
+│ Axios    │                        │ token.routes.ts                       │
+│ intercep │──Cookie: refreshToken─▶│   └── asyncHandler(controller.refresh)│
+│ tor      │                        │         ↓                             │
+│ (on 401) │                        │ TokenController                       │
+│          │                        │   └── service.refreshAccessToken(     │
+│          │                        │         req.cookies?.refreshToken,     │
+│          │                        │         req.t)                        │
+│          │                        │         ↓                             │
+│          │◀──{ accessToken,       │ TokenService                          │
+│          │    refreshToken,       │   ├── verifyRefreshToken(cookie)      │
+│          │    idToken,            │   ├── generateAuthTokensResponse()    │
+│          │    expiresIn }         │   └── toRefreshTokenDto(tokens)       │
+└──────────┘                        └───────────────────────────────────────┘
 ```
 
 ---
@@ -33,11 +37,19 @@ Không thay đổi. Feature này không tương tác với database hay Redis.
 ### JWT Token Configuration
 
 ```typescript
+REFRESH_TOKEN = "refreshToken";   // cookie key
+
 TOKEN_EXPIRY = {
-  ACCESS_TOKEN:  "8h",     // access token lifetime
-  REFRESH_TOKEN: "7d",     // refresh token lifetime
-  ID_TOKEN:      "8h",     // id token lifetime
-  NUMBER_ACCESS_TOKEN: 28800  // 8h in seconds (for expiresIn response)
+  ACCESS_TOKEN:  "8h",              // access token lifetime
+  REFRESH_TOKEN: "7day",            // refresh token lifetime
+  ID_TOKEN:      "8h",              // id token lifetime
+  NUMBER_ACCESS_TOKEN:  28_800_000, // 8h in milliseconds
+  NUMBER_REFRESH_TOKEN: 604_800_000 // 7d in milliseconds
+}
+
+TOKEN_ERRORS = {
+  TOKEN_EXPIRED_ERROR:   "TokenExpiredError",
+  JSON_WEB_TOKEN_ERROR:  "JsonWebTokenError"
 }
 ```
 
@@ -68,14 +80,14 @@ Headers:
 
 Request Body: Không có
 
-Response 200:
+Response 200 (OkSuccess):
 {
-  "message": "Token refreshed successfully",
+  "message": "login:success.tokenRefreshed",
   "data": {
     "accessToken": "string — JWT mới (8h)",
-    "refreshToken": "string — JWT mới (7d)",
+    "refreshToken": "string — JWT mới (7day)",
     "idToken": "string — JWT mới (8h)",
-    "expiresIn": 28800
+    "expiresIn": 28800000
   }
 }
 
@@ -91,21 +103,22 @@ Response 403: Refresh token hết hạn hoặc không hợp lệ
 1. Client nhận 401 từ API call (access token hết hạn)
 2. Axios interceptor tự động gọi POST /api/v1/auth/token/refresh
    (Browser tự gửi cookie refreshToken kèm request)
-3. TokenController nhận request → gọi service.refreshAccessToken(req)
+3. TokenController nhận request → gọi service.refreshAccessToken(req.cookies?.refreshToken, req.t)
 4. TokenService:
-   a. Đọc refreshToken từ req.cookies.refreshToken
-   b. Nếu không có → throw UnauthorizedError (401)
+   a. Kiểm tra refreshToken param
+   b. Nếu không có → Logger.warn + throw UnauthorizedError (401)
    c. verifyRefreshToken(refreshToken):
       - jwt.verify(token, JWT_REFRESH_SECRET)
-      - Nếu expired → throw ForbiddenError (403)
-      - Nếu invalid → throw ForbiddenError (403)
+      - Nếu lỗi (expired/invalid) → Logger.warn + throw ForbiddenError (403)
       - Return decoded payload { userId, authId, email, roles, fullName, avatar }
-   d. generateAuthTokensResponse(payload):
+   d. Logger.info("Token refresh successful")
+   e. generateAuthTokensResponse(payload):
       - generateAccessToken(payload) → sign với JWT_ACCESS_SECRET, exp 8h
-      - generateRefreshToken(payload) → sign với JWT_REFRESH_SECRET, exp 7d
+      - generateRefreshToken(payload) → sign với JWT_REFRESH_SECRET, exp 7day
       - generateIdToken(payload) → sign với JWT_ID_SECRET, exp 8h
-      - Return { accessToken, refreshToken, idToken, expiresIn: 28800 }
-5. Controller trả response 200 với tokens
+      - Return { accessToken, refreshToken, idToken, expiresIn }
+   f. toRefreshTokenDto(tokens) → map sang DTO response
+5. Controller trả response 200 với OkSuccess({ data, message })
 6. Client lưu access token mới → retry request gốc
 ```
 
@@ -116,33 +129,41 @@ Response 403: Refresh token hết hạn hoặc không hợp lệ
 ```
 server/src/
 ├── modules/token/
-│   ├── token.module.ts          # DI setup, export router & service
+│   ├── token.module.ts          # Factory: wire deps, export router & service
 │   ├── token.controller.ts      # Route handler: POST /refresh
+│   ├── token.routes.ts          # Route wiring: middleware + asyncHandler
 │   ├── token.service.ts         # Business logic (verify + generate tokens)
+│   ├── dtos/
+│   │   ├── index.ts             # Barrel export: RefreshTokenDto + toRefreshTokenDto
+│   │   └── refresh-token.dto.ts # Interface RefreshTokenDto + mapper function
 │   └── swagger/
 │       ├── index.ts             # Export paths + schemas
 │       ├── paths.ts             # OpenAPI path definition
 │       └── schemas.ts           # OpenAPI schema (RefreshTokenResponse)
 ├── utils/token/
+│   ├── index.ts                 # Barrel export
 │   ├── jwt.ts                   # JWT generate + verify functions
 │   └── auth-response.ts         # generateAuthTokensResponse helper
 ├── types/
-│   ├── modules/token.ts         # RefreshTokenResponse type
-│   ├── jwt.ts                   # TPayload, TExpiresIn, AuthTokens
-│   └── auth.ts                  # AuthTokensResponse
+│   └── modules/
+│       ├── token.ts             # RefreshTokenResponse type (re-export từ authentication)
+│       └── authentication.ts    # AuthTokensResponse interface
 └── constants/
-    └── infrastructure.ts        # TOKEN_EXPIRY config
+    └── modules/token/
+        └── index.ts             # REFRESH_TOKEN, TOKEN_EXPIRY, TOKEN_ERRORS
 ```
 
 ---
 
 ## 3.7. Dependencies & Integrations
 
-| Dependency   | Loại     | Mô tả                                   | Ghi chú                           |
-| ------------ | -------- | ---------------------------------------- | ---------------------------------- |
-| jsonwebtoken | Library  | Verify refresh token + sign new tokens   | 3 secrets riêng biệt              |
-| cookie-parser | Library | Parse cookies từ request                 | Express middleware                 |
-| Logger       | Internal | Ghi log success/failure                  | utils/logger                       |
+| Dependency    | Loại     | Mô tả                                   | Ghi chú                           |
+| ------------- | -------- | ---------------------------------------- | ---------------------------------- |
+| jsonwebtoken  | Library  | Verify refresh token + sign new tokens   | 3 secrets riêng biệt              |
+| cookie-parser | Library  | Parse cookies từ request                 | Express middleware                 |
+| Logger        | Internal | Ghi log success/failure                  | utils/logger                       |
+| asyncHandler  | Internal | Wrap route handler, forward errors       | utils/async-handler                |
+| OkSuccess     | Internal | Response wrapper (200)                   | config/responses/success           |
 
 ---
 

@@ -34,23 +34,27 @@ Client (Web)
     │
     ├── GET /api/v1/login-history?page=1&limit=20&status=failed
     │       │
-    │   AuthGuard.middleware (verify idToken → req.user)
+    │   authGuard (verify idToken → req.user)
+    │       │
+    │   queryPipe(loginHistoryQuerySchema) → Joi validation → 400 nếu invalid
     │       │
     │   LoginHistoryController.getMyHistory()
     │       │
     │   LoginHistoryService.getMyLoginHistory(userId, query)
     │       │
-    │   LoginHistoryRepository.findByUser(userId, filter, pagination)
+    │   LoginHistoryRepository.findByUser(filter, pagination)
     │       │
-    │   maskIp() → format response (IP masked)
+    │   toMyHistoryItemDto() → maskIp() → format response (IP masked)
     │       │
-    │   ResponsePattern<{ data, meta }>
+    │   OkSuccess<{ items, meta }>
     │
     └── GET /api/v1/admin/login-history?userId=xxx&page=1&limit=20
             │
-        AuthGuard.middleware (verify idToken → req.user)
+        authGuard (verify idToken → req.user)
             │
-        AdminGuard.middleware (check req.user.roles === 'admin')
+        adminGuard (check req.user.roles === 'admin' → 403 nếu không)
+            │
+        queryPipe(loginHistoryAdminQuerySchema) → Joi validation
             │
         LoginHistoryController.getAllHistory()
             │
@@ -58,9 +62,9 @@ Client (Web)
             │
         LoginHistoryRepository.findAll(filter, pagination)
             │
-        format response (IP full, không mask)
+        toAllHistoryItemDto() → format response (IP full, không mask)
             │
-        ResponsePattern<{ data, meta }>
+        OkSuccess<{ items, meta }>
 ```
 
 ---
@@ -214,37 +218,34 @@ Authorization: Bearer {idToken}   (phải có role = 'admin')
 ### Query Flow — User (v2.0)
 ```
 1. GET /api/v1/login-history + query params
-2. AuthGuard → verify idToken → set req.user { userId, roles, ... }
-3. validate(loginHistoryQuerySchema, 'query') → Joi validation → 400 nếu invalid
+2. authGuard → verify idToken → set req.user { userId, roles, ... }
+3. queryPipe(loginHistoryQuerySchema) → Joi validation → 400 nếu invalid
 4. LoginHistoryController.getMyHistory():
-   a. Lấy userId từ req.user.userId
-   b. Parse query params (page, limit, filters, sort)
-   c. Gọi loginHistoryService.getMyLoginHistory(userId, parsedQuery)
+   a. Gọi service.getMyLoginHistory(req.user.userId, req.query)
 5. LoginHistoryService.getMyLoginHistory():
-   a. Cap limit tại 100
-   b. Build filter object (chỉ field của user đó, plus các filters từ query)
-   c. Gọi loginHistoryRepo.findByUser(userId, filter, { skip, limit, sort })
-   d. Apply maskIp() cho từng record trong data
+   a. Cap limit tại MAX_LIMIT (100)
+   b. Gọi buildLoginHistoryFilter(query, userId) → tạo LoginHistoryFilter
+   c. Gọi loginHistoryRepo.findByUser(filter, { skip, limit, sort })
+   d. Map từng record qua toMyHistoryItemDto() (gọi maskIp() bên trong)
    e. Return { items, meta: { total, page, limit, totalPages } }
-6. Controller return HandlerResult → asyncHandler format response
+6. Controller gọi new OkSuccess({ data, message }).send(req, res)
 ```
 
 ### Query Flow — Admin (v2.0)
 ```
 1. GET /api/v1/admin/login-history + query params
-2. AuthGuard → verify idToken → set req.user
-3. AdminGuard → check req.user.roles === 'admin' → 403 nếu không phải
-4. validate(loginHistoryAdminQuerySchema, 'query') → Joi validation
+2. authGuard → verify idToken → set req.user
+3. adminGuard → check req.user.roles === 'admin' → 403 nếu không phải
+4. queryPipe(loginHistoryAdminQuerySchema) → Joi validation
 5. LoginHistoryController.getAllHistory():
-   a. Parse query params (page, limit, userId, filters, sort)
-   b. Gọi loginHistoryService.getAllLoginHistory(parsedQuery)
+   a. Gọi service.getAllLoginHistory(req.query)
 6. LoginHistoryService.getAllLoginHistory():
-   a. Cap limit tại 100
-   b. Build filter object (tất cả fields, có thể thêm userId filter)
+   a. Cap limit tại MAX_LIMIT (100)
+   b. Gọi buildLoginHistoryFilter(query) → tạo LoginHistoryFilter
    c. Gọi loginHistoryRepo.findAll(filter, { skip, limit, sort })
-   d. Không mask IP — trả về full data
+   d. Map từng record qua toAllHistoryItemDto() — không mask IP
    e. Return { items, meta }
-7. Controller return HandlerResult
+7. Controller gọi new OkSuccess({ data, message }).send(req, res)
 ```
 
 ---
@@ -252,20 +253,21 @@ Authorization: Bearer {idToken}   (phải có role = 'admin')
 ## 3.6. IP Masking Logic
 
 ```typescript
-// Áp dụng trong service TRƯỚC khi return, CHỈ cho User API
-function maskIp(ip: string): string {
+// Nằm trong login-history.helper.ts
+// Được gọi bởi toMyHistoryItemDto() trong dtos/my-history-item.dto.ts — CHỈ cho User API
+export const maskIp = (ip: string): string => {
   // IPv4: "192.168.1.100" → "192.168.*.*"
   const ipv4Parts = ip.split('.');
   if (ipv4Parts.length === 4) {
-    return `${ipv4Parts[0]}.${ipv4Parts[1]}.*.*`;
+    return `${ipv4Parts.slice(0, 2).join('.')}.*.*`;
   }
   // IPv6: mask 5 segment cuối, giữ 3 đầu
   const ipv6Parts = ip.split(':');
-  if (ipv6Parts.length > 3) {
+  if (ipv6Parts.length >= 4) {
     return `${ipv6Parts.slice(0, 3).join(':')}:*:*:*:*:*`;
   }
   return ip; // fallback: "UNKNOWN" hoặc dạng khác
-}
+};
 ```
 
 ---
@@ -275,39 +277,46 @@ function maskIp(ip: string): string {
 ```
 server/src/
 ├── modules/login-history/
-│   ├── login-history.module.ts        # Updated: nhận auth/adminGuard/rateLimiter, export userRouter + adminRouter
-│   ├── login-history.service.ts       # Updated: thêm getMyLoginHistory(), getAllLoginHistory()
-│   ├── login-history.controller.ts    # NEW: userRouter (GET /) + adminRouter (GET /)
-│   └── internals/
-│       ├── helpers.ts                 # Updated: thêm maskIp()
-│       └── query-builder.ts           # NEW: buildLoginHistoryFilter(query) → Mongoose FilterQuery
-├── repositories/
-│   └── login-history.repository.ts    # Updated: thêm findByUser(), findAll()
+│   ├── login-history.module.ts        # Factory: nhận authGuard + adminGuard, export loginHistoryService + userRouter + adminRouter
+│   ├── login-history.controller.ts    # Handler methods: getMyHistory(), getAllHistory()
+│   ├── login-history.routes.ts        # Route wiring: createLoginHistoryUserRoutes(), createLoginHistoryAdminRoutes()
+│   ├── login-history.service.ts       # Business logic: recordSuccessfulLogin(), recordFailedLogin(), getMyLoginHistory(), getAllLoginHistory()
+│   ├── login-history.helper.ts        # Pure functions: extractIp(), parseUserAgent(), geoipLookup(), maskIp(), determineClientType(), buildLoginHistoryFilter()
+│   ├── repositories/
+│   │   └── login-history.repository.ts  # DB queries: type LoginHistoryRepository + MongoLoginHistoryRepository (create, findByUser, findAll)
+│   └── dtos/
+│       ├── index.ts                   # Barrel export
+│       ├── my-history-item.dto.ts     # MyHistoryItemDto + toMyHistoryItemDto() (IP masked)
+│       └── all-history-item.dto.ts    # AllHistoryItemDto + toAllHistoryItemDto() (IP full)
 ├── types/modules/
-│   └── login-history.ts               # Updated: thêm LoginHistoryQuery, LoginHistoryAdminQuery, LoginHistoryItem, LoginHistoryAdminItem, PaginatedResult<T>
-├── middlewares/
-│   └── admin.guard.ts                 # NEW: check req.user.roles === 'admin', throw ForbiddenError
-└── validators/schemas/
-    └── login-history.ts               # NEW: loginHistoryQuerySchema, loginHistoryAdminQuerySchema (Joi)
+│   └── login-history.ts               # PaginationParams, LoginHistoryQuery, LoginHistoryAdminQuery, PaginatedResult<T>, MyHistoryRequest, AllHistoryRequest, LoginHistoryDocument, CreateLoginHistoryData, LoginEventPayload, type aliases
+├── middlewares/guards/
+│   └── admin.guard.ts                 # adminGuard: check req.user.roles === 'admin', throw ForbiddenError
+├── validators/schemas/
+│   └── login-history.ts               # loginHistoryQuerySchema, loginHistoryAdminQuerySchema (Joi)
+└── constants/modules/login-history/
+    └── index.ts                       # LOGIN_METHODS, LOGIN_STATUSES, LOGIN_FAIL_REASONS, DEVICE_TYPES, CLIENT_TYPES, GEO_DEFAULTS, USER_AGENT_DEFAULTS, HTTP_HEADERS, LOGIN_HISTORY_CONFIG, LOCALHOST_VALUES, PRIVATE_IP_PATTERNS
 ```
 
 **modules.loader.ts — thay đổi:**
 ```typescript
-// Thêm AdminGuard import và khởi tạo
-const adminGuard = new AdminGuard();
+// Import adminGuard từ @/middlewares
+import { authGuard, adminGuard } from "@/middlewares";
 
-// Thay createLoginHistoryModule() bằng version có args
+// createLoginHistoryModule nhận authGuard + adminGuard
 const { loginHistoryService, loginHistoryUserRouter, loginHistoryAdminRouter }
-  = createLoginHistoryModule(auth, adminGuard, rateLimiter);
+  = createLoginHistoryModule(authGuard, adminGuard);
 
-// Mount routes mới
+// Mount routes
 v1Router.use('/login-history', loginHistoryUserRouter);
 v1Router.use('/admin/login-history', loginHistoryAdminRouter);
 ```
 
 ---
 
-## 3.8. TypeScript Types (bổ sung)
+## 3.8. TypeScript Types & DTOs
+
+### Types — `src/types/modules/login-history.ts`
 
 ```typescript
 // Shared pagination params
@@ -339,33 +348,6 @@ export interface LoginHistoryAdminQuery extends LoginHistoryQuery {
   sortBy?: 'createdAt' | 'method' | 'status' | 'country' | 'ip' | 'usernameAttempted';
 }
 
-// Response item cho User API (IP masked, fields nhạy cảm bị ẩn)
-export interface LoginHistoryItem {
-  _id: string;
-  method: LoginMethod;
-  status: LoginStatus;
-  failReason: LoginFailReason | null;
-  ip: string;            // masked
-  country: string;
-  city: string;
-  deviceType: DeviceType;
-  os: string;
-  browser: string;
-  clientType: ClientType;
-  createdAt: string;
-}
-
-// Response item cho Admin API (full data)
-export interface LoginHistoryAdminItem extends LoginHistoryItem {
-  userId: string | null;
-  usernameAttempted: string;
-  userAgent: string;
-  timezoneOffset: string | null;
-  isAnomaly: boolean;
-  anomalyReasons: string[];
-  ip: string;            // NOT masked
-}
-
 // Paginated result wrapper
 export interface PaginatedResult<T> {
   items: T[];
@@ -376,21 +358,65 @@ export interface PaginatedResult<T> {
     totalPages: number;
   };
 }
+
+// Typed request cho controller
+export interface MyHistoryRequest extends Omit<Request, 'query' | 'user'> {
+  user: { userId: string; authId: string; email: string; roles: string };
+  query: LoginHistoryQuery;
+}
+
+export interface AllHistoryRequest extends Omit<Request, 'query'> {
+  query: LoginHistoryAdminQuery;
+}
+```
+
+### DTOs — `src/modules/login-history/dtos/`
+
+```typescript
+// my-history-item.dto.ts — User API response (IP masked, fields nhạy cảm bị ẩn)
+export interface MyHistoryItemDto {
+  _id: string;
+  method: LoginMethod;
+  status: LoginStatus;
+  failReason: LoginFailReason | null;
+  ip: string;            // masked qua maskIp()
+  country: string;
+  city: string;
+  deviceType: DeviceType;
+  os: string;
+  browser: string;
+  clientType: ClientType;
+  createdAt: string;
+}
+export const toMyHistoryItemDto = (doc: LoginHistoryDocument): MyHistoryItemDto => ({ ... });
+
+// all-history-item.dto.ts — Admin API response (full data, IP không mask)
+export interface AllHistoryItemDto extends MyHistoryItemDto {
+  userId: string | null;
+  usernameAttempted: string;
+  userAgent: string;
+  timezoneOffset: string | null;
+  isAnomaly: boolean;
+  anomalyReasons: string[];
+  ip: string;            // NOT masked
+}
+export const toAllHistoryItemDto = (doc: LoginHistoryDocument): AllHistoryItemDto => ({ ... });
 ```
 
 ---
 
 ## 3.9. Dependencies & Integrations
 
-| Dependency     | Loại     | Mô tả                                                      | Ghi chú                      |
-| -------------- | -------- | ---------------------------------------------------------- | ---------------------------- |
-| MongoDB        | Internal | Lưu & query login history records                          | Mongoose ODM                 |
-| ua-parser-js   | Library  | Parse User-Agent string (v1.0, không đổi)                  | NPM package                  |
-| geoip-lite     | Library  | IP → country, city lookup (v1.0, không đổi)               | Offline database             |
-| Logger         | Internal | Ghi log success/error                                      | Custom logger utility        |
-| AuthGuard      | Internal | Xác thực idToken, set req.user                             | Existing middleware           |
-| AdminGuard     | Internal | Kiểm tra req.user.roles === 'admin', throw 403 nếu không  | **NEW** middleware            |
-| Joi            | Library  | Validate query params (page, limit, filters, sort)         | Existing, pattern từ user.ts  |
+| Dependency     | Loại     | Mô tả                                                      | Ghi chú                                    |
+| -------------- | -------- | ---------------------------------------------------------- | ------------------------------------------ |
+| MongoDB        | Internal | Lưu & query login history records                          | Mongoose ODM                               |
+| ua-parser-js   | Library  | Parse User-Agent string (v1.0, không đổi)                  | NPM package                                |
+| geoip-lite     | Library  | IP → country, city lookup (v1.0, không đổi)               | Offline database                           |
+| Logger         | Internal | Ghi log success/error                                      | Custom logger utility                      |
+| authGuard      | Internal | Xác thực idToken, set req.user                             | `src/middlewares/guards/auth.guard.ts`     |
+| adminGuard     | Internal | Kiểm tra req.user.roles === 'admin', throw 403 nếu không  | `src/middlewares/guards/admin.guard.ts`    |
+| queryPipe      | Internal | Joi validation cho query params                            | `src/middlewares/pipes/validation.pipe.ts` |
+| Joi            | Library  | Validate query params (page, limit, filters, sort)         | NPM package                                |
 
 ---
 

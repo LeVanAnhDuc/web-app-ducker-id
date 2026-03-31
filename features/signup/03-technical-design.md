@@ -20,11 +20,11 @@ Client (Next.js)                          Server (Express)
 │   OtpStepForm        │──POST /verify-otp▶│    ↓                             │
 │                      │                   │  SignupController                │
 │ /signup/info         │                   │    ↓                             │
-│   InfoStepForm       │──POST /complete──▶│  SignupService                   │
+│   InfoStepForm       │──POST /complete──▶│  SignupService + SignupHelper    │
 │                      │                   │    ├── OtpSignupRepo (Redis)     │
 │                      │                   │    ├── SessionSignupRepo (Redis) │
-│                      │                   │    ├── AuthRepository (MongoDB)  │
-│                      │                   │    ├── UserRepository (MongoDB)  │
+│                      │                   │    ├── AuthenticationService     │
+│                      │                   │    ├── UserService               │
 │                      │                   │    └── SendEmailService          │
 └──────────────────────┘                   └──────────────────────────────────┘
 ```
@@ -64,11 +64,11 @@ Client (Next.js)                          Server (Express)
 ### Redis Keys
 
 ```
-signup-otp:{email}                  → OTP hash + metadata (TTL: 5 phút)
-signup-otp-cooldown:{email}         → cooldown flag (TTL: 60 giây)
-signup-otp-failed-attempts:{email}  → số lần nhập sai (TTL: 15 phút)
-signup-otp-resend-count:{email}     → số lần gửi lại (TTL: 1 giờ)
-signup-session:{email}              → session token hash (TTL: 30 phút)
+otp-signup:{email}                  → OTP hash (TTL: 5 phút)
+otp-signup-cooldown:{email}         → cooldown flag (TTL: 60 giây)
+otp-signup-failed-attempts:{email}  → số lần nhập sai (TTL: 15 phút)
+otp-signup-resend-count:{email}     → số lần gửi lại (TTL: 1 giờ)
+session-signup:{email}              → session token (TTL: 30 phút)
 ```
 
 ---
@@ -116,7 +116,7 @@ Response 200:
   "data": {
     "success": true,
     "sessionToken": "string — 64 hex chars",
-    "expiresIn": 300
+    "expiresIn": 1800
   }
 }
 
@@ -169,7 +169,7 @@ Request Body:
   "acceptTerms": true
 }
 
-Response 200:
+Response 201:
 {
   "message": "Account created successfully",
   "data": {
@@ -217,24 +217,24 @@ Response 429: Rate limit exceeded (10/IP/phút)
 BƯỚC 1: GỬI OTP
 1. User nhập email → Client validate format (Zod)
 2. Client gửi POST /send-otp { email }
-3. Server: Rate limiter check (5/IP/15min, 3/email/15min)
-4. Server: Joi validate email format
-5. Server: Kiểm tra email đã tồn tại chưa (MongoDB: auths.emailExists)
-6. Server: Kiểm tra cooldown (Redis: signup-otp-cooldown:{email})
-7. Server: Generate OTP 6 chữ số → hash → lưu Redis (TTL 5 phút)
+3. Server: Rate limiter check (signupOtpByIp + signupOtpByEmail)
+4. Server: Joi validate email format (bodyPipe)
+5. Server: Kiểm tra cooldown (Redis: otp-signup-cooldown:{email}) [helper: ensureCooldownExpired]
+6. Server: Kiểm tra email đã tồn tại chưa (AuthenticationService.emailExists) [helper: ensureEmailAvailable]
+7. Server: Generate OTP 6 chữ số → hash (bcrypt) → lưu Redis (TTL 5 phút) [helper: createAndStoreOtp]
 8. Server: Set cooldown (Redis TTL 60 giây)
-9. Server: Gửi email chứa OTP (React Email template)
+9. Server: Gửi email chứa OTP (SendEmailService, fire-and-forget)
 10. Client: Navigate đến /signup/otp?email={email}
 
 BƯỚC 2: VERIFY OTP
 11. User nhập 6 chữ số → Client auto-submit khi đủ
 12. Client gửi POST /verify-otp { email, otp }
-13. Server: Kiểm tra lockout (Redis: signup-otp-failed-attempts, max 5)
-14. Server: Lấy OTP hash từ Redis → compare
+13. Server: Kiểm tra lockout (Redis: otp-signup-failed-attempts, max 5)
+14. Server: Lấy OTP hash từ Redis → compare (bcrypt) [helper: verifyOtpOrFail]
 15. Nếu sai → tăng failed attempts → trả lỗi kèm remaining attempts
-16. Nếu đúng → sinh session token (crypto.randomBytes(32) → hex)
-17. Server: Lưu session token hash vào Redis (TTL 30 phút)
-18. Server: Cleanup OTP data (xóa OTP, cooldown, failed attempts, resend count)
+16. Nếu đúng → sinh session token (generateSecureToken(32) → hex)
+17. Server: Lưu session token vào Redis (TTL 30 phút) [helper: createAndStoreSession]
+18. Server: Cleanup OTP data (xóa OTP, cooldown, failed attempts)
 19. Client: Nhận sessionToken → navigate đến /signup/info?email={email}
 
 BƯỚC 3: HOÀN TẤT ĐĂNG KÝ
@@ -242,16 +242,16 @@ BƯỚC 3: HOÀN TẤT ĐĂNG KÝ
 21. User tick acceptTerms → submit
 22. Client gửi POST /complete { email, sessionToken, password, confirmPassword,
                                  fullName, gender, dateOfBirth, acceptTerms }
-23. Server: Joi validate toàn bộ input
-24. Server: Verify session token (Redis: signup-session:{email})
-25. Server: Kiểm tra email còn available (tránh race condition)
-26. Server: Hash password (bcrypt, salt rounds 10)
-27. Server: Tạo auth record (MongoDB: auths) với verifiedEmail=true
-28. Server: Tạo user record (MongoDB: users) với authId reference
+23. Server: Joi validate toàn bộ input (bodyPipe)
+24. Server: Verify session token (Redis: session-signup:{email})
+25. Server: Kiểm tra email còn available (tránh race condition) [helper: ensureEmailAvailable]
+26. Server: Hash password (bcrypt) → tạo auth + user record [helper: createUserAccount]
+27. Server: Tạo auth record (MongoDB: auths) qua AuthenticationService.create
+28. Server: Tạo user record (MongoDB: users) qua UserService.createProfile
 29. Server: generateAuthTokensResponse({ userId, authId, email, roles: 'user', fullName, avatar: null })
     (fullName từ req.body, avatar: null vì user mới chưa có avatar)
-30. Server: Cleanup session data (Redis)
-31. Server: Trả về user info + tokens
+30. Server: Cleanup OTP data + session data (Redis, song song)
+31. Server: Trả về user info + tokens (201 Created) [toCompleteSignupDto]
 32. Client: Lưu tokens → redirect vào app
 ```
 
@@ -265,8 +265,17 @@ BƯỚC 3: HOÀN TẤT ĐĂNG KÝ
 server/src/
 ├── modules/signup/
 │   ├── signup.module.ts                  # DI setup, export router & service
-│   ├── signup.controller.ts              # Route handlers + rate limiting
+│   ├── signup.controller.ts              # Route handlers (5 methods)
+│   ├── signup.routes.ts                  # Route wiring: middleware + asyncHandler
 │   ├── signup.service.ts                 # Business logic (5 methods)
+│   ├── signup.helper.ts                  # Pure functions: validators, OTP/session/account helpers
+│   ├── dtos/
+│   │   ├── index.ts                      # Barrel export tất cả DTOs
+│   │   ├── send-otp.dto.ts              # SendOtpDto + toSendOtpDto()
+│   │   ├── verify-otp.dto.ts            # VerifyOtpDto + toVerifyOtpDto()
+│   │   ├── resend-otp.dto.ts            # ResendOtpDto + toResendOtpDto()
+│   │   ├── complete-signup.dto.ts       # CompleteSignupDto + toCompleteSignupDto()
+│   │   └── check-email.dto.ts           # CheckEmailDto + toCheckEmailDto()
 │   ├── repositories/
 │   │   ├── otp-signup.repository.ts      # Redis: OTP CRUD + cooldown + lockout
 │   │   └── session-signup.repository.ts  # Redis: session token CRUD
@@ -277,20 +286,20 @@ server/src/
 ├── models/
 │   ├── authentication.ts                 # Mongoose schema: auths
 │   └── user.ts                           # Mongoose schema: users
-├── repositories/
-│   ├── authentication.repository.ts      # Auth CRUD
-│   └── user.repository.ts                # User CRUD
 ├── validators/schemas/
 │   └── signup.ts                         # Joi schemas (5 schemas)
 ├── types/modules/
 │   └── signup.ts                         # TypeScript interfaces
+├── constants/modules/
+│   └── signup/index.ts                   # OTP_CONFIG, SESSION_CONFIG
+├── constants/redis/store/
+│   └── index.ts                          # Redis key prefixes (SIGNUP object)
 ├── i18n/locales/
 │   ├── en/signup.json                    # English messages
 │   └── vi/signup.json                    # Vietnamese messages
-├── modules/send-email/
-│   └── templates/signup-otp.tsx          # React Email OTP template
-└── constants/
-    └── config.ts                         # OTP config, rate limit config
+└── services/email/
+    ├── email.service.ts                  # SendEmailService
+    └── templates/signup-otp.tsx          # React Email OTP template
 ```
 
 ### Client
@@ -341,18 +350,20 @@ client/src/
 
 ## 3.7. Dependencies & Integrations
 
-| Dependency         | Loại     | Mô tả                                       | Ghi chú                        |
-| ------------------ | -------- | -------------------------------------------- | ------------------------------ |
-| MongoDB            | Internal | Lưu auth + user records                      | Mongoose ODM                   |
-| Redis              | Internal | OTP, session, cooldown, lockout, resend count | ioredis client                 |
-| Email Service      | External | Gửi OTP qua email                            | React Email template           |
-| bcrypt             | Library  | Hash password                                | Salt rounds: 10                |
-| crypto             | Library  | Sinh session token (randomBytes)             | Node.js built-in               |
-| jsonwebtoken       | Library  | Generate JWT tokens sau signup               | 3 secrets (access, refresh, id)|
-| Joi                | Library  | Server-side validation (5 schemas)           | validators/schemas/signup.ts   |
-| Zod                | Library  | Client-side form validation                  | Tích hợp React Hook Form       |
-| next-intl          | Library  | Internationalization cho client              | Vi + En                        |
-| express-rate-limit | Library  | Rate limiting middleware                     | Per-IP và per-email             |
+| Dependency             | Loại     | Mô tả                                       | Ghi chú                           |
+| ---------------------- | -------- | -------------------------------------------- | ---------------------------------- |
+| MongoDB                | Internal | Lưu auth + user records                      | Mongoose ODM                       |
+| Redis                  | Internal | OTP, session, cooldown, lockout, resend count | redis client (RedisClientType)     |
+| SendEmailService       | Internal | Gửi OTP qua email (fire-and-forget)         | services/email/email.service.ts    |
+| AuthenticationService  | Internal | Kiểm tra email tồn tại, tạo auth record     | modules/authentication/            |
+| UserService            | Internal | Tạo user profile record                     | modules/user/                      |
+| bcrypt                 | Library  | Hash password + OTP                          | utils/crypto/bcrypt                |
+| crypto                 | Library  | Sinh session token (generateSecureToken)     | utils/crypto/otp                   |
+| jsonwebtoken           | Library  | Generate JWT tokens sau signup               | utils/token                        |
+| Joi                    | Library  | Server-side validation (5 schemas)           | validators/schemas/signup.ts       |
+| Zod                    | Library  | Client-side form validation                  | Tích hợp React Hook Form           |
+| next-intl              | Library  | Internationalization cho client              | Vi + En                            |
+| express-rate-limit     | Library  | Rate limiting middleware                     | Per-IP và per-email                |
 
 ---
 

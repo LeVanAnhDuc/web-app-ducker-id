@@ -4,7 +4,7 @@
 
 ## 3.1. Tổng quan kỹ thuật (Technical Overview)
 
-Feature User Profile bổ sung 4 API endpoints vào module `user` mới: xem full profile (authenticated), cập nhật profile (authenticated, partial update), upload avatar (authenticated, multipart/form-data), và xem public profile (public). Server dùng Express + Mongoose + Joi validation theo đúng kiến trúc Controller → Service → Repository hiện có. Avatar được lưu local disk với multer (tương tự pattern `uploadContactFiles`), MIME type được validate thực tế. Client có 2 trang Next.js: `/profile` (authenticated, xem + edit) và `/profile/:id` (public, read-only).
+Feature User Profile bổ sung 4 API endpoints vào module `user` mới: xem full profile (authenticated), cập nhật profile (authenticated, partial update), upload avatar (authenticated, multipart/form-data), và xem public profile (public). Server dùng Express + Mongoose + Joi validation theo kiến trúc Module Factory → Routes → Controller → Service → Repository. Module có đầy đủ DTOs (mapper pattern), helper (pure functions), swagger docs, và Postman collection. Avatar được lưu local disk với multer (`file-upload.interceptor.ts`), MIME type được validate thực tế. Client có 2 trang Next.js: `/profile` (authenticated, xem + edit) và `/profile/:id` (public, read-only).
 
 ---
 
@@ -24,13 +24,16 @@ Feature User Profile bổ sung 4 API endpoints vào module `user` mới: xem ful
   → GET /api/v1/users/:id  (get public profile)
 
 [Server]
-  UserController
+  user.routes.ts (createUserRoutes)
+    → RateLimiterMiddleware (update + avatar, trước authGuard)
     → AuthGuard (me endpoints)
-    → RateLimiterMiddleware (update + avatar)
-    → uploadAvatar (multer middleware)
-    → validate (Joi schema)
-    → UserService
-        → UserRepository (MongoDB)
+    → bodyPipe / paramsPipe (Joi validation)
+    → uploadAvatar (multer middleware, avatar endpoint)
+    → UserController
+        → UserService
+            → UserHelper (buildAvatarUrl)
+            → DTOs (toMyProfileDto, toPublicProfileDto, toUploadAvatarDto)
+            → MongoUserRepository (MongoDB)
 ```
 
 ---
@@ -192,55 +195,55 @@ Response 500: Internal Server Error
 
 ```
 1. AuthGuard verify idToken → set req.user = { userId, authId, email, roles }
-2. Controller gọi service.getMyProfile(userId)
+2. Controller gọi service.getMyProfile(userId, email)
 3. Service gọi userRepo.findById(userId)
-4. Repository query MongoDB: UserModel.findById(userId).lean()
-5. Service build response:
-   - Map avatar path → full URL (BASE_URL + "/" + avatar)
-   - Merge email từ req.user.email
-6. Trả 200 với full profile data
+4. Repository query MongoDB: UserModel.findById(userId).select("fullName phone avatar address dateOfBirth gender createdAt").lean()
+5. Nếu không tìm thấy → NotFoundError("user:errors.notFound")
+6. Service build response qua toMyProfileDto(user, email, buildAvatarUrl(user.avatar))
+7. Trả 200 với MyProfileDto
 ```
 
 ### Flow 2: PATCH /users/me
 
 ```
-1. AuthGuard verify idToken
-2. RateLimiterMiddleware.updateProfileByIp check rate limit (10 req/15min)
-3. Joi validate body (partial — chỉ validate field có trong body)
-4. Controller gọi service.updateMyProfile(userId, validatedBody)
+1. RateLimiterMiddleware.updateProfileByIp check rate limit (10 req/15min)
+2. AuthGuard verify idToken
+3. bodyPipe(updateProfileSchema) — Joi validate body (partial, stripUnknown: true)
+4. Controller gọi service.updateMyProfile(userId, email, validatedBody)
 5. Service gọi userRepo.updateById(userId, updateData)
 6. Repository: UserModel.findByIdAndUpdate(userId, { $set: data }, { new: true }).lean()
-7. Service build response với full profile (bao gồm email từ req.user)
-8. Trả 200 với updated profile
+7. Service build response qua toMyProfileDto() (bao gồm email từ req.user, avatar URL từ buildAvatarUrl())
+8. Trả 200 với MyProfileDto
 ```
 
 ### Flow 3: POST /users/me/avatar
 
 ```
-1. AuthGuard verify idToken
-2. RateLimiterMiddleware.uploadAvatarByIp check rate limit (5 req/15min)
+1. RateLimiterMiddleware.uploadAvatarByIp check rate limit (5 req/15min)
+2. AuthGuard verify idToken
 3. uploadAvatar middleware (multer):
    - Validate MIME type thực tế (image/jpeg|png|webp|gif|avif)
    - Validate extension (.jpg|.jpeg|.png|.webp|.gif|.avif)
    - Lưu file vào uploads/avatars/{uuid}{ext}
-4. Controller check req.file — nếu null → 400 No file uploaded
-5. Controller gọi service.updateAvatar(userId, req.file.path)
-6. Service gọi userRepo.updateAvatar(userId, relativePath)
-7. Repository: UserModel.findByIdAndUpdate(userId, { avatar: path }).lean()
-8. Service build full URL từ path
-9. Trả 200 với { avatarUrl: fullUrl }
+4. Controller gọi service.updateAvatar(userId, req.file?.path)
+5. Service check filePath — nếu falsy → 400 BadRequestError("user:errors.noFileUploaded")
+6. Service normalize path (relative, forward slashes)
+7. Service gọi userRepo.updateAvatar(userId, normalizedPath)
+8. Repository: UserModel.updateOne({ _id: userId }, { $set: { avatar: path } })
+9. Service build full URL từ path qua buildAvatarUrl()
+10. Trả 200 với UploadAvatarDto { avatarUrl: fullUrl }
 ```
 
 ### Flow 4: GET /users/:id
 
 ```
-1. Validate :id là ObjectId hợp lệ (Joi schema)
+1. paramsPipe(getPublicProfileSchema) — Validate :id là ObjectId hợp lệ (24 hex chars)
 2. Controller gọi service.getPublicProfile(id)
 3. Service gọi userRepo.findPublicById(id)
 4. Repository query: UserModel.findById(id).select("fullName avatar gender").lean()
-5. Nếu không tìm thấy → NotFoundError
-6. Service build response: map avatar → full URL
-7. Trả 200 với { _id, fullName, avatar, gender }
+5. Nếu không tìm thấy → NotFoundError("user:errors.notFound")
+6. Service build response qua toPublicProfileDto(user, buildAvatarUrl(user.avatar))
+7. Trả 200 với PublicProfileDto { _id, fullName, avatar, gender }
 ```
 
 ---
@@ -254,8 +257,22 @@ server/src/
 ├── modules/
 │   └── user/
 │       ├── user.module.ts          — factory function createUserModule()
-│       ├── user.controller.ts      — UserController class, initRoutes()
-│       └── user.service.ts         — UserService class
+│       ├── user.controller.ts      — UserController class, handler methods only
+│       ├── user.routes.ts          — createUserRoutes() factory, route wiring + middleware stack
+│       ├── user.service.ts         — UserService class, business logic
+│       ├── user.helper.ts          — pure functions (buildAvatarUrl)
+│       ├── repositories/
+│       │   └── user.repository.ts  — UserRepository type contract + MongoUserRepository class
+│       ├── dtos/
+│       │   ├── index.ts            — barrel export (types + mappers)
+│       │   ├── my-profile.dto.ts   — MyProfileDto interface + toMyProfileDto() mapper
+│       │   ├── public-profile.dto.ts — PublicProfileDto interface + toPublicProfileDto() mapper
+│       │   └── upload-avatar.dto.ts — UploadAvatarDto interface + toUploadAvatarDto() mapper
+│       └── swagger/
+│           ├── index.ts            — barrel export (userPaths, userSwaggerSchemas)
+│           ├── paths.ts            — OpenAPI paths cho 4 endpoints
+│           ├── schemas.ts          — OpenAPI schema definitions
+│           └── user.postman_collection.json — Postman collection
 │
 ├── validators/
 │   └── schemas/
@@ -272,20 +289,25 @@ server/src/
 
 ```
 server/src/
-├── repositories/
-│   └── user.repository.ts          — THÊM: findById(), updateById(), updateAvatar(), findPublicById()
-│
 ├── middlewares/
-│   ├── file-upload.ts              — THÊM: uploadAvatar export (multer for avatars)
-│   └── rate-limiter.ts             — THÊM: updateProfileByIp, uploadAvatarByIp properties
+│   ├── guards/
+│   │   └── auth.guard.ts           — AuthGuard verify idToken (đã có)
+│   ├── interceptors/
+│   │   └── file-upload.interceptor.ts — THÊM: uploadAvatar export (multer for avatars)
+│   └── common/
+│       └── rate-limiter.middleware.ts — THÊM: updateProfileByIp, uploadAvatarByIp properties
 │
 ├── constants/
-│   ├── config.ts                   — THÊM: USER_CONFIG (avatar max size), RATE_LIMIT_CONFIG.USER
-│   └── infrastructure.ts          — THÊM: REDIS_KEYS.RATE_LIMIT.USER
+│   ├── modules/
+│   │   └── user/
+│   │       └── index.ts            — GENDERS enum, USER_CONFIG (avatar max size, upload dir, base URL)
+│   └── redis/
+│       └── rate-limit/
+│           └── index.ts            — THÊM: RATE_LIMIT_CONFIG.USER (UPDATE_PROFILE, UPLOAD_AVATAR)
 │
 ├── types/
 │   └── modules/
-│       └── user.ts                 — THÊM: GetMyProfileRequest, UpdateProfileRequest, UploadAvatarRequest, GetPublicProfileRequest, type aliases cho response shapes
+│       └── user.ts                 — THÊM: GetMyProfileRequest, UpdateProfileRequest, UploadAvatarRequest, GetPublicProfileRequest, UpdateProfileData, PublicUserRecord
 │
 └── loaders/
     └── modules.loader.ts           — THÊM: import + mount createUserModule() tại /users
@@ -341,7 +363,7 @@ client/src/
 
 ### Avatar Upload Middleware
 
-Tạo `uploadAvatar` riêng trong `file-upload.ts`, tương tự `uploadContactFiles`:
+`uploadAvatar` được export từ `middlewares/interceptors/file-upload.interceptor.ts`, re-export qua `middlewares/index.ts`:
 
 ```typescript
 // MIME types được phép
@@ -360,61 +382,131 @@ const AVATAR_ALLOWED_EXTENSIONS = new Set([
 
 ### Rate Limiters mới
 
-Thêm vào `RateLimiterMiddleware` class:
+Thêm vào `RateLimiterMiddleware` class (`middlewares/common/rate-limiter.middleware.ts`):
 - `public readonly updateProfileByIp` — 10 req / IP / 15 phút
 - `public readonly uploadAvatarByIp` — 5 req / IP / 15 phút
 
-Redis keys:
-- `REDIS_KEYS.RATE_LIMIT.USER.UPDATE_IP` = `"rate-limit:user-update:ip:"`
-- `REDIS_KEYS.RATE_LIMIT.USER.AVATAR_IP` = `"rate-limit:user-avatar:ip:"`
-
-Config:
+Config trong `constants/redis/rate-limit/index.ts`:
 ```typescript
 RATE_LIMIT_CONFIG.USER = {
-  UPDATE_PROFILE: { PER_IP: { MAX_REQUESTS: 10, WINDOW_SECONDS: 900 } },
-  UPLOAD_AVATAR:  { PER_IP: { MAX_REQUESTS: 5,  WINDOW_SECONDS: 900 } }
+  UPDATE_PROFILE: {
+    PER_IP: { KEY: "rate-limit:user-update:ip:", MAX_REQUESTS: 10, WINDOW_SECONDS: 900 }
+  },
+  UPLOAD_AVATAR: {
+    PER_IP: { KEY: "rate-limit:user-avatar:ip:", MAX_REQUESTS: 5, WINDOW_SECONDS: 900 }
+  }
 }
 ```
 
 ### Avatar URL Construction
 
 ```typescript
-// server/src/constants/config.ts (thêm vào)
+// server/src/constants/modules/user/index.ts
 export const USER_CONFIG = {
   AVATAR_MAX_SIZE_BYTES: 10 * 1024 * 1024, // 10MB
   AVATAR_UPLOAD_DIR: "uploads/avatars",
-  BASE_URL: process.env.BASE_URL ?? "http://localhost:3000"
+  BASE_URL: ENV.BASE_URL
 } as const;
 ```
 
-Service sẽ build full URL:
-```
-avatarUrl = USER_CONFIG.BASE_URL + "/" + relativePath
-// VD: "http://localhost:3000/uploads/avatars/uuid.jpg"
+Helper function `buildAvatarUrl` trong `user.helper.ts` build full URL:
+```typescript
+// server/src/modules/user/user.helper.ts
+export function buildAvatarUrl(avatarPath: string | null): string | null {
+  if (!avatarPath) return null;
+  return `${USER_CONFIG.BASE_URL}/${avatarPath}`;
+}
 ```
 
 ### Joi Validation Schemas
 
+File: `validators/schemas/user.ts`
+
 **updateProfileSchema** (partial update, tất cả optional):
-- `fullName`: string, min 2, max 100, pattern SAFE_FULLNAME_PATTERN
-- `phone`: string, không được empty, regex format
-- `address`: string, max 500, pattern SAFE_ADDRESS_PATTERN
-- `dateOfBirth`: ISO date string, không tương lai, tuổi <= 100 năm
-- `gender`: enum `male | female | other | prefer_not_to_say`
+- `fullName`: string, min `FULLNAME_VALIDATION.MIN_LENGTH`, max `FULLNAME_VALIDATION.MAX_LENGTH`, pattern `SAFE_FULLNAME_PATTERN`
+- `phone`: string, min 1, max 20, pattern `/^[\d\s()+-]+$/`
+- `address`: string, max 500, pattern `SAFE_ADDRESS_PATTERN`
+- `dateOfBirth`: ISO date string (`.isoDate()`), custom validator: không tương lai, tuổi <= 100 năm
+- `gender`: enum `male | female | other | prefer_not_to_say` (lấy từ `GENDERS` constant)
 - Keys không thuộc danh sách trên: strip (Joi `stripUnknown: true`)
 
 **getPublicProfileSchema** (params):
-- `id`: string, MongoDB ObjectId (24 hex chars), regex `/^[a-fA-F0-9]{24}$/`
+- `id`: string, required, MongoDB ObjectId (24 hex chars), regex `/^[a-fA-F0-9]{24}$/`
 
-### UserRepository — Methods mới
+### UserRepository
+
+File: `modules/user/repositories/user.repository.ts`
+
+Khai báo `UserRepository` type contract + `MongoUserRepository` class implementing nó. Dùng `asyncDatabaseHandler` để wrap Mongoose queries.
 
 ```typescript
-// Thêm vào user.repository.ts
-findById(userId: string): Promise<UserDocument | null>
-updateById(userId: string, data: Partial<UpdateUserData>): Promise<UserDocument | null>
-updateAvatar(userId: string, avatarPath: string): Promise<void>
-findPublicById(userId: string): Promise<PublicUserRecord | null>
+type UserRepository = {
+  createProfile(data: CreateUserData): Promise<UserRecord>;
+  findById(userId: string): Promise<UserDocument | null>;
+  updateById(userId: string, data: Partial<UpdateProfileData>): Promise<UserDocument | null>;
+  updateAvatar(userId: string, avatarPath: string): Promise<void>;
+  findPublicById(userId: string): Promise<PublicUserRecord | null>;
+};
 ```
+
+- `findById()`: select `fullName phone avatar address dateOfBirth gender createdAt`, `.lean()`
+- `updateById()`: `findByIdAndUpdate` với `{ $set: data }`, `{ new: true }`, cùng select fields, `.lean()`
+- `updateAvatar()`: `updateOne` với `{ $set: { avatar: avatarPath } }`
+- `findPublicById()`: select `fullName avatar gender`, `.lean()`
+- `createProfile()`: tạo user mới, trả `{ _id, fullName }`
+
+### DTOs
+
+File: `modules/user/dtos/`
+
+Mỗi handler có 1 DTO file riêng với interface + mapper function:
+
+- **`my-profile.dto.ts`**: `MyProfileDto` — chứa `_id, fullName, phone, avatar, address, dateOfBirth, gender, email, createdAt`. Mapper `toMyProfileDto(user, email, avatarUrl)` convert `UserDocument` sang DTO.
+- **`public-profile.dto.ts`**: `PublicProfileDto` — chứa `_id, fullName, avatar, gender`. Mapper `toPublicProfileDto(user, avatarUrl)`.
+- **`upload-avatar.dto.ts`**: `UploadAvatarDto` — chứa `avatarUrl`. Mapper `toUploadAvatarDto(avatarUrl)`.
+- **`index.ts`**: barrel export tất cả types và mappers.
+
+### Module Factory
+
+File: `modules/user/user.module.ts`
+
+```typescript
+export const createUserModule = (authGuard: RequestHandler, rateLimiter: RateLimiterMiddleware) => {
+  const userRepo = new MongoUserRepository();
+  const userService = new UserService(userRepo);
+  const userController = new UserController(userService);
+
+  return {
+    userRouter: createUserRoutes(userController, authGuard, rateLimiter),
+    userService  // exported để signup module dùng createProfile()
+  };
+};
+```
+
+`userService` được export ra ngoài để module `signup` gọi `userService.createProfile()` khi tạo user mới.
+
+### Routes
+
+File: `modules/user/user.routes.ts`
+
+```typescript
+createUserRoutes(controller, authGuard, rl): Router
+```
+
+Thứ tự middleware trong từng route:
+- `GET /me`: `authGuard` → `asyncHandler(controller.getMyProfile)`
+- `PATCH /me`: `rl.updateProfileByIp` → `authGuard` → `bodyPipe(updateProfileSchema)` → `asyncHandler(controller.updateMyProfile)`
+- `POST /me/avatar`: `rl.uploadAvatarByIp` → `authGuard` → `uploadAvatar` → `asyncHandler(controller.uploadAvatarHandler)`
+- `GET /:id`: `paramsPipe(getPublicProfileSchema)` → `asyncHandler(controller.getPublicProfile)`
+
+### Swagger / OpenAPI
+
+File: `modules/user/swagger/`
+
+- `paths.ts`: export `userPaths` — OpenAPI paths cho 4 endpoints (`/users/me`, `/users/me/avatar`, `/users/{id}`)
+- `schemas.ts`: export `userSwaggerSchemas` — 5 schema definitions: `UserProfileResponse`, `PublicUserProfileResponse`, `UpdateProfileRequest`, `UploadAvatarRequest`, `UploadAvatarResponse`
+- `index.ts`: barrel export
+- `user.postman_collection.json`: Postman collection cho testing
 
 ### Static files
 

@@ -4,7 +4,7 @@
 
 ## 3.1. Tổng quan kỹ thuật (Technical Overview)
 
-Feature Login cung cấp 3 phương thức đăng nhập: password, OTP, và magic link. Server sử dụng Express + MongoDB (Mongoose) + Redis. Client sử dụng Next.js App Router với multi-step form (email → chọn phương thức → xác thực). JWT được dùng để quản lý phiên đăng nhập với 3 loại token (access, refresh, id). Redis quản lý OTP, magic link token, rate limiting, failed attempts, và lockout state.
+Feature Login cung cấp 3 phương thức đăng nhập: password, OTP, và magic link. Server sử dụng Express + MongoDB (Mongoose) + Redis. Client sử dụng Next.js App Router với multi-step form (email → chọn phương thức → xác thực). JWT được dùng để quản lý phiên đăng nhập với 3 loại token (access, refresh, id). Refresh token được set vào HTTP-only cookie. Redis quản lý OTP, magic link token, rate limiting, failed attempts, và lockout state.
 
 ---
 
@@ -16,19 +16,19 @@ Client (Next.js)                          Server (Express)
 │ /login              │                   │                                 │
 │   EmailStepForm     │──POST /login───▶  │  Rate Limiter                   │
 │                     │                   │    ↓                            │
-│ /login/password     │                   │  Validation (Joi)               │
+│ /login/password     │                   │  Validation (Joi + bodyPipe)    │
 │   PasswordStepForm  │                   │    ↓                            │
 │                     │                   │  LoginController                │
 │ /login/otp          │                   │    ↓                            │
 │   OtpStepForm       │                   │  LoginService                   │
-│                     │                   │    ├── AuthRepository (MongoDB) │
-│ /login/magic-link   │                   │    ├── UserRepository (MongoDB) │
+│                     │                   │    ├── AuthenticationService     │
+│ /login/magic-link   │                   │    ├── LoginHistoryService      │
 │   MagicLinkForm     │                   │    ├── OtpLoginRepo (Redis)     │
-│                     │                   │    ├── MagicLinkRepo (Redis)    │
-│                     │                   │    ├── FailedAttemptsRepo(Redis)│
-│ /login/alternative  │                   │    └── LoginHistoryService      │
-│   AlternativeMethods│                   │          ↓                      │
-└─────────────────────┘                   │    LoginHistory (MongoDB)       │
+│                     │                   │    ├── MagicLinkLoginRepo(Redis)│
+│ /login/alternative  │                   │    ├── FailedAttemptsRepo(Redis)│
+│   AlternativeMethods│                   │    └── SendEmailService         │
+└─────────────────────┘                   │          ↓                      │
+                                          │    LoginHistory (MongoDB)       │
                                           └─────────────────────────────────┘
 ```
 
@@ -40,15 +40,16 @@ Client (Next.js)                          Server (Express)
 
 ```typescript
 {
-  email:              String,    // unique, required, regex validated
+  email:              String,    // unique, required, regex validated (EMAIL_FORMAT_PATTERN + SAFE_EMAIL_PATTERN)
   password:           String,    // bcrypt hashed
   verifiedEmail:      Boolean,   // must be true to login
-  roles:              String,    // enum: 'user' | 'admin'
+  roles:              String,    // enum: AUTHENTICATION_ROLES ('user' | 'admin')
   isActive:           Boolean,   // account status
   tempPasswordHash:   String,    // temporary password for reset
   tempPasswordExpAt:  Date,      // temp password expiry
   tempPasswordUsed:   Boolean,   // temp password used flag
   mustChangePassword: Boolean,   // force password change
+  passwordChangedAt:  Date,      // last password change timestamp
   createdAt:          Date,
   updatedAt:          Date
 }
@@ -58,45 +59,50 @@ Client (Next.js)                          Server (Express)
 
 ```typescript
 {
-  userId:          ObjectId,     // ref: auths
-  emailAttempted:  String,
-  loginMethod:     String,       // 'password' | 'otp' | 'magic-link'
-  status:          String,       // 'success' | 'failed'
-  failureReason:   String,       // nullable
-  ipAddress:       String,
-  geo: {
-    country:       String,
-    city:          String
-  },
-  deviceType:      String,       // 'desktop' | 'mobile' | 'tablet'
-  os:              String,
-  browser:         String,
-  userAgent:       String,
-  clientType:      String,       // 'web' | 'ios' | 'android'
-  timezoneOffset:  Number,
-  anomaly: {
-    isNewDevice:   Boolean,
-    isNewLocation: Boolean,
-    isNewIp:       Boolean
-  },
-  createdAt:       Date          // TTL index: 90 ngày
+  userId:             ObjectId,     // ref: Authentication, default: null, indexed
+  usernameAttempted:  String,       // required, trim, lowercase
+  method:             String,       // enum: LOGIN_METHODS ('password' | 'otp' | 'magic-link' | 'forgot-password')
+  status:             String,       // enum: LOGIN_STATUSES ('success' | 'failed'), indexed
+  failReason:         String,       // enum: LOGIN_FAIL_REASONS, default: null
+  ip:                 String,       // required, trim, maxlength: 45, indexed
+  country:            String,       // default: GEO_DEFAULTS.UNKNOWN_COUNTRY
+  city:               String,       // default: GEO_DEFAULTS.UNKNOWN_CITY
+  deviceType:         String,       // enum: DEVICE_TYPES ('DESKTOP' | 'MOBILE' | 'TABLET' | 'UNKNOWN')
+  os:                 String,       // default: GEO_DEFAULTS.UNKNOWN_COUNTRY
+  browser:            String,       // default: GEO_DEFAULTS.UNKNOWN_COUNTRY
+  userAgent:          String,       // default: ""
+  clientType:         String,       // enum: CLIENT_TYPES ('WEB' | 'MOBILE_IOS' | 'MOBILE_ANDROID')
+  timezoneOffset:     String,       // default: null
+  isAnomaly:          Boolean,      // default: false
+  anomalyReasons:     [String],     // default: []
+  createdAt:          Date          // TTL index: 90 ngày (LOGIN_HISTORY_CONFIG.TTL_SECONDS)
 }
 ```
+
+**Indexes:**
+- `{ userId: 1, createdAt: -1 }`
+- `{ userId: 1, status: 1, createdAt: -1 }`
+- `{ ip: 1, createdAt: -1 }`
+- `{ usernameAttempted: 1, createdAt: -1 }`
+- `{ createdAt: -1 }`
+- `{ createdAt: 1 }` (TTL index, `expireAfterSeconds`)
 
 ### Redis Keys
 
 ```
-otp-login:{email}                → OTP hash + metadata (TTL: 5 phút)
-otp-login-cooldown:{email}       → cooldown flag (TTL: 60 giây)
-otp-login-failed-attempts:{email}→ số lần nhập sai (TTL: 15 phút)
-otp-login-resend-count:{email}   → số lần gửi lại (TTL: 5 phút)
+otp-login:{email}                     → OTP hash (TTL: 5 phút)
+otp-login-cooldown:{email}            → cooldown flag (TTL: 60 giây)
+otp-login-failed-attempts:{email}     → số lần nhập sai OTP (TTL: 15 phút)
+otp-login-resend-count:{email}        → số lần gửi lại OTP (TTL: 5 phút)
 
-magic-link-login:{email}         → token hash + metadata (TTL: 15 phút)
-magic-link-login-cooldown:{email}→ cooldown flag (TTL: 60 giây)
+magic-link-login:{email}              → token hash (TTL: 15 phút)
+magic-link-login-cooldown:{email}     → cooldown flag (TTL: 60 giây)
 
-login-failed-attempts:{email}    → số lần nhập sai mật khẩu (TTL: 30 phút)
-login-lockout:{email}            → lockout flag (TTL: dynamic)
+login-failed-attempts:{email}         → số lần nhập sai mật khẩu (TTL: 30 phút)
+login-lockout:{email}                 → lockout flag + attempt count (TTL: dynamic, progressive)
 ```
+
+**Key prefixes** được quản lý tại `constants/redis/store/index.ts` (object `LOGIN`).
 
 ---
 
@@ -113,20 +119,20 @@ Headers:
 Request Body:
 {
   "email": "string — email đã đăng ký",
-  "password": "string — mật khẩu (8-100 ký tự)"
+  "password": "string — mật khẩu"
 }
 
 Response 200:
 {
-  "accessToken": "string — JWT access token (8h)",
-  "refreshToken": "string — JWT refresh token (7d)",
-  "idToken": "string — JWT id token (8h)",
+  "accessToken": "string — JWT access token (15 min)",
+  "idToken": "string — JWT id token",
   "expiresIn": "number — thời gian hết hạn (seconds)"
 }
++ Set-Cookie: refreshToken (HTTP-only cookie, 7 days)
 
-Response 400: Validation error (email/password format)
-Response 401: Email hoặc mật khẩu không đúng
-Response 403: Tài khoản bị khóa / chưa verify email / bị deactivate
+Response 400: Account bị lockout do nhập sai quá nhiều
+Response 401: Email hoặc mật khẩu không đúng / tài khoản inactive / email chưa verified
+Response 422: Validation error (email/password format)
 Response 429: Rate limit exceeded
 ```
 
@@ -142,12 +148,14 @@ Request Body:
 
 Response 200:
 {
-  "message": "OTP đã được gửi",
-  "expiresIn": 300
+  "success": true,
+  "expiresIn": 300,
+  "cooldown": 60
 }
 
-Response 400: Email format không hợp lệ
-Response 403: Tài khoản không active / cooldown chưa hết
+Response 400: Cooldown chưa hết / resend limit exceeded / email format không hợp lệ
+Response 401: Tài khoản không tồn tại / inactive / email chưa verified
+Response 422: Validation error
 Response 429: Rate limit exceeded
 ```
 
@@ -165,14 +173,14 @@ Request Body:
 Response 200:
 {
   "accessToken": "string",
-  "refreshToken": "string",
   "idToken": "string",
   "expiresIn": "number"
 }
++ Set-Cookie: refreshToken (HTTP-only cookie)
 
-Response 400: OTP format không hợp lệ
+Response 400: OTP verification bị lockout (5 lần sai → lock 15 phút)
 Response 401: OTP sai hoặc hết hạn
-Response 403: Bị lockout do nhập sai quá nhiều
+Response 422: Validation error
 Response 429: Rate limit exceeded
 ```
 
@@ -188,12 +196,14 @@ Request Body:
 
 Response 200:
 {
-  "message": "Magic link đã được gửi",
-  "expiresIn": 900
+  "success": true,
+  "expiresIn": 900,
+  "cooldown": 60
 }
 
-Response 400: Email format không hợp lệ
-Response 403: Cooldown chưa hết / đạt max resend
+Response 400: Cooldown chưa hết
+Response 401: Tài khoản không tồn tại / inactive / email chưa verified
+Response 422: Validation error
 Response 429: Rate limit exceeded
 ```
 
@@ -205,19 +215,19 @@ POST /api/v1/auth/login/magic-link/verify
 Request Body:
 {
   "email": "string",
-  "token": "string — hex 128 ký tự"
+  "token": "string — hex 128 ký tự (64 bytes)"
 }
 
 Response 200:
 {
   "accessToken": "string",
-  "refreshToken": "string",
   "idToken": "string",
   "expiresIn": "number"
 }
++ Set-Cookie: refreshToken (HTTP-only cookie)
 
-Response 400: Token format không hợp lệ
 Response 401: Token sai, hết hạn, hoặc đã sử dụng
+Response 422: Validation error
 Response 429: Rate limit exceeded
 ```
 
@@ -229,20 +239,25 @@ Response 429: Rate limit exceeded
 
 ```
 1. User nhập email → Client validate format → navigate đến /login/password
-2. User nhập password → Client validate (8-100 ký tự)
+2. User nhập password → Client validate
 3. Client gửi POST /api/v1/auth/login { email, password }
-4. Server: Rate limiter kiểm tra IP limit (30 req/15min)
-5. Server: Joi validate input
-6. Server: Kiểm tra account bị lockout không (Redis: login-lockout:{email})
-7. Server: Tìm user theo email (MongoDB: auths collection)
-8. Server: Kiểm tra isActive, verifiedEmail
-9. Server: bcrypt.compare(password, hashedPassword)
-10. Nếu sai → tăng failed attempts, tính lockout duration nếu vượt ngưỡng
-11. Nếu đúng → reset failed attempts
-12. userRepo.findByAuthId(authId) → { fullName, avatar }
-13. generateAuthTokens(userId, authId, email, roles, fullName, avatar)
-14. Server: Ghi login history (async, non-blocking)
-15. Server: Trả về { accessToken, refreshToken, idToken, expiresIn }
+4. Server: Rate limiter kiểm tra IP limit (rl.loginByIp)
+5. Server: bodyPipe(loginSchema) — Joi validate input
+6. Server: ensureLoginNotLocked() — kiểm tra lockout (Redis: login-lockout:{email})
+7. Server: authService.findByEmail(email) — tìm user (MongoDB: auths collection)
+8. Server: ensureAccountExists() — kiểm tra tồn tại, ghi login history nếu không tìm thấy
+9. Server: ensureAccountActiveWithLogging() — kiểm tra isActive
+10. Server: ensureEmailVerifiedWithLogging() — kiểm tra verifiedEmail
+11. Server: verifyPasswordOrFail() — bcrypt compare, nếu sai → trackFailedPasswordAttempt()
+    - Tăng failed attempts, tính lockout duration theo progressive lockout
+    - Ghi login history (failed)
+12. Nếu đúng → failedAttemptsRepo.resetAll(email) (fire-and-forget với withRetry)
+13. completeSuccessfulLogin():
+    - loginHistoryService.recordSuccessfulLogin() (fire-and-forget)
+    - authService.findUserByAuthId() → { fullName, avatar }
+    - generateAuthTokensResponse() → toLoginResponseDto()
+14. Controller: set refreshToken vào HTTP-only cookie
+15. Server: Trả về { accessToken, idToken, expiresIn }
 16. Client: Lưu tokens → redirect vào app
 ```
 
@@ -250,33 +265,50 @@ Response 429: Rate limit exceeded
 
 ```
 1. User chọn phương thức OTP → Client gửi POST /otp/send { email }
-2. Server: Kiểm tra cooldown (60s) và resend count (max 3)
-3. Server: Generate 6 chữ số ngẫu nhiên → hash → lưu Redis (TTL 5 phút)
-4. Server: Gửi email chứa OTP
-5. User nhập 6 chữ số → Client auto-submit khi đủ 6 số
-6. Client gửi POST /otp/verify { email, otp }
-7. Server: Lấy OTP hash từ Redis → compare
-8. Nếu sai → tăng failed attempts (max 5 → lockout 15 phút)
-9. Nếu đúng → xóa OTP khỏi Redis
-10. userRepo.findByAuthId(authId) → { fullName, avatar }
-11. generateAuthTokens(userId, authId, email, roles, fullName, avatar)
-12. Ghi login history → trả tokens
+2. Server: Rate limiter (rl.loginOtpByIp + rl.loginOtpByEmail)
+3. Server: bodyPipe(otpSendSchema) — Joi validate
+4. Server: ensureCooldownExpired() — kiểm tra cooldown (60s)
+5. Server: validateAuthenticationForLogin() — kiểm tra account tồn tại, active, email verified
+6. Server: otpLoginRepo.hasExceededResendLimit() — kiểm tra resend count (max 3)
+7. Server: otpLoginRepo.createAndStoreOtp() — generate 6 chữ số → hash → lưu Redis (TTL 5 phút)
+8. Server: otpLoginRepo.setRateLimits() — set cooldown + tăng resend count (fire-and-forget)
+9. Server: emailService.send(EmailType.LOGIN_OTP) — gửi email chứa OTP (fire-and-forget)
+10. Server: Trả về toOtpSendDto() { success, expiresIn, cooldown }
+
+11. User nhập 6 chữ số → Client gửi POST /otp/verify { email, otp }
+12. Server: Rate limiter (rl.loginByIp)
+13. Server: ensureOtpNotLocked() — kiểm tra failed attempts (max 5 → lock 15 phút)
+14. Server: ensureAuthenticationExists() — tìm auth record
+15. Server: otpLoginRepo.verify() — lấy OTP hash từ Redis → bcrypt compare
+16. Nếu sai → handleInvalidOtp() → trackFailedOtpAttempt() + ghi login history (failed)
+17. Nếu đúng → otpLoginRepo.cleanupAll() — xóa OTP, cooldown, failed attempts, resend count
+18. completeSuccessfulLogin() → ghi login history + generate tokens
+19. Controller: set refreshToken vào HTTP-only cookie → trả response
 ```
 
 ### Magic Link Login Flow
 
 ```
 1. User chọn phương thức magic link → Client gửi POST /magic-link/send { email }
-2. Server: Kiểm tra cooldown (60s) và resend count (max 3)
-3. Server: Generate 64 bytes random → hex encode → hash → lưu Redis (TTL 15 phút)
-4. Server: Gửi email chứa link: {CLIENT_URL}/login/verify-magic-link?token={hex}&email={email}
-5. User click link trong email → Browser mở trang verify
-6. Client gửi POST /magic-link/verify { email, token }
-7. Server: Lấy token hash từ Redis → compare
-8. Nếu đúng → xóa token khỏi Redis (single-use)
-9. userRepo.findByAuthId(authId) → { fullName, avatar }
-10. generateAuthTokens(userId, authId, email, roles, fullName, avatar)
-11. Ghi login history → trả tokens
+2. Server: Rate limiter (rl.magicLinkByIp + rl.magicLinkByEmail)
+3. Server: bodyPipe(magicLinkSendSchema) — Joi validate
+4. Server: ensureCooldownExpired() — kiểm tra cooldown (60s)
+5. Server: validateAuthenticationForLogin() — kiểm tra account tồn tại, active, email verified
+6. Server: magicLinkLoginRepo.createAndStoreToken() — generate 64 bytes → hex → hash → lưu Redis (TTL 15 phút)
+7. Server: magicLinkLoginRepo.setCooldownAfterSend() (fire-and-forget)
+8. Server: emailService.send(EmailType.MAGIC_LINK) — gửi email chứa link (fire-and-forget)
+   URL: {CLIENT_URL}/login/verify-magic-link?token={hex}&email={email}
+9. Server: Trả về toMagicLinkSendDto() { success, expiresIn, cooldown }
+
+10. User click link trong email → Browser mở trang verify
+11. Client gửi POST /magic-link/verify { email, token }
+12. Server: Rate limiter (rl.loginByIp)
+13. Server: ensureAuthenticationExists() — tìm auth record
+14. Server: magicLinkLoginRepo.verifyToken() — lấy token hash từ Redis → bcrypt compare
+15. Nếu sai → handleInvalidMagicLink() → ghi login history (failed) + throw UnauthorizedError
+16. Nếu đúng → magicLinkLoginRepo.cleanupAll() — xóa token + cooldown (single-use)
+17. completeSuccessfulLogin() → ghi login history + generate tokens
+18. Controller: set refreshToken vào HTTP-only cookie → trả response
 ```
 
 ---
@@ -288,34 +320,69 @@ Response 429: Rate limit exceeded
 ```
 server/src/
 ├── modules/login/
-│   ├── login.module.ts              # DI setup, export router & service
-│   ├── login.controller.ts          # Route handlers + rate limiting
+│   ├── login.module.ts              # DI setup (factory function), export router & service
+│   ├── login.controller.ts          # Route handlers (login, sendOtp, verifyOtp, sendMagicLink, verifyMagicLink)
+│   ├── login.routes.ts              # Route wiring: createLoginRoutes() — middleware stack + asyncHandler
 │   ├── login.service.ts             # Business logic (password, OTP, magic link)
+│   ├── login.helper.ts              # Helper functions: validators, ensureXxx, handleInvalidXxx, completeSuccessfulLogin
 │   ├── repositories/
-│   │   ├── otp-login.repository.ts       # Redis: OTP CRUD
-│   │   ├── magic-link-login.repository.ts # Redis: magic link CRUD
-│   │   └── failed-attempts.repository.ts  # Redis: lockout management
+│   │   ├── otp-login.repository.ts       # Redis: OTP CRUD (type OtpLoginRepository + RedisOtpLoginRepository)
+│   │   ├── magic-link-login.repository.ts # Redis: magic link CRUD (type MagicLinkLoginRepository + RedisMagicLinkLoginRepository)
+│   │   └── failed-attempts.repository.ts  # Redis: lockout management (type FailedAttemptsRepository + RedisFailedAttemptsRepository)
+│   ├── dtos/
+│   │   ├── index.ts                      # Barrel export
+│   │   ├── login-response.dto.ts         # LoginResponseDto + toLoginResponseDto()
+│   │   ├── otp-send.dto.ts              # OtpSendDto + toOtpSendDto()
+│   │   └── magic-link-send.dto.ts       # MagicLinkSendDto + toMagicLinkSendDto()
 │   └── swagger/
 │       ├── index.ts                      # Swagger export
 │       ├── paths.ts                      # OpenAPI paths
-│       └── schemas.ts                    # OpenAPI schemas
+│       └── schemas.ts                    # OpenAPI schemas (joi-to-swagger)
 ├── modules/login-history/
 │   ├── login-history.module.ts
-│   └── login-history.service.ts     # Ghi và query lịch sử
+│   └── login-history.service.ts     # Ghi và query lịch sử (recordSuccessfulLogin, recordFailedLogin)
+├── modules/authentication/
+│   └── authentication.service.ts    # findByEmail, findUserByAuthId
 ├── models/
 │   ├── authentication.ts            # Mongoose schema: auths
 │   └── login-history.ts             # Mongoose schema: login_histories
-├── repositories/
-│   └── authentication.repository.ts # Auth CRUD operations
+├── services/email/
+│   └── email.service.ts             # SendEmailService (gửi OTP, magic link emails)
 ├── middlewares/
-│   └── auth.guard.ts                # JWT authenticate middleware
-├── utils/token/
-│   ├── jwt.ts                       # Token generate & verify
-│   └── auth-response.ts             # Format token response
+│   ├── guards/
+│   │   └── auth.guard.ts            # JWT authenticate middleware
+│   └── pipes/
+│       └── validation.pipe.ts       # bodyPipe, paramsPipe, queryPipe
+├── utils/
+│   ├── token/
+│   │   └── index.ts                 # generateAuthTokensResponse()
+│   ├── async-handler.ts             # asyncHandler wrapper
+│   ├── crypto/
+│   │   ├── bcrypt.ts                # hashValue, isValidHashedValue
+│   │   └── otp.ts                   # generateOtp, generateSecureToken
+│   ├── retry.ts                     # withRetry (fire-and-forget)
+│   ├── logger.ts                    # Logger utility
+│   └── date.ts                      # formatDuration
 ├── validators/schemas/
-│   └── login.ts                     # Joi validation schemas
-└── constants/
-    └── config.ts                    # Login config (timeouts, limits)
+│   ├── base.ts                      # emailSchema, otpSchema (shared)
+│   └── login.ts                     # loginSchema, otpSendSchema, otpVerifySchema, magicLinkSendSchema, magicLinkVerifySchema
+├── constants/
+│   ├── modules/
+│   │   ├── login/index.ts           # LOGIN_LOCKOUT, LOGIN_OTP_CONFIG, MAGIC_LINK_CONFIG
+│   │   ├── login-history/index.ts   # LOGIN_METHODS, LOGIN_STATUSES, LOGIN_FAIL_REASONS, DEVICE_TYPES, CLIENT_TYPES, GEO_DEFAULTS, LOGIN_HISTORY_CONFIG
+│   │   └── token/index.ts           # REFRESH_TOKEN
+│   ├── redis/store/index.ts         # LOGIN key prefixes (Redis store keys)
+│   └── time.ts                      # SECONDS_PER_MINUTE, etc.
+├── config/
+│   ├── env.ts                       # ENV.CLIENT_URL, etc.
+│   ├── cookie.ts                    # REFRESH_TOKEN_COOKIE_OPTIONS
+│   └── responses/
+│       ├── success.ts               # OkSuccess
+│       └── error.ts                 # BadRequestError, UnauthorizedError, NotFoundError
+└── types/modules/
+    ├── login.ts                     # PasswordLoginRequest, OtpSendRequest, OtpVerifyRequest, MagicLinkSendRequest, MagicLinkVerifyRequest, CreateLoginHistoryInput
+    ├── login-history.ts             # LoginHistoryDocument, LoginStatus, LoginFailReason
+    └── authentication.ts            # AuthenticationDocument, AuthTokensResponse
 ```
 
 ### Client
@@ -366,14 +433,15 @@ client/src/
 | Dependency     | Loại     | Mô tả                                           | Ghi chú                                    |
 | -------------- | -------- | ------------------------------------------------ | ------------------------------------------ |
 | MongoDB        | Internal | Lưu trữ auth records và login history            | Mongoose ODM                               |
-| Redis          | Internal | OTP, magic link, rate limiting, lockout state     | ioredis client                             |
-| Email Service  | External | Gửi OTP và magic link qua email                  | Chưa xác định provider cụ thể              |
-| bcrypt         | Library  | Hash và verify mật khẩu                           | Salt rounds: 10                            |
+| Redis          | Internal | OTP, magic link, rate limiting, lockout state     | redis client (RedisClientType)             |
+| Email Service  | External | Gửi OTP và magic link qua email                  | SendEmailService, React Email templates    |
+| bcrypt         | Library  | Hash và verify mật khẩu, OTP, magic link token   | hashValue, isValidHashedValue              |
 | jsonwebtoken   | Library  | Generate và verify JWT tokens                     | 3 secrets riêng biệt                       |
 | Joi            | Library  | Server-side input validation                      | Schemas trong validators/schemas/           |
+| joi-to-swagger | Library  | Convert Joi schemas sang OpenAPI schemas          | Dùng trong swagger/schemas.ts              |
 | Zod            | Library  | Client-side form validation                       | Tích hợp với React Hook Form               |
 | next-intl      | Library  | Internationalization cho client                   | Vi + En                                    |
-| express-rate-limit | Library | Rate limiting middleware                      | Per-IP và per-email                        |
+| express-rate-limit | Library | Rate limiting middleware                      | Per-IP và per-email (RateLimiterMiddleware) |
 
 ---
 

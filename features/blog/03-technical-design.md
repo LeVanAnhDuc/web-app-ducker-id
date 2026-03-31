@@ -4,7 +4,7 @@
 
 ## 3.1. Tổng quan kỹ thuật (Technical Overview)
 
-Blog là app đầu tiên trong App Store platform, đặt tại namespace `modules/apps/blog/` trên server và `app/[locale]/apps/blogs/` trên client. Server triển khai theo kiến trúc controller → service → repository, bổ sung 3 Mongoose collections mới (`blogs`, `blog_tags`, `blog_categories`) cùng một `query-builder` riêng để xử lý filter/search/sort. Cover image hỗ trợ cả Multer upload lẫn URL string; slug auto-generated từ title, unique và stable sau khi tạo. Visibility phân quyền theo `OptionalAuthGuard` (public read) + `AuthGuard` (write) + `AdminGuard` (hard delete). Client sử dụng Next.js App Router với dataSources và React Hook Form + Zod.
+Blog là app đầu tiên trong App Store platform, đặt tại namespace `modules/apps/blog/` trên server và `app/[locale]/apps/blogs/` trên client. Server triển khai theo kiến trúc controller → service → repository, bổ sung 3 Mongoose collections mới (`blogs`, `blog_tags`, `blog_categories`) cùng `blog.helper.ts` chứa slug generation, cover image resolution, file deletion, và query filter/sort builder. Cover image hỗ trợ cả Multer upload lẫn URL string; slug auto-generated từ title, unique và stable sau khi tạo. Visibility phân quyền theo `optionalAuth` (public read) + `authGuard` (write). Sub-modules (tags, categories) có routes/controller/service riêng, mount qua `router.use()` trong blog routes. Client sử dụng Next.js App Router với dataSources và React Hook Form + Zod.
 
 ---
 
@@ -17,19 +17,19 @@ Client (Web)
     │
     ├── POST /api/v1/apps/blogs  (multipart/form-data hoặc JSON)
     │       │
-    │   AuthGuard.middleware (verify idToken → req.user)
+    │   authGuard (verify idToken → req.user)
     │       │
-    │   uploadBlogCover.single('coverImage') (Multer, optional)
+    │   uploadBlogCover (Multer, optional)
     │       │
-    │   validateRequest(createBlogSchema)
+    │   bodyPipe(createBlogSchema)
     │       │
     │   BlogController.createBlog()
     │       │
     │   BlogService.createBlog(userId, dto, file?)
-    │       ├── generateSlug(title) → check uniqueness → slugify
-    │       ├── resolveCoverImage(file?, coverUrl?) → { type, url }
+    │       ├── generateBaseSlug(title) → check slugExists() → appendTimestampToSlug() nếu trùng
+    │       ├── resolveCoverImage(file?, coverUrl?) → { type, url } | null
     │       ├── blogRepo.create(blogDoc)
-    │       └── ResponsePattern<BlogDetailResponse>
+    │       └── toBlogDetailDto(doc) → BlogDetailDto
 
 === LIST BLOGS FLOW ===
 
@@ -37,21 +37,22 @@ Client (Web / Guest)
     │
     ├── GET /api/v1/apps/blogs?page=1&limit=20&search=xxx&categoryId=yyy
     │       │
-    │   OptionalAuthGuard.middleware (req.user nếu có token, undefined nếu không)
+    │   optionalAuth (req.user nếu có token, undefined nếu không)
     │       │
-    │   validateRequest(listBlogsQuerySchema)
+    │   queryPipe(listBlogsQuerySchema)
     │       │
     │   BlogController.listBlogs()
     │       │
     │   BlogService.listBlogs(query, req.user?)
-    │       ├── buildBlogFilter(query, req.user) → FilterQuery<IBlog>
+    │       ├── buildBlogFilter(query, req.user) → FilterQuery<BlogDocument>
     │       │     ├── deletedAt: null (bắt buộc)
     │       │     ├── visibility: 'public' (guest) | 'public' OR authorId=self (user) | all (admin)
     │       │     ├── search: { title: { $regex } }
     │       │     ├── categoryId, tagId filter
     │       │     └── authorId filter
+    │       ├── buildBlogSort(sortBy, sortOrder)
     │       ├── Promise.all([blogRepo.find(), blogRepo.countDocuments()])
-    │       └── ResponsePattern<PaginatedResult<BlogListItem>>
+    │       └── PaginatedResult<BlogListItemDto>
 
 === GET BLOG DETAIL FLOW ===
 
@@ -59,14 +60,14 @@ Client
     │
     ├── GET /api/v1/apps/blogs/:slug
     │       │
-    │   OptionalAuthGuard.middleware
+    │   optionalAuth
     │       │
     │   BlogController.getBlogBySlug()
     │       │
     │   BlogService.getBlogBySlug(slug, req.user?)
     │       ├── blogRepo.findBySlug(slug)  → throws 404 if not found or deletedAt != null
     │       ├── if visibility === 'private': check owner OR admin → 404 if not
-    │       └── ResponsePattern<BlogDetailResponse>
+    │       └── toBlogDetailDto(doc) → BlogDetailDto
 
 === UPDATE BLOG FLOW ===
 
@@ -74,20 +75,21 @@ Client
     │
     ├── PATCH /api/v1/apps/blogs/:id
     │       │
-    │   AuthGuard.middleware
+    │   authGuard
     │       │
-    │   uploadBlogCover.single('coverImage') (Multer, optional)
+    │   uploadBlogCover (Multer, optional)
     │       │
-    │   validateRequest(updateBlogSchema)
+    │   paramsPipe(blogIdParamSchema) + bodyPipe(updateBlogSchema)
     │       │
     │   BlogController.updateBlog()
     │       │
     │   BlogService.updateBlog(id, userId, dto, file?)
     │       ├── blogRepo.findById(id) → 404 if not found
-    │       ├── check authorId === userId → 403 if not (admin bypass: future)
-    │       ├── resolveCoverImage(file?, dto.coverUrl?)
+    │       ├── check authorId === userId → 403 if not
+    │       ├── resolveCoverImage(file?, dto.coverUrl?, dto.removeCover?)
+    │       ├── if cover changed & old cover was upload → deleteUploadedFile()
     │       └── blogRepo.findByIdAndUpdate(id, updates)
-    │       └── ResponsePattern<BlogDetailResponse>
+    │       └── toBlogDetailDto(doc) → BlogDetailDto
 
 === DELETE BLOG FLOW ===
 
@@ -95,18 +97,21 @@ Client
     │
     ├── DELETE /api/v1/apps/blogs/:id
     │       │
-    │   AuthGuard.middleware
+    │   authGuard
+    │       │
+    │   paramsPipe(blogIdParamSchema)
     │       │
     │   BlogController.deleteBlog()
     │       │
     │   BlogService.deleteBlog(id, req.user)
     │       ├── blogRepo.findById(id) → 404 if not found
     │       ├── if req.user.roles === 'admin':
+    │       │     deleteUploadedFile() nếu cover là upload
     │       │     blogRepo.hardDelete(id)  → xóa vĩnh viễn
     │       └── else:
     │             check authorId === userId → 403 if not
     │             blogRepo.softDelete(id)  → set deletedAt = now
-    │       └── ResponsePattern<{ message }>
+    │       └── toDeleteBlogDto(id) → DeleteBlogDto
 ```
 
 ---
@@ -121,17 +126,17 @@ Client
   authorId:     ObjectId,   // ref: USER — required, index
   title:        String,     // required, trim, maxlength: 200
   slug:         String,     // required, unique, lowercase, trim
-  content:      String,     // required (plain text v1.0)
+  content:      String,     // required
   coverImage: {
-    type:       String,     // 'upload' | 'url' | null
-    url:        String,     // relative path (upload) | absolute URL (url)
-  } | null,
+    type:       String,     // 'upload' | 'url' — enum từ BLOG_COVER_TYPE
+    url:        String,     // required, trim
+  } | null,                 // sub-schema { _id: false }, default: null
   tags:         ObjectId[], // ref: BLOG_TAG, default: []
   categories:   ObjectId[], // ref: BLOG_CATEGORY, default: []
-  visibility:   String,     // 'public' | 'private', default: 'public'
-  deletedAt:    Date | null, // null = active, Date = soft deleted
-  createdAt:    Date,
-  updatedAt:    Date
+  visibility:   String,     // enum từ BLOG_VISIBILITY, required, default: 'public'
+  deletedAt:    Date | null, // null = active, Date = soft deleted, default: null
+  createdAt:    Date,       // timestamps: true
+  updatedAt:    Date        // timestamps: true
 }
 ```
 
@@ -151,8 +156,8 @@ Client
 ```typescript
 {
   _id:          ObjectId,
-  name:         String,     // required, unique (case-insensitive via lowercase), trim, maxlength: 50
-  createdAt:    Date
+  name:         String,     // required, unique, trim, lowercase, maxlength: 50
+  createdAt:    Date        // timestamps: { createdAt: true, updatedAt: false }
 }
 ```
 
@@ -166,8 +171,8 @@ Client
 ```typescript
 {
   _id:          ObjectId,
-  name:         String,     // required, unique (case-insensitive via lowercase), trim, maxlength: 50
-  createdAt:    Date
+  name:         String,     // required, unique, trim, lowercase, maxlength: 50
+  createdAt:    Date        // timestamps: { createdAt: true, updatedAt: false }
 }
 ```
 
@@ -188,20 +193,25 @@ export const MODEL_NAMES = {
 }
 ```
 
-**`server/src/constants/enums.ts`** — thêm enums:
+**`server/src/constants/modules/blog/index.ts`** — constants riêng module blog:
 ```typescript
-export enum BLOG_VISIBILITY {
-  PUBLIC = 'public',
-  PRIVATE = 'private',
-}
+export const BLOG_VISIBILITY = {
+  PUBLIC: "public",
+  PRIVATE: "private"
+} as const;
 
-export enum BLOG_COVER_TYPE {
-  UPLOAD = 'upload',
-  URL = 'url',
-}
+export const BLOG_COVER_TYPE = {
+  UPLOAD: "upload",
+  URL: "url"
+} as const;
+
+export const BLOG_CONFIG = {
+  COVER_MAX_SIZE_BYTES: 5 * 1024 * 1024, // 5MB
+  COVER_UPLOAD_DIR: "uploads/blogs"
+} as const;
 ```
 
-**`server/src/middlewares/file-upload.ts`** — thêm `uploadBlogCover`:
+**`server/src/middlewares/`** — export `uploadBlogCover`:
 ```typescript
 // Stored at: uploads/blogs/{YYYY-MM-DD}/{uuid}.{ext}
 // Allowed: image/jpeg, image/jpg, image/png, image/webp, image/gif
@@ -226,8 +236,8 @@ Request Body (multipart/form-data):
   title        String  — required, 1–200 chars
   content      String  — required, min 1 char
   visibility   String  — optional, 'public'|'private', default 'public'
-  tags[]       String  — optional, array of ObjectId strings (existing tag IDs)
-  categories[] String  — optional, array of ObjectId strings (existing category IDs)
+  tags[]       String  — optional, array of ObjectId strings (existing tag IDs), max 10
+  categories[] String  — optional, array of ObjectId strings (existing category IDs), max 5
   coverImage   File    — optional, image file (jpg/png/webp/gif, max 5MB)
   coverUrl     String  — optional, URL string (mutually exclusive với coverImage)
 
@@ -246,12 +256,12 @@ Response 201:
     "createdAt": "ISO8601",
     "updatedAt": "ISO8601"
   },
-  "message": "Blog created successfully",
+  "message": "blog:success.created",
   "status": 201,
   "reasonStatusCode": "CREATED"
 }
 
-Response 400: Validation error (missing title, coverImage + coverUrl đồng thời, invalid ObjectId)
+Response 400: Validation error (missing title, coverImage + coverUrl đồng thời — COVER_IMAGE_CONFLICT)
 Response 401: Token missing or invalid
 ```
 
@@ -264,8 +274,8 @@ Headers:
 
 Query Params:
   page         Number  — default 1, min 1
-  limit        Number  — default 20, min 1, max 100
-  search       String  — optional, search theo title (case-insensitive)
+  limit        Number  — default 20, min 1, max 50 (schema max 50, service cũng cap MAX_LIMIT=50)
+  search       String  — optional, search theo title (case-insensitive regex), max 100 chars
   categoryId   String  — optional, ObjectId
   tagId        String  — optional, ObjectId
   authorId     String  — optional, ObjectId (filter theo author)
@@ -273,7 +283,7 @@ Query Params:
   sortBy       String  — optional, 'title'|'createdAt', default 'createdAt'
   sortOrder    String  — optional, 'asc'|'desc', default 'desc'
 
-Visibility rules (enforced in query-builder):
+Visibility rules (enforced in buildBlogFilter):
   - Guest (no token):   chỉ public + deletedAt=null
   - User (token):       public + private của mình + deletedAt=null
   - Admin:              tất cả visibility + deletedAt=null
@@ -281,15 +291,15 @@ Visibility rules (enforced in query-builder):
 Response 200:
 {
   "data": {
-    "items": [BlogListItem],
+    "items": [BlogListItemDto],
     "meta": { "total": 100, "page": 1, "limit": 20, "totalPages": 5 }
   },
-  "message": "OK",
+  "message": "blog:success.listed",
   "status": 200,
   "reasonStatusCode": "OK"
 }
 
-BlogListItem: {
+BlogListItemDto: {
   id, title, slug, coverImage, tags, categories,
   visibility, author: { id, name, avatar },
   createdAt, updatedAt
@@ -308,13 +318,13 @@ Headers:
 
 Response 200:
 {
-  "data": BlogDetailResponse,
-  "message": "OK",
+  "data": BlogDetailDto,
+  "message": "blog:success.found",
   "status": 200,
   "reasonStatusCode": "OK"
 }
 
-BlogDetailResponse: { ...BlogListItem, content: string }
+BlogDetailDto: { ...BlogListItemDto, content: string }
 
 Response 404: Blog not found, or soft deleted, or private (non-owner/non-admin)
 // Private blog → 404, NOT 403 (security by obscurity)
@@ -328,21 +338,23 @@ Headers:
   Authorization: Bearer {idToken}
   Content-Type: multipart/form-data | application/json
 
+Params: id — validated bởi blogIdParamSchema (ObjectId pattern)
+
 Request Body (all optional):
   title        String
   content      String
   visibility   String  — 'public'|'private'
-  tags[]       String  — array of ObjectId (replaces existing)
-  categories[] String  — array of ObjectId (replaces existing)
+  tags[]       String  — array of ObjectId (replaces existing), max 10
+  categories[] String  — array of ObjectId (replaces existing), max 5
   coverImage   File    — new cover image upload
   coverUrl     String  — new cover URL
   removeCover  Boolean — true → xóa cover hiện tại, set null
 
-Response 200: BlogDetailResponse
+Response 200: BlogDetailDto
 Response 400: Validation error
 Response 401: Not authenticated
-Response 403: Not the author
-Response 404: Blog not found
+Response 403: Not the author (FORBIDDEN)
+Response 404: Blog not found (BLOG_NOT_FOUND)
 ```
 
 ### Endpoint 5: Xóa blog
@@ -352,16 +364,18 @@ DELETE /api/v1/apps/blogs/:id
 Headers:
   Authorization: Bearer {idToken}
 
+Params: id — validated bởi blogIdParamSchema (ObjectId pattern)
+
 Response 200:
 {
   "data": { "id": "string" },
-  "message": "Blog deleted successfully",
+  "message": "blog:success.deleted",
   "status": 200,
   "reasonStatusCode": "OK"
 }
 
 Logic:
-  - Admin: hard delete (xóa vĩnh viễn)
+  - Admin: deleteUploadedFile() nếu cover là upload → hard delete (xóa vĩnh viễn)
   - User (author): soft delete (set deletedAt = now)
   - User (non-author): 403
 
@@ -376,10 +390,18 @@ Response 404: Blog not found
 GET /api/v1/apps/blogs/tags?search=xxx&limit=10
 Headers: (không cần auth)
 
+Query Params:
+  search   String — optional, max 50 chars, tìm theo name (regex, case-insensitive)
+  limit    Number — optional, min 1, max 50, default 10
+
+Logic:
+  - Nếu search rỗng hoặc không có → findPopular(limit) (sort createdAt desc)
+  - Nếu có search → search(query, limit) (sort name asc)
+
 Response 200:
 {
   "data": [{ "id": "string", "name": "string" }],
-  "message": "OK",
+  "message": "blog:success.tagsFound",
   "status": 200,
   "reasonStatusCode": "OK"
 }
@@ -395,9 +417,11 @@ Headers:
 Request Body:
   name  String  — required, 1–50 chars
 
-Response 201: { "data": { "id": "string", "name": "string" }, ... }
+Logic: normalize name (lowercase + trim) → check findByName() → 409 nếu trùng → create
+
+Response 201: { "data": { "id": "string", "name": "string" }, "message": "blog:success.tagCreated", ... }
 Response 400: Validation error
-Response 409: Tag already exists (case-insensitive match)
+Response 409: Tag already exists (TAG_ALREADY_EXISTS)
 Response 401: Not authenticated
 ```
 
@@ -407,9 +431,16 @@ Response 401: Not authenticated
 GET /api/v1/apps/blogs/categories?search=xxx&limit=10
 Headers: (không cần auth)
 
+Query Params:
+  search   String — optional, max 50 chars
+  limit    Number — optional, min 1, max 50, default 10
+
+Logic: tương tự tag search — findPopular() hoặc search()
+
 Response 200:
 {
   "data": [{ "id": "string", "name": "string" }],
+  "message": "blog:success.categoriesFound",
   ...
 }
 ```
@@ -424,9 +455,11 @@ Headers:
 Request Body:
   name  String  — required, 1–50 chars
 
-Response 201: { "data": { "id": "string", "name": "string" }, ... }
+Logic: normalize name (lowercase + trim) → check findByName() → 409 nếu trùng → create
+
+Response 201: { "data": { "id": "string", "name": "string" }, "message": "blog:success.categoryCreated", ... }
 Response 400: Validation error
-Response 409: Category already exists (case-insensitive match)
+Response 409: Category already exists (CATEGORY_ALREADY_EXISTS)
 Response 401: Not authenticated
 ```
 
@@ -434,27 +467,37 @@ Response 401: Not authenticated
 
 ## 3.5. Luồng xử lý chính (Main Flow)
 
-### Slug Generation
+### Slug Generation (`blog.helper.ts`)
 
 ```
 1. Nhận title: "Hello World! (2026)"
-2. Slugify: "hello-world-2026"  (kebab-case, remove special chars, lowercase)
-3. Check blogs collection: { slug: "hello-world-2026", deletedAt: null }
-4. Nếu trùng: append timestamp → "hello-world-2026-1709654321"
+2. generateBaseSlug(title): slugify(title, { lower: true, strict: true, trim: true }) → "hello-world-2026"
+3. Check blogRepo.slugExists(base) → boolean
+4. Nếu trùng: appendTimestampToSlug(base) → "hello-world-2026-1709654321" (Math.floor(Date.now() / 1000))
 5. Lưu slug, KHÔNG thay đổi khi update title (SEO stability)
 ```
 
-### Cover Image Resolution
+### Cover Image Resolution (`blog.helper.ts`)
 
 ```typescript
 resolveCoverImage(file?, coverUrl?, removeCover?):
   if removeCover === true → return null
-  if file exists → { type: 'upload', url: '/uploads/blogs/2026-03-05/uuid.jpg' }
-  if coverUrl exists → { type: 'url', url: coverUrl }
+  if file exists → normalize path → { type: BLOG_COVER_TYPE.UPLOAD, url: '/uploads/blogs/...' }
+  if coverUrl exists → { type: BLOG_COVER_TYPE.URL, url: coverUrl }
   return undefined  // no change (update), hoặc null (create without cover)
 ```
 
-### Visibility Filter in Query Builder (`internals/query-builder.ts`)
+### Delete Uploaded File (`blog.helper.ts`)
+
+```typescript
+deleteUploadedFile(filePath):
+  // Dùng khi update cover (replace old upload) hoặc admin hard delete blog có upload cover
+  absolutePath = path.join(process.cwd(), filePath)
+  if fs.existsSync(absolutePath) → fs.unlinkSync(absolutePath)
+  // ignore errors silently
+```
+
+### Visibility Filter in Query Builder (`blog.helper.ts`)
 
 ```typescript
 buildBlogFilter(query, user?):
@@ -470,21 +513,21 @@ buildBlogFilter(query, user?):
     // User: public + private của mình
     if (query.visibility === 'private'):
       filter.visibility = 'private'
-      filter.authorId = user.id
+      filter.authorId = new Types.ObjectId(user.userId)
     else if (query.visibility === 'public'):
       filter.visibility = 'public'
     else:
       filter.$or = [
         { visibility: 'public' },
-        { visibility: 'private', authorId: user.id }
+        { visibility: 'private', authorId: new Types.ObjectId(user.userId) }
       ]
 
   // authorId filter
-  if (query.authorId) filter.authorId = query.authorId
+  if (query.authorId) filter.authorId = new Types.ObjectId(query.authorId)
 
   // category / tag filter
-  if (query.categoryId) filter.categories = query.categoryId
-  if (query.tagId) filter.tags = query.tagId
+  if (query.categoryId) filter.categories = new Types.ObjectId(query.categoryId)
+  if (query.tagId) filter.tags = new Types.ObjectId(query.tagId)
 
   // text search trên title
   if (query.search) filter.title = { $regex: query.search, $options: 'i' }
@@ -492,12 +535,13 @@ buildBlogFilter(query, user?):
   return filter
 ```
 
-### Sort Builder
+### Sort Builder (`blog.helper.ts`)
 
 ```typescript
-buildBlogSort(sortBy, sortOrder):
-  if (sortBy === 'title') return { title: sortOrder === 'asc' ? 1 : -1 }
-  return { createdAt: sortOrder === 'asc' ? 1 : -1 }  // default
+buildBlogSort(sortBy = 'createdAt', sortOrder = 'desc'):
+  const order: SortOrder = sortOrder === 'asc' ? 1 : -1
+  if (sortBy === 'title') return { title: order }
+  return { createdAt: order }  // default
 ```
 
 ---
@@ -507,76 +551,176 @@ buildBlogSort(sortBy, sortOrder):
 ```typescript
 // server/src/types/modules/blog.ts
 
-export interface CreateBlogDto {
-  title: string
-  content: string
-  visibility?: 'public' | 'private'
-  tags?: string[]          // ObjectId strings
-  categories?: string[]    // ObjectId strings
-  coverUrl?: string
-  removeCover?: boolean
+// ─── Derived types from constants ─────────────────────────────────────────
+export type BlogVisibility = (typeof BLOG_VISIBILITY)[keyof typeof BLOG_VISIBILITY];
+export type BlogCoverType = (typeof BLOG_COVER_TYPE)[keyof typeof BLOG_COVER_TYPE];
+
+// ─── Mongoose Document types ──────────────────────────────────────────────
+export interface BlogTagDocument extends Document {
+  name: string;
+  createdAt: Date;
 }
 
-export interface UpdateBlogDto extends Partial<CreateBlogDto> {}
+export interface BlogCategoryDocument extends Document {
+  name: string;
+  createdAt: Date;
+}
+
+export interface BlogCoverImageDoc {
+  type: BlogCoverType;
+  url: string;
+}
+
+export interface BlogDocument extends Document {
+  authorId: Types.ObjectId;
+  title: string;
+  slug: string;
+  content: string;
+  coverImage: BlogCoverImageDoc | null;
+  tags: Types.ObjectId[];
+  categories: Types.ObjectId[];
+  visibility: BlogVisibility;
+  deletedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// ─── DTOs ─────────────────────────────────────────────────────────────────
+export interface CreateBlogDto {
+  title: string;
+  content: string;
+  visibility?: BlogVisibility;
+  tags?: string[];
+  categories?: string[];
+  coverUrl?: string;
+}
+
+export interface UpdateBlogDto {
+  title?: string;
+  content?: string;
+  visibility?: BlogVisibility;
+  tags?: string[];
+  categories?: string[];
+  coverUrl?: string;
+  removeCover?: boolean;
+}
 
 export interface BlogQuery {
-  page?: number
-  limit?: number
-  search?: string
-  categoryId?: string
-  tagId?: string
-  authorId?: string
-  visibility?: 'public' | 'private'
-  sortBy?: 'title' | 'createdAt'
-  sortOrder?: 'asc' | 'desc'
-}
-
-export interface BlogAuthorInfo {
-  id: string
-  name: string
-  avatar: string | null
-}
-
-export interface BlogCoverImage {
-  type: 'upload' | 'url'
-  url: string
-}
-
-export interface BlogTagItem {
-  id: string
-  name: string
-}
-
-export interface BlogListItem {
-  id: string
-  title: string
-  slug: string
-  coverImage: BlogCoverImage | null
-  tags: BlogTagItem[]
-  categories: BlogTagItem[]
-  visibility: 'public' | 'private'
-  author: BlogAuthorInfo
-  createdAt: string
-  updatedAt: string
-}
-
-export interface BlogDetailItem extends BlogListItem {
-  content: string
+  page?: number;
+  limit?: number;
+  search?: string;
+  categoryId?: string;
+  tagId?: string;
+  authorId?: string;
+  visibility?: BlogVisibility;
+  sortBy?: 'title' | 'createdAt';
+  sortOrder?: 'asc' | 'desc';
 }
 
 export interface TagQuery {
-  search?: string
-  limit?: number
+  search?: string;
+  limit?: number;
+}
+
+export interface CreateTagDto {
+  name: string;
+}
+
+export interface CreateCategoryDto {
+  name: string;
+}
+
+// ─── Response types ───────────────────────────────────────────────────────
+export interface BlogAuthorInfo {
+  id: string;
+  name: string;
+  avatar: string | null;
+}
+
+export interface BlogCoverImage {
+  type: BlogCoverType;
+  url: string;
+}
+
+export interface BlogTagItem {
+  id: string;
+  name: string;
+}
+
+export interface BlogListItem {
+  id: string;
+  title: string;
+  slug: string;
+  coverImage: BlogCoverImage | null;
+  tags: BlogTagItem[];
+  categories: BlogTagItem[];
+  visibility: BlogVisibility;
+  author: BlogAuthorInfo;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BlogDetailItem extends BlogListItem {
+  content: string;
 }
 
 export interface PaginatedResult<T> {
-  items: T[]
+  items: T[];
   meta: {
-    total: number
-    page: number
-    limit: number
-    totalPages: number
-  }
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
+// ─── Typed Request interfaces ─────────────────────────────────────────────
+export interface CreateBlogRequest extends Omit<Request, 'body' | 'user'> {
+  body: CreateBlogDto;
+  user: JwtUserPayload;
+  file?: Express.Multer.File;
+}
+
+export interface ListBlogsRequest extends Omit<Request, 'query'> {
+  query: BlogQuery;
+}
+
+export interface GetBlogBySlugRequest extends Omit<Request, 'params'> {
+  params: { slug: string };
+}
+
+export interface UpdateBlogRequest extends Omit<Request, 'params' | 'body' | 'user'> {
+  params: { id: string };
+  body: UpdateBlogDto;
+  user: JwtUserPayload;
+  file?: Express.Multer.File;
+}
+
+export interface DeleteBlogRequest extends Omit<Request, 'params' | 'user'> {
+  params: { id: string };
+  user: JwtUserPayload;
+}
+
+export interface BlogIdParamRequest extends Omit<Request, 'params'> {
+  params: { id: string };
+}
+
+export interface SearchTagsRequest extends Omit<Request, 'query'> {
+  query: TagQuery;
+}
+
+export interface CreateTagRequest extends Omit<Request, 'body' | 'user'> {
+  body: CreateTagDto;
+  user: JwtUserPayload;
+}
+
+export interface SearchCategoriesRequest extends Omit<Request, 'query'> {
+  query: TagQuery;
+}
+
+export interface CreateCategoryRequest extends Omit<Request, 'body' | 'user'> {
+  body: CreateCategoryDto;
+  user: JwtUserPayload;
 }
 ```
 
@@ -589,55 +733,106 @@ export interface PaginatedResult<T> {
 ```
 server/src/
 ├── constants/
-│   ├── models.ts           (+) BLOG, BLOG_TAG, BLOG_CATEGORY
-│   └── enums.ts            (+) BLOG_VISIBILITY, BLOG_COVER_TYPE
+│   ├── models.ts                       (+) BLOG, BLOG_TAG, BLOG_CATEGORY
+│   └── modules/blog/
+│       └── index.ts                    (NEW) BLOG_VISIBILITY, BLOG_COVER_TYPE, BLOG_CONFIG
 ├── models/
-│   ├── blog.ts             (NEW) Blog Mongoose model
-│   ├── blog-tag.ts         (NEW) BlogTag Mongoose model
-│   └── blog-category.ts    (NEW) BlogCategory Mongoose model
+│   ├── blog.ts                         (NEW) Blog Mongoose model
+│   ├── blog-tag.ts                     (NEW) BlogTag Mongoose model
+│   └── blog-category.ts               (NEW) BlogCategory Mongoose model
 ├── middlewares/
-│   └── file-upload.ts      (+) uploadBlogCover
+│   └── (barrel export)                 (+) uploadBlogCover
 ├── types/modules/
-│   └── blog.ts             (NEW) TypeScript types
+│   └── blog.ts                         (NEW) Document types, DTOs, Response types, Typed Request interfaces
 ├── validators/schemas/
-│   └── blog.ts             (NEW) Joi schemas
+│   └── blog.ts                         (NEW) Joi schemas
 └── modules/apps/blog/
-    ├── blog.module.ts              (NEW) createBlogModule()
-    ├── blog.controller.ts          (NEW) BlogController
-    ├── blog.service.ts             (NEW) BlogService
-    ├── internals/
-    │   └── query-builder.ts        (NEW) buildBlogFilter(), buildBlogSort()
+    ├── blog.module.ts                  (NEW) createBlogModule(authGuard, optionalAuth)
+    ├── blog.controller.ts              (NEW) BlogController
+    ├── blog.routes.ts                  (NEW) createBlogRoutes() — main router + sub-module mount
+    ├── blog.service.ts                 (NEW) BlogService
+    ├── blog.helper.ts                  (NEW) slug, cover image, query builder, file deletion helpers
+    ├── dtos/
+    │   ├── index.ts                    (NEW) barrel export
+    │   ├── blog-list-item.dto.ts       (NEW) BlogListItemDto + toBlogListItemDto()
+    │   ├── blog-detail.dto.ts          (NEW) BlogDetailDto + toBlogDetailDto()
+    │   ├── delete-blog.dto.ts          (NEW) DeleteBlogDto + toDeleteBlogDto()
+    │   ├── tag-item.dto.ts             (NEW) TagItemDto + toTagItemDto()
+    │   └── category-item.dto.ts        (NEW) CategoryItemDto + toCategoryItemDto()
     ├── repositories/
-    │   ├── blog.repository.ts      (NEW) BlogRepository
-    │   ├── blog-tag.repository.ts  (NEW) BlogTagRepository
-    │   └── blog-category.repository.ts (NEW) BlogCategoryRepository
+    │   ├── blog.repository.ts          (NEW) BlogRepository type + MongoBlogRepository
+    │   ├── blog-tag.repository.ts      (NEW) BlogTagRepository type + MongoBlogTagRepository
+    │   └── blog-category.repository.ts (NEW) BlogCategoryRepository type + MongoBlogCategoryRepository
     └── sub-modules/
         ├── tags/
-        │   ├── blog-tags.controller.ts  (NEW)
-        │   └── blog-tags.service.ts     (NEW)
+        │   ├── blog-tags.routes.ts     (NEW) createBlogTagsRoutes()
+        │   ├── blog-tags.controller.ts (NEW) BlogTagsController
+        │   └── blog-tags.service.ts    (NEW) BlogTagsService
         └── categories/
-            ├── blog-categories.controller.ts (NEW)
-            └── blog-categories.service.ts    (NEW)
+            ├── blog-categories.routes.ts     (NEW) createBlogCategoriesRoutes()
+            ├── blog-categories.controller.ts (NEW) BlogCategoriesController
+            └── blog-categories.service.ts    (NEW) BlogCategoriesService
 ```
 
 **Route mounting** (`server/src/loaders/modules.loader.ts`):
 ```typescript
 // blog module
-const { blogRouter } = createBlogModule({ authGuard, optionalAuthGuard, adminGuard })
-v1Router.use('/apps/blogs', blogRouter)
+const { blogRouter } = createBlogModule(auth, optionalAuth);
+v1Router.use('/apps/blogs', blogRouter);
 ```
 
-**Routing trong BlogController** (single router, route order quan trọng):
+**Module factory** (`blog.module.ts`) — wiring:
+```typescript
+export const createBlogModule = (authGuard, optionalAuth) => {
+  // Repositories
+  const blogRepo = new MongoBlogRepository();
+  const tagRepo = new MongoBlogTagRepository();
+  const categoryRepo = new MongoBlogCategoryRepository();
+
+  // Services
+  const blogService = new BlogService(blogRepo);
+  const tagsService = new BlogTagsService(tagRepo);
+  const categoriesService = new BlogCategoriesService(categoryRepo);
+
+  // Controllers
+  const tagsController = new BlogTagsController(tagsService);
+  const categoriesController = new BlogCategoriesController(categoriesService);
+  const blogController = new BlogController(blogService);
+
+  // Sub-module routes
+  const tagsRouter = createBlogTagsRoutes(tagsController, authGuard);
+  const categoriesRouter = createBlogCategoriesRoutes(categoriesController, authGuard);
+
+  // Main router (mounts sub-module routers internally)
+  return {
+    blogRouter: createBlogRoutes(blogController, authGuard, optionalAuth, {
+      tagsRouter, categoriesRouter
+    })
+  };
+};
 ```
-blogRouter.get('/tags', ...)               // ← phải đứng TRƯỚC /:slug
-blogRouter.post('/tags', authGuard, ...)
-blogRouter.get('/categories', ...)
-blogRouter.post('/categories', authGuard, ...)
-blogRouter.post('/', authGuard, uploadBlogCover, validate, createBlog)
-blogRouter.get('/', optionalAuthGuard, validate, listBlogs)
-blogRouter.get('/:slug', optionalAuthGuard, getBlogBySlug)
-blogRouter.patch('/:id', authGuard, uploadBlogCover, validate, updateBlog)
-blogRouter.delete('/:id', authGuard, deleteBlog)
+
+**Routing trong `blog.routes.ts`** (sub-module mount + main routes):
+```
+router.use('/tags', tagsRouter)                     // ← mount sub-module TRƯỚC /:slug
+router.use('/categories', categoriesRouter)         // ← mount sub-module TRƯỚC /:slug
+router.post('/', authGuard, uploadBlogCover, bodyPipe(createBlogSchema), ...)
+router.get('/', optionalAuth, queryPipe(listBlogsQuerySchema), ...)
+router.get('/:slug', optionalAuth, ...)
+router.patch('/:id', authGuard, uploadBlogCover, paramsPipe(blogIdParamSchema), bodyPipe(updateBlogSchema), ...)
+router.delete('/:id', authGuard, paramsPipe(blogIdParamSchema), ...)
+```
+
+**Sub-module routing trong `blog-tags.routes.ts`**:
+```
+router.get('/', queryPipe(tagQuerySchema), ...)
+router.post('/', authGuard, bodyPipe(createTagSchema), ...)
+```
+
+**Sub-module routing trong `blog-categories.routes.ts`**:
+```
+router.get('/', queryPipe(tagQuerySchema), ...)
+router.post('/', authGuard, bodyPipe(createCategorySchema), ...)
 ```
 
 ### Client
@@ -684,40 +879,43 @@ client/src/
 ```typescript
 // server/src/validators/schemas/blog.ts
 
-createBlogSchema: {
-  title:      string, required, min(1), max(200)
+// Shared: OBJECTID_PATTERN = /^[a-fA-F0-9]{24}$/
+// Shared: objectIdSchema = Joi.string().pattern(OBJECTID_PATTERN)
+
+createBlogSchema: {                        // stripUnknown: true
+  title:      string, required, min(1), max(200), trim
   content:    string, required, min(1)
-  visibility: string, valid('public', 'private'), default('public')
-  tags:       array of ObjectId strings, optional, max 10 items
-  categories: array of ObjectId strings, optional, max 10 items
+  visibility: string, valid(...BLOG_VISIBILITY values), default('public')
+  tags:       array of objectIdSchema, optional, max 10 items
+  categories: array of objectIdSchema, optional, max 5 items
   coverUrl:   string, uri, optional
   // coverImage: validated by Multer fileFilter
 }
 
-updateBlogSchema: {
-  title:        string, min(1), max(200), optional
+updateBlogSchema: {                        // stripUnknown: true
+  title:        string, min(1), max(200), optional, trim
   content:      string, min(1), optional
-  visibility:   string, valid('public', 'private'), optional
-  tags:         array of ObjectId strings, optional
-  categories:   array of ObjectId strings, optional
+  visibility:   string, valid(...BLOG_VISIBILITY values), optional
+  tags:         array of objectIdSchema, optional, max 10
+  categories:   array of objectIdSchema, optional, max 5
   coverUrl:     string, uri, optional
   removeCover:  boolean, optional
 }
 
-listBlogsQuerySchema: {
+listBlogsQuerySchema: {                    // stripUnknown: true
   page:       number, integer, min(1), default(1)
-  limit:      number, integer, min(1), max(100), default(20)
-  search:     string, max(100), optional
-  categoryId: string ObjectId, optional
-  tagId:      string ObjectId, optional
-  authorId:   string ObjectId, optional
-  visibility: string, valid('public', 'private'), optional
+  limit:      number, integer, min(1), max(50), default(20)
+  search:     string, trim, max(100), optional
+  categoryId: objectIdSchema, optional
+  tagId:      objectIdSchema, optional
+  authorId:   objectIdSchema, optional
+  visibility: string, valid(...BLOG_VISIBILITY values), optional
   sortBy:     string, valid('title', 'createdAt'), default('createdAt')
   sortOrder:  string, valid('asc', 'desc'), default('desc')
 }
 
-tagQuerySchema: {
-  search:   string, max(50), optional
+tagQuerySchema: {                          // stripUnknown: true
+  search:   string, trim, max(50), optional
   limit:    number, integer, min(1), max(50), default(10)
 }
 
@@ -728,19 +926,93 @@ createTagSchema: {
 createCategorySchema: {
   name:   string, required, min(1), max(50)
 }
+
+blogIdParamSchema: {
+  id:   string, required, pattern(OBJECTID_PATTERN)
+}
 ```
 
 ---
 
-## 3.9. Dependencies & Integrations
+## 3.9. DTOs (Data Transfer Objects)
+
+### `dtos/blog-list-item.dto.ts`
+
+```typescript
+export type BlogListItemDto = BlogListItem;  // re-export từ types
+
+export const toBlogListItemDto = (doc: Record<string, unknown>): BlogListItemDto => {
+  // Map authorId (populated) → BlogAuthorInfo { id, name, avatar }
+  //   avatar: prepend USER_CONFIG.BASE_URL nếu có
+  // Map tags (populated) → BlogTagItem[] { id, name }
+  // Map categories (populated) → BlogTagItem[] { id, name }
+  // Map coverImage → BlogCoverImage | null
+  // Return: { id, title, slug, coverImage, tags, categories, visibility, author, createdAt, updatedAt }
+};
+```
+
+### `dtos/blog-detail.dto.ts`
+
+```typescript
+export type BlogDetailDto = BlogDetailItem;
+
+export const toBlogDetailDto = (doc): BlogDetailDto => {
+  const base = toBlogListItemDto(doc);
+  return { ...base, content: doc.content };
+};
+```
+
+### `dtos/delete-blog.dto.ts`
+
+```typescript
+export interface DeleteBlogDto { id: string; }
+export const toDeleteBlogDto = (id: string): DeleteBlogDto => ({ id });
+```
+
+### `dtos/tag-item.dto.ts`
+
+```typescript
+export type TagItemDto = BlogTagItem;
+export const toTagItemDto = (doc: { _id; name }) => ({ id: doc._id.toString(), name: doc.name });
+```
+
+### `dtos/category-item.dto.ts`
+
+```typescript
+export type CategoryItemDto = BlogTagItem;
+export const toCategoryItemDto = (doc: { _id; name }) => ({ id: doc._id.toString(), name: doc.name });
+```
+
+### `dtos/index.ts` — barrel export
+
+```typescript
+export type { BlogListItemDto } from "./blog-list-item.dto";
+export { toBlogListItemDto } from "./blog-list-item.dto";
+export type { BlogDetailDto } from "./blog-detail.dto";
+export { toBlogDetailDto } from "./blog-detail.dto";
+export type { DeleteBlogDto } from "./delete-blog.dto";
+export { toDeleteBlogDto } from "./delete-blog.dto";
+export type { TagItemDto } from "./tag-item.dto";
+export { toTagItemDto } from "./tag-item.dto";
+export type { CategoryItemDto } from "./category-item.dto";
+export { toCategoryItemDto } from "./category-item.dto";
+```
+
+---
+
+## 3.10. Dependencies & Integrations
 
 | Dependency          | Loại     | Mô tả                                               | Ghi chú                               |
 | ------------------- | -------- | --------------------------------------------------- | ------------------------------------- |
-| `AuthGuard`         | Internal | Verify idToken → req.user                           | Đã có, tái sử dụng                    |
-| `OptionalAuthGuard` | Internal | Không throw nếu không có token                      | Đã có (contact-admin v1.0), tái sử dụng |
-| `AdminGuard`        | Internal | Check req.user.roles === 'admin', throw 403 if not | Đã có (login-history v2.0), tái sử dụng |
-| `uploadBlogCover`   | Internal | Multer middleware, single image, max 5MB            | Thêm mới vào file-upload.ts           |
-| `MongoDBRepository` | Internal | Base repository class                               | Đã có, extend                         |
+| `authGuard`         | Internal | Verify idToken → req.user                           | Đã có, tái sử dụng                    |
+| `optionalAuth`      | Internal | Không throw nếu không có token                      | Đã có, tái sử dụng                    |
+| `uploadBlogCover`   | Internal | Multer middleware, single image, max 5MB            | Export từ `@/middlewares`              |
+| `bodyPipe`/`queryPipe`/`paramsPipe` | Internal | Joi validation pipes              | Đã có, tái sử dụng                    |
+| `asyncHandler`      | Internal | Wrap async controller handlers                      | Đã có, tái sử dụng                    |
+| `asyncDatabaseHandler` | Internal | Wrap Mongoose queries trong repositories         | Đã có, tái sử dụng                    |
+| `OkSuccess`/`CreatedSuccess` | Internal | Response pattern classes                  | Đã có, tái sử dụng                    |
+| `NotFoundError`/`ForbiddenError`/`BadRequestError`/`ConflictRequestError` | Internal | Error classes | Đã có |
+| `USER_CONFIG`       | Internal | Base URL cho avatar trong DTO mapper                | Đã có                                 |
 | `slugify` (npm)     | External | Chuyển title → kebab-case slug                      | Cần install                           |
 
 **Package cần install:**
@@ -751,7 +1023,7 @@ yarn add @types/slugify --dev  # nếu cần (slugify có bundled types)
 
 ---
 
-## 3.10. Migration & Deployment Strategy
+## 3.11. Migration & Deployment Strategy
 
 **Feature flag:** Không. Blog là feature mới, không ảnh hưởng flow hiện tại.
 

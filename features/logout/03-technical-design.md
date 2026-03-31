@@ -4,7 +4,7 @@
 
 ## 3.1. Tổng quan kỹ thuật (Technical Overview)
 
-Feature Logout là một endpoint đơn giản xóa refresh token khỏi HTTP-only cookie. Yêu cầu valid access token (Bearer auth) thông qua middleware `authenticate`. Không tương tác với database hay Redis. Client chịu trách nhiệm xóa access token và id token khỏi memory.
+Feature Logout là một endpoint đơn giản xóa refresh token khỏi HTTP-only cookie. Yêu cầu valid access token (Bearer auth) thông qua middleware `authGuard`. Không tương tác với database hay Redis. Client chịu trách nhiệm xóa access token và id token khỏi memory.
 
 ---
 
@@ -13,12 +13,12 @@ Feature Logout là một endpoint đơn giản xóa refresh token khỏi HTTP-on
 ```
 Client                              Server (Express)
 ┌──────────┐                        ┌──────────────────────────────┐
-│ POST     │                        │ authenticate middleware      │
+│ POST     │                        │ authGuard middleware          │
 │ /auth/   │──Bearer token────────▶ │   ↓ (verify JWT)            │
 │ logout   │                        │ LogoutController             │
 │          │                        │   ↓                          │
 │          │◀──clearCookie──────────│ LogoutService.logout()       │
-│          │  + { success: true }   │   ↓                          │
+│          │  + 204 No Content      │   ↓                          │
 │ Xóa AT,  │                        │ res.clearCookie(refreshToken) │
 │ IT local │                        └──────────────────────────────┘
 └──────────┘
@@ -44,13 +44,7 @@ Headers:
 
 Request Body: Không có
 
-Response 200:
-{
-  "message": "Đăng xuất thành công",
-  "data": {
-    "success": true
-  }
-}
+Response 204: No Content (không có body)
 
 Set-Cookie: refreshToken=; Max-Age=0; Path=/; HttpOnly; Secure; SameSite=Lax
 
@@ -63,24 +57,21 @@ Response 401: Access token không hợp lệ hoặc thiếu
 
 ```
 1. Client gửi POST /api/v1/auth/logout với Authorization: Bearer {accessToken}
-2. Middleware authenticate:
+2. Middleware authGuard:
    a. Extract token từ Authorization header
    b. verifyAccessToken(token) → decode payload
    c. Gán req.user = { userId, authId, email, roles }
    d. Nếu lỗi → throw UnauthorizedError
-3. LogoutController.logout():
-   a. Gọi service.logout(req) → nhận { data, message }
-   b. res.clearCookie("refreshToken", {
-        httpOnly: true,
-        secure: ENV.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/"
-      })
-   c. Trả response 200 với { success: true }
-4. LogoutService.logout():
-   a. Logger.info("Logout initiated", { userId })
-   b. Logger.info("Logout successful", { userId })
-   c. Return { message: t("logout:success.logoutSuccessful"), data: { success: true } }
+3. LogoutController.logout(req, res):
+   a. Gọi service.logout(req.user!.userId)
+   b. res.clearCookie(REFRESH_TOKEN, REFRESH_TOKEN_COOKIE_OPTIONS)
+      - REFRESH_TOKEN = "refreshToken" (từ constants/modules/token)
+      - REFRESH_TOKEN_COOKIE_OPTIONS (từ config/cookie.ts):
+        { httpOnly: true, secure: ..., sameSite: ..., path: "/" }
+   c. Trả response 204 No Content qua new NoContentSuccess().send(req, res)
+4. LogoutService.logout(userId):
+   a. Logger.info("Logout successful", { userId })
+   b. Return void
 ```
 
 ---
@@ -90,25 +81,35 @@ Response 401: Access token không hợp lệ hoặc thiếu
 ```
 server/src/
 ├── modules/logout/
-│   ├── logout.module.ts         # DI setup, export router & service
-│   ├── logout.controller.ts     # Route handler: POST / (with authenticate middleware)
-│   ├── logout.service.ts        # Business logic (log + return success)
+│   ├── logout.module.ts         # Factory function: tạo service, controller, gọi createLogoutRoutes()
+│   ├── logout.controller.ts     # Handler: clearCookie + NoContentSuccess
+│   ├── logout.routes.ts         # Route wiring: POST / với authGuard + asyncHandler
+│   ├── logout.service.ts        # Business logic (log + return void)
 │   └── swagger/
 │       ├── index.ts             # Export paths + schemas
 │       ├── paths.ts             # OpenAPI path definition
 │       └── schemas.ts           # OpenAPI schema (LogoutResponse)
-└── middlewares/
-    └── auth.guard.ts            # authenticate middleware (shared)
+├── config/
+│   └── cookie.ts                # REFRESH_TOKEN_COOKIE_OPTIONS (shared)
+├── constants/modules/token/
+│   └── index.ts                 # REFRESH_TOKEN constant (shared)
+├── types/modules/
+│   └── logout.ts                # LogoutRequest type (= Request)
+└── middlewares/guards/
+    └── auth.guard.ts            # authGuard middleware (shared)
 ```
 
 ---
 
 ## 3.7. Dependencies & Integrations
 
-| Dependency     | Loại     | Mô tả                                   | Ghi chú                  |
-| -------------- | -------- | ---------------------------------------- | ------------------------ |
-| authenticate   | Internal | Middleware xác thực Bearer token          | middlewares/auth.guard.ts |
-| Logger         | Internal | Ghi log logout events                    | utils/logger             |
+| Dependency                   | Loại     | Mô tả                                          | Ghi chú                          |
+| ---------------------------- | -------- | ----------------------------------------------- | -------------------------------- |
+| authGuard                    | Internal | Middleware xác thực Bearer token                 | middlewares/guards/auth.guard.ts  |
+| Logger                       | Internal | Ghi log logout events                           | utils/logger                     |
+| REFRESH_TOKEN                | Internal | Tên cookie refresh token                        | constants/modules/token/index.ts  |
+| REFRESH_TOKEN_COOKIE_OPTIONS | Internal | Cookie options cho refresh token                | config/cookie.ts                  |
+| NoContentSuccess             | Internal | Response class trả 204 No Content               | config/responses/success.ts       |
 
 ---
 

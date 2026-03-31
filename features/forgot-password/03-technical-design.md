@@ -4,7 +4,7 @@
 
 ## 3.1. Tổng quan kỹ thuật (Technical Overview)
 
-Feature Forgot Password được xây dựng theo đúng architecture hiện có: **Controller → Service → Repository** pattern. OTP và Magic Link token được hash (bcrypt) và lưu trong Redis với TTL tự động expire. Khi verify OTP/magic-link thành công, hệ thống tạo `resetToken` (64-char hex) lưu Redis, client dùng token này cùng password mới để gọi API reset. Sau khi reset thành công, password mới được hash và update vào MongoDB, tất cả session bị invalidate. Chống email enumeration bằng cách trả success giả khi email không tồn tại (vẫn validate format).
+Feature Forgot Password được xây dựng theo đúng architecture hiện có: **Controller → Service → Repository** pattern, với thêm **Routes** (tách route wiring khỏi controller) và **Helper** (tách sub-logic ra pure functions). OTP và Magic Link token được hash (bcrypt) và lưu trong Redis với TTL tự động expire. Khi verify OTP/magic-link thành công, hệ thống tạo `resetToken` (64-byte hex) lưu Redis, client dùng token này cùng password mới để gọi API reset. Sau khi reset thành công, password mới được hash và update vào MongoDB, tất cả session bị invalidate thông qua `passwordChangedAt`. Chống email enumeration bằng cách trả success giả khi email không tồn tại (vẫn validate format). Service sử dụng **DTO pattern** — mỗi handler trả về DTO riêng thông qua mapper function.
 
 ---
 
@@ -26,24 +26,24 @@ Feature Forgot Password được xây dựng theo đúng architecture hiện có
 ┌────────────▼──────────────────▼───────────────────▼─────────────────────┐
 │                         SERVER (Express.js)                              │
 │                                                                          │
-│  Rate Limiter → Validator → ForgotPasswordController                     │
-│                                   │                                      │
-│                          ForgotPasswordService                           │
-│                         /         |          \                           │
-│               OtpFPRepo    MagicLinkFPRepo   ResetTokenRepo              │
-│                    │              │                │                     │
-│                    ▼              ▼                ▼                     │
-│              ┌──────────────────────────────┐  ┌──────────┐             │
-│              │     Redis (hash storage)     │  │ MongoDB   │             │
-│              │ - OTP (hashed, 5min TTL)     │  │ - Update  │             │
-│              │ - Magic Link (hashed, 15min) │  │   password│             │
-│              │ - Reset Token (hashed, 10min)│  └──────────┘             │
-│              │ - Cooldown (60s TTL)         │                            │
-│              │ - Failed attempts (15min)    │                            │
-│              │ - Resend count              │                            │
-│              └──────────────────────────────┘                            │
+│  Rate Limiter → bodyPipe(schema) → ForgotPasswordController              │
+│                                         │                                │
+│                                ForgotPasswordService                     │
+│                               /         |          \                     │
+│             OtpFPRepo    MagicLinkFPRepo   ResetTokenRepo                │
+│                  │              │                │                       │
+│                  ▼              ▼                ▼                       │
+│            ┌──────────────────────────────┐  ┌──────────┐               │
+│            │     Redis (hash storage)     │  │ MongoDB   │               │
+│            │ - OTP (hashed, 5min TTL)     │  │ - Update  │               │
+│            │ - Magic Link (hashed, 15min) │  │   password│               │
+│            │ - Reset Token (hashed, 10min)│  └──────────┘               │
+│            │ - Cooldown (60s TTL)         │                              │
+│            │ - Failed attempts (15min)    │                              │
+│            │ - Resend count              │                              │
+│            └──────────────────────────────┘                              │
 │                                                                          │
-│  SendEmailService ──→ Nodemailer (Gmail SMTP)                           │
+│  SendEmailService (services/email/) ──→ Nodemailer (Gmail SMTP)          │
 │  LoginHistoryService ──→ MongoDB (login-history collection)              │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
@@ -54,18 +54,16 @@ Feature Forgot Password được xây dựng theo đúng architecture hiện có
 
 ### MongoDB - Không tạo bảng mới
 
-Sử dụng collection `authentication` hiện có. Cần thêm method `updatePassword` vào `AuthenticationRepository`.
+Sử dụng `AuthenticationService` hiện có. Service gọi `authService.updatePassword(authId, hashedPassword)` để cập nhật password.
 
 ```typescript
-// Thêm vào AuthenticationRepository
-async updatePassword(authId: string, hashedPassword: string): Promise<void> {
-  await this.db.findByIdAndUpdate(authId, { password: hashedPassword });
-}
+// AuthenticationService (đã có sẵn)
+async updatePassword(authId: string, hashedPassword: string): Promise<void>
 ```
 
 ### Redis - Keys mới
 
-Tất cả keys sử dụng pattern: `{prefix}:{email}` (giống login module).
+Tất cả keys sử dụng pattern: `{prefix}:{email}`, định nghĩa trong `constants/redis/store/index.ts`.
 
 | Key Pattern                           | Value          | TTL       | Mô tả                           |
 | ------------------------------------- | -------------- | --------- | -------------------------------- |
@@ -252,34 +250,31 @@ Response 401 (reset token sai / hết hạn):
 
 ```
 1. Client POST /forgot-password/otp/send { email }
-2. Rate limiter check (IP + email)
-3. Validator check email format → nếu sai → 422
-4. Service:
-   a. Check cooldown → nếu chưa hết → 400
-   b. Check resend limit → nếu vượt → 400
-   c. Tìm auth record bằng email
-   d. Nếu email KHÔNG tồn tại hoặc inactive → trả success giả (không gửi email)
+2. Rate limiter check (rl.forgotPasswordOtpByIp, rl.forgotPasswordOtpByEmail)
+3. bodyPipe(fpOtpSendSchema) check email format → nếu sai → 422
+4. Controller gọi service.sendOtp(req):
+   a. Helper ensureOtpCooldownExpired() → nếu chưa hết → 400
+   b. Helper ensureOtpResendLimitNotExceeded() → nếu vượt → 400
+   c. authService.findByEmail(email)
+   d. Nếu email KHÔNG tồn tại hoặc inactive → trả fake success DTO (không gửi email)
    e. Nếu email tồn tại + active:
-      - Tạo OTP 6 số → hash (bcrypt) → lưu Redis (TTL 5 min)
-      - Set cooldown (60s) + increment resend count
-      - Gửi email async (fire-and-forget)
-   f. Trả { success: true, expiresIn: 300, cooldown: 60 }
+      - otpRepo.createAndStoreOtp(email) → tạo OTP 6 số, hash (bcrypt), lưu Redis (TTL 5 min)
+      - withRetry(() => otpRepo.setRateLimits(email)) — fire-and-forget
+      - emailService.send(EmailType.FORGOT_PASSWORD_OTP, ...) — fire-and-forget
+   f. Trả toSendOtpResponseDto(expiresIn, cooldown)
 
 5. Client POST /forgot-password/otp/verify { email, otp }
-6. Validator check email + otp format
-7. Service:
-   a. Check lockout (>= 5 failed attempts) → nếu locked → 400
-   b. Tìm auth record → nếu không có → 401
-   c. Lấy hashed OTP từ Redis → bcrypt compare
+6. bodyPipe(fpOtpVerifySchema) check email + otp format
+7. Controller gọi service.verifyOtp(req):
+   a. Helper ensureOtpNotLocked() (>= 5 failed attempts) → nếu locked → 400
+   b. Helper ensureAuthExists() → nếu không có → 401
+   c. otpRepo.verify(email, otp) → bcrypt compare
    d. Nếu SAI:
-      - Increment failed attempts counter
-      - Record failed login history
-      - Trả 401 kèm remaining attempts
+      - Helper handleInvalidOtp() → trackFailedOtpAttempt + recordFailedLogin → throw error với remaining attempts
    e. Nếu ĐÚNG:
-      - Tạo resetToken (crypto.randomBytes(64).toString('hex'))
-      - Hash resetToken → lưu Redis (TTL 10 min)
-      - Cleanup OTP data (otp, cooldown, failed, resend)
-      - Trả { success: true, resetToken: "plain text" }
+      - resetTokenRepo.createAndStore(email) → tạo token, hash, lưu Redis (TTL 10 min)
+      - withRetry(() => otpRepo.cleanupAll(email)) — fire-and-forget
+      - Trả toVerifyOtpResponseDto(resetToken)
 
 8. Client redirect → /reset-password?email=...&token=...
 ```
@@ -288,31 +283,29 @@ Response 401 (reset token sai / hết hạn):
 
 ```
 1. Client POST /forgot-password/magic-link/send { email }
-2. Rate limiter check (IP + email)
-3. Validator check email format
-4. Service:
-   a. Check cooldown → nếu chưa hết → 400
-   b. Check resend limit → nếu vượt → 400
-   c. Tìm auth record bằng email
-   d. Nếu email KHÔNG tồn tại hoặc inactive → trả success giả
+2. Rate limiter check (rl.forgotPasswordMagicLinkByIp, rl.forgotPasswordMagicLinkByEmail)
+3. bodyPipe(fpMagicLinkSendSchema) check email format
+4. Controller gọi service.sendMagicLink(req):
+   a. Helper ensureMagicLinkCooldownExpired() → nếu chưa hết → 400
+   b. Helper ensureMagicLinkResendLimitNotExceeded() → nếu vượt → 400
+   c. authService.findByEmail(email)
+   d. Nếu email KHÔNG tồn tại hoặc inactive → trả fake success DTO
    e. Nếu email tồn tại + active:
-      - Tạo magic link token (crypto.randomBytes(64).toString('hex'))
-      - Hash → lưu Redis (TTL 15 min)
-      - Set cooldown + increment resend count
-      - Build URL: {CLIENT_URL}/reset-password?email=...&token=...&method=magic-link
-      - Gửi email async
-   f. Trả { success: true, expiresIn: 900, cooldown: 60 }
+      - magicLinkRepo.createAndStoreToken(email) → tạo token, hash, lưu Redis (TTL 15 min)
+      - withRetry(() => magicLinkRepo.setRateLimits(email)) — fire-and-forget
+      - Helper sendMagicLinkEmail() → build URL: {CLIENT_URL}/reset-password?email=...&token=...&method=magic-link → emailService.send() — fire-and-forget
+   f. Trả toSendMagicLinkResponseDto(expiresIn, cooldown)
 
 5. User click link trong email → GET /reset-password?email=...&token=...&method=magic-link
 6. Client detect method=magic-link → POST /forgot-password/magic-link/verify { email, token }
-7. Service:
-   a. Tìm auth record → nếu không có → 401
-   b. Lấy hashed token từ Redis → bcrypt compare
-   c. Nếu SAI → record failed login → 401
+7. Controller gọi service.verifyMagicLink(req):
+   a. Helper ensureAuthExists() → nếu không có → 401
+   b. magicLinkRepo.verifyToken(email, token) → bcrypt compare
+   c. Nếu SAI → Helper handleInvalidMagicLink() → recordFailedLogin → throw 401
    d. Nếu ĐÚNG:
-      - Tạo resetToken → hash → lưu Redis (TTL 10 min)
-      - Cleanup magic link data
-      - Trả { success: true, resetToken: "plain text" }
+      - resetTokenRepo.createAndStore(email) → tạo token, hash, lưu Redis (TTL 10 min)
+      - withRetry(() => magicLinkRepo.cleanupAll(email)) — fire-and-forget
+      - Trả toVerifyMagicLinkResponseDto(resetToken)
 8. Client thay token trong URL bằng resetToken → hiển thị form
 ```
 
@@ -320,19 +313,18 @@ Response 401 (reset token sai / hết hạn):
 
 ```
 1. Client POST /forgot-password/reset { email, resetToken, newPassword }
-2. Rate limiter check (IP)
-3. Validator check email + resetToken + newPassword format/strength
-4. Service:
-   a. Lấy hashed resetToken từ Redis → bcrypt compare
-   b. Nếu KHÔNG hợp lệ → 401
+2. Rate limiter check (rl.forgotPasswordResetByIp)
+3. bodyPipe(fpResetPasswordSchema) check email + resetToken + newPassword format/strength
+4. Controller gọi service.resetPassword(req):
+   a. resetTokenRepo.verify(email, resetToken) → bcrypt compare
+   b. Nếu KHÔNG hợp lệ → throw UnauthorizedError
    c. Nếu hợp lệ:
-      - Tìm auth record bằng email
-      - Hash newPassword (bcrypt)
-      - Update password trong MongoDB
-      - Xóa resetToken khỏi Redis
-      - Invalidate tất cả session (xóa refresh tokens nếu có)
-      - Record successful password reset vào login-history
-      - Trả { success: true }
+      - Helper ensureAuthExists() → tìm auth record
+      - hashValue(newPassword) (bcrypt)
+      - authService.updatePassword(authId, hashedPassword) → update password + passwordChangedAt trong MongoDB
+      - resetTokenRepo.clear(email) → xóa resetToken khỏi Redis
+      - loginHistoryService.recordSuccessfulLogin() với LOGIN_METHODS.FORGOT_PASSWORD — fire-and-forget
+      - Trả toResetPasswordResponseDto()
 5. Client hiển thị toast success → redirect → /login
 ```
 
@@ -345,27 +337,42 @@ Response 401 (reset token sai / hết hạn):
 ```
 server/src/
 ├── modules/forgot-password/
-│   ├── forgot-password.controller.ts       # 5 route handlers
-│   ├── forgot-password.service.ts          # Business logic
 │   ├── forgot-password.module.ts           # DI wiring, export router
+│   ├── forgot-password.controller.ts       # 5 route handlers
+│   ├── forgot-password.routes.ts           # Route wiring: rate limiter → bodyPipe → asyncHandler
+│   ├── forgot-password.service.ts          # Business logic, trả về DTOs
+│   ├── forgot-password.helper.ts           # Pure helper functions cho service
 │   ├── repositories/
 │   │   ├── otp-forgot-password.repository.ts          # Redis: OTP CRUD
 │   │   ├── magic-link-forgot-password.repository.ts   # Redis: magic link CRUD
 │   │   └── reset-token.repository.ts                  # Redis: reset token CRUD
+│   ├── dtos/
+│   │   ├── index.ts                        # Barrel export tất cả DTOs
+│   │   ├── send-otp.dto.ts                 # SendOtpResponseDto + toSendOtpResponseDto()
+│   │   ├── verify-otp.dto.ts              # VerifyOtpResponseDto + toVerifyOtpResponseDto()
+│   │   ├── send-magic-link.dto.ts         # SendMagicLinkResponseDto + toSendMagicLinkResponseDto()
+│   │   ├── verify-magic-link.dto.ts       # VerifyMagicLinkResponseDto + toVerifyMagicLinkResponseDto()
+│   │   └── reset-password.dto.ts          # ResetPasswordResponseDto + toResetPasswordResponseDto()
 │   └── swagger/
 │       ├── index.ts                        # Swagger export
 │       ├── paths.ts                        # OpenAPI paths
-│       └── schemas.ts                      # OpenAPI schemas
-├── modules/send-email/templates/
-│   └── forgot-password-otp.tsx             # Forgot password OTP email template
+│       └── schemas.ts                      # OpenAPI schemas (dùng joi-to-swagger)
+├── services/email/
+│   ├── email.service.ts                    # SendEmailService
+│   ├── email.types.ts                      # EmailType enum
+│   └── templates/
+│       ├── forgot-password-otp.tsx         # Forgot password OTP email template
+│       └── magic-link.tsx                  # Magic link email template (dùng chung)
 ├── types/modules/
-│   └── forgot-password.ts                  # Request/Response types
+│   └── forgot-password.ts                  # Request types: FPOtpSendRequest, FPOtpVerifyRequest, ...
 ├── validators/schemas/
-│   └── forgot-password.ts                  # Joi schemas cho 5 endpoints
-├── repositories/
-│   └── authentication.repository.ts        # Có method updatePassword(authId, hashedPassword)
+│   └── forgot-password.ts                  # Joi schemas: fpOtpSendSchema, fpOtpVerifySchema, ...
+├── constants/
+│   ├── modules/forgot-password/index.ts    # FORGOT_PASSWORD_OTP_CONFIG, FORGOT_PASSWORD_MAGIC_LINK_CONFIG, FORGOT_PASSWORD_RESET_TOKEN_CONFIG
+│   └── redis/store/index.ts               # FORGOT_PASSWORD Redis key prefixes
 ├── middlewares/
-│   └── auth.guard.ts                       # Kiểm tra passwordChangedAt sau khi reset password
+│   ├── pipes/validation.pipe.ts           # bodyPipe(schema) middleware
+│   └── index.ts                           # Export bodyPipe, RateLimiterMiddleware type
 └── i18n/locales/
     ├── en/forgotPassword.json              # English messages
     └── vi/forgotPassword.json             # Vietnamese messages
@@ -411,138 +418,276 @@ client/src/
 
 ### 3.7.1. OtpForgotPasswordRepository
 
-Clone pattern từ `OtpLoginRepository`. Khác biệt:
-- Dùng Redis keys prefix `otp-forgot-pw` thay vì `otp-login`
-- Dùng config `FORGOT_PASSWORD_OTP_CONFIG` thay vì `LOGIN_OTP_CONFIG`
-- Các methods giống hệt: `createAndStoreOtp`, `verify`, `storeHashed`, `clearOtp`, `checkCooldown`, `getCooldownRemaining`, `setCooldown`, `incrementFailedAttempts`, `isLocked`, `incrementResendCount`, `hasExceededResendLimit`, `setRateLimits`, `cleanupAll`
+Định nghĩa type contract `OtpForgotPasswordRepository` và class `RedisOtpForgotPasswordRepository` implement nó. Sử dụng Redis client trực tiếp (không extend `RedisCache`).
+
+**Config:** `FORGOT_PASSWORD_OTP_CONFIG` từ `constants/modules/forgot-password`.
+
+**Redis key prefixes:** `FORGOT_PASSWORD.OTP`, `FORGOT_PASSWORD.OTP_COOLDOWN`, `FORGOT_PASSWORD.OTP_FAILED_ATTEMPTS`, `FORGOT_PASSWORD.OTP_RESEND_COUNT` từ `constants/redis/store`.
+
+```typescript
+type OtpForgotPasswordRepository = {
+  readonly OTP_EXPIRY_SECONDS: number;    // 5 * 60 = 300
+  readonly OTP_COOLDOWN_SECONDS: number;  // 60
+
+  createOtp(): string;
+  storeHashed(email: string, otp: string, expiry: number): Promise<void>;
+  clearOtp(email: string): Promise<void>;
+  verify(email: string, otp: string): Promise<boolean>;
+  checkCooldown(email: string): Promise<boolean>;
+  getCooldownRemaining(email: string): Promise<number>;
+  setCooldown(email: string, seconds: number): Promise<void>;
+  clearCooldown(email: string): Promise<void>;
+  incrementFailedAttempts(email: string): Promise<number>;
+  getFailedAttemptCount(email: string): Promise<number>;
+  clearFailedAttempts(email: string): Promise<void>;
+  isLocked(email: string): Promise<boolean>;
+  incrementResendCount(email: string, windowSeconds: number): Promise<number>;
+  getResendAttemptCount(email: string): Promise<number>;
+  clearResendCount(email: string): Promise<void>;
+  hasExceededResendLimit(email: string): Promise<boolean>;
+  createAndStoreOtp(email: string): Promise<string>;
+  setRateLimits(email: string): Promise<void>;
+  cleanupAll(email: string): Promise<void>;
+};
+```
 
 ### 3.7.2. MagicLinkForgotPasswordRepository
 
-Clone pattern từ `MagicLinkLoginRepository`. Khác biệt:
-- Dùng Redis keys prefix `ml-forgot-pw` thay vì `magic-link-login`
-- Dùng config `FORGOT_PASSWORD_MAGIC_LINK_CONFIG`
-- Thêm `resendCount` operations (login magic link không có)
-- Methods: `createAndStoreToken`, `verifyToken`, `checkCooldown`, `getCooldownRemaining`, `setCooldownAfterSend`, `incrementResendCount`, `hasExceededResendLimit`, `cleanupAll`
+Định nghĩa type contract `MagicLinkForgotPasswordRepository` và class `RedisMagicLinkForgotPasswordRepository` implement nó.
 
-### 3.7.3. ResetTokenRepository (MỚI)
+**Config:** `FORGOT_PASSWORD_MAGIC_LINK_CONFIG` từ `constants/modules/forgot-password`.
+
+**Redis key prefixes:** `FORGOT_PASSWORD.MAGIC_LINK`, `FORGOT_PASSWORD.MAGIC_LINK_COOLDOWN`, `FORGOT_PASSWORD.MAGIC_LINK_RESEND_COUNT` từ `constants/redis/store`.
 
 ```typescript
-class ResetTokenRepository extends RedisCache {
-  // Key: "reset-token:{email}" → bcrypt hash of token
-  // TTL: 10 minutes
+type MagicLinkForgotPasswordRepository = {
+  readonly MAGIC_LINK_EXPIRY_SECONDS: number;    // 15 * 60 = 900
+  readonly MAGIC_LINK_COOLDOWN_SECONDS: number;  // 60
 
-  createToken(): string
-  // crypto.randomBytes(64).toString('hex') → 128-char hex
+  createToken(): string;
+  storeHashed(email: string, token: string, expiry: number): Promise<void>;
+  verifyToken(email: string, token: string): Promise<boolean>;
+  clearToken(email: string): Promise<void>;
+  checkCooldown(email: string): Promise<boolean>;
+  getCooldownRemaining(email: string): Promise<number>;
+  setCooldown(email: string, seconds: number): Promise<void>;
+  clearCooldown(email: string): Promise<void>;
+  incrementResendCount(email: string, windowSeconds: number): Promise<number>;
+  getResendAttemptCount(email: string): Promise<number>;
+  clearResendCount(email: string): Promise<void>;
+  hasExceededResendLimit(email: string): Promise<boolean>;
+  createAndStoreToken(email: string): Promise<string>;
+  setRateLimits(email: string): Promise<void>;
+  cleanupAll(email: string): Promise<void>;
+};
+```
 
-  async storeHashed(email: string, token: string): Promise<void>
+### 3.7.3. ResetTokenRepository
+
+Định nghĩa type contract `ResetTokenRepository` và class `RedisResetTokenRepository` implement nó.
+
+**Config:** `FORGOT_PASSWORD_RESET_TOKEN_CONFIG` từ `constants/modules/forgot-password`.
+
+**Redis key prefix:** `FORGOT_PASSWORD.RESET_TOKEN` từ `constants/redis/store`.
+
+```typescript
+type ResetTokenRepository = {
+  readonly RESET_TOKEN_EXPIRY_SECONDS: number;  // 10 * 60 = 600
+
+  createToken(): string;
+  // generateSecureToken(64) → 128-char hex
+  storeHashed(email: string, token: string): Promise<void>;
   // hash token → Redis setEx (TTL 10 min)
-
-  async verify(email: string, token: string): Promise<boolean>
+  verify(email: string, token: string): Promise<boolean>;
   // get hash from Redis → bcrypt compare
-
-  async clear(email: string): Promise<void>
+  clear(email: string): Promise<void>;
   // Redis del
-}
+  createAndStore(email: string): Promise<string>;
+  // clear old → createToken → storeHashed → return plain token
+};
 ```
 
 ---
 
-## 3.8. Chi tiết ForgotPasswordService
+## 3.8. Chi tiết ForgotPasswordHelper
+
+Helper chứa các pure functions được service sử dụng, tách ra để giữ service methods ngắn gọn.
+
+```typescript
+// forgot-password.helper.ts — exported functions
+
+// OTP send helpers
+ensureOtpCooldownExpired(otpRepo, email, t): Promise<void>
+  // otpRepo.checkCooldown → nếu chưa hết → throw BadRequestError
+
+ensureOtpResendLimitNotExceeded(otpRepo, email, t): Promise<void>
+  // otpRepo.hasExceededResendLimit → nếu vượt → throw BadRequestError
+
+// OTP verify helpers
+ensureAuthExists(authService, email, t): Promise<AuthenticationDocument>
+  // authService.findByEmail → nếu không có → throw UnauthorizedError
+
+ensureOtpNotLocked(otpRepo, email, t): Promise<void>
+  // otpRepo.isLocked → nếu locked → throw BadRequestError với lockout duration
+
+handleInvalidOtp(otpRepo, loginHistoryService, email, auth, t, req): Promise<never>
+  // trackFailedOtpAttempt (increment + recordFailedLogin)
+  // Nếu remaining <= 0 → throw BadRequestError (locked)
+  // Nếu còn → throw UnauthorizedError với remaining attempts
+
+// Magic link send helpers
+sendMagicLinkEmail(emailService, email, token, language): void
+  // Build URL: {CLIENT_URL}/reset-password?email=...&token=...&method=magic-link
+  // emailService.send(EmailType.MAGIC_LINK, ...) — fire-and-forget
+
+ensureMagicLinkCooldownExpired(magicLinkRepo, email, t): Promise<void>
+  // magicLinkRepo.checkCooldown → nếu chưa hết → throw BadRequestError
+
+ensureMagicLinkResendLimitNotExceeded(magicLinkRepo, email, t): Promise<void>
+  // magicLinkRepo.hasExceededResendLimit → nếu vượt → throw BadRequestError
+
+// Magic link verify helpers
+handleInvalidMagicLink(loginHistoryService, email, auth, req, t): never
+  // recordFailedLogin → throw UnauthorizedError
+```
+
+---
+
+## 3.9. Chi tiết ForgotPasswordService
 
 ```typescript
 class ForgotPasswordService {
   constructor(
-    authRepo: AuthenticationRepository,
+    authService: AuthenticationService,
     loginHistoryService: LoginHistoryService,
     otpRepo: OtpForgotPasswordRepository,
     magicLinkRepo: MagicLinkForgotPasswordRepository,
-    resetTokenRepo: ResetTokenRepository
+    resetTokenRepo: ResetTokenRepository,
+    emailService: SendEmailService
   )
 
-  // ── Send OTP ──
-  async sendOtp(req): Promise<ResponsePattern<OtpSendResponse>>
-  // 1. checkCooldown → 2. checkResendLimit → 3. findAuth
-  // 4. Nếu không tồn tại/inactive → return fake success
-  // 5. createAndStoreOtp → 6. setRateLimits → 7. sendEmail → 8. return success
+  // ── Send OTP ── trả về SendOtpResponseDto
+  async sendOtp(req: FPOtpSendRequest): Promise<SendOtpResponseDto>
+  // 1. ensureOtpCooldownExpired → 2. ensureOtpResendLimitNotExceeded
+  // 3. authService.findByEmail
+  // 4. Nếu không tồn tại/inactive → return toSendOtpResponseDto() (fake success)
+  // 5. otpRepo.createAndStoreOtp → 6. withRetry(setRateLimits) → 7. emailService.send
+  // 8. return toSendOtpResponseDto()
 
-  // ── Verify OTP ──
-  async verifyOtp(req): Promise<ResponsePattern<VerifyResponse>>
-  // 1. checkLockout → 2. findAuth → 3. verify OTP
-  // 4. Nếu sai → trackFailed → throw error
-  // 5. Nếu đúng → createResetToken → cleanupOtp → return resetToken
+  // ── Verify OTP ── trả về VerifyOtpResponseDto
+  async verifyOtp(req: FPOtpVerifyRequest): Promise<VerifyOtpResponseDto>
+  // 1. ensureOtpNotLocked → 2. ensureAuthExists → 3. otpRepo.verify
+  // 4. Nếu sai → handleInvalidOtp (throw error)
+  // 5. Nếu đúng → resetTokenRepo.createAndStore → withRetry(otpRepo.cleanupAll)
+  // 6. return toVerifyOtpResponseDto(resetToken)
 
-  // ── Send Magic Link ──
-  async sendMagicLink(req): Promise<ResponsePattern<MagicLinkSendResponse>>
+  // ── Send Magic Link ── trả về SendMagicLinkResponseDto
+  async sendMagicLink(req: FPMagicLinkSendRequest): Promise<SendMagicLinkResponseDto>
   // Pattern giống sendOtp nhưng tạo magic link URL thay vì OTP
+  // Dùng sendMagicLinkEmail() helper, withRetry(magicLinkRepo.setRateLimits)
 
-  // ── Verify Magic Link ──
-  async verifyMagicLink(req): Promise<ResponsePattern<VerifyResponse>>
-  // 1. findAuth → 2. verify token
-  // 3. Nếu sai → record failed → throw error
-  // 4. Nếu đúng → createResetToken → cleanupMagicLink → return resetToken
+  // ── Verify Magic Link ── trả về VerifyMagicLinkResponseDto
+  async verifyMagicLink(req: FPMagicLinkVerifyRequest): Promise<VerifyMagicLinkResponseDto>
+  // 1. ensureAuthExists → 2. magicLinkRepo.verifyToken
+  // 3. Nếu sai → handleInvalidMagicLink (throw error)
+  // 4. Nếu đúng → resetTokenRepo.createAndStore → withRetry(magicLinkRepo.cleanupAll)
+  // 5. return toVerifyMagicLinkResponseDto(resetToken)
 
-  // ── Reset Password ──
-  async resetPassword(req): Promise<ResponsePattern<{ success: true }>>
-  // 1. verify resetToken → 2. findAuth
-  // 3. hash newPassword → 4. updatePassword in MongoDB
-  // 5. clearResetToken → 6. invalidateSessions → 7. recordHistory → 8. return success
-
-  // ── Private helpers ──
-  private async createAndReturnResetToken(email: string): Promise<string>
-  // Tạo token → hash → lưu Redis → return plain token
-
-  private async invalidateAllSessions(authId: string): Promise<void>
-  // TODO: Xóa refresh tokens (tùy cách lưu session hiện tại)
+  // ── Reset Password ── trả về ResetPasswordResponseDto
+  async resetPassword(req: FPResetPasswordRequest): Promise<ResetPasswordResponseDto>
+  // 1. resetTokenRepo.verify → 2. nếu sai → throw UnauthorizedError
+  // 3. ensureAuthExists → 4. hashValue(newPassword)
+  // 5. authService.updatePassword(authId, hashedPassword)
+  // 6. resetTokenRepo.clear(email)
+  // 7. loginHistoryService.recordSuccessfulLogin() (fire-and-forget)
+  // 8. return toResetPasswordResponseDto()
 }
 ```
 
 ---
 
-## 3.9. Xử lý Anti-Enumeration
+## 3.10. Chi tiết ForgotPasswordModule
+
+Module factory wires tất cả dependencies và trả về router:
+
+```typescript
+// forgot-password.module.ts
+createForgotPasswordModule(
+  redisClient: RedisClientType,
+  authService: AuthenticationService,
+  loginHistorySvc: LoginHistoryService,
+  emailService: SendEmailService,
+  rateLimiter: RateLimiterMiddleware
+) => { forgotPasswordRouter: Router }
+```
+
+Dependency graph:
+1. Tạo 3 Redis repositories: `RedisOtpForgotPasswordRepository`, `RedisMagicLinkForgotPasswordRepository`, `RedisResetTokenRepository`
+2. Tạo `ForgotPasswordService` với 6 dependencies (authService, loginHistorySvc, otpRepo, magicLinkRepo, resetTokenRepo, emailService)
+3. Tạo `ForgotPasswordController` với service
+4. Gọi `createForgotPasswordRoutes(controller, rateLimiter)` → trả về router
+
+---
+
+## 3.11. Chi tiết ForgotPasswordRoutes
+
+```typescript
+// forgot-password.routes.ts
+createForgotPasswordRoutes(controller, rl: RateLimiterMiddleware): Router
+
+// POST /otp/send
+//   rl.forgotPasswordOtpByIp → rl.forgotPasswordOtpByEmail → bodyPipe(fpOtpSendSchema) → asyncHandler(controller.sendOtp)
+
+// POST /otp/verify
+//   rl.forgotPasswordOtpByIp → bodyPipe(fpOtpVerifySchema) → asyncHandler(controller.verifyOtp)
+
+// POST /magic-link/send
+//   rl.forgotPasswordMagicLinkByIp → rl.forgotPasswordMagicLinkByEmail → bodyPipe(fpMagicLinkSendSchema) → asyncHandler(controller.sendMagicLink)
+
+// POST /magic-link/verify
+//   rl.forgotPasswordMagicLinkByIp → bodyPipe(fpMagicLinkVerifySchema) → asyncHandler(controller.verifyMagicLink)
+
+// POST /reset
+//   rl.forgotPasswordResetByIp → bodyPipe(fpResetPasswordSchema) → asyncHandler(controller.resetPassword)
+```
+
+---
+
+## 3.12. Xử lý Anti-Enumeration
 
 Khi email không tồn tại hoặc account inactive, service sẽ:
 
 1. **Không throw error** (khác với login flow hiện tại)
-2. **Return cùng response format** như khi email tồn tại
+2. **Return cùng response format** như khi email tồn tại (cùng DTO)
 3. **Không gửi email** thực tế
-4. **Vẫn apply cooldown** nếu muốn (optional - để attacker không nhận ra qua timing)
+4. **Log thông tin** "fake success" để debug
 
 ```typescript
-// Pseudo code
-async sendOtp(req) {
-  // ... check cooldown, resend limit (luôn check trước) ...
+// Trong sendOtp / sendMagicLink
+const auth = await this.authService.findByEmail(email);
 
-  const auth = await this.authRepo.findByEmail(email);
-
-  if (!auth || !auth.isActive) {
-    Logger.info("Forgot password OTP - email not found or inactive (fake success)", { email });
-    // Trả success giả với cùng format
-    return {
-      message: t("forgotPassword:success.otpSent"),
-      data: { success: true, expiresIn: 300, cooldown: 60 }
-    };
-  }
-
-  // ... tạo OTP thật, gửi email ...
+if (!auth || !auth.isActive) {
+  Logger.info("Forgot password OTP - email not found or inactive (fake success)", { email });
+  return toSendOtpResponseDto(
+    this.otpRepo.OTP_EXPIRY_SECONDS,
+    this.otpRepo.OTP_COOLDOWN_SECONDS
+  );
 }
 ```
 
 ---
 
-## 3.10. Session Invalidation Strategy
+## 3.13. Session Invalidation Strategy
 
-Sau khi reset password, cần invalidate tất cả session hiện tại. Cách tiếp cận phụ thuộc vào cách lưu session:
+Sau khi reset password, cần invalidate tất cả session hiện tại.
 
-**Hiện tại:** Hệ thống dùng JWT stateless (access token + refresh token trong HttpOnly cookie). Không có server-side session store cho refresh tokens.
-
-**Approach đề xuất:** Thêm `passwordChangedAt` field vào Authentication model. Khi verify access token, kiểm tra `iat` (issued at) < `passwordChangedAt` → reject token.
+**Approach:** `authService.updatePassword()` đồng thời cập nhật `passwordChangedAt` field trong Authentication model. Khi verify access token, auth middleware kiểm tra `iat` (issued at) < `passwordChangedAt` → reject token.
 
 ```typescript
-// Thêm vào Authentication model
-passwordChangedAt: { type: Date, default: null }
-
-// Khi reset password
-await this.authRepo.updatePasswordAndTimestamp(authId, hashedPassword);
+// Khi reset password — trong service
+const hashedPassword = hashValue(newPassword);
+await this.authService.updatePassword(auth._id.toString(), hashedPassword);
+// authService.updatePassword cập nhật cả password lẫn passwordChangedAt
 
 // Trong auth middleware (kiểm tra khi verify JWT)
 if (auth.passwordChangedAt && tokenIssuedAt < auth.passwordChangedAt) {
@@ -552,24 +697,77 @@ if (auth.passwordChangedAt && tokenIssuedAt < auth.passwordChangedAt) {
 
 ---
 
-## 3.11. Dependencies & Integrations
+## 3.14. Constants
 
-| Dependency           | Loại     | Mô tả                                    | Đã có? |
-| -------------------- | -------- | ---------------------------------------- | ------ |
-| Redis                | Internal | Lưu OTP, magic link, reset token (hashed) | ✅ Có  |
-| MongoDB              | Internal | Update password, đọc auth record          | ✅ Có  |
-| Nodemailer (Gmail)   | External | Gửi OTP/magic link email                  | ✅ Có  |
-| bcrypt               | Library  | Hash OTP, token, password                 | ✅ Có  |
-| crypto               | Node.js  | Tạo secure random token                   | ✅ Có  |
-| Joi                  | Library  | Validate request input                    | ✅ Có  |
-| React Email          | Library  | Render email template                     | ✅ Có  |
-| LoginHistoryService  | Internal | Ghi log reset password                    | ✅ Có  |
+```typescript
+// constants/modules/forgot-password/index.ts
+
+export const FORGOT_PASSWORD_OTP_CONFIG = {
+  LENGTH: 6,                      // OTP 6 chữ số
+  EXPIRY_MINUTES: 5,              // OTP hết hạn sau 5 phút
+  COOLDOWN_SECONDS: 60,           // Cooldown 60 giây giữa các lần gửi
+  MAX_FAILED_ATTEMPTS: 5,         // Khóa sau 5 lần sai
+  MAX_RESEND_ATTEMPTS: 3,         // Tối đa 3 lần gửi lại
+  LOCKOUT_DURATION_MINUTES: 15    // Khóa 15 phút
+} as const;
+
+export const FORGOT_PASSWORD_MAGIC_LINK_CONFIG = {
+  TOKEN_LENGTH: 64,               // 64 bytes → 128-char hex
+  EXPIRY_MINUTES: 15,             // Magic link hết hạn sau 15 phút
+  COOLDOWN_SECONDS: 60,           // Cooldown 60 giây
+  MAX_RESEND_ATTEMPTS: 3          // Tối đa 3 lần gửi lại
+} as const;
+
+export const FORGOT_PASSWORD_RESET_TOKEN_CONFIG = {
+  TOKEN_LENGTH: 64,               // 64 bytes → 128-char hex
+  EXPIRY_MINUTES: 10              // Reset token hết hạn sau 10 phút
+} as const;
+```
+
+---
+
+## 3.15. Validation Schemas
+
+```typescript
+// validators/schemas/forgot-password.ts — sử dụng Joi
+
+fpOtpSendSchema       = { email: emailSchema.required() }
+fpOtpVerifySchema     = { email: emailSchema.required(), otp: otpSchema.required() }
+fpMagicLinkSendSchema = { email: emailSchema.required() }
+fpMagicLinkVerifySchema = {
+  email: emailSchema.required(),
+  token: Joi.string().length(128).pattern(/^[a-f0-9]+$/).required()  // 64 bytes * 2
+}
+fpResetPasswordSchema = {
+  email: emailSchema.required(),
+  resetToken: Joi.string().length(128).pattern(/^[a-f0-9]+$/).required(),
+  newPassword: passwordSchema.required()
+}
+```
+
+---
+
+## 3.16. Dependencies & Integrations
+
+| Dependency             | Loại     | Mô tả                                    | Đã có? |
+| ---------------------- | -------- | ---------------------------------------- | ------ |
+| Redis                  | Internal | Lưu OTP, magic link, reset token (hashed) | ✅ Có  |
+| MongoDB                | Internal | Update password, đọc auth record          | ✅ Có  |
+| Nodemailer (Gmail)     | External | Gửi OTP/magic link email                  | ✅ Có  |
+| bcrypt                 | Library  | Hash OTP, token, password                 | ✅ Có  |
+| crypto                 | Node.js  | Tạo secure random token                   | ✅ Có  |
+| Joi                    | Library  | Validate request input                    | ✅ Có  |
+| joi-to-swagger         | Library  | Convert Joi schema → OpenAPI schema       | ✅ Có  |
+| React Email            | Library  | Render email template                     | ✅ Có  |
+| AuthenticationService  | Internal | findByEmail, updatePassword               | ✅ Có  |
+| LoginHistoryService    | Internal | Ghi log reset password                    | ✅ Có  |
+| SendEmailService       | Internal | Gửi email (services/email/)               | ✅ Có  |
 
 **Không cần thêm package mới.**
 
 ---
 
-## 3.12. Migration & Deployment Strategy
+## 3.17. Migration & Deployment Strategy
 
 **Feature flag:** Không cần. Feature này là module mới, mount thêm route, không ảnh hưởng code hiện tại.
 
@@ -583,6 +781,6 @@ if (auth.passwordChangedAt && tokenIssuedAt < auth.passwordChangedAt) {
 
 ---
 
-## 3.13. Trạng thái implement
+## 3.18. Trạng thái implement
 
 ✅ Tất cả server-side và client-side đã được implement đầy đủ.

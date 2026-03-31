@@ -4,28 +4,29 @@
 
 ## 3.1. Tổng quan kỹ thuật (Technical Overview)
 
-Send Email là service-only module cung cấp khả năng gửi email cho toàn bộ hệ thống. Sử dụng React Email để render template thành HTML, Nodemailer để gửi qua Gmail SMTP. Service dùng generic types để đảm bảo type-safety cho từng loại email. Singleton pattern cho transport instance với connection pooling và rate limiting.
+Send Email là service-only module cung cấp khả năng gửi email cho toàn bộ hệ thống. Sử dụng React Email để render template thành HTML, Nodemailer để gửi qua Gmail SMTP. Service dùng generic types để đảm bảo type-safety cho từng loại email (5 loại). Singleton pattern cho transport instance với connection pooling và rate limiting.
 
 ---
 
 ## 3.2. Kiến trúc tổng quan (Architecture Overview)
 
 ```
-Calling Modules                  Send Email Module
-┌──────────────┐                 ┌──────────────────────────────────────┐
-│ LoginService │──send()──────▶  │ SendEmailService                     │
-│ SignupService│──send()──────▶  │   ├── renderTemplate(type, options)  │
-│ UnlockService│──send()──────▶  │   │     ├── LoginOtpEmail            │
-└──────────────┘                 │   │     ├── SignupOtpEmail           │
-                                 │   │     ├── MagicLinkEmail           │
-                                 │   │     └── UnlockTempPasswordEmail  │
-                                 │   ├── getSubject(type, locale)       │
-                                 │   │     └── i18n translations        │
-                                 │   └── transport.sendRawEmail()       │
-                                 │         ↓                            │
-                                 │   NodemailerTransport (Singleton)    │
-                                 │     └── Gmail SMTP (pool: 5 conn)    │
-                                 └──────────────────────────────────────┘
+Calling Modules                  Email Service
+┌──────────────┐                 ┌───────────────────────────────────────┐
+│ LoginService │──send()──────▶  │ SendEmailService                      │
+│ SignupService│──send()──────▶  │   ├── renderTemplate(type, options)   │
+│ UnlockService│──send()──────▶  │   │     ├── LoginOtpEmail             │
+│ ForgotPwServ │──send()──────▶  │   │     ├── SignupOtpEmail            │
+└──────────────┘                 │   │     ├── MagicLinkEmail            │
+                                 │   │     ├── UnlockTempPasswordEmail   │
+                                 │   │     └── ForgotPasswordOtpEmail    │
+                                 │   ├── getSubject(type, locale)        │
+                                 │   │     └── getEmailT() translations  │
+                                 │   └── transport.sendRawEmail()        │
+                                 │         ↓                             │
+                                 │   NodemailerTransport (Singleton)     │
+                                 │     └── Gmail SMTP (pool: 5 conn)     │
+                                 └───────────────────────────────────────┘
 ```
 
 ---
@@ -48,6 +49,9 @@ Không tương tác với database. Module này chỉ gửi email.
 
 // UNLOCK_TEMP_PASSWORD
 { tempPassword: string, loginUrl: string }
+
+// FORGOT_PASSWORD_OTP
+{ otp: string, expiryMinutes: number }
 ```
 
 ---
@@ -65,7 +69,7 @@ send<T extends EmailType>(type: T, options: SendEmailOptions<T>): void
 {
   email: string;              // Địa chỉ email người nhận
   data: EmailDataMap[T];      // Data tương ứng với email type
-  locale?: "vi" | "en";      // Ngôn ngữ (default: "vi")
+  locale?: I18n.Locale;       // Ngôn ngữ (default: "vi")
 }
 ```
 
@@ -82,7 +86,7 @@ send<T extends EmailType>(type: T, options: SendEmailOptions<T>): void
       - Truyền data và locale vào component
       - render() → HTML string
    b. getSubject(type, locale):
-      - Lấy translations theo locale (default: "vi")
+      - getEmailT(locale) lấy translations theo locale (default: "vi")
       - Return subject string theo email type
    c. transport.sendRawEmail({ to, subject, htmlContent }):
       - Nodemailer gửi email qua Gmail SMTP
@@ -97,14 +101,15 @@ send<T extends EmailType>(type: T, options: SendEmailOptions<T>): void
 
 ```
 server/src/
-├── modules/send-email/
-│   ├── send-email.module.ts         # Singleton setup, export service + EmailType
-│   ├── send-email.service.ts        # Business logic (send, renderTemplate, getSubject)
-│   ├── send-email.types.ts          # EmailType enum, data interfaces, SendEmailOptions
-│   ├── send-email.i18n.ts           # getEmailT() — load translations theo locale
+├── services/email/
+│   ├── email.module.ts              # createEmailModule() → { emailService }, export EmailType
+│   ├── email.service.ts             # SendEmailService (send, renderTemplate, getSubject)
+│   ├── email.types.ts               # EmailType enum, data interfaces, SendEmailOptions
+│   ├── email.helper.ts              # getEmailT() — load translations theo locale
 │   └── templates/
 │       ├── login-otp.tsx            # Login OTP email template
 │       ├── signup-otp.tsx           # Signup OTP email template
+│       ├── forgot-password-otp.tsx  # Forgot password OTP email template
 │       ├── magic-link.tsx           # Magic link email template
 │       ├── unlock-temp-password.tsx # Unlock temp password email template
 │       └── components/
@@ -112,10 +117,8 @@ server/src/
 │           ├── otp-block.tsx        # OTP display block (large, dashed border)
 │           ├── info-box.tsx         # Info/warning/danger box component
 │           └── cta-button.tsx       # Call-to-action button (gradient)
-├── core/
-│   ├── EmailTransport.ts            # Abstract class (interface)
-│   └── implements/
-│       └── NodemailerTransport.ts   # Gmail SMTP implementation (singleton, pool)
+├── services/cores/
+│   └── NodemailerTransport.ts       # EmailTransport abstract class + NodemailerTransport (singleton, pool)
 └── i18n/locales/
     ├── en/sendEmail.json            # English translations
     └── vi/sendEmail.json            # Vietnamese translations
@@ -132,7 +135,7 @@ server/src/
 | @react-email/components | Library  | UI components cho email (Text, Button…)   | Responsive email components|
 | Gmail SMTP              | External | Email delivery service                    | Cần App Password           |
 
-**Modules sử dụng send-email:**
+**Modules sử dụng email service:**
 
 | Module          | Email Type           | Khi nào                                  |
 | --------------- | -------------------- | ---------------------------------------- |
@@ -140,24 +143,31 @@ server/src/
 | login           | MAGIC_LINK           | User yêu cầu đăng nhập bằng magic link  |
 | signup          | SIGNUP_OTP           | User đăng ký, cần verify email           |
 | unlock-account  | UNLOCK_TEMP_PASSWORD | User yêu cầu mở khóa tài khoản bị lock  |
+| forgot-password | FORGOT_PASSWORD_OTP  | User yêu cầu reset mật khẩu             |
 
 ---
 
 ## 3.8. Transport Configuration
 
 ```typescript
-// NodemailerTransport (Singleton)
+// NodemailerTransport (Singleton) — services/cores/NodemailerTransport.ts
+// Chứa cả EmailTransport abstract class và NodemailerTransport implementation trong cùng 1 file
+
+const EMAIL_SERVICE = { PROVIDER: "gmail" };
+const EMAIL_POOL = { MAX_CONNECTIONS: 5, MAX_MESSAGES_PER_CONNECTION: 100 };
+const EMAIL_RATE_LIMIT = { PER_SECOND: 5, DELTA_MS: 1000 };
+
 {
   service: "gmail",
   auth: {
-    user: ENV.USERNAME_EMAIL,      // Gmail address
-    pass: ENV.PASSWORD_EMAIL       // Gmail App Password
+    user: config.USERNAME_EMAIL,       // Gmail address
+    pass: config.PASSWORD_EMAIL        // Gmail App Password
   },
-  pool: true,                      // Enable connection pooling
-  maxConnections: 5,               // Max concurrent SMTP connections
-  maxMessages: 100,                // Max messages per connection before reconnect
-  rateDelta: 1000,                 // Rate limit window (ms)
-  rateLimit: 5                     // Max emails per rateDelta
+  pool: true,                          // Enable connection pooling
+  maxConnections: 5,                   // Max concurrent SMTP connections
+  maxMessages: 100,                    // Max messages per connection before reconnect
+  rateDelta: 1000,                     // Rate limit window (ms)
+  rateLimit: 5                         // Max emails per rateDelta
 }
 ```
 
@@ -168,32 +178,32 @@ server/src/
 ### EmailLayout
 
 Shared layout cho tất cả email types:
-- Header gradient (customizable, default: purple)
+- Header gradient (customizable, default: purple `#667eea → #764ba2`)
 - Title text (white on gradient)
-- Content area (padded)
-- Footer (gray background, copyright)
+- Content area (padded `40px 30px`)
+- Footer (gray background `#f8f9fa`, optional copyright)
 
 ### OtpBlock
 
 Hiển thị OTP code:
 - Font size 36px, bold
 - Letter spacing 8px
-- Dashed border, rounded corners
+- Dashed border, rounded corners (8px)
 - Color customizable (default: #667eea)
 
 ### InfoBox
 
 Box thông báo với 3 variants:
-- **warning**: nền vàng, viền vàng, text nâu
-- **danger**: nền đỏ nhạt, viền đỏ, text đỏ đậm
-- **info**: nền xanh nhạt, viền xanh, text xanh đậm
+- **warning**: nền vàng (`#fff3cd`), viền vàng (`#ffc107`), text nâu (`#856404`)
+- **danger**: nền đỏ nhạt (`#f8d7da`), viền đỏ (`#dc3545`), text đỏ đậm (`#721c24`)
+- **info**: nền xanh nhạt (`#dbeafe`), viền xanh (`#3b82f6`), text xanh đậm (`#1e40af`)
 
 ### CtaButton
 
 Button call-to-action:
-- Gradient background (customizable)
-- White text, rounded corners
-- Padding 16px 48px, font 18px bold
+- Gradient background (customizable, default: purple)
+- White text, rounded corners (8px)
+- Padding 16px 48px, font 18px bold (fontWeight 600)
 
 ---
 
