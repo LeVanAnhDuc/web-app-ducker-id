@@ -30,9 +30,9 @@
 | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
 | TC-01.1 | 🟢 Happy | **GIVEN** user có tài khoản active với email đã verify **WHEN** nhập đúng email và mật khẩu **THEN** nhận được access token, refresh token, id token và chuyển vào trang chính                | ⚪         |
 | TC-01.2 | 🟡 Edge  | **GIVEN** user có tài khoản nhưng email chưa verify **WHEN** nhập đúng email và mật khẩu **THEN** hiển thị lỗi yêu cầu verify email trước                                                   | ⚪         |
-| TC-01.3 | 🟡 Edge  | **GIVEN** user đã nhập sai mật khẩu 4 lần (hết free attempts) **WHEN** nhập sai lần thứ 5 **THEN** tài khoản bị lockout 30 giây, hiển thị thời gian chờ                                     | ⚪         |
+| TC-01.3 | 🟡 Edge  | **GIVEN** user đã nhập sai mật khẩu 9 lần **WHEN** nhập sai lần thứ 10 **THEN** tài khoản bị lockout 30 phút, hiển thị thời gian chờ                                                        | ⚪         |
 | TC-01.4 | 🟡 Edge  | **GIVEN** user đang bị lockout **WHEN** nhập đúng mật khẩu **THEN** vẫn bị từ chối, hiển thị thời gian lockout còn lại                                                                      | ⚪         |
-| TC-01.5 | 🟡 Edge  | **GIVEN** user nhập sai nhiều lần liên tục **WHEN** lockout hết hạn và nhập đúng mật khẩu **THEN** đăng nhập thành công, counter failed attempts được reset                                  | ⚪         |
+| TC-01.5 | 🟡 Edge  | **GIVEN** user nhập sai vài lần nhưng chưa bị lock **WHEN** qua ngày mới (00:00 UTC) **THEN** counter failed attempts tự reset về 0. Hoặc khi login thành công → counter cũng được reset    | ⚪         |
 | TC-01.6 | 🟡 Edge  | **GIVEN** tài khoản bị deactivate (isActive = false) **WHEN** nhập đúng email và mật khẩu **THEN** hiển thị lỗi tài khoản bị vô hiệu hóa                                                   | ⚪         |
 | TC-01.7 | 🟡 Edge  | **GIVEN** user có flag mustChangePassword = true **WHEN** đăng nhập thành công **THEN** chuyển đến trang đổi mật khẩu bắt buộc                                                               | ⚪         |
 | TC-01.8 | 🔴 Error | **GIVEN** email không tồn tại trong hệ thống **WHEN** nhập email và mật khẩu **THEN** hiển thị lỗi chung "Email hoặc mật khẩu không đúng" (không tiết lộ email có tồn tại hay không)         | ⚪         |
@@ -111,8 +111,7 @@
 | Rate limit password login             | 30 req/IP/15 phút          | HTTP 429 Too Many Requests                                |
 | Rate limit OTP send                   | 10/IP + 5/email per 15 phút | HTTP 429 Too Many Requests                               |
 | Rate limit magic link send            | 10/IP + 5/email per 15 phút | HTTP 429 Too Many Requests                               |
-| Failed password attempts (free)       | 4 lần                       | Bắt đầu lockout từ lần thứ 5                             |
-| Progressive lockout duration          | 30s → 60s → 2m → 4m → 8m → 30m | Tăng dần, tối đa 30 phút                             |
+| Failed password attempts              | 10 lần                      | Lockout 30 phút, counter tự reset mỗi ngày 00:00 UTC    |
 | Failed OTP attempts                   | 5 lần                       | Lockout 15 phút                                          |
 | OTP resend                            | 3 lần                       | Không cho gửi thêm                                       |
 | Magic link resend                     | 3 lần                       | Không cho gửi thêm                                       |

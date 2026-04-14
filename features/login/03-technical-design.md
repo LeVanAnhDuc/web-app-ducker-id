@@ -4,7 +4,7 @@
 
 ## 3.1. Tổng quan kỹ thuật (Technical Overview)
 
-Feature Login cung cấp 3 phương thức đăng nhập: password, OTP, và magic link. Server sử dụng Express + MongoDB (Mongoose) + Redis. Client sử dụng Next.js App Router với multi-step form (email → chọn phương thức → xác thực). JWT được dùng để quản lý phiên đăng nhập với 3 loại token (access, refresh, id). Refresh token được set vào HTTP-only cookie. Redis quản lý OTP, magic link token, rate limiting, failed attempts, và lockout state.
+Feature Login cung cấp 3 phương thức đăng nhập: password, OTP, và magic link. Server sử dụng Express + MongoDB (Mongoose) + Redis. Client sử dụng Next.js App Router với multi-step form (email → chọn phương thức → xác thực). JWT được dùng để quản lý phiên đăng nhập với 3 loại token (access, refresh, id). Refresh token được set vào HTTP-only cookie. Redis quản lý OTP, magic link token, rate limiting, failed attempts, và lockout state. Nhập sai mật khẩu 10 lần → lockout 30 phút. Counter failed attempts tự reset mỗi ngày lúc 00:00 UTC.
 
 ---
 
@@ -98,8 +98,8 @@ otp-login-resend-count:{email}        → số lần gửi lại OTP (TTL: 5 ph�
 magic-link-login:{email}              → token hash (TTL: 15 phút)
 magic-link-login-cooldown:{email}     → cooldown flag (TTL: 60 giây)
 
-login-failed-attempts:{email}         → số lần nhập sai mật khẩu (TTL: 30 phút)
-login-lockout:{email}                 → lockout flag + attempt count (TTL: dynamic, progressive)
+login-failed-attempts:{email}         → số lần nhập sai mật khẩu (TTL: đến 00:00 UTC ngày kế tiếp)
+login-lockout:{email}                 → lockout flag + attempt count (TTL: 1800s — 30 phút, cố định)
 ```
 
 **Key prefixes** được quản lý tại `constants/redis/store/index.ts` (object `LOGIN`).
@@ -249,7 +249,7 @@ Response 429: Rate limit exceeded
 9. Server: ensureAccountActiveWithLogging() — kiểm tra isActive
 10. Server: ensureEmailVerifiedWithLogging() — kiểm tra verifiedEmail
 11. Server: verifyPasswordOrFail() — bcrypt compare, nếu sai → trackFailedPasswordAttempt()
-    - Tăng failed attempts, tính lockout duration theo progressive lockout
+    - Tăng failed attempts (counter TTL = đến 00:00 UTC), nếu đạt 10 lần → lockout 30 phút
     - Ghi login history (failed)
 12. Nếu đúng → failedAttemptsRepo.resetAll(email) (fire-and-forget với withRetry)
 13. completeSuccessfulLogin():
@@ -368,7 +368,7 @@ server/src/
 │   └── login.ts                     # loginSchema, otpSendSchema, otpVerifySchema, magicLinkSendSchema, magicLinkVerifySchema
 ├── constants/
 │   ├── modules/
-│   │   ├── login/index.ts           # LOGIN_LOCKOUT, LOGIN_OTP_CONFIG, MAGIC_LINK_CONFIG
+│   │   ├── login/index.ts           # LOGIN_LOCKOUT (MAX_ATTEMPTS, LOCKOUT_SECONDS), LOGIN_OTP_CONFIG, MAGIC_LINK_CONFIG
 │   │   ├── login-history/index.ts   # LOGIN_METHODS, LOGIN_STATUSES, LOGIN_FAIL_REASONS, DEVICE_TYPES, CLIENT_TYPES, GEO_DEFAULTS, LOGIN_HISTORY_CONFIG
 │   │   └── token/index.ts           # REFRESH_TOKEN
 │   ├── redis/store/index.ts         # LOGIN key prefixes (Redis store keys)

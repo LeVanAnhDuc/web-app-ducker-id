@@ -26,7 +26,7 @@ Người dùng không thể truy cập hệ thống một cách an toàn. Cần 
 ## 1.3. Mục tiêu (Objectives)
 
 - Cung cấp 3 phương thức đăng nhập: mật khẩu, OTP qua email, và magic link
-- Bảo vệ tài khoản khỏi brute force bằng progressive lockout và rate limiting
+- Bảo vệ tài khoản khỏi brute force bằng lockout khi nhập sai 10 lần và rate limiting
 - Ghi lại lịch sử đăng nhập (thiết bị, IP, vị trí) phục vụ giám sát bảo mật
 - Hỗ trợ đa ngôn ngữ (Tiếng Việt, Tiếng Anh)
 
@@ -60,7 +60,7 @@ Người dùng không thể truy cập hệ thống một cách an toàn. Cần 
 - Đăng nhập bằng email + mật khẩu
 - Đăng nhập bằng OTP (gửi qua email, 6 chữ số, hết hạn 5 phút)
 - Đăng nhập bằng magic link (gửi qua email, hết hạn 15 phút)
-- Progressive lockout khi nhập sai mật khẩu nhiều lần
+- Lockout 30 phút khi nhập sai mật khẩu 10 lần, counter tự reset mỗi ngày (00:00 UTC)
 - Rate limiting trên IP và email
 - JWT token (access token, refresh token, id token)
 - Ghi lịch sử đăng nhập (IP, device, OS, browser, geolocation)
