@@ -1,8 +1,7 @@
 # ERD — Blog Satellite
 
-> Schema MongoDB cho **Blog**, một app vệ tinh của IDMS (xem [`project-goals.md`](./project-goals.md) §2 Constellation Concept).
-> Trạng thái: hiện code blog vẫn ở `server/src/modules/apps/blog/`. Sẽ tách sang repo riêng ở **MVP-3** (xem [`project-goals.md`](./project-goals.md) §10 Roadmap).
-> Khi tách, file này di chuyển vào repo blog vệ tinh.
+> Schema MongoDB cho **Blog**, một app vệ tinh của IDMS (xem [`project-goals.md`](../project-goals.md) §2 Constellation Concept).
+> Trạng thái: code blog đã được gỡ khỏi IDMS server. File ERD này là **schema reference** giữ lại cho MVP-3 — khi scaffold project blog vệ tinh, dùng file này làm starting point và di chuyển vào repo blog mới.
 > Render: GitHub native, hoặc VS Code extension `bierner.markdown-mermaid`.
 
 ## Module groups
@@ -124,7 +123,7 @@ erDiagram
 
 ### Auth & permission (sau khi tách)
 - Blog là OAuth client của IDMS — đăng ký vào IDMS với `client_id` riêng.
-- Mỗi request authenticated → blog validate access token bằng JWKS local (xem [`project-goals.md`](./project-goals.md) ADR-003).
+- Mỗi request authenticated → blog validate access token bằng JWKS local (xem [`project-goals.md`](../project-goals.md) ADR-003).
 - Action nhạy cảm (delete blog, delete comment người khác): gọi `/oauth/introspect` real-time check token revoke.
 - Author authorization: so sánh `author_id` của blog với `sub` claim của token. Admin override: kiểm tra `roles` claim chứa `ADMIN`.
 
@@ -153,8 +152,9 @@ Khi thêm: `BLOG.author_id` có thể giữ trỏ thẳng IDMS user_id (như hi�
 
 ## How to update
 
-Khi sửa Mongoose schema (hiện ở `server/src/modules/apps/blog/entities/*.schema.ts`, sau MVP-3 sẽ chuyển sang repo blog satellite):
-1. Tìm entity tương ứng trong ERD này
-2. Sửa field block — Mermaid sẽ tự re-render
-3. Nếu thêm/đổi relationship → sửa cả ERD diagram lẫn FK ở entity block
-4. Commit cùng PR sửa schema (KHÔNG để drift)
+File này là **schema reference** đến khi blog satellite được scaffold (MVP-3). Hiện chưa có Mongoose schema thực tế nào tham chiếu vào ERD này (code blog đã được gỡ khỏi IDMS server).
+
+Khi scaffold blog satellite ở MVP-3:
+1. Dùng ERD này làm starting point cho `entities/*.schema.ts` của blog repo mới
+2. Di chuyển file này vào `docs/` của repo blog mới — gỡ khỏi IDMS repo
+3. Từ đó về sau: sửa schema → sửa ERD trong cùng PR (như rule sync ở erd.md)

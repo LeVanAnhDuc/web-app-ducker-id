@@ -240,7 +240,7 @@ Field `login_histories.userId` (theo memory: `project_login_history_userid_namin
 
 Các app vệ tinh có ERD riêng. IDMS chỉ giữ ObjectId `user_id` làm external reference (xem [External reference pattern](#external-reference-pattern-cho-satellite-apps)):
 
-- [Blog](./erd-blog.md) — sẽ migrate sang repo blog vệ tinh khi vào MVP-3 (xem [`project-goals.md`](./project-goals.md) §10).
+- [Blog](./erd-blog.md) — sẽ migrate sang repo blog vệ tinh khi vào MVP-3 (xem [`project-goals.md`](../project-goals.md) §10).
 
 ## How to update
 

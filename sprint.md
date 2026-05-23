@@ -1,6 +1,6 @@
 # Sprint Progress
 
-> Cập nhật lần cuối: 23/03/2026 (TASK-019 User Profile done)
+> Cập nhật lần cuối: 23/05/2026 (Blog feature removed — migrated to satellite project, see docs/project-goals.md MVP-3)
 > Nguồn: các file `docs/features/*/05-implement-plan.md`
 
 ---
@@ -9,11 +9,11 @@
 
 | Mục                           | Giá trị  |
 | ----------------------------- | -------- |
-| Tổng số feature               | 11       |
+| Tổng số feature               | 10       |
 | Đang làm                      | 4        |
-| Chưa bắt đầu                  | 7        |
-| Tổng task đã xong / tổng task | 76 / 228 |
-| Tiến độ toàn dự án            | ~33%     |
+| Chưa bắt đầu                  | 6        |
+| Tổng task đã xong / tổng task | 76 / 198 |
+| Tiến độ toàn dự án            | ~38%     |
 
 ---
 
@@ -29,6 +29,5 @@
 | [Token Refresh](features/token/05-implement-plan.md)             |      0       |     4     |   0%    | —                    | TASK-001       | ⬜ Chưa bắt đầu |
 | [Signup](features/signup/05-implement-plan.md)                   |      0       |    13     |   0%    | —                    | TASK-001       | ⬜ Chưa bắt đầu |
 | [Unlock Account](features/unlock-account/05-implement-plan.md)   |      0       |    10     |   0%    | —                    | TASK-001       | ⬜ Chưa bắt đầu |
-| [Blog](features/blog/05-implement-plan.md)                       |      0       |    30     |   0%    | —                    | TASK-001       | ⬜ Chưa bắt đầu |
 | [Mini Spotify](features/mini-spotify/05-implement-plan.md)       |      0       |    32     |   0%    | —                    | TASK-001       | ⬜ Chưa bắt đầu |
 | [Feature Flag](features/feature-flag/05-implement-plan.md)       |      0       |    19     |   0%    | —                    | TASK-001       | ⬜ Chưa bắt đầu |
