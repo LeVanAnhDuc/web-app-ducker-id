@@ -2,9 +2,11 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Cho user đã đăng nhập đổi mật khẩu của chính mình từ Security page; giữ phiên thiết bị hiện tại (cấp token mới), kick thiết bị khác, gửi email cảnh báo.
+> **⚠️ Correction [2026-06-03] — FE nằm ở Account Settings, KHÔNG phải Security.** Các Task FE-4/FE-5/FE-6 bên dưới ghi path `views/Security/...` là **SAI** (kế thừa design cũ). Thực tế: card `views/AccountSettings/mains/ChangePasswordCard` **đã tồn tại sẵn** (mock) → wire vào BE API; hook đặt ở `views/AccountSettings/hooks/useChangePassword.ts`; i18n dùng namespace `accountSettings.changePassword` (đã có sẵn). KHÔNG đụng `views/Security`. Đọc các bước FE với thay thế `Security → AccountSettings` và "Create → wire/normalize existing".
 
-**Architecture:** BE module `change-password/` độc lập sau `authGuard` → verify current password → chặn same-password → `updatePassword` (set `passwordChangedAt`) → cấp token pair mới (mirror login) → fire-and-forget email alert. FE `ChangePasswordCard` trong Security page, hook `useChangePassword` cập nhật auth store với token mới. Thiết bị khác bị `PasswordNotChangedGuard` (sẵn có ở `/auth/token/refresh`) từ chối.
+**Goal:** Cho user đã đăng nhập đổi mật khẩu của chính mình từ **Account Settings** page; giữ phiên thiết bị hiện tại (cấp token mới), kick thiết bị khác, gửi email cảnh báo.
+
+**Architecture:** BE module `change-password/` độc lập sau `authGuard` → verify current password → chặn same-password → `updatePassword` (set `passwordChangedAt`) → cấp token pair mới (mirror login) → fire-and-forget email alert. FE wire card có sẵn `AccountSettings/mains/ChangePasswordCard`, hook `useChangePassword` (`AccountSettings/hooks/`) cập nhật auth store với token mới. Thiết bị khác bị `PasswordNotChangedGuard` (sẵn có ở `/auth/token/refresh`) từ chối.
 
 **Tech Stack:** BE — Node/Express + TypeScript, Joi, bcrypt, JWT, Redis rate-limit, React-Email + queue. FE — Next.js 15 / React 19, React Hook Form + Zod, TanStack Query, Zustand, next-intl, shadcn/ui.
 
@@ -54,10 +56,10 @@
 | `types/ChangePassword.ts` | request/form types | Create |
 | `requests/changePassword.ts` | PATCH request | Create |
 | `forms/ChangePassword/{validations,data,index}.ts` | RHF + Zod | Create |
-| `views/Security/mains/ChangePasswordCard/hooks/useChangePassword.ts` | mutation hook | Create |
-| `views/Security/mains/ChangePasswordCard/index.tsx` | card + form | Create |
-| `views/Security/index.tsx` | mount card | Modify |
-| `locales/{en,vi}/security.json` | `changePassword` group | Modify |
+| `views/AccountSettings/hooks/useChangePassword.ts` | mutation hook | Create |
+| `views/AccountSettings/mains/ChangePasswordCard/index.tsx` | card + form (đã có sẵn, mock) | Wire/Modify |
+| `views/AccountSettings/index.tsx` | mount card (đã mount sẵn) | — |
+| `locales/{en,vi}/common.json` | `validation.currentPassword.required` | Modify |
 
 > **Naming consistency** (dùng xuyên suốt): BE route `PATCH /api/v1/auth/change-password`; service method `changePassword`; guards `WrongCurrentPasswordGuard.assert(currentPassword, storedHash)` + `SamePasswordGuard.assert(currentPassword, newPassword)`; FE request `changePassword(payload)`; hook `useChangePassword`; fields `currentPassword` / `newPassword` / `confirmPassword`.
 

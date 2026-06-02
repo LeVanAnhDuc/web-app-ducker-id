@@ -20,7 +20,7 @@ Tham chiếu gần nhất: module `forgot-password/` (đầy đủ guards/servic
 | Khía cạnh       | Quyết định                                                                                           |
 | --------------- | ---------------------------------------------------------------------------------------------------- |
 | Phạm vi         | Cross-stack (BE + FE)                                                                                |
-| Actor           | User **đã đăng nhập**, đổi mật khẩu của chính mình từ Security page                                  |
+| Actor           | User **đã đăng nhập**, đổi mật khẩu của chính mình từ **Account Settings** page                      |
 | Kiến trúc BE    | **Module `change-password/` độc lập** (feature-per-module, như `login`/`signup`/`forgot-password`)   |
 | Session sau đổi | **Giữ phiên thiết bị hiện tại** (cấp token pair mới), **kick thiết bị khác** qua `passwordChangedAt` |
 | Email           | Gửi cảnh báo "mật khẩu vừa thay đổi" **fire-and-forget qua queue**                                   |
@@ -110,22 +110,23 @@ Mirror đúng login: refresh token vào cookie `REFRESH_TOKEN`, access token + u
 
 ---
 
-## 7. Frontend — Components (convention `forms/` + `views/Security`)
+## 7. Frontend — Components (convention `forms/` + `views/AccountSettings`)
 
-| Item                 | Path                                                                 | Tái dùng / Ghi chú                                                                                     |
-| -------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `ChangePasswordCard` | `views/Security/mains/ChangePasswordCard/index.tsx`                  | Mount vào `views/Security/index.tsx` (cạnh `ApiKeysCard`)                                              |
-| Form schema          | `forms/ChangePassword/` (`data.ts`, `validations.ts`, `index.ts`)    | zod reuse `passwordSchema` từ `@/schemas`, `.refine()` confirm match                                   |
-| `useChangePassword`  | `views/Security/mains/ChangePasswordCard/hooks/useChangePassword.ts` | pattern `useForgotPasswordReset`: `useMutation` + `toast` (sonner) + `useTranslations` + `useAnnounce` |
-| Request              | `requests/changePassword.ts`                                         | `axiosInstance.patch(END_POINTS.AUTH_CHANGE_PASSWORD, body)` → `ResponsePattern<T>`                    |
-| Types                | `types/ChangePassword`                                               | request/response khớp BE DTO                                                                           |
+> **Correction [2026-06-03]:** Change-password FE thuộc **Account Settings** (`views/AccountSettings`), KHÔNG phải Security. Card `AccountSettings/mains/ChangePasswordCard` **đã tồn tại sẵn** (UI + mock submit) → việc cần làm là **wire vào BE API**, không tạo mới. (Bản design gốc nhầm sang Security do kế thừa design cũ + scaffold rỗng; đã sửa.)
+
+| Item                 | Path                                                                       | Tái dùng / Ghi chú                                                                                     |
+| -------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `ChangePasswordCard` | `views/AccountSettings/mains/ChangePasswordCard/index.tsx`                 | **Đã có sẵn** (mock) → wire mutation thật; giữ UX Cancel/Save + dirty-check; mount sẵn trong `AccountSettings/index.tsx` |
+| Form schema          | `forms/ChangePassword/` (`data.ts`, `validations.ts`, `index.ts`)          | **Đã có sẵn** → chuẩn hoá dùng `CONSTANTS.FIELD_NAMES`; zod reuse `passwordSchema`, `.refine()` confirm match |
+| `useChangePassword`  | `views/AccountSettings/hooks/useChangePassword.ts`                         | `useMutation` + `setTokens` (giữ phiên) + `toast` + `useAnnounce`; namespace i18n `accountSettings.changePassword` |
+| Request              | `requests/changePassword.ts`                                               | `axiosInstance.patch(END_POINTS.AUTH_CHANGE_PASSWORD, payload)` → `LoginTokenResponse`                 |
 
 ### Mở rộng file FE sẵn có
 
 - `constants/endpoints.ts` — `AUTH_CHANGE_PASSWORD: "/auth/change-password"`.
-- `constants/fieldNames` — `CHANGE_PASSWORD_FIELD_NAMES` (`CURRENT_PASSWORD`, `NEW_PASSWORD`, `CONFIRM_PASSWORD`).
-- `locales/{vi,en}/security.json` — group `changePassword` (label, placeholder, success/error, announce).
-- `views/Security/index.tsx` — mount `<ChangePasswordCard />`.
+- `constants/fieldNames/ChangePassword.ts` — `CHANGE_PASSWORD_FIELD_NAMES` (`CURRENT_PASSWORD`, `NEW_PASSWORD`, `CONFIRM_PASSWORD`).
+- `locales/{en,vi}/common.json` — thêm `validation.currentPassword.required` (newPassword/confirmPassword đã có).
+- i18n `accountSettings.changePassword` — **đã có sẵn** đầy đủ (fields/placeholders/buttons/toast/announce), không cần thêm.
 
 ---
 
