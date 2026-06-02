@@ -7,7 +7,7 @@ Folder `docs/` chứa 3 nhóm tài liệu source-of-truth:
 - Single source of truth về Identity/Vision/Goals/Non-Goals của dự án
 - Mọi feature mới phải đối chiếu `## 4. Goals` và `## 5. Non-Goals` **trước khi** vào `superpowers:brainstorming`
 - Xung đột với goals → cập nhật `project-goals.md` qua PR có review của owner. KHÔNG tự suy diễn trong feature spec
-- Đọc file này khi feature liên quan đến định vị / scope / non-goals (giai đoạn `brainstorming` + `pm-requirements`)
+- Đọc file này khi feature liên quan đến định vị / scope / non-goals (giai đoạn `brainstorming`)
 
 ## 2. `erds` — Data model
 
@@ -16,7 +16,7 @@ Folder `docs/` chứa 3 nhóm tài liệu source-of-truth:
 - Drift giữa ERD và entity code:
   - Code mới hơn ERD → developer update ERD trong cùng commit/PR
   - ERD mới hơn code → là spec chưa implement → flag trong `writing-plans`
-- Khi thiết kế data model (giai đoạn `brainstorming` / `writing-plans`) đọc ERD trước. Phát hiện thiếu field/collection → đề xuất update ERD qua Decision Record (DR) trong `requirements.md`
+- Khi thiết kế data model (giai đoạn `brainstorming` / `writing-plans`) đọc ERD trước. Phát hiện thiếu field/collection → đề xuất update ERD qua Decision Record (DR) trong design doc / plan
 
 ## 3. `ui-designs/` — Thiết kế UX (Pencil)
 
