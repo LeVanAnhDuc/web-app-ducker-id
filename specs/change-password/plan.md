@@ -1282,7 +1282,7 @@ import ChangePasswordCard from "./mains/ChangePasswordCard";
 ### Task V-2: Code review + security
 - [ ] `superpowers:requesting-code-review` (review theo side: BE convention cho task BE, FE cho task FE).
 - [ ] Dispatch `security-auditor` (feature đụng auth) → `docs/specs/change-password/security-report.md`.
-- [ ] `superpowers:finishing-a-development-branch` → `tech-writer` (changelog + swagger).
+- [ ] `superpowers:finishing-a-development-branch` → `tech-writer` (CHỈ README, nếu đổi setup/config/deps). Swagger/API docs do developer làm khi implement (Task BE-13). Changelog không có owner agent.
 
 ---
 
