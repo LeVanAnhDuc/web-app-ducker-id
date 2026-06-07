@@ -180,4 +180,4 @@ Mirror đúng login: refresh token vào cookie `REFRESH_TOKEN`, access token + u
 
 1. `superpowers:writing-plans` → chia task theo side (BE / FE), đặt tên rõ side; plan tham chiếu trực tiếp design doc này (gồm API Contract Sync §9).
 2. Code theo `subagent-driven-development` + convention theo side (BE đọc `server/.claude/CLAUDE.md`, FE đọc `client/.claude/CLAUDE.md`).
-3. `security-auditor` (feature đụng auth) → `specs/change-password/security-report.md`; `tech-writer` khi finishing branch.
+3. `security-auditor` (feature đụng auth) → `specs/change-password/security-report.md`; `readme-maintainer` khi finishing branch (chỉ nếu đổi setup/config/deps).
