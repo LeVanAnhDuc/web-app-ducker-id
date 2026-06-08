@@ -96,7 +96,7 @@
 
 - Admin gán: `User × App → granted`.
 - Mỗi App có `requiredRoles` mặc định; admin có thể override per-user (grant ngoại lệ hoặc revoke).
-- User chỉ thấy + launch được app trong entitlement của mình.
+- Danh sách app ở `/apps` hiển thị **catalog tất cả app `ACTIVE`** (auth-guarded, không lọc theo entitlement). Entitlement điều khiển **quyền launch** (đối chiếu khi user mở app) — gating này là follow-up, KHÔNG lọc danh sách ở vòng này.
 
 ### G6 — Asymmetric session lifecycle
 
@@ -147,7 +147,7 @@ Rõ ràng **KHÔNG** thuộc scope của IDMS:
 | Unlock               | `/auth/unlock/{request,verify}`                                                                                                                                                            | ✅ có                                  |
 | User Profile         | `GET/PATCH /users/me`, `POST /users/me/avatar`, `GET /users/:id`                                                                                                                           | ✅ có                                  |
 | **OAuth/OIDC**       | `/oauth/authorize`, `/oauth/token`, `/oauth/introspect`, `/oauth/revoke`, `/.well-known/openid-configuration`, `/.well-known/jwks.json`, `/oauth/userinfo`, `/oauth/logout` (RP-initiated) | ❌ **CHƯA CÓ — MVP-1**                 |
-| **App Registry**     | `GET /apps` (user — chỉ app trong entitlement), `CRUD /admin/apps`, `CRUD /admin/apps/:id/entitlements`                                                                                    | ❌ **CHƯA CÓ — MVP-2**                 |
+| **App Registry**     | `GET /apps` (user — catalog tất cả app `ACTIVE`, auth-guarded), `CRUD /admin/apps`, `CRUD /admin/apps/:id/entitlements`                                                                                    | ✅ user list (catalog) · ❌ entitlement-gated launch + admin entitlements CRUD (MVP-2) |
 | **Favorites/Recent** | `POST/DELETE /users/me/favorites/:appId`, `GET /users/me/recent-apps`                                                                                                                      | ❌ chưa có                             |
 | Login History        | `GET /login-history` (mình), `GET /admin/login-history`                                                                                                                                    | ✅ có                                  |
 | Contact Admin        | `POST /contact/submit`, admin CRUD                                                                                                                                                         | ✅ có                                  |
