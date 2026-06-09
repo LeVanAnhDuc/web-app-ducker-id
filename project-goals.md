@@ -96,7 +96,7 @@
 
 - Admin gán: `User × App → granted`.
 - Mỗi App có `requiredRoles` mặc định; admin có thể override per-user (grant ngoại lệ hoặc revoke).
-- Danh sách app ở `/apps` hiển thị **catalog tất cả app `ACTIVE`** (auth-guarded, không lọc theo entitlement). Entitlement điều khiển **quyền launch** (đối chiếu khi user mở app) — gating này là follow-up, KHÔNG lọc danh sách ở vòng này.
+- Danh sách app ở `/apps` hiển thị app `ACTIVE` **lọc theo role** (auth-guarded): admin thấy toàn bộ catalog active; user thường chỉ thấy app có `user` trong `requiredRoles` (app admin-only bị ẩn). Lọc theo **per-user entitlement** (grant/revoke cá biệt) và **gating quyền launch** vẫn là follow-up — chưa áp ở list vòng này.
 
 ### G6 — Asymmetric session lifecycle
 
