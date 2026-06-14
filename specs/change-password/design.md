@@ -168,6 +168,35 @@ Mirror đúng login: refresh token vào cookie `REFRESH_TOKEN`, access token + u
 
 ---
 
+## 10.5. E2E Scenario Matrix
+
+> **Backfill [2026-06-14]** — matrix soạn theo skill `e2e-scenario-coverage` (rubric 12 nhóm — mỗi nhóm ✅ ≥1 scenario hoặc N/A có lý do; depth dùng test-design `[EP]`/`[BVA]`/`[DT]`/`[ST]`/error-guessing với giá trị cụ thể). Feature **đã có suite** ở `client/e2e/change-password/change-password.e2e.ts` (4 case) → đây là backfill mở rộng coverage, KHÔNG rebuild. `e2e.md` (tài liệu kịch bản chi tiết per-scenario) sẽ được tạo ở bước §4.3 implementation; matrix này là source breadth/depth cho `writing-plans` expand.
+>
+> **Cột `Gate`**: `A+B` = chạy cả gate A (`yarn e2e`) lẫn gate B (MCP walk). `A only` = mutation-heavy / network-level / rate-limit → chỉ gate A (gate B chỉ verify read/render, không mutate song song — tránh session contamination, xem [[reference_e2e_suite_session_contamination]]). `B` = visual/UX/keyboard → lean gate B.
+> **Nhãn `[EXISTS]`** = đã có trong suite hiện tại; **`[NEW]`** = cần thêm khi implement §4.3.
+> **Selector thực tế** (từ card): label `Current Password` / `New Password` / `Confirm New Password`; button `Update Password` (Save) + `Cancel`; toast success `Password updated successfully`; inline error qua `aria-invalid="true"`; Save disabled khi `!isDirty` + tooltip `noChanges`; a11y qua `#announcer` (`aria-live=polite`).
+
+| # | Category | Status | Scenario(s) + expected + [technique] + concrete values | Gate |
+|---|----------|--------|--------------------------------------------------------|------|
+| 1 | **Happy path** | ✅ | **[EXISTS]** điền `current=User@123` + `new=NewPass@123` + `confirm=NewPass@123` → click `Update Password` → toast `Password updated successfully` + vẫn ở `/account-settings`. **[NEW]** sau đổi, assert **phiên sống sót**: gọi authed request (`GET /users/me` / load lại `/account-settings`) → 200 với access token mới (mirror login completion, `setTokens`). | A+B |
+| 2 | **AuthN (authentication)** | ✅ **[NEW]** | (a) Unauth: `clearCookies()` + storageState `undefined` → `goto /account-settings` → redirect `/login` (AuthGuardLayout). (b) `PATCH /api/v1/auth/change-password` **không Bearer** → `401` (authGuard). | (a) A+B · (b) A only |
+| 3 | **AuthZ (authorization)** | N/A | Endpoint chỉ có `authGuard`, self-service — user đổi mật khẩu của **chính mình** (authId lấy từ JWT qua `RequestContext`, không tin body). Không có role/ownership surface để escalate → không có authZ case. | — |
+| 4 | **Validation** | ✅ **[NEW]** (+confirm-mismatch EXISTS) | **[EP]** `newPassword` invalid classes (mỗi cái → `aria-invalid=true`, **no PATCH**): empty · no-upper `newpass@123` · no-lower `NEWPASS@123` · no-digit `NewPass@!!` · no-special `NewPass123` · =current `User@123` (client refine hoặc BE same-as-current) · reused. `currentPassword` empty → required, no PATCH. **confirm-mismatch [EXISTS]**: `confirm=Different@123` → `aria-invalid` trên confirm, no PATCH. **[DT]** precedence: (i) currentWrong+newValid `current=WrongPass@123`,`new=NewPass@123` → **PATCH** → `400 CHANGE_PASSWORD_WRONG_CURRENT` map về field `currentPassword` `[EXISTS-partial]`; (ii) currentOK+newInvalid → client policy chặn (no PATCH); (iii) currentWrong+newInvalid → client policy thắng (no PATCH, BE chưa gọi). | A+B (rows có PATCH thật → A only) |
+| 5 | **Empty / null** | ✅ **[NEW]** | Form pristine (3 field rỗng, `isDirty=false`) → nút `Update Password`/`Cancel` **disabled** + tooltip `noChanges` hiện; submit không fire → **no PATCH**. | A+B |
+| 6 | **Boundary / pagination** | ✅ **[NEW]** | **[BVA]** `newPassword` length quanh min=8: 7 ký tự `Ab@3xyz` → reject (`aria-invalid`); 8 ký tự `Ab@3xyzz` → accept (PATCH 200); 129 ký tự (> max) → reject. Password-history depth: **N/A** (không có reuse-history policy ngoài rule `new ≠ current`). Pagination: N/A (không list). | A+B (accept-8 row → A only) |
+| 7 | **Filter / search** | N/A | Feature là form 3-field, không có list/table/filter/search surface. | — |
+| 8 | **Data rendering** | ✅ | **Covered-by-selectors**: render đúng English labels (`Current Password`/`New Password`/`Confirm New Password`) + heading `Change Password` + button `Update Password` — chính là các selector dùng ở case 1/4 (assert visible khi `beforeEach`). Không có date/number/currency/relative-time surface để format-check. | A+B |
+| 9 | **i18n (en + vi)** | ✅ **[NEW]** — MANDATORY | `goto /vi/account-settings` → heading/labels/button render **chuỗi vi** (vd `Đổi mật khẩu`, nút save vi); trigger 1 validation/error → assert **chuỗi lỗi vi** (vd wrong-current vi `Mật khẩu hiện tại không đúng` hoặc validation vi). Đối chiếu en case 1/4. | A+B |
+| 10 | **Error / loading** | ✅ **[NEW]** | **Error**: `route.fulfill` 500 cho `PATCH /auth/change-password` → `toast.error` hiện, form **không reset** (giá trị giữ nguyên), vẫn authed. **Loading**: intercept PATCH thêm delay → giữa flight nút `Update Password` ở trạng thái loading (`isPending`) + 3 input `disabled`; sau resolve trở lại bình thường. | A+B (loading lean B) |
+| 11 | **Mutation safety** | ✅ **[NEW]** | **[ST] valid**: sau đổi, authed request với **token mới** → 200 (phiên hiện tại sống). **[ST] invalid — MANDATORY**: lấy **refresh token từ context #2** (login trước khi đổi) → sau khi context #1 đổi mật khẩu → `POST /auth/token/refresh` với cookie cũ → `401/403` (`PasswordNotChangedGuard` kick thiết bị khác). **Double-submit**: click `Update Password` 2 lần nhanh → **đúng 1 PATCH** (nút disabled khi `isPending`). **Rate-limit [BVA]**: 5 lần trong window OK / lần thứ **6** → `429` (config `MAX_REQUESTS=5`). **Revert**: `afterAll` `ensureDefaultPassword(NEW_PASSWORD)` đưa mật khẩu về default — idempotent **[EXISTS]**. | A only |
+| 12 | **Accessibility (a11y)** | ✅ **[NEW]** (+role/label EXISTS) | **[EXISTS-partial]**: selector dùng role/label (`getByLabel("Current Password", exact)`, `getByRole("heading"/"button")`) — chứng tỏ label↔input liên kết. **[NEW]** keyboard tab order: Tab đi `Current → New → Confirm → Update Password` đúng thứ tự DOM. **[NEW]** `#announcer` (aria-live) announce `announce.saving` (vd "Updating password...") lúc submit + `announce.saved` (vd "Password updated.") khi success. | B |
+
+**Error-Guessing note (cross-cutting)**: dán giá trị có **trailing space** vào `new` + `confirm` (vd `"NewPass@123 "` cả 2 field) — document hành vi: confirm có khớp không (zod compare nguyên văn → khớp nếu cả 2 cùng trailing space), policy có pass không, BE trim hay reject. Ghi kết quả quan sát vào `e2e.md`, KHÔNG sửa app code (gặp behavior bất ngờ → flag follow-up).
+
+**Contamination guard**: gate B login bằng auth context **riêng** (KHÔNG share storageState với gate A — cookie localhost không scope theo port). Mọi row `Gate = A only` (case 11 mutation/refresh-revoke/rate-limit, case 4 rows có PATCH thật) gate B **chỉ verify read/render**, không mutate song song.
+
+---
+
 ## 11. Out of scope (YAGNI)
 
 - Không buộc re-login toàn bộ (đã chọn giữ phiên hiện tại).

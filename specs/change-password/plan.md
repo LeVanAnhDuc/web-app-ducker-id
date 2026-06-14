@@ -1292,3 +1292,488 @@ import ChangePasswordCard from "./mains/ChangePasswordCard";
 - **Placeholder scan:** Không có TBD/TODO; các điểm "mở analog để mirror" (i18n register, swagger paths, email strings) đều chỉ rõ file mẫu + nội dung cần thêm. ✅
 - **Type consistency:** `changePassword` (service/controller/hook/request) đồng nhất; guards `assert(currentPassword, storedHash)` / `assert(currentPassword, newPassword)` khớp giữa BE-7 ↔ BE-8; response shape `{accessToken,idToken,expiresIn}` khớp BE-9 ↔ FE-3 ↔ FE-4 (`LoginTokenResponse`). ✅
 - **Deviation flag:** (1) không ghi login_histories, (2) response mirror `LoginTokenResponse` thay vì `{accessToken,user}` — cần user xác nhận.
+
+---
+
+# PART D — E2E Backfill Plan
+
+> **Backfill [2026-06-14]** — expand `## 10.5. E2E Scenario Matrix` (design.md) thành các E2E task TDD bite-sized. Nguồn sự thật về scenario + `[technique]` + giá trị cụ thể + cột `Gate` là matrix đó. Đây là **backfill mở rộng** suite hiện có ở `client/e2e/change-password/change-password.e2e.ts` (4 case `[EXISTS]`) — **KHÔNG rebuild**, chỉ ADD case mới + UPDATE case có expected đổi (reconcile cả 3 artifact: matrix ↔ e2e.md ↔ test file).
+>
+> **File đích test**: `client/e2e/change-password/change-password.e2e.ts` (extend) + helper mới nếu cần ở `client/e2e/helpers/`.
+> **Selector thực tế** (xác nhận từ `views/AccountSettings/mains/ChangePasswordCard/index.tsx`): label `Current Password` / `New Password` / `Confirm New Password` (programmatically associated → `getByLabel(..., { exact: true })`); button Save có accessible name = `buttons.save` i18n (en `Update Password`); heading `getByRole("heading", { name: "Change Password" })`; inline error qua `aria-invalid="true"`; Save/Cancel `disabled` khi `!isDirty || isPending`; loading qua `loading={isPending}` (3 input `disabled={isPending}`); a11y announce qua `#announcer` (`aria-live="polite"`) với `announce.saving` + `announce.saved`.
+>
+> **Convention TDD (`superpowers:test-driven-development`)**: app đã implement xong → đây là test backfill, không phải red-first cho code mới. Mỗi task = 1 `test(...)`, chạy được ngay sau khi thêm; verify PASS thật trước khi tick. KHÔNG sửa app code trong test (gặp a11y/DOM/behavior bất ngờ → flag follow-up vào `e2e.md`).
+>
+> **Hằng số dùng chung (đã có ở đầu file test)**: `DEFAULT_PASSWORD = process.env.E2E_USER_PASSWORD ?? "User@123"`, `NEW_PASSWORD = "NewPass@123"`, `currentPassword/newPassword/confirmPassword` locator helpers, `test.describe.configure({ mode: "serial" })`, `afterAll → ensureDefaultPassword(NEW_PASSWORD)`.
+
+## Bố cục test file sau backfill
+
+Suite hiện tại 1 `describe` serial. Backfill chia thành **3 describe** trong cùng file để cô lập contamination (theo cột `Gate`):
+
+1. `describe("Change Password — UI & validation (Gate A+B)")` — serial, dùng storageState mặc định, **không mutate password thật** (validation/empty/i18n/render/a11y/loading/error-mock). An toàn cho gate B đọc song song.
+2. `describe("Change Password — happy path & boundary (Gate A only, mutating)")` — serial, **mutate password thật** → `afterAll ensureDefaultPassword`. Gate B chỉ verify read/render, KHÔNG chạy song song.
+3. `describe("Change Password — session & security (Gate A only, isolated)")` — token-revoke (`[ST] invalid`), double-submit, rate-limit 429. **Phải chạy isolated** (không song song với bất kỳ read scenario nào chia session) vì revoke refresh token + tiêu rate-limit window — xem [[reference_e2e_suite_session_contamination]].
+
+> **Quy tắc serial + revert**: mọi describe mutate đặt `mode: "serial"`; mọi mutate password thật phải revert ở `afterAll` qua `ensureDefaultPassword` (idempotent, chỉ thử `DEFAULT_PASSWORD` rồi `currentGuess`). Nếu describe 3 đổi sang mật khẩu khác `NEW_PASSWORD` → phải `afterAll` riêng đưa về `NEW_PASSWORD` trước khi `ensureDefaultPassword` chung chạy, hoặc revert trực tiếp về `DEFAULT_PASSWORD` trong chính describe đó.
+
+---
+
+## Group 1 — Happy path (matrix row 1) — Gate A+B
+
+- [ ] **1a happy-path đổi mật khẩu [EXISTS]** — `current=User@123` + `new=NewPass@123` + `confirm=NewPass@123` → click Save → toast `Password updated successfully` + URL vẫn `/account-settings`. (Đã có, giữ nguyên ở describe 2.)
+- [ ] **1b phiên sống sót sau đổi [NEW]** [ST valid] — sau happy-path, gọi authed request với **access token mới** (`setTokens` đã cập nhật store) → `200`. Vì E2E test ở tầng browser, assert gián tiếp: reload `/account-settings` → heading `Change Password` vẫn visible (không bị redirect `/login`). Test code (thêm vào describe 2, sau 1a):
+
+```ts
+test("keeps the current session alive after change (reload stays authed)", async ({
+  page
+}) => {
+  await currentPassword(page).fill(DEFAULT_PASSWORD);
+  await newPassword(page).fill(NEW_PASSWORD);
+  await confirmPassword(page).fill(NEW_PASSWORD);
+  await page.getByRole("button", { name: "Update Password" }).click();
+  await expect(page.getByText("Password updated successfully")).toBeVisible();
+  await page.reload();
+  await expect(
+    page.getByRole("heading", { name: "Change Password" })
+  ).toBeVisible();
+  await expect(page).toHaveURL(/\/account-settings/);
+});
+```
+
+> Note: 1b mutate password thật → nằm describe 2 (Gate A only). `afterAll ensureDefaultPassword(NEW_PASSWORD)` revert.
+
+---
+
+## Group 2 — AuthN (matrix row 2) — (a) A+B · (b) A only
+
+- [ ] **2a unauth → redirect /login [NEW]** [error-guessing] — fresh context KHÔNG có auth (`clearCookies()` + storageState `undefined`) → `goto /account-settings` → bị `AuthGuardLayout` redirect về `/login`. **Phải tạo context mới**. Test code:
+
+```ts
+test("redirects unauthenticated user away from account settings", async ({
+  browser
+}) => {
+  const ctx = await browser.newContext({ storageState: undefined });
+  await ctx.clearCookies();
+  const freshPage = await ctx.newPage();
+  await freshPage.goto("/account-settings");
+  await expect(freshPage).toHaveURL(/\/login/);
+  await ctx.close();
+});
+```
+
+- [ ] **2b PATCH không Bearer → 401 [NEW]** [authN] — gọi API trực tiếp không kèm Authorization → `401` (authGuard). Dùng `request.newContext` (không storageState). Test code:
+
+```ts
+test("rejects change-password API call without a bearer token (401)", async () => {
+  const ctx = await request.newContext({
+    baseURL: process.env.E2E_BASE_URL ?? "http://localhost:3000"
+  });
+  try {
+    const res = await ctx.patch("/api/v1/auth/change-password", {
+      data: {
+        currentPassword: DEFAULT_PASSWORD,
+        newPassword: NEW_PASSWORD,
+        confirmPassword: NEW_PASSWORD
+      }
+    });
+    expect(res.status()).toBe(401);
+  } finally {
+    await ctx.dispose();
+  }
+});
+```
+
+> Import bổ sung đầu file: `import { request } from "@playwright/test";`. 2b là `A only` (network-level) → đặt describe 1; **không mutate** (401 trước khi chạm DB) nên describe 1 OK.
+
+- [ ] **Row 3 AuthZ — DEFER (N/A)**: endpoint chỉ có `authGuard`, self-service, `authId` lấy từ JWT (không tin body) → không có role/ownership surface để escalate. Không viết test. Ghi N/A + lý do vào `e2e.md`.
+
+---
+
+## Group 3 — Validation (matrix row 4) — A+B (rows có PATCH thật → A only)
+
+- [ ] **4-confirm-mismatch [EXISTS]** — `confirm=Different@123` → `aria-invalid=true` trên confirm + **no PATCH**. (Đã có, describe 1.)
+- [ ] **4-wrong-current [EXISTS-partial]** [DT row i] — `current=WrongPass@123` + `new=NewPass@123` → **có PATCH** → `400 CHANGE_PASSWORD_WRONG_CURRENT` map về field `currentPassword`. (Đã có; PATCH thật nhưng KHÔNG đổi được mật khẩu → an toàn để describe 1.)
+- [ ] **4-new-equals-current [EXISTS]** — `new=current=User@123` → `aria-invalid` trên `newPassword`. (Đã có, describe 1.)
+
+### 4-EP worked example + parametrized list [NEW]
+
+- [ ] **4-EP-policy worked example** [EP] — ONE test minh hoạ pattern "invalid newPassword class → `aria-invalid` + no PATCH", engineer parametrize phần còn lại. Test code (describe 1):
+
+```ts
+test("rejects new password missing an uppercase letter (no API call)", async ({
+  page
+}) => {
+  let patchCalled = false;
+  page.on("request", (r) => {
+    if (r.method() === "PATCH" && r.url().includes("/auth/change-password")) {
+      patchCalled = true;
+    }
+  });
+  await currentPassword(page).fill(DEFAULT_PASSWORD);
+  await newPassword(page).fill("newpass@123");
+  await confirmPassword(page).fill("newpass@123");
+  await page.getByRole("button", { name: "Update Password" }).click();
+  await expect(newPassword(page)).toHaveAttribute("aria-invalid", "true");
+  expect(patchCalled).toBe(false);
+});
+```
+
+- [ ] **4-EP remaining classes — engineer parametrize** (cùng pattern trên; expected = `aria-invalid=true` trên `newPassword`, **no PATCH** — client policy chặn trước khi gọi BE):
+  - empty `""` → required
+  - no-lower `NEWPASS@123`
+  - no-digit `NewPass@!!`
+  - no-special `NewPass123`
+  - (=current `User@123` đã cover bởi `4-new-equals-current` [EXISTS])
+  - **currentPassword empty** `""` (+ new/confirm valid) → required trên `currentPassword`, no PATCH
+- [ ] **4-DT row ii currentOK+newInvalid [NEW]** [DT] — `current=User@123` + `new=newpass@123` (invalid) → client policy thắng → `aria-invalid` trên `newPassword`, **no PATCH** (đã ngầm cover bởi worked example vì worked example dùng `current` đúng). KHÔNG cần test riêng — ghi mapping vào `e2e.md`.
+- [ ] **4-DT row iii currentWrong+newInvalid [NEW]** [DT] — `current=WrongPass@123` + `new=newpass@123` → client policy chặn `newPassword` trước → **no PATCH** (BE chưa gọi, dù current cũng sai). Test code (describe 1):
+
+```ts
+test("client policy wins when both current is wrong and new is invalid (no API call)", async ({
+  page
+}) => {
+  let patchCalled = false;
+  page.on("request", (r) => {
+    if (r.method() === "PATCH" && r.url().includes("/auth/change-password")) {
+      patchCalled = true;
+    }
+  });
+  await currentPassword(page).fill("WrongPass@123");
+  await newPassword(page).fill("newpass@123");
+  await confirmPassword(page).fill("newpass@123");
+  await page.getByRole("button", { name: "Update Password" }).click();
+  await expect(newPassword(page)).toHaveAttribute("aria-invalid", "true");
+  expect(patchCalled).toBe(false);
+});
+```
+
+---
+
+## Group 4 — Empty / null (matrix row 5) — A+B
+
+- [ ] **5-pristine-disabled [NEW]** [EP] — form pristine (3 field rỗng, `isDirty=false`) → Save + Cancel `disabled`; submit không fire → no PATCH. Test code (describe 1):
+
+```ts
+test("disables actions and blocks submit when the form is pristine", async ({
+  page
+}) => {
+  let patchCalled = false;
+  page.on("request", (r) => {
+    if (r.method() === "PATCH" && r.url().includes("/auth/change-password")) {
+      patchCalled = true;
+    }
+  });
+  await expect(
+    page.getByRole("button", { name: "Update Password" })
+  ).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Cancel" })).toBeDisabled();
+  await page.waitForTimeout(300);
+  expect(patchCalled).toBe(false);
+});
+```
+
+> Tooltip `noChanges`: cần hover (Radix tooltip render on hover). DEFER assertion text tooltip sang gate B MCP walk (visual) — gate A chỉ assert `disabled` (đủ chứng minh forcing-function). Ghi vào `e2e.md`.
+
+---
+
+## Group 5 — Boundary (matrix row 6) — A+B (accept-8 → A only)
+
+- [ ] **6-BVA-7chars reject [NEW]** [BVA] — `new=Ab@3xyz` (7 ký tự, < min 8) → `aria-invalid` trên `newPassword`, no PATCH. (describe 1, dùng worked-example pattern.)
+- [ ] **6-BVA-129chars reject [NEW]** [BVA] — `new` = 129 ký tự (> max, vd `"Ab@3" + "x".repeat(125)`) → `aria-invalid`, no PATCH. (describe 1.)
+- [ ] **6-BVA-8chars accept [NEW]** [BVA] — `new=Ab@3xyzz` (đúng 8 ký tự, hợp lệ) + `current=User@123` → PATCH `200`, toast success. **Mutate thật** → describe 2 (Gate A only). **Mitigation**: helper `ensureDefaultPassword` chỉ thử `DEFAULT_PASSWORD` + 1 `currentGuess` → vì test này đặt mật khẩu thứ 3 (`Ab@3xyzz` ≠ `NEW_PASSWORD`), **phải tự revert trong chính test** (gọi `ensureDefaultPassword("Ab@3xyzz")` cuối test, hoặc đổi tiếp về `NEW_PASSWORD`) trước khi describe kết thúc.
+- [ ] **Password-history depth — DEFER (N/A)**: không có reuse-history policy ngoài `new != current`. Pagination N/A (không list). Ghi N/A vào `e2e.md`.
+
+---
+
+## Group 6 — Filter / search (matrix row 7) — DEFER (N/A)
+
+- [ ] **Row 7 — N/A**: feature là form 3-field, không có list/table/filter/search. Không test. Ghi N/A + lý do vào `e2e.md`.
+
+---
+
+## Group 7 — Data rendering (matrix row 8) — A+B
+
+- [ ] **8-render-labels [EXISTS-implicit]** — render đúng English labels + heading `Change Password` + button `Update Password`. Đã assert gián tiếp qua `beforeEach` + mọi `getByLabel`. Thêm 1 test khẳng định explicit (describe 1):
+
+```ts
+test("renders the change-password form with the expected English labels", async ({
+  page
+}) => {
+  await expect(currentPassword(page)).toBeVisible();
+  await expect(newPassword(page)).toBeVisible();
+  await expect(confirmPassword(page)).toBeVisible();
+  await expect(
+    page.getByRole("button", { name: "Update Password" })
+  ).toBeVisible();
+});
+```
+
+> Không có date/number/currency/relative-time surface để format-check → không thêm case format.
+
+---
+
+## Group 8 — i18n en + vi (matrix row 9) — A+B — MANDATORY
+
+- [ ] **9-vi-render [NEW]** [i18n] — `goto /vi/account-settings` → heading + labels + nút Save render **chuỗi vi**. Lấy chuỗi vi thực tế từ `client/src/locales/vi/*.json` namespace `accountSettings.changePassword` (engineer đọc đúng key `title`/`fields.*`/`buttons.save` lúc viết — KHÔNG hardcode đoán). Test code (describe 1) — placeholder cần thay bằng chuỗi vi thật:
+
+```ts
+test("renders the form in Vietnamese on the /vi route", async ({ page }) => {
+  await page.goto("/vi/account-settings");
+  // Replace with the exact string from locales/vi (accountSettings.changePassword.title).
+  const VI_HEADING = "Đổi mật khẩu";
+  await expect(page.getByRole("heading", { name: VI_HEADING })).toBeVisible();
+});
+```
+
+- [ ] **9-vi-error [NEW]** [i18n] — trên `/vi/account-settings`, trigger wrong-current (`current=WrongPass@123` + new/confirm valid → PATCH 400 → field error map sang i18n vi `wrongCurrentPassword`) → assert chuỗi lỗi vi hiện. Engineer đọc đúng key vi. **PATCH thật nhưng không đổi được mật khẩu** → an toàn describe 1. Đối chiếu en row 4.
+
+> **Lưu ý route locale**: `next-intl` prefix `as-needed` — `en` không prefix, `vi` có prefix `/vi`. Auth storageState dùng chung (cookie không scope locale).
+
+---
+
+## Group 9 — Error / loading (matrix row 10) — A+B (loading lean B)
+
+- [ ] **10-error-500 [NEW]** [error-guessing] — `page.route` intercept PATCH → `fulfill` 500 → `toast.error` hiện, form **không reset** (giá trị giữ nguyên), vẫn authed. KHÔNG mutate DB thật (route bị chặn) → describe 1 an toàn. Test code:
+
+```ts
+test("shows an error toast and keeps form values when the API fails (500)", async ({
+  page
+}) => {
+  await page.route("**/api/v1/auth/change-password", (route) => {
+    if (route.request().method() === "PATCH") {
+      return route.fulfill({
+        status: 500,
+        contentType: "application/json",
+        body: JSON.stringify({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Server error"
+        })
+      });
+    }
+    return route.continue();
+  });
+  await currentPassword(page).fill(DEFAULT_PASSWORD);
+  await newPassword(page).fill(NEW_PASSWORD);
+  await confirmPassword(page).fill(NEW_PASSWORD);
+  await page.getByRole("button", { name: "Update Password" }).click();
+  await expect(page.getByText(/error/i).first()).toBeVisible();
+  await expect(newPassword(page)).toHaveValue(NEW_PASSWORD);
+  await page.unroute("**/api/v1/auth/change-password");
+});
+```
+
+> `toast.error` text = `accountSettings.changePassword.toast.error` (en). Thay `getByText(/error/i)` bằng chuỗi i18n chính xác khi viết. **Mitigation flaky**: `page.unroute` cuối test để không rò route sang test serial kế.
+
+- [ ] **10-loading-state [NEW]** [error-guessing] — `page.route` thêm delay (`setTimeout` 1500ms trước `fulfill` success-shape giả) → giữa flight: nút Save loading + 3 input `disabled`; sau resolve → bình thường. **Lean gate B** (visual spinner khó assert deterministic ở gate A); gate A assert được `disabled` của input lúc in-flight. Test code (describe 1):
+
+```ts
+test("disables inputs while the change-password request is in flight", async ({
+  page
+}) => {
+  await page.route("**/api/v1/auth/change-password", async (route) => {
+    if (route.request().method() === "PATCH") {
+      await new Promise((r) => setTimeout(r, 1500));
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: { accessToken: "x", idToken: "x", expiresIn: 900 }
+        })
+      });
+    }
+    return route.continue();
+  });
+  await currentPassword(page).fill(DEFAULT_PASSWORD);
+  await newPassword(page).fill(NEW_PASSWORD);
+  await confirmPassword(page).fill(NEW_PASSWORD);
+  await page.getByRole("button", { name: "Update Password" }).click();
+  await expect(currentPassword(page)).toBeDisabled();
+  await expect(newPassword(page)).toBeDisabled();
+  await expect(confirmPassword(page)).toBeDisabled();
+  await page.unroute("**/api/v1/auth/change-password");
+});
+```
+
+> Route mock fulfill nên không mutate DB → describe 1. Nếu fake token-pair shape làm `setTokens` lỗi/store bẩn ảnh hưởng test kế → **mitigation**: chạy ở describe riêng hoặc reload sau test. Ghi follow-up vào `e2e.md` nếu observe được store contamination.
+
+---
+
+## Group 10 — Mutation safety (matrix row 11) — A only (isolated)
+
+> **Toàn bộ group 10 đặt ở describe 3 (isolated, serial)** — KHÔNG chạy song song với read scenario chia session (token-revoke + rate-limit làm hỏng session/window). Gate B chỉ verify read/render, không mutate.
+
+- [ ] **11-ST-valid [NEW]** [ST] — đã cover bởi **1b** (phiên sống sót với token mới). Ghi mapping 11-ST-valid → 1b vào `e2e.md`, không lặp test.
+- [ ] **11-ST-invalid revoke other device [NEW] — MANDATORY** [ST] — capture refresh token từ **context #2** (login trước khi đổi), context #1 đổi mật khẩu, reuse cookie cũ của context #2 → `POST /auth/token/refresh` → `401/403` (`PasswordNotChangedGuard`). **Gate A only**. Test code (describe 3):
+
+```ts
+test("revokes other-device refresh token after password change (ST invalid)", async ({
+  browser
+}) => {
+  const baseURL = process.env.E2E_BASE_URL ?? "http://localhost:3000";
+  const EMAIL = process.env.E2E_USER_EMAIL ?? "user@test.com";
+
+  // Context #2 = "other device": log in BEFORE the change to capture a pre-change
+  // refresh token (iat < passwordChangedAt -> must be rejected on next refresh).
+  const otherDevice = await request.newContext({ baseURL });
+  const loginRes = await otherDevice.post("/api/v1/auth/login", {
+    data: { email: EMAIL, password: DEFAULT_PASSWORD }
+  });
+  expect(loginRes.ok()).toBeTruthy();
+  const oldRefreshCookie = (await otherDevice.storageState()).cookies.find(
+    (c) => c.name === "refreshToken"
+  );
+  expect(oldRefreshCookie).toBeTruthy();
+
+  // Context #1 = current device: perform the real password change.
+  const current = await request.newContext({ baseURL });
+  const curLogin = await current.post("/api/v1/auth/login", {
+    data: { email: EMAIL, password: DEFAULT_PASSWORD }
+  });
+  const curToken = (await curLogin.json()).data.accessToken as string;
+  const changeRes = await current.patch("/api/v1/auth/change-password", {
+    headers: { Authorization: `Bearer ${curToken}` },
+    data: {
+      currentPassword: DEFAULT_PASSWORD,
+      newPassword: NEW_PASSWORD,
+      confirmPassword: NEW_PASSWORD
+    }
+  });
+  expect(changeRes.ok()).toBeTruthy();
+
+  // Other device reuses its now-stale refresh cookie -> must be kicked.
+  const refreshRes = await otherDevice.post("/api/v1/auth/token/refresh", {
+    headers: oldRefreshCookie
+      ? { Cookie: `refreshToken=${oldRefreshCookie.value}` }
+      : {}
+  });
+  expect([401, 403]).toContain(refreshRes.status());
+
+  await otherDevice.dispose();
+  await current.dispose();
+});
+```
+
+> **Revert**: describe 3 `afterAll → ensureDefaultPassword(NEW_PASSWORD)`. Vì test này đổi mật khẩu thật, đặt cuối describe hoặc đảm bảo `afterAll` chạy.
+
+- [ ] **11-double-submit [NEW]** [error-guessing] — click Save 2 lần nhanh → **đúng 1 PATCH** (nút `disabled` khi `isPending`). Đếm request. Test code (describe 3 — UI, dùng `page`):
+
+```ts
+test("fires exactly one PATCH on rapid double-submit", async ({ page }) => {
+  await page.goto("/account-settings");
+  await expect(
+    page.getByRole("heading", { name: "Change Password" })
+  ).toBeVisible();
+  let patchCount = 0;
+  page.on("request", (r) => {
+    if (r.method() === "PATCH" && r.url().includes("/auth/change-password")) {
+      patchCount += 1;
+    }
+  });
+  await currentPassword(page).fill(DEFAULT_PASSWORD);
+  await newPassword(page).fill(NEW_PASSWORD);
+  await confirmPassword(page).fill(NEW_PASSWORD);
+  const saveBtn = page.getByRole("button", { name: "Update Password" });
+  await saveBtn.click();
+  await saveBtn.click({ force: true });
+  await expect(page.getByText("Password updated successfully")).toBeVisible();
+  expect(patchCount).toBe(1);
+});
+```
+
+> Mutate thật → describe 3; revert qua `afterAll`.
+
+- [ ] **11-rate-limit-429 [NEW]** [BVA] — 5 lần trong window OK / lần thứ **6** → `429` (config `MAX_REQUESTS=5`). Gọi API trực tiếp 6 lần với wrong current password (không đổi mật khẩu thật mỗi lần, vẫn tiêu rate-limit theo IP+user). Test code (describe 3):
+
+```ts
+test("rate-limits change-password after 5 attempts in the window (6th -> 429)", async () => {
+  const baseURL = process.env.E2E_BASE_URL ?? "http://localhost:3000";
+  const EMAIL = process.env.E2E_USER_EMAIL ?? "user@test.com";
+  const ctx = await request.newContext({ baseURL });
+  const login = await ctx.post("/api/v1/auth/login", {
+    data: { email: EMAIL, password: DEFAULT_PASSWORD }
+  });
+  const token = (await login.json()).data.accessToken as string;
+  const attempt = () =>
+    ctx.patch("/api/v1/auth/change-password", {
+      headers: { Authorization: `Bearer ${token}` },
+      // Wrong current -> 400 each time (does NOT mutate password) but still
+      // consumes the IP+user rate-limit bucket.
+      data: {
+        currentPassword: "WrongPass@123",
+        newPassword: NEW_PASSWORD,
+        confirmPassword: NEW_PASSWORD
+      }
+    });
+  for (let i = 0; i < 5; i++) {
+    const res = await attempt();
+    expect(res.status()).not.toBe(429);
+  }
+  const sixth = await attempt();
+  expect(sixth.status()).toBe(429);
+  await ctx.dispose();
+});
+```
+
+> **DEFER risk + mitigation**: rate-limit phụ thuộc **config window + key (IP+user)** và **state Redis** giữa các lần chạy. Nếu một run trước đã tiêu bucket → run này có thể 429 sớm hơn (flaky). **Mitigation**: (a) chạy isolated cuối cùng trong describe 3; (b) nếu window dài (vd 15ph) → test không reset được trong 1 run → **DEFER với lý do**: cần env test có window ngắn hoặc Redis-flush hook trước test. Ghi rõ điều kiện chạy + cách reset bucket vào `e2e.md`; nếu CI không cấp được → đánh dấu `test.skip` kèm lý do, KHÔNG xóa.
+
+- [ ] **11-revert [EXISTS]** — `afterAll ensureDefaultPassword(NEW_PASSWORD)` (idempotent). Áp cho describe 2 + 3 (mọi describe mutate password thật).
+
+---
+
+## Group 11 — Accessibility (matrix row 12) — Gate B (+ tab-order Gate A)
+
+- [ ] **12-role-label [EXISTS-implicit]** — selector dùng role/label (`getByLabel(..., { exact })`, `getByRole`) đã chứng tỏ label↔input liên kết. Không thêm test riêng.
+- [ ] **12-tab-order [NEW]** [a11y] — Tab đi `Current → New → Confirm → Save` đúng thứ tự DOM. Gate A khả thi qua `keyboard.press("Tab")` + assert focus. Test code (describe 1):
+
+```ts
+test("tabs through fields in DOM order: current -> new -> confirm -> save", async ({
+  page
+}) => {
+  await currentPassword(page).focus();
+  await expect(currentPassword(page)).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(newPassword(page)).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(confirmPassword(page)).toBeFocused();
+  // PasswordInput may have a show/hide toggle between field and submit;
+  // if so, adjust the number of Tab presses — verify against the rendered DOM.
+});
+```
+
+> **Lưu ý**: `PasswordInput` có thể có nút toggle hiện/ẩn mật khẩu trong tab order giữa input và nút Save → engineer kiểm DOM thật để chỉnh số lần `Tab` (đừng giả định). Nếu toggle phá thứ tự kỳ vọng → flag follow-up vào `e2e.md`, KHÔNG sửa app.
+
+- [ ] **12-announce [NEW]** [a11y] — `#announcer` (`aria-live=polite`) announce `announce.saving` lúc submit + `announce.saved` khi success. **Lean gate B** (timing aria-live khó deterministic ở gate A vì `announce.saving` → `announce.saved` ghi đè nhanh). Gate A có thể assert text cuối (`announce.saved`) sau success. DEFER assertion `announce.saving` (transient) sang gate B MCP walk (`browser_snapshot` bắt aria-live). Ghi vào `e2e.md`.
+
+---
+
+## Group 12 — Error-Guessing cross-cutting (matrix note) — A+B
+
+- [ ] **EG-trailing-space [NEW]** [error-guessing] — dán `"NewPass@123 "` (trailing space) vào cả `new` + `confirm` → **document hành vi quan sát được** (KHÔNG assert cứng kết quả vì là exploratory): zod compare nguyên văn → confirm khớp nếu cả 2 cùng trailing space; policy có pass không; BE trim hay reject. Ghi kết quả thật vào `e2e.md`. Nếu thấy behavior bất ngờ (vd space lọt vào hash) → flag follow-up, KHÔNG sửa app. (describe 1 — nếu mutate thật thì describe 2 + revert.)
+
+---
+
+## Group 13 — Tạo `docs/specs/change-password/e2e.md` (bước §4.3 implementation)
+
+- [ ] **E2E-DOC tạo `docs/specs/change-password/e2e.md`** — tài liệu kịch bản per-scenario (source-of-truth runtime cho dual-gate §4.3). Nội dung bắt buộc:
+  - **Header**: feature, ngày, link tới `design.md §10.5` (matrix) + file test `client/e2e/change-password/change-password.e2e.ts`.
+  - **Bảng scenario per-row** (1 row matrix → 1+ entry): `# | scenario | input cụ thể | expected | technique | Gate | trạng thái ([EXISTS]/[NEW]) | test name`.
+  - **N/A registry**: rows 3 (AuthZ), 7 (Filter/search), password-history/pagination (row 6) — mỗi cái lý do N/A (no silent gaps).
+  - **DEFER registry**: 11-rate-limit-429 (điều kiện window/Redis-flush + cách reset bucket; nếu CI không cấp → `test.skip` + lý do); 12-announce `announce.saving` (transient → gate B); 5-tooltip-text + 10-loading-spinner (visual → gate B). Mỗi defer có **lý do + mitigation/điều kiện chạy lại**.
+  - **Mapping cover-by**: 11-ST-valid → 1b; 4-DT row ii → 4-EP worked example.
+  - **Error-guessing observation log**: kết quả thật của EG-trailing-space (confirm match? policy pass? BE trim/reject?) — điền sau khi chạy.
+  - **Contamination & isolation notes**: describe 3 isolated; gate B auth context riêng (cookie localhost không scope port → `clearCookies()` + `storageState: undefined` cho fresh context); rows `A only` gate B chỉ read/render.
+  - **Revert notes**: `afterAll ensureDefaultPassword(NEW_PASSWORD)`; helper chỉ thử `DEFAULT_PASSWORD` + 1 `currentGuess` → bất kỳ test đặt mật khẩu thứ 3 (vd 6-BVA-8chars `Ab@3xyzz`) phải tự revert trong test.
+  - **Env preconditions**: `E2E_BASE_URL`, `E2E_USER_EMAIL`, `E2E_USER_PASSWORD` (admin/seed creds), app chạy BE :5000 + FE :3000 + Mongo + Redis (CLAUDE.md §4.3 tiền đề app-running).
+
+---
+
+## Self-Review — E2E Backfill Plan
+
+- **Matrix coverage**: 12 rows đều có task hoặc DEFER/N/A có lý do — row1 ✅, row2 ✅, row3 N/A, row4 ✅, row5 ✅, row6 ✅ (+N/A history), row7 N/A, row8 ✅, row9 ✅, row10 ✅, row11 ✅, row12 ✅ + EG cross-cutting ✅. Không silent gap.
+- **Non-obvious test code đã viết full**: AuthN fresh context (2a) + no-Bearer (2b), error 500 + loading via `page.route` (10), ST-invalid token revoke 2-context (11), double-submit (11), rate-limit 429 6th (11), tab-order (12), DT row iii (4).
+- **Trivial validation**: 1 worked example ([EP] no-upper) + danh sách class còn lại để parametrize.
+- **Contamination**: token-revoke + rate-limit + mutating → describe 3 isolated, `A only`, không song song read; fresh context `clearCookies()` + `storageState: undefined`.
+- **Revert**: mọi mutate password thật → `afterAll ensureDefaultPassword`; 8-char boundary đặt mật khẩu thứ 3 → mitigation self-revert nêu rõ.
+- **DEFER có lý do + mitigation**: rate-limit (window/Redis), announce.saving (transient), tooltip/loading visual → gate B.
+- **e2e.md task**: liệt kê đủ nội dung bắt buộc cho bước §4.3.
+- **Cần xác nhận lúc impl**: chuỗi i18n vi thật (9-vi-render/error placeholder), số lần Tab khi PasswordInput có toggle (12), shape token-pair mock cho loading test (10) — engineer đọc locale/DOM thật, KHÔNG hardcode đoán.

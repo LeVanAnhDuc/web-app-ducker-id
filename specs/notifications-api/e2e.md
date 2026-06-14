@@ -34,6 +34,16 @@ with `.env.local` `API_SERVER_URL=http://localhost:5050`), Mongo seeded.
 Command: `E2E_BASE_URL=http://localhost:3100 yarn e2e e2e/notifications/notifications.e2e.ts`
 → **14/14 passed**.
 
+> **Backfill expansion (2026-06-14) — re-run pending.** The suite was extended
+> with the matrix `NEW` scenarios (rows 1b, 5a, 5c, 6b, 7-content, 9-vi, 10c,
+> 11c, 11d, 11e, 12-announcer, 12-keyboard). `npx playwright test e2e/notifications --list`
+> now discovers **28 chromium test blocks** (+1 `auth.setup`). These backfill
+> tests have **not yet been executed** against a running app — they were verified
+> by `npx tsc --noEmit` (0 errors) + discovery only. Re-run
+> `E2E_BASE_URL=… yarn e2e e2e/notifications/notifications.e2e.ts` and record the
+> true pass count before relying on it; the old "14/14" figure is stale and is
+> intentionally **not** updated to an unverified number.
+
 Environment notes (worktree-specific, not feature defects):
 
 - **Turbopack fails through the `node_modules` junction** ("Next.js package not
@@ -67,6 +77,31 @@ Environment notes (worktree-specific, not feature defects):
 | 10 | Mark all | Intercept list + unread-count + read-all PATCH → click "Mark all as read" → unread tab becomes empty (`states.empty`), intercepted items gone | **Intercept** |
 | 11 | A11y | Mark-read button has accessible name + is keyboard-focusable (`focus()` → `toBeFocused()`); "Load more" reachable & focusable by role (intercept drives pagination) | **Real + intercept** |
 
+### Backfill scenarios (matrix `NEW` rows — added 2026-06-14)
+
+| # | Matrix row | Gate | Test | Backend |
+| --- | --- | --- | --- | --- |
+| 1b | Happy path — header bell + panel | **A only** | Intercept `unread-count: 3` + list → bell shows `3` badge; open panel → first-page items visible + "Mark all as read" affordance present (asserted, never clicked). Second test: `unread-count: 0` → no numeric badge on bell | **Intercept** |
+| 5a | Empty / null — per-tab empty (Read) | A+B | Intercept list returning `[]` only when `isRead=true` (Unread tab still has data) → switch to Read tab → `states.empty` visible. [EP] | **Intercept** |
+| 5c | Empty / null — null `readAt` | A+B | Intercept one `isRead:false, readAt:null` item → title renders, no `pageerror` captured. [EP] | **Intercept** |
+| 6b | Boundary — single full page | A+B | Intercept exactly **20** items with `totalPages:1` → "Load more" **never** rendered (`hasNextPage===false` from page 1). [BVA] | **Intercept** |
+| 7 | Filter — Read-tab content | A+B | Real seed: `SEED_UNREAD_TITLE` visible / `SEED_READ_TITLE` absent on Unread; inverse on Read tab. [Decision Table] | **Real** |
+| 9 | i18n — vi relative-time | A+B | `/vi/notifications` → a timestamp matches `/trước/` specifically; English `\bago\b` absent (locale-leak guard). [Error Guessing] | **Real** |
+| 10c | Error — mark-read failure | A+B | Intercept list (1 unread) + `PATCH /:id/read → 500` → `toast.markReadError` ("Could not mark as read.") fires **and** item stays unread (invalidate-on-success: no rollback needed). [Error Guessing] | **Intercept** |
+| 11c | Mutation — mark-all no-op | **A only** | Intercept empty list + `count:0` + `read-all → {updated:0}` → click mark-all → still empty, no negative/any numeric badge. [BVA] | **Intercept** |
+| 11d | Mutation — double-click idempotent | **A only** | Intercept list (1 unread) + delayed `PATCH /:id/read` → two rapid clicks → button `disabled` while `isPending` swallows the 2nd → PATCH count `=== 1` (count −1, not −2). [State Transition] | **Intercept** |
+| 11e | Mutation — persistence after reload | **A only** | **REAL** mark-single → item leaves Unread → `page.reload()` → still out of Unread (default tab), present on Read tab (authoritative refetch). [State Transition] | **Real (mutates)** |
+| 12 | A11y — announcer (tab change) | A+B | Switch to Read tab → `#announcer` (`aria-live="polite"`) text equals `announce.tabChanged` ("Showing Read notifications."). [State Transition] | **Real** |
+| 12 | A11y — announcer (load-more) | A+B | Intercept 2-page set → click Load more → `#announcer` text equals `announce.loadingMore` ("Loading more notifications..."). | **Intercept** |
+| 12 | A11y — keyboard activation | **A only** | Focus mark-read button → press **Enter** (and **Space**, separate test) → mark-read `PATCH` fires (same handler as click). Measured at request layer via intercept (no seed mutation). [State Transition] | **Intercept** |
+
+> **Namespace note**: the page (`/notifications`) chrome is namespace
+> `notifications.*` (tabs/actions/states/toast/announce); the header bell label
+> + panel "Mark all as read" come from `dashboard.*`
+> (`dashboard.header.notificationsLabel`, `dashboard.notifications.markAllRead`).
+> The panel mark-all assertion is scoped inside the popover (anchored on its
+> "View all notifications" button) to avoid matching the PageHeader mark-all.
+
 ### Intentionally NOT tested here (covered by BE — see `design.md` §6)
 
 - **AuthZ (row 3)** — ownership 404 on `PATCH /notifications/:id/read` for a
@@ -94,14 +129,18 @@ and never errors. All other tests run against the real backend.
 
 ## 5. Teardown / reseed requirement (mutation safety)
 
-- **Test 9 (mark single) fires a REAL `PATCH /notifications/:id/read`** to
-  validate the live mutation + badge-decrement path. This permanently flips one
-  seeded notification to read.
-- **There is no mark-unread API**, so the test does **not** (and cannot)
-  programmatically revert. The `afterAll` hook documents this rather than
+- **TWO tests fire a REAL `PATCH /notifications/:id/read`** that permanently
+  flips a seeded notification to read:
+  1. **Test 9 (mark single)** — validates the live mutation + badge-decrement path.
+  2. **Row 11e (persistence after reload)** — validates state survives a reload
+     (added 2026-06-14, in the same `describe.serial` block, after test 9).
+- **There is no mark-unread API**, so neither test can programmatically revert.
+  The `afterAll` hook documents this (now naming **both** tests) rather than
   attempting a revert.
-- **Test 10 (mark all)** uses route intercepts and does **not** touch the real
-  backend, so it leaves seeded state intact.
+- **All other backfill mutation-path tests** (11c mark-all no-op, 11d
+  double-click idempotency, 12 keyboard activation) use **route intercepts** and
+  do **not** touch the real backend — seeded state stays intact.
+- **Test 10 (mark all)** likewise uses route intercepts and leaves the seed intact.
 - **To restore state for a clean re-run:** `cd server && yarn seed --clear && yarn seed`.
 
 ## 6. Follow-ups / known gaps
@@ -110,3 +149,15 @@ and never errors. All other tests run against the real backend.
   per tab < 20); covered deterministically via intercept instead. If the seed
   later guarantees > 20 unread items, test 4 could switch to real backend.
 - Loading-state assertion deferred (see §3).
+- **`announce.markedRead` / `announce.markedAllRead` live-region assertions —
+  DEFERRED.** These fire only on a real mutation's `onSuccess`, so asserting
+  them would require mutating the real seed purely to read the announcer — no
+  added coverage beyond the existing real mark-single (test 9) + persistence
+  (11e), and it adds reseed burden. The `#announcer` wiring is already proven by
+  the read-only tab-change + intercept-driven load-more announcer tests (row 12).
+  If thoroughness is later required, piggyback an
+  `expect(page.locator("#announcer")).toHaveText(announce.markedRead)` onto the
+  existing test 9 (no new mutating test needed).
+- **Auto-revert for the two real mark-single tests (test 9 + 11e) — DEFERRED**:
+  no mark-unread API exists; `afterAll` is a documented no-op. Restore manually
+  via `cd server && yarn seed --clear && yarn seed`.

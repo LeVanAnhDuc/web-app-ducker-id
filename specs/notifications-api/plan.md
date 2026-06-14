@@ -1372,3 +1372,602 @@ Render each item: `<NotificationItem type={n.type} title={n.title} message={n.me
 
 - **Commit review gate (CLAUDE.md §7):** default is Review ON — implementers write ALL code, stage but do NOT commit per-task; main loop shows one overall diff; user approves once; then commit per-repo. The per-task "Commit" steps above apply only if the user opts into Review OFF.
 - **Per-repo PRs** at the end via `creating-github-pr` (server + client + docs).
+
+---
+
+# PHASE D — E2E Backfill (client worktree)
+
+## E2E Backfill Plan
+
+> **Mục đích**: backfill các scenario `NEW` trong Scenario Matrix (`design.md` §6) mà suite hiện tại (13 `test(...)` blocks trong `client/e2e/notifications/notifications.e2e.ts`) chưa cover. Đây là **reconcile**, KHÔNG rebuild: chỉ ADD/extend test cho behavior chưa được assert; không xóa test cũ. Mỗi task = 1 checkbox = 1 scenario `NEW`/extended. Code đầy đủ cho case NON-OBVIOUS (header bell, intercept-per-tab, mutation-failure, idempotency, persistence, vi relative-time, announcer, keyboard). TDD: viết test → chạy `yarn e2e` (chỉ file này) → đỏ nếu app chưa đúng → xanh.
+>
+> **File mục tiêu (extend, không tạo mới)**: `client/e2e/notifications/notifications.e2e.ts`. Tất cả test chạy dưới project `chromium` (user storageState từ `auth.setup.ts`, login `user@test.com`).
+>
+> **Drift đã chốt (bám sát code thật — KHÔNG optimistic UI)**: `useMarkNotificationRead` / `useMarkAllRead` chỉ `invalidateQueries` trong `onSuccess` (KHÔNG `onMutate`, KHÔNG rollback). Mutation **fail** → cache giữ nguyên → item ở lại unread + toast từ `onError`. Mark-read button `disabled={isMarking}` với `isMarking = markRead.isPending` **dùng chung cho mọi item** (1 mutation hook cho cả list) → trong lúc pending, **TẤT CẢ** nút mark-read bị disabled (quan trọng cho test idempotency).
+>
+> **Restoration (drift fix)**: KHÔNG có mark-unread API và `afterAll` **KHÔNG** auto-reseed (block là no-op documented). Test mutate seed thật (mark-single thật, mark-all thật) → DEFER auto-revert với lý do "no mark-unread API"; restore THỦ CÔNG bằng `cd server && yarn seed --clear && yarn seed`. Ưu tiên `page.route` intercept ở mọi case có thể để KHÔNG mutate seed.
+>
+> **Gate**: scenario read/render = `A+B`; scenario mutation-heavy (chạy PATCH thật) = **`A only`** (gate B MCP chỉ verify read/render, không mutate song song — contamination rule §4.3).
+
+### Hằng số chrome cần bổ sung vào đầu file (test mới tham chiếu)
+
+Khối `EN` / `VI` hiện có thiếu một số key mà các test backfill cần. Thêm các field sau (string lấy verbatim từ `client/src/locales/{en,vi}/notifications.json` + `dashboard.json`):
+
+```ts
+// Bổ sung vào object EN hiện có:
+const EN = {
+  // ...existing keys...
+  markRead: "Mark as read",
+  loadMore: "Load more notifications",
+  empty: "No notifications here.",
+  error: "Couldn't load notifications.",
+  // announce.* (live-region — notifications.json → announce)
+  announceTabChangedRead: "Showing Read notifications.",
+  announceMarkedRead: "Notification marked as read.",
+  announceMarkedAllRead: "All notifications marked as read.",
+  announceLoadingMore: "Loading more notifications...",
+  // toast (notifications.json → toast)
+  toastMarkReadError: "Could not mark as read.",
+  // header bell (dashboard.json → header.notificationsLabel)
+  bellLabel: "Notifications",
+  // panel (dashboard.json → notifications)
+  panelMarkAll: "Mark all as read"
+};
+
+// Bổ sung vào object VI hiện có:
+const VI = {
+  // ...existing keys...
+  markRead: "Đánh dấu đã đọc"
+};
+```
+
+> **Lưu ý namespace (dễ nhầm)**: page (`/notifications`) dùng namespace **`notifications`** (`tabs.*`, `actions.*`, `states.*`, `toast.*`, `announce.*`). Header `NotificationPanel` + bell dùng namespace **`dashboard`** (`dashboard.header.notificationsLabel`, `dashboard.notifications.{title,markAllRead,all,unread,viewAll}`). Panel "Mark all as read" (`dashboard.notifications.markAllRead`) trùng chuỗi với page nhưng là affordance khác — test header phải scope trong popover, không nhầm với nút trên `PageHeader`.
+
+### Task D1: Header bell badge + panel (matrix row 1b) — `A only` (panel có nút mark-all → mutate)
+
+- [ ] **1b header bell badge + panel** [Decision Table] — badge hiện ⇔ `unreadCount > 0` (intercept `unread-count`); mở panel → list page-1 + nút "Mark all as read"; badge **ẩn** khi `count === 0` → render bell badge theo `unreadCount`, panel có affordance mark-all.
+
+Badge chỉ render khi `unreadCount > 0` (`AppHeader` line ~105). Panel list lấy `data?.pages[0]?.items`. Dùng intercept để cố định count (read-only — KHÔNG bấm mark-all để giữ `A only` an toàn cho seed; chỉ assert affordance tồn tại):
+
+```ts
+test.describe("Notifications — header bell + panel", () => {
+  // Gate A only: panel exposes a mark-all mutation affordance; we assert its
+  // presence/visibility but never CLICK it here, so no real mutation fires.
+  // Badge + count are pinned via intercept (read-only) so the assertion does
+  // not depend on live seed counts.
+  test("bell shows the unread badge and the panel lists recent items + mark-all", async ({
+    page
+  }) => {
+    await page.route(UNREAD_COUNT_RE, (route: Route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(responseEnvelope({ count: 3 }))
+      })
+    );
+    await page.route(LIST_RE, (route: Route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(
+          responseEnvelope({
+            items: [fakeItem(201), fakeItem(202)],
+            meta: { total: 2, page: 1, limit: 20, totalPages: 1 }
+          })
+        )
+      })
+    );
+
+    await page.goto("/notifications");
+
+    const bell = page.getByRole("button", { name: EN.bellLabel });
+    await expect(bell).toBeVisible();
+    // Badge text is the unread count; only rendered when count > 0.
+    await expect(bell.getByText("3", { exact: true })).toBeVisible();
+
+    await bell.click();
+    // Panel (Popover content) lists the intercepted first-page items...
+    await expect(
+      page.getByText("Intercepted notification 201", { exact: true })
+    ).toBeVisible();
+    // ...and exposes a "Mark all as read" affordance (do NOT click — A only).
+    await expect(
+      page.getByRole("button", { name: EN.panelMarkAll })
+    ).toBeVisible();
+  });
+
+  test("bell badge is hidden when the unread count is zero", async ({
+    page
+  }) => {
+    await page.route(UNREAD_COUNT_RE, (route: Route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(responseEnvelope({ count: 0 }))
+      })
+    );
+    await page.goto("/notifications");
+    const bell = page.getByRole("button", { name: EN.bellLabel });
+    await expect(bell).toBeVisible();
+    // No numeric badge node rendered (AppHeader renders <Badge> only on > 0).
+    await expect(bell.getByText(/^\d+$/)).toHaveCount(0);
+  });
+});
+```
+
+### Task D2: Per-tab empty state (matrix row 5a) — `A+B`
+
+- [ ] **5a per-tab empty — Read tab** [EP] — intercept list (`isRead=true`) → `items: []` trên tab **Read** → `states.empty` render (chứng minh empty *per-tab*, không chỉ "user không có gì"). Empty-set partition.
+
+`useNotifications` đặt `isRead` vào queryKey và gửi `isRead` query param; chỉ trả `[]` khi `isRead=true` để tab Unread vẫn có data thật, tab Read mới rỗng:
+
+```ts
+test("Read tab renders the per-tab empty state when no read items exist", async ({
+  page
+}) => {
+  // Only the read filter (isRead=true) returns empty; the unread filter still
+  // serves data so the page does not look globally empty.
+  await page.route(LIST_RE, (route: Route) => {
+    const url = new URL(route.request().url());
+    const isReadParam = url.searchParams.get("isRead");
+    const empty = isReadParam === "true";
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(
+        responseEnvelope({
+          items: empty ? [] : [fakeItem(1)],
+          meta: {
+            total: empty ? 0 : 1,
+            page: 1,
+            limit: 20,
+            totalPages: empty ? 0 : 1
+          }
+        })
+      )
+    });
+  });
+
+  await gotoNotifications(page);
+  await page.getByRole("tab", { name: EN.read, exact: true }).click();
+  await expect(
+    page.getByRole("tab", { name: EN.read, exact: true })
+  ).toHaveAttribute("data-state", "active");
+  await expect(page.getByText(EN.empty)).toBeVisible();
+});
+```
+
+- [ ] **5c null-readAt renders (no crash)** [EP] — unread item với `readAt: null` render không lỗi (page chỉ render `createdAt` qua `relativeTime`; `readAt` không đi vào UI nên dùng case này để bảo vệ regression nếu sau này render readAt). `fakeItem(i)` mặc định đã `isRead:false, readAt:null` → intercept 1 item, assert title visible + không có console error.
+
+```ts
+test("an unread item with readAt:null renders without crashing", async ({
+  page
+}) => {
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.route(LIST_RE, (route: Route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(
+        responseEnvelope({
+          items: [fakeItem(1)], // isRead:false, readAt:null by default
+          meta: { total: 1, page: 1, limit: 20, totalPages: 1 }
+        })
+      )
+    })
+  );
+  await gotoNotifications(page);
+  await expect(
+    page.getByText("Intercepted notification 1", { exact: true })
+  ).toBeVisible();
+  expect(errors).toEqual([]);
+});
+```
+
+### Task D3: Single-page boundary — no "Load more" from the start (matrix row 6b) — `A+B`
+
+- [ ] **6b single full page (totalPages:1, exactly 20 items)** [BVA] — `limit`-boundary: trả đúng **20** item, `totalPages:1` → `hasNextPage === false` → nút "Load more" **KHÔNG render từ đầu** (khác row 6a là nút biến mất *sau khi* tới trang cuối).
+
+```ts
+test("no Load more button when the dataset is a single full page", async ({
+  page
+}) => {
+  const items = Array.from({ length: 20 }, (_, i) => fakeItem(i + 1));
+  await page.route(LIST_RE, (route: Route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(
+        responseEnvelope({
+          // exactly limit items, but totalPages 1 → getNextPageParam undefined
+          items,
+          meta: { total: 20, page: 1, limit: 20, totalPages: 1 }
+        })
+      )
+    })
+  );
+  await gotoNotifications(page);
+  await expect(
+    page.getByText("Intercepted notification 1", { exact: true })
+  ).toBeVisible();
+  // Load more must NEVER appear (hasNextPage === false from page 1).
+  await expect(
+    page.getByRole("button", { name: EN.loadMore })
+  ).toHaveCount(0);
+});
+```
+
+### Task D4: Read-tab content assertion (matrix row 7) — `A+B`
+
+- [ ] **7 Read tab content** [Decision Table] — `SEED_READ_TITLE = "Password changed"` **visible trên tab Read** và **absent trên tab Unread**; `SEED_UNREAD_TITLE` thì ngược lại. tab × isRead → expected subset. Real backend (seed có sẵn cả read & unread item).
+
+Import `SEED_READ_TITLE` từ helper (đã export). Test real backend — KHÔNG mutate:
+
+```ts
+test("Read tab shows read seed titles and hides unread ones (and vice versa)", async ({
+  page
+}) => {
+  await gotoNotifications(page);
+
+  // Unread tab (default): unread title present, read title absent.
+  await expect(
+    page.getByText(SEED_UNREAD_TITLE, { exact: true }).first()
+  ).toBeVisible();
+  await expect(
+    page.getByText(SEED_READ_TITLE, { exact: true })
+  ).toHaveCount(0);
+
+  // Switch to Read tab: read title present, unread title absent.
+  await page.getByRole("tab", { name: EN.read, exact: true }).click();
+  await expect(
+    page.getByText(SEED_READ_TITLE, { exact: true }).first()
+  ).toBeVisible();
+  await expect(
+    page.getByText(SEED_UNREAD_TITLE, { exact: true })
+  ).toHaveCount(0);
+});
+```
+
+> **Import**: thêm `SEED_READ_TITLE` vào import từ `../helpers/notifications` (hiện chỉ import `fetchUnreadCount, SEED_UNREAD_TITLE`).
+
+### Task D5: vi relative-time `/trước/` (matrix row 9 NEW) — `A+B`
+
+- [ ] **9 vi relative-time** [Error Guessing] — trên `/vi/notifications`, một timestamp render khớp **`/trước/`** cụ thể (chứng minh `date-fns` locale **vi** được wire, không phải regex lỏng `/ago|trước/`); và "ago" tiếng Anh **KHÔNG** xuất hiện trên trang vi (locale-leak). Real backend.
+
+`relativeTime(iso, "vi")` dùng `date-fns/locale` `vi` với `addSuffix:true` → hậu tố "trước":
+
+```ts
+test("vi locale renders relative time with the Vietnamese suffix 'trước'", async ({
+  page
+}) => {
+  await gotoNotifications(page, "/vi");
+  // The vi date-fns locale renders the "ago" suffix as "trước".
+  await expect(page.getByText(/trước/).first()).toBeVisible();
+  // Locale-leak guard: the English "ago" suffix must not appear on the vi page.
+  await expect(page.getByText(/\bago\b/i)).toHaveCount(0);
+});
+```
+
+### Task D6: Mark-read mutation failure (matrix row 10c) — `A+B`
+
+- [ ] **10c mark-read mutation failure** [Error Guessing] — intercept `PATCH /notifications/:id/read` → **500** → toast `notifications.toast.markReadError` fires **và** item **ở lại unread** (invalidate-on-success: fail không flip cache, không cần rollback). Intercept → KHÔNG mutate seed thật.
+
+Cần route matcher cho PATCH `:id/read` (chưa có hằng số) — thêm `MARK_READ_RE` cạnh các regex hiện có. Phải loại trừ `/read-all`:
+
+```ts
+// Bổ sung cạnh LIST_RE/UNREAD_COUNT_RE/READ_ALL_RE ở đầu file:
+// PATCH /api/v1/notifications/<id>/read  (NOT /read-all)
+const MARK_READ_RE = /\/api\/v1\/notifications\/[^/]+\/read(\?|$)/;
+```
+
+```ts
+test("mark-read failure shows an error toast and leaves the item unread", async ({
+  page
+}) => {
+  // Seed-agnostic: serve one unread item via intercept, then fail the PATCH.
+  await page.route(LIST_RE, (route: Route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(
+        responseEnvelope({
+          items: [fakeItem(301)],
+          meta: { total: 1, page: 1, limit: 20, totalPages: 1 }
+        })
+      )
+    })
+  );
+  await page.route(MARK_READ_RE, (route: Route) =>
+    route.fulfill({
+      status: 500,
+      contentType: "application/json",
+      body: JSON.stringify({
+        code: "INTERNAL",
+        message: "boom",
+        timestamp: new Date().toISOString(),
+        path: "/api/v1/notifications/fake-301/read"
+      })
+    })
+  );
+
+  await gotoNotifications(page);
+  const button = markReadButtons(page).first();
+  await expect(button).toBeVisible();
+  await button.click();
+
+  // onError toast fires (sonner renders role="status"/text).
+  await expect(page.getByText(EN.toastMarkReadError)).toBeVisible();
+  // invalidate-on-success means a FAILED mutation never flipped the cache:
+  // the item is still in the unread list and still has its mark-read button.
+  await expect(
+    page.getByText("Intercepted notification 301", { exact: true })
+  ).toBeVisible();
+  await expect(markReadButtons(page)).toHaveCount(1);
+});
+```
+
+### Task D7: Mark-all-when-empty no-op (matrix row 11c) — `A only`
+
+- [ ] **11c mark-all no-op khi đã empty** [BVA] — intercept list rỗng + `unread-count: 0` + `read-all` PATCH trả `{ updated: 0 }` → bấm "Mark all as read" → UI no-op, **không badge âm** (count không bao giờ < 0). `A only` (gọi `read-all` PATCH — nhưng qua intercept nên KHÔNG chạm seed; vẫn xếp `A only` vì là mutation-path).
+
+Đặt trong `describe.serial("Notifications — mutations")` hiện có (cùng nhóm mutation, ordered). Tất cả qua intercept → KHÔNG mutate seed thật:
+
+```ts
+test("mark-all on an already-empty list is a no-op (no negative badge)", async ({
+  page
+}) => {
+  await page.route(LIST_RE, (route: Route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(
+        responseEnvelope({
+          items: [],
+          meta: { total: 0, page: 1, limit: 20, totalPages: 0 }
+        })
+      )
+    })
+  );
+  await page.route(UNREAD_COUNT_RE, (route: Route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(responseEnvelope({ count: 0 }))
+    })
+  );
+  await page.route(READ_ALL_RE, (route: Route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(responseEnvelope({ updated: 0 }))
+    })
+  );
+
+  await gotoNotifications(page);
+  await expect(page.getByText(EN.empty)).toBeVisible();
+  // PageHeader mark-all button is always present; clicking with nothing unread.
+  await page.getByRole("button", { name: EN.markAll }).click();
+
+  // Still empty, still no negative/any numeric badge on the bell.
+  await expect(page.getByText(EN.empty)).toBeVisible();
+  const bell = page.getByRole("button", { name: EN.bellLabel });
+  await expect(bell.getByText(/^-?\d+$/)).toHaveCount(0);
+});
+```
+
+### Task D8: Double-click idempotency (matrix row 11d) — `A only`
+
+- [ ] **11d double-click mark-read → count −1, không −2** [State Transition] — nút mark-read `disabled` khi `markRead.isPending` (shared trên cả list), nên click thứ 2 bị nuốt → chỉ 1 PATCH fire → count giảm **đúng 1**. Đếm số PATCH thật fire qua `page.on("request")`; intercept PATCH để KHÔNG mutate seed (assert call-count thay vì badge thật) → tránh phải reseed.
+
+Idempotency đo ở tầng **số request PATCH** (assertion bền hơn so với chờ badge), intercept để không chạm seed:
+
+```ts
+test("double-clicking mark-read fires the PATCH once, not twice", async ({
+  page
+}) => {
+  let patchCount = 0;
+  await page.route(LIST_RE, (route: Route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(
+        responseEnvelope({
+          items: [fakeItem(401)],
+          meta: { total: 1, page: 1, limit: 20, totalPages: 1 }
+        })
+      )
+    })
+  );
+  // Delay the PATCH so the button stays disabled (isPending) across the 2nd
+  // click; the 2nd click must be swallowed by `disabled={isMarking}`.
+  await page.route(MARK_READ_RE, async (route: Route) => {
+    patchCount += 1;
+    await new Promise((r) => setTimeout(r, 600));
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(
+        responseEnvelope({ ...fakeItem(401, true), id: "fake-401" })
+      )
+    });
+  });
+
+  await gotoNotifications(page);
+  const button = markReadButtons(page).first();
+  await expect(button).toBeVisible();
+  // Two rapid clicks: the 2nd lands while isPending → disabled → no-op.
+  await button.click();
+  await button.click({ force: true }).catch(() => {});
+  // Let any pending PATCH settle.
+  await page.waitForTimeout(1000);
+  expect(patchCount).toBe(1);
+});
+```
+
+> **Lưu ý**: `isMarking` dùng chung cho mọi `NotificationItem` (1 hook/list) → trong lúc pending, click thứ 2 trên cùng nút (hoặc bất kỳ nút mark-read nào) đều bị disabled. Đây chính là forcing-function chống double-fire.
+
+### Task D9: Persistence after reload (matrix row 11e) — `A only` (REAL mark-single)
+
+- [ ] **11e persistence sau reload** [State Transition] — sau mark-single **thật**, **reload** trang → item ở lại Read / ra khỏi Unread (invalidate refetch server state authoritative). REAL mutation → `A only`. **DEFER auto-revert** (no mark-unread API); restore thủ công `cd server && yarn seed --clear && yarn seed`.
+
+Đây là test mutate seed thật duy nhất được thêm (cùng nhóm với test mark-single thật đã có). Đặt trong `describe.serial("Notifications — mutations")`, **sau** test mark-single hiện có:
+
+```ts
+// REAL mutation (A only) — permanently flips one seeded item to read.
+// No mark-unread API → afterAll cannot revert; restore via:
+//   cd server && yarn seed --clear && yarn seed
+test("a marked item stays read after a full page reload", async ({ page }) => {
+  await gotoNotifications(page);
+  const firstButton = markReadButtons(page).first();
+  await expect(firstButton).toBeVisible();
+  const firstArticle = page.locator("article").first();
+  const markedTitle = (await firstArticle.getAttribute("aria-label"))?.trim();
+  expect(markedTitle).toBeTruthy();
+
+  await firstButton.click();
+  // Wait for the item to leave the unread tab (invalidate → refetch).
+  await expect(
+    page.getByText(markedTitle!, { exact: true })
+  ).toHaveCount(0, { timeout: 15_000 });
+
+  // Reload: authoritative server state is refetched, item must stay out of Unread.
+  await page.reload();
+  await expect(
+    page.getByRole("tab", { name: EN.unread, exact: true })
+  ).toHaveAttribute("data-state", "active");
+  await expect(
+    page.getByText(markedTitle!, { exact: true })
+  ).toHaveCount(0);
+
+  // ...and it appears on the Read tab.
+  await page.getByRole("tab", { name: EN.read, exact: true }).click();
+  await expect(
+    page.getByText(markedTitle!, { exact: true }).first()
+  ).toBeVisible();
+});
+```
+
+> Cập nhật `afterAll` trong `describe.serial` để liệt kê **cả hai** test mutate thật (mark-single hiện có + persistence mới) cần reseed thủ công.
+
+### Task D10: `#announcer` aria-live updates (matrix row 12 NEW) — `A+B` (tab-change/load-more); mark announce — `A only`
+
+- [ ] **12 announcer — tab change** [State Transition] `A+B` — đổi tab → `#announcer` (`aria-live="polite"`) nhận text `announce.tabChanged` (vd "Showing Read notifications."). Read-only.
+- [ ] **12 announcer — load-more** `A+B` — bấm Load more (intercept paginate) → `#announcer` nhận `announce.loadingMore`. Read-only path (intercept).
+
+`#announcer` ở root layout (`app/[locale]/layout.tsx`). `useAnnounce` ghi text vào đó. Đợi text vì announce có thể clear sau timeout:
+
+```ts
+test.describe("Notifications — announcer (aria-live)", () => {
+  test("tab change announces via the #announcer live region", async ({
+    page
+  }) => {
+    await gotoNotifications(page);
+    await page.getByRole("tab", { name: EN.read, exact: true }).click();
+    // The polite live region receives the tab-change announcement text.
+    await expect(page.locator("#announcer")).toHaveText(
+      EN.announceTabChangedRead,
+      { timeout: 5_000 }
+    );
+  });
+
+  test("load-more announces via the #announcer live region", async ({
+    page
+  }) => {
+    const page1 = Array.from({ length: 20 }, (_, i) => fakeItem(i + 1));
+    const page2 = Array.from({ length: 3 }, (_, i) => fakeItem(i + 21));
+    await page.route(LIST_RE, (route: Route) => {
+      const url = new URL(route.request().url());
+      const isPage2 = url.searchParams.get("page") === "2";
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(
+          responseEnvelope({
+            items: isPage2 ? page2 : page1,
+            meta: { total: 23, page: isPage2 ? 2 : 1, limit: 20, totalPages: 2 }
+          })
+        )
+      });
+    });
+    await gotoNotifications(page);
+    await page.getByRole("button", { name: EN.loadMore }).click();
+    await expect(page.locator("#announcer")).toHaveText(
+      EN.announceLoadingMore,
+      { timeout: 5_000 }
+    );
+  });
+});
+```
+
+> **`A only` announce variants (mark-read / mark-all)**: `announce.markedRead` / `announce.markedAllRead` chỉ fire trên `onSuccess` của mutation thật → cần mutate thật để assert. **DEFER** assertion live-region cho 2 case này, lý do: (a) fire một mark-read/mark-all thật chỉ để check announcer = mutate seed mà không thêm coverage so với test mark-single thật đã có (D9) + no-op (D7); (b) tránh thêm reseed burden. Tab-change + load-more (read-only/intercept) đã chứng minh `#announcer` được wire qua `useAnnounce` — đủ cho row 12 announcer. Nếu user yêu cầu thorough → có thể assert `announce.markedRead` ngay trong D9 (chồng lên mark-single thật) bằng `expect(page.locator("#announcer")).toHaveText(EN.announceMarkedRead)` sau click, KHÔNG cần test mutate riêng.
+
+### Task D11: Keyboard activation (Enter/Space) on mark-read (matrix row 12 NEW) — `A only`
+
+- [ ] **12 keyboard activation Enter** [State Transition] — focus nút mark-read, nhấn **Enter** → fire mark-read (cùng handler như click). Keyboard fire mutation thật → `A only`. Dùng **intercept** PATCH để KHÔNG chạm seed (assert PATCH fired, không cần badge thật) → tránh reseed.
+- [ ] **12 keyboard activation Space** [State Transition] — như trên với **Space**. (Hai phím tách 2 case vì `CustomButton` là `<button>` native, Enter & Space đều activate — assert cả hai.)
+
+Đo bằng số PATCH fire (intercept), không mutate seed:
+
+```ts
+test.describe("Notifications — keyboard activation", () => {
+  for (const key of ["Enter", "Space"] as const) {
+    test(`pressing ${key} on a focused mark-read button fires the mutation`, async ({
+      page
+    }) => {
+      let patchFired = false;
+      await page.route(LIST_RE, (route: Route) =>
+        route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify(
+            responseEnvelope({
+              items: [fakeItem(501)],
+              meta: { total: 1, page: 1, limit: 20, totalPages: 1 }
+            })
+          )
+        })
+      );
+      await page.route(MARK_READ_RE, (route: Route) => {
+        patchFired = true;
+        route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify(
+            responseEnvelope({ ...fakeItem(501, true), id: "fake-501" })
+          )
+        });
+      });
+
+      await gotoNotifications(page);
+      const button = markReadButtons(page).first();
+      await button.focus();
+      await expect(button).toBeFocused();
+      await page.keyboard.press(key);
+      // Same handler as click → the mark-read PATCH is issued.
+      await expect.poll(() => patchFired, { timeout: 5_000 }).toBe(true);
+    });
+  }
+});
+```
+
+### Task D12: Reconcile `docs/specs/notifications-api/e2e.md`
+
+- [ ] **Cập nhật `docs/specs/notifications-api/e2e.md`** — reconcile tài liệu kịch bản với 13 test cũ + các test backfill mới (D1–D11). Cụ thể:
+  - **§3 bảng Scenarios**: ADD rows cho: 1b header bell/panel (Real+intercept, A only), 5a per-tab empty Read (Intercept), 5c null-readAt (Intercept), 6b single-full-page no-load-more (Intercept), 7 read-tab content (Real), 9 vi `/trước/` (Real), 10c mark-read failure (Intercept), 11c mark-all no-op (Intercept), 11d double-click idempotent (Intercept, A only), 11e persistence-after-reload (**Real mutates**, A only), 12 announcer tab-change/load-more (Real/Intercept), 12 keyboard Enter/Space (Intercept, A only). Cập nhật cột Gate (`A+B` vs `A only`) cho khớp matrix.
+  - **§5 Teardown/reseed**: bổ sung **test 11e (persistence)** vào danh sách test mutate seed thật cần reseed thủ công (hiện chỉ liệt kê test 9). Nêu rõ: 2 test mutate thật = mark-single (cũ) + persistence-reload (mới); tất cả còn lại dùng intercept.
+  - **§6 Follow-ups**: ghi các assertion **DEFER** + lý do: (a) `announce.markedRead`/`markedAllRead` live-region không test riêng (mutate-only, đã cover qua tab-change/load-more + optional piggyback trên D9); (b) auto-revert mark-single/persistence DEFER vì no mark-unread API.
+  - **Verified-run note (§2)**: KHÔNG sửa số "14/14" cũ — thêm dòng mới ghi rằng suite mở rộng cần re-run + cập nhật test-count thực tế sau khi chạy `yarn e2e` (đừng claim con số chưa verify).
+  - Giữ matrix (`design.md` §6) ↔ `e2e.md` ↔ test file đồng bộ: mỗi `NEW` trong matrix có đúng 1 test + 1 row e2e.md.
+
+### Step cuối: chạy & verify (TDD green)
+
+- [ ] **Run** — `cd client && yarn e2e e2e/notifications/notifications.e2e.ts` trên app thật đã seed (worktree FE riêng port + `E2E_BASE_URL` nếu chạy trong worktree — [[reference_e2e_worktree_devserver]], [[reference_worktree_missing_env]]). Tất cả xanh trước khi sang `requesting-code-review`. **Reseed sau khi chạy** nếu test mutate thật (D9 + mark-single cũ) đã fire: `cd server && yarn seed --clear && yarn seed`.
+
+### Deferred (ghi rõ lý do — KHÔNG để gap im lặng)
+
+- **`announce.markedRead` / `announce.markedAllRead` live-region (row 12)** — DEFER assertion riêng: chỉ fire trên mutation `onSuccess` thật; test riêng = mutate seed thừa, không thêm coverage so với D9/D7. Có thể piggyback trên D9 nếu muốn thorough.
+- **Auto-revert cho mark-single (cũ) + persistence D9** — DEFER: **không có mark-unread API**; `afterAll` là no-op documented; restore thủ công `yarn seed --clear && yarn seed`.
+- **Per-tab 2-page pagination trên backend thật** — vẫn defer (seed/tab < 20), cover bằng intercept (đã ghi trong e2e.md §6). Không đổi.
+- **Loading-skeleton (`states.loading`)** — giữ defer (transient, race-prone) như e2e.md §3 hiện tại; row 10b vẫn N/A-deterministic.
+- **AuthZ-FE (row 3) / Validation-FE-form (row 4)** — N/A như cũ (không có UI path foreign id; không có form page/limit). Cover ở BE. Không thêm.

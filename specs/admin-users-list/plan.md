@@ -1184,3 +1184,377 @@ Per project rule, implementer subagents **stage but do NOT commit per-task** (Re
 **Type consistency:** `AdminUsersQuery`/`AdminUsersFilter`/`AdminUserAggregateRow`/`AdminUserListMeta` (BE types, Task 1) are used consistently in Tasks 3–6. `AdminUserDto` (Task 3) returned by service (Task 5). FE `PaginatedAdminUsersResponse`/`AdminUsersMeta` (Task 9) consumed by request (Task 10), hook (Task 11), table (Task 12). `findAdminUsers(filter, options)` signature identical across repo type, impl, service call, and test. ✅
 
 **Placeholder scan:** No TBD/TODO; all code blocks complete. Swagger (Task 8) is the one descriptive task — it references reading the doc skill + existing file to match an established in-repo pattern rather than inventing a spec format, which is appropriate. ✅
+
+---
+
+## E2E Backfill Plan
+
+> **Mục tiêu:** backfill suite `admin-users-list` E2E để cover toàn bộ `## 9. E2E Scenario Matrix` của `design.md`. File hiện có (`client/e2e/admin-users-list/admin-users-list.e2e.ts`) đã có 5 test (`[EXISTS]` rows 1, 6-partial, 7-partial); phần dưới expand các row `[NEW]` còn thiếu thành từng task TDD bite-sized.
+>
+> **Phương pháp (TDD):** với mỗi task — viết test ASSERT trước → chạy `yarn e2e` (đỏ nếu app chưa đủ behavior) → nếu đỏ do thiếu code-fix prereq (CF-*) thì task đó **BLOCKED** cho tới khi CF tương ứng landed (xem dependency tag). Test chỉ pass khi behavior thật của app khớp; KHÔNG nới lỏng assertion để ép xanh.
+>
+> **Test file target (extend):** `client/e2e/admin-users-list/admin-users-list.e2e.ts` — suite này chạy dưới project `admin` (admin `storageState`) sau khi **CF-1** đổi config (xem Task E0). Tài liệu kịch bản đồng bộ ở `docs/specs/admin-users-list/e2e.md`.
+>
+> **Selectors (đã verify từ FE source — đừng đoán lại):**
+> - Cell email: `page.getByText(email, { exact: true })` (helper `cell` đã có).
+> - Header cột: `getByRole("columnheader", { name })` — labels en: `User / Role / Status / Last Login / Created`; vi: `Người dùng / Role / Trạng thái / Đăng nhập gần nhất / Ngày tạo` (key `adminUsers.table.*`).
+> - Table: `getByRole("table")` (shadcn `<Table>` render `<table>`).
+> - Empty state: `getByText("No users match")` en / `"Không có người dùng phù hợp"` vi; description en `"Try adjusting the search or clearing the filter."` (`adminUsers.table.empty` + `emptyDescription`).
+> - "Never": en `"Never"`, vi `"Chưa từng"` (`adminUsers.table.neverLoggedIn`).
+> - Role badge label: en `Admin`/`User`, vi `Quản trị viên`/`Người dùng` (`adminUsers.role.*`).
+> - Status badge label: en `Active`/`Locked`, vi `Đang hoạt động`/`Đã khóa` (`adminUsers.status.*`).
+> - Pagination labels: `adminUsers.pagination.page/of/results`.
+> - Toolbar Role/Status comboboxes: shadcn `Select` → `getByRole("combobox")`; search input dùng `<SearchInput ariaLabel={t("search")}>`. NOTE: `<CustomSelectTrigger>` hiện chưa expose `aria-label` từ `<Label>` (label dùng text, không `htmlFor`) → a11y row 12 dùng role-based + flag follow-up nếu cần name (xem Task E11a).
+>
+> **Seed reference:** `admin@test.com` (admin, active), `user@test.com` (user, active), `inactive@test.com` (user, isActive=false). Seed <20 user → pager click-through seed-gated (xem Task E6c — DEFER).
+
+### Dependencies (code-fix prereq từ design.md §10)
+
+- **CF-1** (config routing) → blocks Task E0 (config) + Task E3 (AuthZ deny). Suite chạy dưới project `admin` chỉ sau khi CF-1 thêm config; AuthZ deny test sống ở `client/e2e/admin-authz/` (user storageState trên route admin).
+- **CF-2** (`isError` branch) → blocks Task E10 (error UI 500).
+- **CF-4** (`useAnnounce` wiring) → blocks phần announce của Task E11b (a11y `#announcer`).
+
+---
+
+### Task E0 — [CF-1] Đưa suite `admin-users-list` vào project `admin` + tách project `admin-authz`
+**Depends: CF-1.** File: `client/playwright.config.ts` (FE repo — không thuộc docs scope; ghi ở đây để implement FE pick up).
+
+- [ ] Config hiện `admin` project `testMatch: /admin-apps\/.*\.e2e\.ts/` chỉ match `admin-apps/`. Mở rộng để suite `admin-users-list/` cũng chạy admin storageState:
+  ```ts
+  {
+    name: "admin",
+    testMatch: /(admin-apps|admin-users-list|admin-login-history)\/.*\.e2e\.ts/,
+    use: { ...devices["Desktop Chrome"], storageState: "e2e/.auth/admin.json" },
+    dependencies: ["admin-setup"]
+  }
+  ```
+  Và `chromium` project thêm `admin-users-list/` vào `testIgnore` (đang chỉ ignore `/admin-apps\//`):
+  ```ts
+  testIgnore: /(admin-apps|admin-users-list|admin-login-history)\//,
+  ```
+- [ ] Thêm project `admin-authz` cho deny-path (user storageState chạy route admin) — xem Task E3:
+  ```ts
+  {
+    name: "admin-authz",
+    testMatch: /admin-authz\/.*\.e2e\.ts/,
+    use: { ...devices["Desktop Chrome"], storageState: "e2e/.auth/user.json" },
+    dependencies: ["setup"]
+  }
+  ```
+- **Lý do tách task config:** các test row 1-10 ASSUME admin storageState; nếu config chưa đổi, suite chạy dưới `chromium` (user storageState) → row 1 (happy) fail vì user không vào được route admin. Task E0 là prerequisite kỹ thuật cho mọi task dưới.
+
+---
+
+### Group 1 — Happy path & data render (Gate A+B)
+
+- [x] **(EXISTS)** `1` admin sees the user list `[EP]` — admin có ≥2 user → `cell(admin@test.com)` + `cell(user@test.com)` visible. *(đã có; bổ sung assert header để khớp matrix — Task E1b.)*
+
+- [ ] **E1b** `1` table headers render `[EP]` — `/admin/users` → 5 header cột visible. Code (obvious):
+  ```ts
+  test("table renders the expected column headers", async ({ page }) => {
+    await gotoUsers(page);
+    await expect(page.getByRole("table")).toBeVisible();
+    for (const name of ["User", "Role", "Status", "Last Login", "Created"]) {
+      await expect(
+        page.getByRole("columnheader", { name, exact: true })
+      ).toBeVisible();
+    }
+  });
+  ```
+
+- [ ] **E8** `8` data rendering — localized labels, not raw enum/ISO `[EP]` → role badge `Admin`/`User` (không raw `"admin"`); status badge `Active`/`Locked` (không `true`/`false`); `createdAt` qua `formatDateTimeShort` (không ISO `T...Z`); `lastLoginAt=null` → `Never`. Code (non-obvious — assert localized + assert raw absent):
+  ```ts
+  test("renders localized badge labels and formatted dates, not raw values", async ({
+    page
+  }) => {
+    await gotoUsers(page, "?role=admin");
+    const adminRow = page.getByRole("row").filter({ hasText: ADMIN_EMAIL });
+    await expect(adminRow.getByText("Admin", { exact: true })).toBeVisible();
+    await expect(adminRow.getByText("Active", { exact: true })).toBeVisible();
+    await expect(adminRow.getByText("admin", { exact: true })).toHaveCount(0);
+    await expect(adminRow.getByText("true", { exact: true })).toHaveCount(0);
+    await expect(adminRow).not.toContainText(/\d{4}-\d{2}-\d{2}T.*Z/);
+  });
+  ```
+
+---
+
+### Group 2 — AuthN & AuthZ (Gate A+B)
+
+- [ ] **E2** `2` AuthN — unauthenticated → redirect `/login` `[EP]`. Context **fresh, no cookie + storageState undefined** (cookie localhost không scope theo port — memory `reference_e2e_suite_session_contamination`). Code (non-obvious — fresh context inside an admin-storageState suite):
+  ```ts
+  test("unauthenticated visitor is redirected to /login (no list)", async ({
+    browser
+  }) => {
+    const context = await browser.newContext({ storageState: undefined });
+    const page = await context.newPage();
+    await page.context().clearCookies();
+    await page.goto("/admin/users");
+    await page.waitForURL(/\/login/);
+    await expect(page).toHaveURL(/\/login/);
+    await expect(page.getByText(ADMIN_EMAIL, { exact: true })).toHaveCount(0);
+    await context.close();
+  });
+  ```
+
+- [ ] **E3** `3` AuthZ deny — role=user trên route admin → BE `adminGuard` 403 → FE chặn `[DT]`. **Depends: CF-1.** **Lives in `client/e2e/admin-authz/admin-authz.e2e.ts`** (project `admin-authz`, user storageState) — KHÔNG trong file admin-users-list (file đó dưới admin storageState, không cover deny). Cross-reference từ đây. Code (non-obvious — chạy dưới user storageState):
+  ```ts
+  // client/e2e/admin-authz/admin-authz.e2e.ts  (project: admin-authz, user storageState)
+  import { test, expect } from "@playwright/test";
+
+  test.describe("Admin route authorization", () => {
+    test("non-admin user is denied the admin users list", async ({ page }) => {
+      const res = await page.goto("/admin/users");
+      await expect(page.getByText("user@test.com", { exact: true })).toHaveCount(0);
+      const onAdminList = /\/admin\/users/.test(page.url());
+      if (onAdminList) {
+        await expect(page.getByRole("table")).toHaveCount(0);
+      } else {
+        expect(onAdminList).toBe(false);
+      }
+      expect(res?.status() === undefined || res.status() < 500).toBe(true);
+    });
+  });
+  ```
+  - **Note:** decision-table — `role=admin` (allow) đã cover bởi happy-path row 1 dưới admin storageState; task này cover nhánh `role=user` (deny). CF-1 chưa landed → BLOCKED (không có project user-on-admin-route).
+
+---
+
+### Group 3 — Validation (param tampering) (Gate A, +B optional)
+
+- [ ] **E4a** `4` `[EP]` `?page=abc` → FE coerce về page 1, render bình thường (guard `Number.isInteger(rawPage) && rawPage >= 1` ở `AdminUsersTable`). Code:
+  ```ts
+  test("non-numeric page param falls back to page 1 (renders normally)", async ({
+    page
+  }) => {
+    await gotoUsers(page, "?page=abc");
+    await expect(cell(page, ADMIN_EMAIL)).toBeVisible();
+  });
+  ```
+
+- [ ] **E4b** `4` `[EP]` `?limit=101` (vượt max) & `?limit=-1` → BE `queryPipe` **400**. Code (non-obvious — assert qua API response, không UI):
+  ```ts
+  test("out-of-range limit is rejected by the API (400)", async ({ request }) => {
+    for (const limit of [101, -1]) {
+      const res = await request.get(`/api/v1/admin/users?limit=${limit}`);
+      expect(res.status()).toBe(400);
+    }
+  });
+  ```
+  - **Note:** `request` fixture kế thừa admin storageState của project → có cookie auth, qua `adminGuard`, fail tại `queryPipe`. Nếu proxy FE không forward cookie cho `request` → dùng `page.request` thay vì fixture `request`.
+
+- [ ] **E4c** `4` `[EP]` `?role=superadmin` (ngoài enum) → BE 400 **và** FE `isRole` guard drop param không hợp lệ (list vẫn render full). Code:
+  ```ts
+  test("invalid role param is dropped by the FE guard (full list still renders)", async ({
+    page
+  }) => {
+    await gotoUsers(page, "?role=superadmin");
+    await expect(cell(page, ADMIN_EMAIL)).toBeVisible();
+    await expect(cell(page, USER_EMAIL)).toBeVisible();
+  });
+  ```
+
+---
+
+### Group 4 — Empty / null (Gate A+B)
+
+- [ ] **E5a** `5` `[EP]` `?search=zzz-nomatch` → `items.length===0` → `UsersEmptyState` (`adminUsers.table.empty` + `emptyDescription`). Code:
+  ```ts
+  test("no-match search shows the empty state", async ({ page }) => {
+    await gotoUsers(page, "?search=zzz-nomatch-xyz");
+    await expect(page.getByText("No users match", { exact: true })).toBeVisible();
+    await expect(
+      page.getByText("Try adjusting the search or clearing the filter.", {
+        exact: true
+      })
+    ).toBeVisible();
+    await expect(cell(page, ADMIN_EMAIL)).toHaveCount(0);
+  });
+  ```
+
+- [ ] **E5b** `5` `[EP]` user có `lastLoginAt=null` → cell render `Never` (en) / `Chưa từng` (vi), KHÔNG trống/ISO. Code (non-obvious — target đúng row có lastLoginAt null; seed `inactive@test.com` chưa login):
+  ```ts
+  test("a user that never logged in shows 'Never' in the last-login cell", async ({
+    page
+  }) => {
+    await gotoUsers(page, "?search=inactive");
+    const row = page.getByRole("row").filter({ hasText: INACTIVE_EMAIL });
+    await expect(row.getByText("Never", { exact: true })).toBeVisible();
+  });
+  ```
+  - **Note:** giả định seed `inactive@test.com` chưa có login_history success → `lastLoginAt=null`. Nếu seed đổi, chọn account khác chưa login hoặc seed một account dedicated; đừng nới assertion.
+
+---
+
+### Group 5 — Boundary / pagination (Gate A)
+
+- [ ] **E6a** `6` `[BVA]` limit boundaries qua API: `limit=1` (min hợp lệ → 200, `meta.limit===1`, `items.length<=1`), `limit=100` (max hợp lệ → 200), `limit=101` (vượt → 400, đã cover ở E4b — cross-ref). Code:
+  ```ts
+  test("limit boundary values are honored by the API", async ({ request }) => {
+    const r1 = await request.get("/api/v1/admin/users?limit=1");
+    expect(r1.status()).toBe(200);
+    const b1 = await r1.json();
+    expect(b1.data.items.length).toBeLessThanOrEqual(1);
+    expect(b1.data.meta.limit).toBe(1);
+
+    const r100 = await request.get("/api/v1/admin/users?limit=100");
+    expect(r100.status()).toBe(200);
+  });
+  ```
+
+- [ ] **E6b** `6` `[BVA]` beyond-range page — **(EXISTS, keep)** `?page=2` của dataset 1-trang → empty. *(đã có test "page param is wired to the API".)*
+
+- [ ] **E6c — DEFER (seed-gated):** visible pager click-through (next/prev đổi `?page=` qua `router.push`). **Lý do defer:** `TablePagination` return `null` khi `totalPages <= 1`; seed hiện <20 user + default `limit=20` → luôn 1 trang → pager ẩn by design. Click-through cần seed **>20 user** (persistent DB mutation, tránh cho feature read-only). **Không silent cap** — verify thay thế: E6a (limit boundaries via API meta) + E6b (`?page=2` empty). **Follow-up:** seed >20-user fixture rồi assert next/prev. *(Đồng bộ "Known caveat" trong `e2e.md`.)*
+
+- [ ] **E6d — N/A (flag follow-up):** sort toggle UI. **Lý do N/A:** bảng chưa có control sort (`sortBy/order` chỉ ở contract, header không clickable). Cũng liên quan param-name drift `order` ↔ `sortOrder` (design.md §10) chưa reconcile. Khi UI sort landed → thêm `[ST]` sort toggle test.
+
+---
+
+### Group 6 — Filter / search (Gate A+B)
+
+- [x] **(EXISTS)** `7` `?role=admin` (chỉ admin) · `?search=inactive` · `?status=locked` — 3 single-param test đã có.
+
+- [ ] **E7a** `7` `[DT]` combined filter `?role=user&status=active` → chỉ user active (admin row absent vì role≠user; inactive absent vì status≠active). Code:
+  ```ts
+  test("combined role+status filter narrows correctly", async ({ page }) => {
+    await gotoUsers(page, "?role=user&status=active");
+    await expect(cell(page, USER_EMAIL)).toBeVisible();
+    await expect(cell(page, ADMIN_EMAIL)).toHaveCount(0);
+    await expect(cell(page, INACTIVE_EMAIL)).toHaveCount(0);
+  });
+  ```
+
+- [ ] **E7b** `7` `[ST]` state-transition — set filter → reload → URL param **persist** (toolbar đọc lại từ `searchParams`, list khớp). Code (non-obvious — reload phải giữ query):
+  ```ts
+  test("filter state persists across a full page reload", async ({ page }) => {
+    await gotoUsers(page, "?role=admin");
+    await expect(cell(page, ADMIN_EMAIL)).toBeVisible();
+    await page.reload();
+    await expect(page).toHaveURL(/[?&]role=admin/);
+    await expect(cell(page, ADMIN_EMAIL)).toBeVisible();
+    await expect(cell(page, USER_EMAIL)).toHaveCount(0);
+  });
+  ```
+
+---
+
+### Group 7 — i18n en + vi (Gate A+B; MANDATORY)
+
+- [ ] **E9** `9` `[DT]` locale → label render ở **`/admin/users` (en)** AND **`/vi/admin/users` (vi)`**: header, role/status badge per-locale khác nhau, URL prefix vi giữ đúng. Code (non-obvious — table-driven over 2 locales):
+  ```ts
+  const LOCALES = [
+    {
+      path: "/admin/users",
+      urlRe: /\/admin\/users/,
+      header: "User",
+      role: "Admin",
+      status: "Active"
+    },
+    {
+      path: "/vi/admin/users",
+      urlRe: /\/vi\/admin\/users/,
+      header: "Người dùng",
+      role: "Quản trị viên",
+      status: "Đang hoạt động"
+    }
+  ];
+
+  for (const L of LOCALES) {
+    test(`localized list renders for ${L.path}`, async ({ page }) => {
+      await page.goto(`${L.path}?role=admin`);
+      await expect(page).toHaveURL(L.urlRe);
+      await expect(
+        page.getByRole("columnheader", { name: L.header, exact: true })
+      ).toBeVisible();
+      const adminRow = page.getByRole("row").filter({ hasText: ADMIN_EMAIL });
+      await expect(adminRow.getByText(L.role, { exact: true })).toBeVisible();
+      await expect(adminRow.getByText(L.status, { exact: true })).toBeVisible();
+    });
+  }
+  ```
+  - **Note:** "Never"/"Chưa từng" cover trong E5b (en) — thêm vi variant nếu muốn explicit; pagination labels (`Page/Trang`) chỉ visible khi `totalPages>1` (seed-gated, xem E6c) → defer cùng pager. Header + badge đủ để gate i18n MANDATORY.
+
+---
+
+### Group 8 — Error / loading (Gate A+B)
+
+- [ ] **E10** `10` `[EG]` route-intercept `GET /api/v1/admin/users` → **500** → UI lỗi rõ ràng (distinct error state, không trắng/không crash). **Depends: CF-2** (hook + `AdminUsersTable` thêm nhánh `isError`). Code (non-obvious — `page.route` mock + assert error UI, không empty-state giả):
+  ```ts
+  test("API 500 surfaces a distinct error state (not a fake empty list)", async ({
+    page
+  }) => {
+    await page.route("**/api/v1/admin/users**", (route) =>
+      route.fulfill({
+        status: 500,
+        contentType: "application/json",
+        body: JSON.stringify({ message: "Internal Server Error" })
+      })
+    );
+    await gotoUsers(page);
+    await expect(page.getByRole("alert")).toBeVisible();
+    await expect(page.getByText("No users match", { exact: true })).toHaveCount(0);
+  });
+  ```
+  - **Note:** selector `getByRole("alert")` giả định CF-2 render error UI với `role="alert"` (hoặc `data-testid="admin-users-error"`). Implement CF-2 phải khớp; nếu CF-2 dùng testid khác → update selector cùng commit. BLOCKED cho tới khi CF-2 landed.
+
+- [ ] **E10b** `10` loading — trong lúc fetch → `UsersTableSkeleton` visible (nhánh `isLoading` đã có). Code (non-obvious — delay route để bắt skeleton):
+  ```ts
+  test("shows the skeleton while the list is loading", async ({ page }) => {
+    await page.route("**/api/v1/admin/users**", async (route) => {
+      await new Promise((r) => setTimeout(r, 800));
+      await route.continue();
+    });
+    await gotoUsers(page);
+    await expect(page.locator(".animate-pulse").first()).toBeVisible();
+    await expect(cell(page, ADMIN_EMAIL)).toBeVisible();
+  });
+  ```
+  - **Note:** nếu `UsersTableSkeleton` có `data-testid` thì ưu tiên testid thay `.animate-pulse` (xác nhận khi đọc component lúc implement). Không phụ thuộc CF.
+
+---
+
+### Group 9 — Accessibility (Gate B)
+
+- [ ] **E11a** `12` `[EP]` role/label selectors — table `role="table"`, columnheader, toolbar role/status là `combobox`, search input có accessible name. Code:
+  ```ts
+  test("core landmarks expose accessible roles", async ({ page }) => {
+    await gotoUsers(page);
+    await expect(page.getByRole("table")).toBeVisible();
+    await expect(page.getByRole("columnheader")).toHaveCount(6); // 5 labels + sr-only actions
+    await expect(page.getByRole("combobox")).toHaveCount(2); // role + status selects
+    await expect(page.getByRole("searchbox")).toBeVisible();
+  });
+  ```
+  - **Note:** nếu `<SearchInput>` không expose `role="searchbox"` → fallback `page.getByPlaceholder("Search by name or email…")` hoặc `getByLabel`. Confirm khi implement; KHÔNG sửa app code chỉ để pass selector — DOM thiếu accessible name thì flag follow-up.
+
+- [ ] **E11b** `12` `#announcer` — dynamic change (filter/search/pagination/loading) thông báo cho screen reader. **Depends: CF-4** (`useAnnounce` wiring + `adminUsers.announce.*` keys en+vi). Code (non-obvious — assert aria-live region content sau khi filter):
+  ```ts
+  test("filter change is announced to screen readers", async ({ page }) => {
+    await gotoUsers(page);
+    const announcer = page.locator("#announcer"); // aria-live=polite in root layout
+    await gotoUsers(page, "?role=admin");
+    await expect(announcer).not.toBeEmpty();
+  });
+  ```
+  - **Note:** assertion cố tình lỏng (`not.toBeEmpty`) vì message text do CF-4 quyết (key `adminUsers.announce.*` cho list-level chưa định nghĩa). CF-4 landed + key chốt → siết assert về text cụ thể per-locale. BLOCKED cho tới khi CF-4 landed.
+
+- [ ] **E11c** `12` keyboard tab order — toolbar → table → pager. Code (non-obvious — tab walk + focus assert):
+  ```ts
+  test("keyboard focus reaches the toolbar controls", async ({ page }) => {
+    await gotoUsers(page);
+    await page.keyboard.press("Tab");
+    await expect(page.getByRole("searchbox")).toBeFocused();
+  });
+  ```
+  - **Note:** assert tới control đầu tiên (search, toolbar đứng đầu DOM). Walk sâu hơn (combobox → pager) brittle với seed 1-trang (pager ẩn) → giữ scope ở toolbar; flag follow-up nếu cần full walk khi pager visible.
+
+---
+
+### Group 11 — Mutation safety — N/A
+
+- [ ] **N/A (row 11):** list read-only trong scope (design.md §1). Dialog reset-password / lock-unlock / force-logout còn mock, ngoài scope → không có mutation thật để test an toàn. Re-evaluate khi mutation wire API thật (feature riêng).
+
+---
+
+### Task E-DOC — Reconcile `docs/specs/admin-users-list/e2e.md`
+- [ ] CREATE/UPDATE `docs/specs/admin-users-list/e2e.md` để khớp suite sau backfill: **ADD** scenario mới (E1b, E2 AuthN, E3 AuthZ cross-ref tới `admin-authz/`, E4a-c validation, E5a-b empty/null, E6a limit-boundary, E7a-b combined+persist, E9 i18n, E10/E10b error+loading, E11a-c a11y); **UPDATE** "Known caveat" giữ nội dung pager defer (E6c) + thêm note CF-1/CF-2/CF-4 dependencies; giữ matrix (design.md §9) ↔ e2e.md ↔ test file đồng bộ (no drift). Ghi rõ scenario nào BLOCKED bởi CF-* và scenario nào DEFER (E6c) / N/A (E6d, row 11).

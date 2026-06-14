@@ -1223,3 +1223,323 @@ After ALL tasks above are implemented and staged, and the FE/BE quality gates + 
 - **Type consistency:** `HistoryDetailItemDto` (BE) ↔ `LoginHistoryAdminDetailItem` (FE) identical field set; `getLoginHistoryDetail`/`getAdminLoginHistoryDetail`/`useAdminLoginHistoryDetail`/`ADMIN_LOGIN_HISTORY_DETAIL`/`loginHistoryIdParamSchema`/`LOGIN_HISTORY_NOT_FOUND` names used consistently across tasks.
 - **Deferrals recorded:** AuthZ + Empty/null E2E rows deferred with reasons in E2E-1 and e2e.md (not silent).
 ```
+
+---
+
+## E2E Backfill Plan
+
+Mục tiêu: backfill suite Playwright hiện có (`client/e2e/admin-login-history/admin-login-history-detail.e2e.ts`) cho khớp **Scenario Matrix đã reconcile** trong `design.md` — không rebuild, chỉ **ADD case thiếu** + **UPDATE case overstated** (row 8, 12) + giữ matrix ↔ e2e.md ↔ test file đồng bộ. TDD bite-sized: mỗi scenario áp dụng được = 1 test (hoặc 1 deferred có lý do). Code English, prose tiếng Việt.
+
+### Tiền đề (đọc trước khi viết test)
+
+- **Project scope — depends CF-1:** matrix ghi detail chạy dưới **`admin` project** (storageState `e2e/.auth/admin.json`, dependency `admin-setup`). Hiện `playwright.config.ts` chỉ map `admin` project cho `admin-apps/.*\.e2e\.ts` (`testMatch: /admin-apps\/.*\.e2e\.ts/`) và `chromium` project `testIgnore: /admin-apps\//` ôm phần còn lại với `user.json`. **CF-1** = mở rộng `admin` project `testMatch` để bao luôn `admin-login-history/` (và loại nó khỏi `chromium` testIgnore) → suite này chạy với admin storageState mà không cần override `E2E_USER_EMAIL`. Đây là code-fix hạ tầng test, **không** sửa app code. **Nếu CF-1 chưa close** → giữ nguyên cách chạy cũ (`E2E_USER_EMAIL=admin@test.com yarn e2e admin-login-history` dưới `chromium`).
+- **Selector thực tế (READ-ONLY, đã verify trong code):**
+  - View action: `<CustomButton>` render `<button>` với text từ `tTable("viewDetail")` (en label ~ "View", vi "Xem") → `page.getByRole("button", { name: /view|xem/i })`.
+  - Detail heading: `getByRole("heading", { name: /Login Attempt Detail/i })` (en) — `LoginHistoryDetailCard` render `<h2>{data.usernameAttempted}</h2>`, còn "Login Attempt Detail" là page title ở `AdminLoginHistoryDetailHeader`.
+  - Field label: `<dt>` uppercase qua CSS (`uppercase`) nhưng **text node giữ nguyên casing i18n** → `getByText("IP Address", { exact: true })` / vi `"Địa chỉ IP"` vẫn match (CSS uppercase không đổi DOM text).
+  - Status badge: `<CustomBadge variant={status==="success"?"success":"warning"}>{tStatus(status)}</CustomBadge>` — text là nhãn i18n (`tStatus("failed")` = "Failed"), KHÔNG raw `"failed"`.
+  - Method: `tMethod(data.method)` (vd "Password"), KHÔNG raw `"PASSWORD"`.
+  - isAnomaly: `t("anomalyYes")` / `t("anomalyNo")` ("Yes"/"No"), KHÔNG bool.
+  - anomalyReasons rỗng: `t("anomalyNone")` ("None").
+  - createdAt: `formatDateTimeMedium(data.createdAt)` — không chứa ISO `T…Z`.
+  - Conditional render: `{data.userId && <DetailField label={tFields("userId")} .../>}`, tương tự `failReason`, `timezoneOffset`.
+  - Skeleton: `LoginHistoryDetailSkeleton` render 8 shadcn `<Skeleton>` (class `animate-pulse`) trong `.bg-card.space-y-3`; **không có testid** → assert qua `page.locator(".animate-pulse").first()` hoặc `bg-card` chứa pulse trước khi heading về.
+  - Announcer: `#announcer` (`aria-live="polite"`) ở root layout (`app/[locale]/layout.tsx`).
+- **Mutation:** read-only — không revert. Mọi case dùng `page.route` chỉ stub response, không đụng DB.
+
+### Task E2E-BF-1: Backfill ADD/UPDATE scenarios trong test file
+
+**File (extend, READ-ONLY ngoài file này):** `client/e2e/admin-login-history/admin-login-history-detail.e2e.ts`
+
+Một checkbox / scenario áp dụng được. `<row#>` tham chiếu Scenario Matrix `design.md`.
+
+#### Đã có (giữ nguyên — KHÔNG đụng)
+
+- [x] 1 Happy + deep-link `[EP]` — id 24-hex hợp lệ → heading "Login Attempt Detail" + "IP Address" (đã có 2 test).
+- [x] 2 AuthN `[State Transition]` — empty storageState → `/admin/login-history/000…0` → redirect `/login` (đã có).
+- [x] 4 Validation `[BVA]` — `/admin/login-history/not-a-valid-id` → "Login history record not found" (đã có).
+- [x] 10 (error 500) `[Error Guessing]` — `route.fulfill 500` → error UI (đã có; **lưu ý UPDATE expected** — xem BF dưới).
+- [x] 9 i18n (en+vi label) — vi action "Xem" + field "Địa chỉ IP" (đã có; **ADD depth** dưới).
+
+#### UPDATE — case overstated cần siết assertion
+
+- [ ] **8 Data rendering** `[DT]` — sau `openFirstDetail`, status badge text = nhãn i18n (`/Success|Failed/`), KHÔNG raw `/^(success|failed)$/`; method = nhãn (không raw enum); `isAnomaly` = "Yes"/"No"; createdAt KHÔNG chứa ISO `T…Z` → UPDATE test happy hiện chỉ assert label "IP Address" thành assert localize/format. **Non-obvious** (cần deterministic data → stub qua `page.route`):
+
+```ts
+const VALID_ID = "0123456789abcdef01234567";
+const detailUrl = (id: string) => `/admin/login-history/${id}`;
+
+const FAILED_RECORD = {
+  _id: VALID_ID,
+  method: "PASSWORD",
+  status: "failed",
+  failReason: "INVALID_CREDENTIALS",
+  ip: "203.0.113.9",
+  country: "Vietnam",
+  city: "Hanoi",
+  deviceType: "desktop",
+  os: "Windows 10",
+  browser: "Chrome 120",
+  clientType: "web",
+  userAgent: "Mozilla/5.0 (Windows NT 10.0)",
+  createdAt: "2026-01-15T08:30:00.000Z",
+  userId: "64b7f0c2e1a2b3c4d5e6f7a8",
+  usernameAttempted: "victim@test.com",
+  timezoneOffset: "+07:00",
+  isAnomaly: true,
+  anomalyReasons: ["new_device", "new_country"]
+};
+
+const fulfillDetail = (page: Page, body: Record<string, unknown>) =>
+  page.route("**/api/v1/admin/login-history/*", (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        timestamp: new Date().toISOString(),
+        path: "/api/v1/admin/login-history",
+        message: "ok",
+        data: body
+      })
+    })
+  );
+
+test("detail renders localized/formatted values, not raw enums", async ({
+  page
+}) => {
+  await fulfillDetail(page, FAILED_RECORD);
+  await page.goto(detailUrl(VALID_ID));
+  // status badge: localized label, not the raw "failed" enum
+  await expect(page.getByText(/^Failed$/)).toBeVisible();
+  await expect(page.getByText(/^failed$/)).toHaveCount(0);
+  // method: localized, not raw "PASSWORD"
+  await expect(page.getByText("PASSWORD", { exact: true })).toHaveCount(0);
+  // isAnomaly: Yes/No, not boolean
+  await expect(page.getByText(/^(Yes|No)$/)).toBeVisible();
+  // createdAt: humanized, no ISO timestamp leaking through
+  await expect(page.getByText(/\dT\d.*Z/)).toHaveCount(0);
+});
+```
+
+- [ ] **10 (error 500) expected** `[Error Guessing]` — **UPDATE** assertion của test 500 hiện có cho khớp code: `LoginHistoryDetailCard` map `status===500` (không 404/400) → `t("error")` = "Could not load this login record", KHÔNG phải `notFound`. Test cũ trong plan E2E-1 từng assert `notFound` cho 500 — sai theo code reconciled. Sửa expected thành `getByText(/Could not load this login record/i)` (suite hiện hành đã đúng — chỉ confirm khi reconcile).
+
+#### ADD — scenario hợp lệ chưa có test
+
+- [ ] **5 Empty / null** `[Decision Table]` (null→hide · present→show · empty[]→"None") — `page.route` fulfill 200 với `{ userId: null, failReason: "INVALID_CREDENTIALS", timezoneOffset: null, anomalyReasons: [], status: "failed" }` → field userId & timezoneOffset **vắng mặt**, failReason **hiển thị**, anomaly = "None", status badge = warning. **Non-obvious** (route stub + assert absence/presence):
+
+```ts
+test("null userId/timezoneOffset are hidden; failReason shown; anomaly None; warning badge", async ({
+  page
+}) => {
+  await fulfillDetail(page, {
+    ...FAILED_RECORD,
+    userId: null,
+    failReason: "INVALID_CREDENTIALS",
+    timezoneOffset: null,
+    anomalyReasons: [],
+    status: "failed"
+  });
+  await page.goto(detailUrl(VALID_ID));
+  await expect(
+    page.getByRole("heading", { name: /Login Attempt Detail/i })
+  ).toBeVisible();
+  // failReason present
+  await expect(page.getByText("INVALID_CREDENTIALS")).toBeVisible();
+  // userId field label absent (conditional render `data.userId &&`)
+  await expect(page.getByText("User ID", { exact: true })).toHaveCount(0);
+  // timezoneOffset field label absent (`data.timezoneOffset &&`)
+  await expect(page.getByText("Timezone Offset", { exact: true })).toHaveCount(
+    0
+  );
+  // empty anomalyReasons → "None"
+  await expect(page.getByText(/^None$/)).toBeVisible();
+  // failed status → warning badge variant (data-variant or class assertion)
+  const badge = page.getByText(/^Failed$/);
+  await expect(badge).toBeVisible();
+});
+```
+
+> Note: label literal ("User ID", "Timezone Offset") phải khớp `loginHistory.admin.detail.fields.userId` / `.timezoneOffset` trong `locales/en/loginHistory.json` — chỉnh literal theo i18n thật khi viết.
+
+- [ ] **9 i18n depth (vi)** — ADD: vi not-found + error string render đúng tiếng Việt, không lộ key thô. **Non-obvious** (vi locale + route stub):
+
+```ts
+test("vi locale renders translated not-found and error strings", async ({
+  page
+}) => {
+  // not-found (invalid id → 400 → notFound branch)
+  await page.goto("/vi/admin/login-history/not-a-valid-id");
+  const notFoundVi = page.getByText(
+    /Không tìm thấy bản ghi lịch sử đăng nhập/i
+  );
+  await expect(notFoundVi).toBeVisible();
+  await expect(page.getByText(/loginHistory\.admin\.detail/)).toHaveCount(0);
+
+  // error (5xx → error branch)
+  await page.route("**/api/v1/admin/login-history/*", (route) =>
+    route.fulfill({ status: 500, body: "{}" })
+  );
+  await page.goto("/vi/admin/login-history/000000000000000000000000");
+  await expect(
+    page.getByText(/Không thể tải bản ghi đăng nhập này/i)
+  ).toBeVisible();
+});
+```
+
+> Note: chuỗi vi literal phải khớp `loginHistory.admin.detail.notFound` / `.error` trong `locales/vi/loginHistory.json` — chỉnh theo bản dịch thật khi viết.
+
+- [ ] **10 loading skeleton** `[Error Guessing: delayed-response]` — route delay (fulfill sau ~800ms) → skeleton hiển thị TRƯỚC khi data về. **Non-obvious** (delayed route + race assert):
+
+```ts
+test("loading skeleton shows before detail data arrives", async ({ page }) => {
+  await page.route("**/api/v1/admin/login-history/*", async (route) => {
+    await new Promise((r) => setTimeout(r, 800));
+    await route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify({
+        timestamp: new Date().toISOString(),
+        path: "/api/v1/admin/login-history",
+        message: "ok",
+        data: FAILED_RECORD
+      })
+    });
+  });
+  await page.goto(detailUrl(VALID_ID));
+  // skeleton (animate-pulse) visible while the request is in flight
+  await expect(page.locator(".animate-pulse").first()).toBeVisible();
+  // then the real heading replaces it
+  await expect(
+    page.getByRole("heading", { name: /Login Attempt Detail/i })
+  ).toBeVisible();
+  await expect(page.locator(".animate-pulse")).toHaveCount(0);
+});
+```
+
+- [ ] **10 network abort** `[Error Guessing: abort]` — `route.abort()` → error UI; phân biệt với 5xx (abort không phải HTTP-5xx → React Query `retry chỉ 5xx max 2` không kích hoạt như 500). **Non-obvious**:
+
+```ts
+test("network abort shows the error UI (distinct from 5xx retry path)", async ({
+  page
+}) => {
+  await page.route("**/api/v1/admin/login-history/*", (route) =>
+    route.abort()
+  );
+  await page.goto(detailUrl(VALID_ID));
+  await expect(
+    page.getByText(/Could not load this login record/i)
+  ).toBeVisible();
+});
+```
+
+- [ ] **12 a11y keyboard activation** `[State Transition]` — focus View + `Enter` → điều hướng sang detail. **Non-obvious** (keyboard nav):
+
+```ts
+test("View action is keyboard-activatable (focus + Enter navigates)", async ({
+  page
+}) => {
+  await page.goto("/admin/login-history");
+  const viewButton = page.getByRole("button", { name: /view|xem/i }).first();
+  await expect(viewButton).toBeVisible();
+  await viewButton.focus();
+  await expect(viewButton).toBeFocused();
+  await page.keyboard.press("Enter");
+  await page.waitForURL(/\/admin\/login-history\/[a-f0-9]{24}/);
+  await expect(
+    page.getByRole("heading", { name: /Login Attempt Detail/i })
+  ).toBeVisible();
+});
+```
+
+- [ ] **12 a11y back-preserves-filter** `[State Transition]` — list `?status=failed&page=2` → View → `goBack` → URL giữ nguyên query. **Non-obvious** (history back + query retention):
+
+```ts
+test("navigating back from detail preserves the list query string", async ({
+  page
+}) => {
+  await page.goto("/admin/login-history?status=failed&page=2");
+  const viewButton = page.getByRole("button", { name: /view|xem/i }).first();
+  await expect(viewButton).toBeVisible();
+  await viewButton.click();
+  await page.waitForURL(/\/admin\/login-history\/[a-f0-9]{24}/);
+  await page.goBack();
+  await expect(page).toHaveURL(/[?&]status=failed(&|$)/);
+  await expect(page).toHaveURL(/[?&]page=2(&|$)/);
+});
+```
+
+> Note: View là `<CustomButton>` (`router.push`), không `<a href>`. Back vẫn giữ query vì list URL nằm trong history stack — nhưng **không có** middle-click / open-in-new-tab. **A11y follow-up flag** (KHÔNG sửa app code trong test): cân nhắc đổi View sang next-intl `<Link href>` để hỗ trợ native link affordance.
+
+- [ ] **12 a11y announce-on-load — DEPENDS CF-4** `[State Transition]` — detail data về → `#announcer` chứa thông báo (vd record loaded). **Non-obvious** + **blocked**:
+
+```ts
+test("detail load announces to the #announcer live region", async ({
+  page
+}) => {
+  await fulfillDetail(page, FAILED_RECORD);
+  await page.goto(detailUrl(VALID_ID));
+  await expect(
+    page.getByRole("heading", { name: /Login Attempt Detail/i })
+  ).toBeVisible();
+  const announcer = page.locator("#announcer");
+  await expect(announcer).not.toBeEmpty();
+});
+```
+
+> **DEPENDS CF-4** (design.md "Known code fixes prereq"): `LoginHistoryDetailCard` hiện KHÔNG gọi `useAnnounce` khi data về → `#announcer` im lặng → test FAIL cho tới khi CF-4 thêm announce-on-load + i18n `announce.*` (en/vi). **Nếu CF-4 chưa close → DEFER test này, ghi lý do** (không silent-drop); enable ngay sau CF-4.
+
+#### DEFER — không viết được lúc này (ghi lý do, không silent-drop)
+
+- [ ] **3 AuthZ (non-admin → blocked)** `[Decision Table]` (role=admin→allow · role=user→deny) — **DEFER: thiếu non-admin fixture.** `auth.setup.ts` chỉ seed admin storageState (`E2E_USER_EMAIL=admin`); chưa có non-admin login fixture/storageState để gate A assert `adminGuard` chặn non-admin (403/redirect, detail card KHÔNG render). Server-side `adminGuard` đã cover về mặt bảo vệ. **Khi non-admin fixture sẵn sàng** (cross-ref suite `admin-authz` / `admin.setup`-style cho user thường), enable test sau:
+
+```ts
+// ENABLE khi có e2e/.auth/non-admin.json (hoặc fixture tương đương)
+test.describe("Admin Login History — authZ (non-admin)", () => {
+  test.use({ storageState: "e2e/.auth/non-admin.json" });
+  test("non-admin cannot view a login-history detail record", async ({
+    page
+  }) => {
+    await page.goto(detailUrl("0123456789abcdef01234567"));
+    // adminGuard blocks: either redirect away or no detail card rendered
+    await expect(
+      page.getByRole("heading", { name: /Login Attempt Detail/i })
+    ).toHaveCount(0);
+    await expect(page).not.toHaveURL(
+      /\/admin\/login-history\/[a-f0-9]{24}/
+    );
+  });
+});
+```
+
+#### N/A (per matrix — không viết)
+
+- 6 Boundary/pagination — detail không phân trang; list pagination cover ở suite `admin-login-history` riêng.
+- 7 Filter/search — detail không có filter; list filter không đổi bởi column trim.
+- 11 Mutation safety — feature read-only, không có write.
+
+### Task E2E-BF-2: App-running self-check + dual-gate run (§4.3)
+
+- [ ] **Self-check một lần** trước khi dispatch: BE :5000, FE :3000 (hoặc worktree dev `--port 3100` + `E2E_BASE_URL` per worktree dev-server note), Mongo, Redis up + seeded. Chưa chạy → hỏi user (a) tự run / (b) agent run background (teardown chỉ cái mình bật).
+- [ ] **Gate A — `yarn e2e`** (sau CF-1 chạy dưới `admin` project, không cần override email):
+
+```bash
+# từ client worktree, sau CF-1:
+yarn e2e admin-login-history
+# nếu CF-1 chưa close (fallback chromium + admin user):
+E2E_USER_EMAIL=admin@test.com yarn e2e admin-login-history
+```
+
+Expected: mọi test non-deferred green (announce-on-load test phụ thuộc CF-4; AuthZ phụ thuộc non-admin fixture).
+
+- [ ] **Gate B — MCP walk** (general-purpose + Playwright MCP, auth context riêng, KHÔNG share storageState với A): walk Scenario Matrix từ `e2e.md`, verify visual/UX/console/network mà assertion gate A có thể sót. Read-only feature → gate B verify read/render thoải mái.
+- [ ] Fail ≥1 gate → `superpowers:systematic-debugging` root cause → `e2e-bugs.md` → fix → rerun cả 2 (max 3 vòng). Cả 2 PASS → sang `requesting-code-review`.
+
+### Task E2E-BF-3: Reconcile `docs/specs/admin-login-history-detail/e2e.md`
+
+- [ ] **UPDATE** `docs/specs/admin-login-history-detail/e2e.md` để khớp suite backfilled (reconcile cả 3 artifact: matrix ↔ e2e.md ↔ test file):
+  - Bảng "Scenario → test mapping": ADD các test mới (row 5 empty/null, row 8 data-render localized, row 9 vi not-found/error, row 10 skeleton + abort, row 12 keyboard + back-preserves-filter + announce-on-load).
+  - Sửa mapping row 10: 500 → **error** UI (không `notFound`).
+  - "Deferred scenarios": cập nhật — **row 3 AuthZ** vẫn deferred (non-admin fixture); row 5 Empty/null **chuyển từ deferred → covered** (giờ stub qua `page.route`, không cần seed); **row 12 announce-on-load** = deferred-pending-CF-4 (ghi rõ enable sau CF-4).
+  - Ghi chú CF-1 (project scope) + CF-4 (announce) trong phần "How to run" / prerequisites.
+  - A11y follow-up: View là `<button>`+`router.push` (không `<a href>`) — flag, không sửa trong test.
+- [ ] **Stage** (docs worktree): `git add specs/admin-login-history-detail/e2e.md`.

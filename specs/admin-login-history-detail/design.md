@@ -87,22 +87,31 @@ hooks/useAdminLoginHistoryDetail.ts        # useQuery, QUERY_KEYS.ADMIN_LOGIN_HI
 
 ## E2E Scenario Matrix (admin login-history list + detail)
 
-| # | Category | Decision |
-| --- | --- | --- |
-| 1 | Happy path | ✅ Admin mở list → thấy bảng 7 cột; click **View** → tới `/admin/login-history/{id}` hiển thị đủ field. Deep-link trực tiếp tới id hợp lệ render detail. |
-| 2 | AuthN | ✅ Chưa đăng nhập → `/admin/login-history/{id}` redirect về login. |
-| 3 | AuthZ | ✅ User thường (non-admin) → list & detail bị chặn (403/redirect qua `adminGuard`). |
-| 4 | Validation | ✅ Detail với id không phải ObjectID (`/admin/login-history/abc`) → 400 → FE hiển thị error/not-found UI. |
-| 5 | Empty / null | ✅ Detail của failed attempt: `userId` null → field ẩn/"—"; record success: `failReason` null ẩn; `anomalyReasons` rỗng → "none". |
-| 6 | Boundary / pagination | N/A — detail không phân trang; list pagination không đổi bởi việc rút cột (đã cover bởi suite admin-login-history hiện có). |
-| 7 | Filter / search | N/A — detail không có filter; list filter không đổi (rút cột không động tới filter logic). |
-| 8 | Data rendering | ✅ Method/status/device là human label không phải raw enum; `isAnomaly` → Yes/No; `createdAt` formatted (không ISO); cột "IP & Location" gộp. |
-| 9 | **i18n** | ✅ Label cột Action + detail (title, breadcrumb, field labels, method/status enum, not-found) render ở **cả en VÀ vi**. |
-| 10 | Error / loading | ✅ Detail API 5xx/network → error UI; loading → skeleton; id hợp lệ nhưng không tồn tại → 404 not-found UI. |
-| 11 | Mutation safety | N/A — read-only, không write. |
-| 12 | Accessibility | ✅ Action View reachable bằng keyboard/role; detail dùng semantic `<dl>` + heading order; announce on load/navigation. |
+Trạng thái phản ánh **coverage thực tế** trong `client/e2e/admin-login-history/admin-login-history-detail.e2e.ts` (đã reconcile — một số cell trước đây overstate so với assertion thật trong test). `✅` = đã có test assert; `✅ NEW` = scenario hợp lệ nhưng test hiện **chưa** cover (cần ADD); `N/A` = không áp dụng + lý do.
 
-Feature-specific: deep-link load detail (không qua table click) ✅ (row 1); back-from-detail giữ list URL/filter ✅ (row 12).
+| # | Category | Status | Scenario + expected + [technique] + values | Gate |
+| --- | --- | --- | --- | --- |
+| 1 | Happy path | ✅ | Admin mở `/admin/login-history` → bảng 7 cột; click **View** → URL khớp `/admin/login-history/{24-hex}` → heading "Login Attempt Detail" + field "IP Address" hiển thị. Deep-link trực tiếp tới id hợp lệ render lại detail (goto url sau khi rời trang). **[EP]** id hợp lệ = ObjectID 24-hex của record tồn tại. | A+B |
+| 2 | AuthN | ✅ | Context không cookie (`storageState: { cookies: [], origins: [] }`) → goto `/admin/login-history/000000000000000000000000` → redirect `…/login`. **[State Transition]** unauth → guard → /login. | A+B |
+| 3 | AuthZ | ✅ NEW | User thường (non-admin) đăng nhập → `GET /admin/login-history/{validId}` → `adminGuard` chặn (403 hoặc redirect) → **detail card KHÔNG render** (không lộ record). Cần **non-admin storageState fixture** (hiện deferred — xem "Known code fixes prereq"). **[Decision Table]** role=admin→allow · role=user→deny. | A+B |
+| 4 | Validation | ✅ | Detail với id không phải ObjectID (`/admin/login-history/not-a-valid-id`) → not-found UI ("Login history record not found"). FE map **cả 400 lẫn 404 → `notFound`** (`isMissing = status === 404 || status === 400`, nhất quán). **[BVA]** "abc"/"not-a-valid-id" (fail pattern) vs 24-hex valid. | A+B |
+| 5 | Empty / null | ✅ NEW | `page.route` detail API → `fulfill 200 { userId: null, failReason: "INVALID_CREDENTIALS", timezoneOffset: null, anomalyReasons: [], status: "failed" }` → field **userId & timezoneOffset ẩn** (conditional render `data.userId &&` / `data.timezoneOffset &&`), **failReason hiển thị**, anomaly = **"None"** (`anomalyNone`), status badge = **warning**. **[Decision Table]** null→hide · present→show · empty[]→"None". | A+B |
+| 6 | Boundary / pagination | N/A | Detail page không phân trang. List pagination (page/limit, totalPages) đã được cover bởi **suite `admin-login-history` riêng** — không lặp ở đây. | — |
+| 7 | Filter / search | N/A | Detail không có filter/search. List filter (status/method/country/date/userId/ip) không đổi bởi việc rút cột — không động tới filter logic. | — |
+| 8 | Data rendering | ✅ NEW (was overstated) | **[DT]** assert giá trị đã localize/format, KHÔNG raw: status badge text = nhãn i18n (vd "Success"/"Failed", **không** raw `"success"`); method = nhãn (`tMethod`, không raw enum `"PASSWORD"`); `isAnomaly` → "Yes"/"No" (không bool `true/false`); `createdAt` qua `formatDateTimeMedium` (không chứa ISO `T…Z`). Trước đây cell ✅ nhưng test chỉ assert sự hiện diện của label "IP Address", **chưa** assert localization/format của value. | A+B |
+| 9 | **i18n** | ✅ (+depth) | **Đã có**: vi locale render action label ("Xem") + field label ("Địa chỉ IP"). **ADD depth**: assert chuỗi vi cho **not-found** + **error** state (`t("notFound")` / `t("error")` ở `loginHistory.admin.detail`) render đúng tiếng Việt, không lộ key thô. Cả en + vi. | A+B |
+| 10 | Error / loading | ✅ NEW (error có, loading thiếu) | **Đã có**: detail API 500 → error UI ("Could not load this login record"). **ADD**: (a) **loading skeleton** `LoginHistoryDetailSkeleton` qua route delay → skeleton hiển thị trước khi data về; (b) **network abort** (`route.abort()`) → error UI, **phân biệt với 5xx** — kiểm chứng React Query `retry chỉ 5xx (max 2)`: abort không phải HTTP-5xx nên hành vi retry khác. **[Error Guessing]** delayed-response, abort, 500. | A+B |
+| 11 | Mutation safety | N/A | Feature read-only — không có write/mutation nào để bảo vệ. | — |
+| 12 | Accessibility | ✅ NEW (was overstated) | **Đã có**: View là `<button>` có accessible name. **ADD**: (a) **keyboard activation** — focus View + `Enter` → điều hướng sang detail; (b) **back-preserves-filter** — list `?status=failed&page=2` → View → `navigate_back` → URL **giữ nguyên query** (`status=failed&page=2`); (c) **#announcer announce-on-load** detail (yêu cầu **CF-4** — hiện code chưa có `useAnnounce` ở detail card). **Note a11y follow-up**: View là `<CustomButton>` (render `<button>`) + `router.push`, **không phải `<a href>`** → mất right-click/open-in-new-tab/middle-click; flag follow-up (KHÔNG sửa app code trong test). | B |
+
+Feature-specific: deep-link load detail (không qua table click) ✅ (row 1, đã có); back-from-detail giữ list URL/filter — **row 12 ADD** (chưa có test).
+
+## Known code fixes prereq
+
+Hai scenario ✅ NEW phụ thuộc code-fix/fixture chưa có — phải close trước khi test tương ứng pass được:
+
+- **CF-4 — `useAnnounce` announce-on-load ở detail** (cho **row 12** announce-on-load): `LoginHistoryDetailCard` hiện **KHÔNG** gọi `useAnnounce` khi data về (kiểm chứng trong `views/AdminLoginHistoryDetail/mains/LoginHistoryDetailCard/index.tsx`). Design ghi "Announce on load" nhưng code chưa implement → `#announcer` im lặng khi detail load. CF-4 = thêm `useAnnounce` announce-on-load (theo `client/.claude/rules/accessibility.md`: "Loading → Data về" bắt buộc announce) + i18n `announce.*` cho cả en/vi. Đây là điểm đóng gap design ↔ code.
+- **Non-admin fixture — `row 3 AuthZ`**: chưa có non-admin `storageState`. `auth.setup.ts` hiện chỉ seed **admin** (`E2E_USER_EMAIL=admin`). Cần thêm setup/fixture đăng nhập user thường để gate A có thể assert `adminGuard` chặn non-admin. Hiện **deferred** cho tới khi fixture sẵn sàng.
 
 ## Out of scope
 
