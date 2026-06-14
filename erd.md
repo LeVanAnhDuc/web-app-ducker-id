@@ -11,7 +11,7 @@
 | Identity                       | `auths`, `refresh_tokens`, `login_histories`         |
 | Profile                        | `users`, `user_addresses`                            |
 | App Registry                   | `web_apps`, `web_app_categories`                     |
-| Entitlement & Personalization  | `entitlements` (gộp grant + favorite + recently-used)|
+| Entitlement & Personalization  | `entitlements` (grant + recently-used), `user_favorites` (favorite — tách riêng, xem DR-FAV)|
 | OAuth                          | `oauth_consents` (auth codes lưu Redis, không phải Mongo) |
 | Notification                   | `notifications`                                      |
 | Support                        | `contacts`                                           |
@@ -31,6 +31,8 @@ erDiagram
     USER ||--o{ OAUTH_CONSENT : "consented"
     WEB_APP ||--o{ OAUTH_CONSENT : "for-client"
     USER ||--o{ NOTIFICATION : "receives"
+    USER ||--o{ USER_FAVORITE : "favorites"
+    WEB_APP ||--o{ USER_FAVORITE : "favorited-as"
 
     AUTH {
         ObjectId _id PK
@@ -155,6 +157,13 @@ erDiagram
         Date updated_at
     }
 
+    USER_FAVORITE {
+        ObjectId _id PK
+        ObjectId user_id FK,UK "→ USER"
+        ObjectId web_app_id FK,UK "→ WEB_APP"
+        Date created_at "append-only, no updated_at"
+    }
+
     OAUTH_CONSENT {
         ObjectId _id PK
         ObjectId user_id FK,UK "→ USER"
@@ -212,11 +221,18 @@ erDiagram
 
 ### Composite unique constraints
 - `entitlements`: `(user_id, web_app_id)` unique — 1 cặp user-app chỉ 1 entitlement record
+- `user_favorites`: `(user_id, web_app_id)` unique — 1 cặp user-app chỉ 1 favorite record (POST favorite idempotent qua index này)
 - `oauth_consents`: `(user_id, web_app_id, scope_set_hash)` unique — phát hiện scope mới yêu cầu re-consent
 - `web_apps`: `client_id` unique (đã đánh dấu UK ở field)
 
 ### Single-collection patterns
-- **ENTITLEMENT** gộp 3 concern: (1) grant của admin, (2) favorite của user, (3) recently-used tracking. 1 user × 1 app = 1 document duy nhất. Query nhanh, tránh join, tránh inconsistency giữa "user star app nhưng không có entitlement".
+- **ENTITLEMENT** gộp 2 concern còn lại: (1) grant của admin, (2) recently-used tracking. 1 user × 1 app = 1 document duy nhất.
+
+### DR-FAV — Favorite tách khỏi ENTITLEMENT (2026-06)
+- **Quyết định**: favorite lưu ở collection riêng `user_favorites` `{user_id, web_app_id, created_at}`, KHÔNG dùng `entitlements.is_favorite`.
+- **Lý do**: catalog `/apps` hiển thị app theo role (chưa gate theo entitlement), nên user thường favorite app **chưa có** entitlement record. Upsert vào `entitlements` sẽ buộc đặt `granted_by` (nghĩa "admin cấp") sai ngữ nghĩa. Collection riêng cho ngữ nghĩa sạch, không đụng grant lifecycle.
+- **Hệ quả**: field `entitlements.is_favorite` không còn được feature favorite dùng (giữ lại trong schema cũ nếu có, nhưng nguồn sự thật favorite là `user_favorites`). Annotate `isFavorite` trên `GET /apps` join từ `user_favorites`.
+- API: `POST/DELETE /users/me/favorites/:appId`, `GET /users/me/favorites`. Xem `specs/favorite-apps/`.
 
 ### OAuth client pattern
 - `WEB_APP` đồng thời là **OAuth client metadata holder** — không tách entity riêng (1-1 quan hệ).
