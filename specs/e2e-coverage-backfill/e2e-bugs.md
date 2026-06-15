@@ -71,3 +71,18 @@ Append-only. 1 entry per fail round.
 **Side effect (dev DB):** notifications mutation test (D9 persistence, mark-single) đánh dấu read vĩnh viễn vài notification unread (không có mark-unread API). Minor; reseed nếu cần: `cd server && yarn seed --clear && yarn seed`.
 
 **Kết luận:** Dual-gate §4.3 PASS sau round 2 (≤3 vòng). Teardown: worktree FE :3100 đã tắt, BE :5000/FE :3000 của user giữ nguyên.
+
+## Follow-up fixes (post-merge, branch `fix/e2e-followups`)
+
+Xử lý các app finding theo thứ tự, mỗi issue 1 commit để review dễ.
+
+- **Issue #1 — double-submit guard (FE) [DONE]**: hook dùng chung `src/hooks/useSubmitGuard.ts` (`run`/`release` + in-flight `useRef`, chặn đồng bộ trước re-render); áp 7 form mutate-BE-thật (AdminAppsFormSheet, ChangePasswordCard, Profile PersonalInfoForm, ForgotPasswordReset, LoginPassword, Signup InfoStep, Login EmailStep) — `onSubmit` bọc `run(...)` + `onSettled: release`. Un-fixme test double-submit edit-apps (pass, 1 PATCH, self-revert). Refactor onError ChangePasswordCard → object-mapping `FIELD_ERROR_MAP`.
+- **Issue #2 — vi label + Category localize (FE+BE) [DONE]**: vi Role header/filter → "Vai trò". Category localize theo **Approach A** (FE i18n by slug, explicit map): BE `UserCategoryDto` +`slug`, `UserAppDto` +`categorySlug`, repo populate `select: "displayName name"`; FE `common.categories` (en+vi) + `dataSources/Categories` map `CATEGORY_LABEL_KEY` + `resolveCategoryLabel(t,slug,fallback)`; localize 4 render site (CategoryFilter pill, app card + announce ở AppsBoard, CategorySelect, AdminAppsTable). E2E thêm assertion vi "Năng suất". en giữ "Content" (không regression). KHÔNG đổi schema (slug = field `name` sẵn có).
+- **Issue #3 — password-not-changed.guard iat resolution (BE) [DONE]**: fix bằng **tokenVersion discriminator** (không sửa toán tử — `<=` sẽ revoke nhầm phiên hiện tại; iat giây không tách được same-second). Auth `+tokenVersion`; refresh payload mang version; `updatePassword` `$inc tokenVersion` (atomic, return version mới) → change-password issue token với version mới; guard reject `(payload.tokenVersion ?? 0) < auth.tokenVersion` (`?? 0` migration mượt). forgot-password cũng bump. Bỏ `1.1s wait` trong e2e. Verify: curl chứng minh OLD token reuse **cùng giây** → 403, NEW token → 200; change-password e2e 28 pass/1 skip.
+  - **Env note**: phát hiện server+client `node_modules` bị prune devDeps (ts-node/eslint/playwright) → `yarn install` khôi phục (tắt BE :5000 + FE :3000 tạm để gỡ EPERM bcrypt, đã bật lại). Xem [[reference_e2e_auth_ratelimit_gotchas]].
+
+### Finding mới — double error-notification (global toast trùng form onError) [FOLLOW-UP, làm sau]
+
+`query-client.ts` đặt `MutationCache.onError: queryErrorHandler` → toast cho MỌI mutation 4xx. RQ chạy CẢ global cache onError LẪN `onError` per-call form. Form có bespoke onError (AdminAppsFormSheet, ChangePasswordCard) làm `setError`/`toast.error` → **chồng global toast = 2 thông báo** (sai mật khẩu / 409: field error + toast; else: 2 toast). Form chỉ-dựa-global thì OK (1 toast).
+
+**Fix đề xuất:** `meta: { skipGlobalErrorToast: true }` (augment `MutationMeta`); `MutationCache.onError` đọc `mutation.meta` → skip khi set; hook tự xử lý (`useUpdateAdminApp`/`useCreateAdminApp`/`useChangePassword`) opt-out → form là chủ duy nhất (1 thông báo). E2E assert no-double. Pre-existing, scope riêng — user chọn làm sau.
