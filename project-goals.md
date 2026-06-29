@@ -160,7 +160,7 @@ Rõ ràng **KHÔNG** thuộc scope của IDMS:
 | Public       | `/login`, `/signup`, `/forgot-password`, `/contact-admin`                                                     | ✅ có                                              |
 | **OAuth UX** | `/oauth/authorize` (consent screen)                                                                           | ❌ MVP-1                                           |
 | Dashboard    | `/`, `/apps`, `/discover`, `/favorites`, `/recently-used`, `/notifications`, `/login-history`, `/contacts/me` | ✅ shell có, cần wire vào App Registry             |
-| Settings     | `/profile`, `/account-settings`, `/security`, `/billing`, `/team`                                             | ✅ có (Billing/Team giữ như placeholder, không gỡ) |
+| Settings     | `/profile`, `/account-settings`, `/security`, `/billing`                                                     | ✅ có (Billing giữ như placeholder, không gỡ)     |
 | Admin        | `/admin/contact`, `/admin/login-history`, **`/admin/apps`**, **`/admin/entitlements`**, **`/admin/users`**    | ✅ phần đầu / ❌ phần in đậm cần build             |
 
 **Loại bỏ**: khu vực "Categories" 10 mục cứng trong sidebar (Productivity/Creativity/Health/Shopping…) — không phù hợp với IDMS portal. Category vẫn tồn tại như metadata của App entry (admin tự định nghĩa, vd: "Content", "Internal Tools"), không hardcode.
@@ -231,14 +231,14 @@ Chi tiết version: `.claude/techstack/frontend.md`, `.claude/techstack/backend.
 | **MVP-2**   | App registry + entitlement                                                                                                      | App model + admin CRUD UI + per-user entitlement + dashboard hiển thị app theo entitlement + Favorites/RecentlyUsed wired.                   | MVP-1 (để có client_id mapping) |
 | **MVP-3**   | Tách Blog thành satellite                                                                                                       | Scaffold project blog mới, migrate `apps/blog/*` ra src riêng, đăng ký Blog vào IDMS như app vệ tinh đầu tiên, validate end-to-end SSO flow. | MVP-1, MVP-2                    |
 | **MVP-4**   | UI polish + Admin tools                                                                                                         | Hoàn thiện admin force-logout, lock/unlock, reset-password override. Loại bỏ Categories hardcoded. Notifications wire vào event thật.        | MVP-2                           |
-| **Backlog** | Discover algorithm, Billing thực, Team multi-user, Anomaly detection nâng cao, OAuth provider khác (Google/GitHub login social) | —                                                                                                                                            | —                               |
+| **Backlog** | Discover algorithm, Billing thực, Anomaly detection nâng cao, OAuth provider khác (Google/GitHub login social) | —                                                                                                                                            | —                               |
 
 ---
 
 ## 11. Out of Scope (phiên bản hiện tại)
 
 - Payment gateway thực (Billing UI giữ làm placeholder).
-- Team collaboration thực (Team UI giữ làm placeholder).
+- Team collaboration (mời thành viên, vai trò owner/admin/member): **Non-Goal** — trái mô hình single-tenant (§5). Placeholder UI `/team` đã được gỡ bỏ.
 - Social login (Google/GitHub) — sẽ vào backlog sau MVP-4.
 - Push notification real-time (WebSocket/SSE) — Notifications hiện chỉ là inbox.
 - Mobile native app.
@@ -262,3 +262,4 @@ Chi tiết version: `.claude/techstack/frontend.md`, `.claude/techstack/backend.
 | Date       | Change                                            |
 | ---------- | ------------------------------------------------- |
 | 2026-05-23 | Initial — định vị IDMS, scope MVP-1..4, glossary. |
+| 2026-06-29 | Gỡ bỏ Team collaboration placeholder (FE + docs); Team thành Non-Goal dứt khoát (single-tenant). |

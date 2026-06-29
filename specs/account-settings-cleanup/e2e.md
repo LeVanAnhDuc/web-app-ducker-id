@@ -21,7 +21,7 @@
 | 11  | Mutation safety       | N/A     | Cleanup gỡ các mock-mutation; change-password mutation có suite riêng.                                                                                                       | —    |
 | 12  | Accessibility         | ✅      | account-settings/profile dùng role/label selector; link "Security" không còn trong tab order sidebar.                                                                       | A+B  |
 | F1  | Route removal `[ST]`  | ✅      | Vào `/security` và `/vi/security` → `not-found`/404 (invalid transition: route từng hợp lệ nay không còn).                                                                  | A+B  |
-| F2  | Nav integrity         | ✅      | Sidebar nhóm Settings liệt kê profile, account-settings, billing, team — **không** có security; các link còn lại điều hướng đúng.                                            | A+B  |
+| F2  | Nav integrity         | ✅      | Sidebar nhóm Settings liệt kê profile, account-settings, billing — **không** có security (lẫn team, đã gỡ ở feature remove-team-feature); các link còn lại điều hướng đúng. | A+B  |
 | F3  | Dead-reference guard  | ✅      | Không còn import/string tham chiếu `ROUTES.SECURITY`/`views/Security`/`mocks/Security`/locale `security`/các card đã xoá — chốt bằng `yarn build` (type-check) + grep, không cần E2E. | —    |
 
 **Test-design techniques**: EP/BVA/DT không kích hoạt (không có input domain / boundary / điều kiện kết hợp mới). Chỉ ST cho F1 (route removal = invalid transition). Completeness-critic: chưa yêu cầu "thorough/≥90%" → không chạy.
@@ -34,7 +34,7 @@ All tests in `client/e2e/account-settings-cleanup/cleanup.e2e.ts`. They run unde
 | -------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | F1       | `/security` → not-found                                              | `F1 route removal › renders not-found for /security (default locale)`                                                                       |
 | F1       | `/vi/security` → not-found                                           | `F1 route removal › renders not-found for /vi/security (Vietnamese locale)`                                                                 |
-| F2       | Settings nav lists Profile/Account Settings/Billing/Team, no Security | `F2 nav integrity › settings nav lists Profile/Account Settings/Billing/Team without Security`                                              |
+| F2       | Settings nav lists Profile/Account Settings/Billing, no Security or Team | `F2 nav integrity › settings nav lists Profile/Account Settings/Billing without Security or Team`                                          |
 | F2       | A remaining settings link navigates                                  | `F2 nav integrity › a remaining settings link navigates correctly (Profile)`                                                               |
 | #1       | account-settings = Change Password only, removed cards gone          | `#1 happy path › account-settings renders Change Password and none of the removed cards`                                                    |
 | #1       | profile still renders Danger Zone                                    | `#1 happy path › profile renders the relocated Danger Zone`                                                                                 |
