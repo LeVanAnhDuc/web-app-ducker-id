@@ -1,8 +1,10 @@
 # E2E — `web-app-user-list` (`/vi/apps` catalog)
 
-> Playwright, per CLAUDE.md §4.3. Test: `client/e2e/web-app-user-list/apps-list.e2e.ts`.
-> Auth via global `e2e/auth.setup.ts` (seed user `user@test.com`). Read-only — no data mutation, nothing to revert.
+> Playwright, per CLAUDE.md §4.3. Tests: `client/e2e/web-app-user-list/apps-list.e2e.ts` + `client/e2e/web-app-user-list/categories-public-ssr.e2e.ts`.
+> Auth via global `e2e/auth.setup.ts` (seed user `user@test.com`) / `e2e/admin.setup.ts` (seed admin `admin@test.com`). Read-only — no data mutation, nothing to revert.
 > Reconciled against `design.md §6 ## E2E Scenario Matrix` (12-group rubric, merged with category-filter + EN-locale from `apps-api-integration`). Every applicable matrix row maps to a scenario + `test()` below, or is DEFERRED with a reason (no silent gaps).
+>
+> **Reconciled again for feature `apps-category-ssr`** (`specs/apps-category-ssr/design.md` §"E2E Scenario Matrix", rows 1–20): `GET /apps/categories` became a PUBLIC endpoint (`optionalAuthGuard` + per-IP rate-limit + `Cache-Control: public, max-age=300`) and `/apps` now fetches categories in a Next.js Server Component, passed as a prop to `AppsBoard` (client fallback to `useAppCategories()` on server-fetch failure). New scenarios live in `categories-public-ssr.e2e.ts` — see "Public categories + SSR hybrid (apps-category-ssr)" section below. The apps LIST endpoint (`GET /api/v1/apps`) is unchanged (still `authGuard`).
 
 ## Preconditions
 
@@ -33,7 +35,7 @@ Mapping legend: each item lists the matrix **row #** (from `design.md §6`) and 
 ### AuthN (Row 2)
 
 9. **(Row 2) Unauthenticated UI redirect** `[EP]` — a fresh non-authenticated context (`storageState` dropped **and** `clearCookies()`, because localhost cookies are not port-scoped) visiting `/vi/apps` is redirected to `/login` by `AuthGuardLayout`. _test:_ `redirects an unauthenticated user from /vi/apps to /login [EP]`.
-10. **(Row 2) API 401 without a token** `[EP]` — a fresh `request.newContext` (no cookies, no Authorization) hitting `GET /api/v1/apps/categories` returns **401**. Gate A only. _test:_ `GET /api/v1/apps/categories without a Bearer token returns 401 [EP]`.
+10. ~~**(Row 2) API 401 without a token** — `GET /api/v1/apps/categories` without a token returns 401.~~ **UPDATED for `apps-category-ssr`**: this endpoint is now **PUBLIC** (`optionalAuthGuard` + per-IP rate-limit). No-header → **200**; a *garbage/invalid* `Bearer` token now falls through to `authGuard` and returns **401** (the auth cliff moved from "any request" to "a request that supplies a bad token"). No test previously existed for this row in `apps-list.e2e.ts` (the file's own history shows the pills/search-era scenarios were superseded by `unified-list`) — the corrected behavior is now covered in `categories-public-ssr.e2e.ts`. _test:_ `rejects a garbage Bearer token with 401 but allows no header (200) [EP]`. The `GET /api/v1/apps` LIST endpoint is **unchanged** — still `authGuard`, still 401 without a token (covered by scenario 9's redirect at the UI layer; no separate raw-401 API test existed or was added for the list endpoint here).
 
 ### Validation / tampered params (Row 4, API-level)
 
@@ -53,7 +55,7 @@ Mapping legend: each item lists the matrix **row #** (from `design.md §6`) and 
 ### Error / loading (Row 10)
 
 17. **(Row 10) Catalog 5xx error alert** — `page.route` fulfills `GET /apps` with **500**. React Query retries 5xx up to **2×** (3 attempts total) → the mock persists across all attempts; the test timeout is bumped to absorb retry backoff. A `role="alert"` shows `apps.error` ("Không thể tải ứng dụng. Vui lòng thử lại."). _test:_ `shows the error alert when GET /apps fails (5xx + React Query retries)`.
-18. **(Row 10) Categories 5xx degrade** — `GET /apps/categories` → **500** → the pill row is reduced to only the "All" pill, but the unfiltered "All" grid still renders apps (Blog visible). _test:_ `hides category pills on a categories 5xx but still renders the All grid`.
+18. ~~**(Row 10) Categories 5xx degrade** — `GET /apps/categories` → 500 → the pill row is reduced to only the "All" pill, but the unfiltered "All" grid still renders apps.~~ **UPDATED for `apps-category-ssr`**: the pill-row UI it referenced no longer exists (superseded by the `ListToolbar`/`Filters` popover — see the "REMOVED" note at the top of `apps-list.e2e.ts`), and category fetching moved server-side. The correct degrade path today is: `getServerAppCategories()` (Server Component, `next.config` `revalidate: 300`) returns `null` on **any** fetch failure (non-OK status or thrown error) → `AppsBoard` receives `categories={null}` → falls back to the client hook `useAppCategories()` (`enabled: serverCategories == null`) → the Filters popover still renders once the client fetch resolves; if the client fetch *also* fails, the filter option list is simply empty (no crash, apps list is unaffected since it's a separate query). **No dedicated E2E test authored for this path** — a Server Component fetch failure cannot be forced via `page.route` (the request never reaches the browser's network layer; it happens in the Next.js server process before HTML is streamed). DEFERRED — see "Notes / follow-ups" below.
 19. **(Row 10) Loading skeleton** — a held (`page.route` + gate promise) response keeps the query pending → `AppCardSkeleton`s render (shadcn `Skeleton`, asserted via `[data-slot="skeleton"]`). _test:_ `renders skeleton cards while the catalog request is pending`.
 
 ### Accessibility (Row 12)
