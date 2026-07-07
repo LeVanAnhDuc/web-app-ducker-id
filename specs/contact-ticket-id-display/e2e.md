@@ -30,3 +30,14 @@ All 6 automated tests in `contact-display.e2e.ts` run under **Gate A** (`yarn e2
 
 1. `ShortId` exposes the full `_id` only via the `title` attribute (mouse-hover tooltip). Keyboard/screen-reader users have no equivalent affordance to discover the full id. Consider adding an `aria-label` with the full id.
 2. `ListFilterPanel` renders filter labels as shadcn `<Label>` without `htmlFor`/`id` linkage to their control (select/input) — filters are not programmatically associated with their labels, so `page.getByLabel(...)` cannot resolve them and screen readers won't announce the label on focus. Consider wiring `htmlFor`/`id` or `aria-labelledby`.
+
+## Delta — contact-detail-fullid-cleanup
+
+Follow-up branch to this feature. Full design/rationale: `specs/contact-detail-fullid-cleanup/design.md`. Summary of behavior changes (test file unchanged in location, `client/e2e/contact/contact-display.e2e.ts`, reconciled in place — no new file):
+
+- **Detail card header now shows the FULL `_id`** (24-hex), not the `ShortId` truncated form. `ContactDetailCard`'s `<h2>` renders `contact._id` verbatim. Test: `detail page renders the FULL ticket id in the card heading, breadcrumb shows full id, and has no category field` asserts `getByRole("heading", { level: 2, name: VALID_ID })` is visible and no `ShortId`-pattern text (`/^[0-9a-f]{6}\.\.\.$/`) remains on the detail page.
+- **Breadcrumb current (last) item now shows the FULL `_id`** instead of the translated "Detail"/"Chi tiết" label — `buildAdminContactDetailBreadcrumb(id)` sets the current item's `label` directly to the raw `id`, bypassing the `contactAdmin.admin.detail.breadcrumb` namespace for that segment. Test asserts the breadcrumb nav (`getByRole("navigation", { name: "breadcrumb" })`) contains the exact full id and not `/detail|chi tiết/i`. (Note: Playwright's `getByRole(role, { current: "page" })` filter did not narrow to the `aria-current="page"` element on the `role="link"` span in this Playwright version — worked around by scoping to the breadcrumb landmark + exact text instead of fixing/avoiding via app code.)
+- **Admin list table no longer has a "Files"/"Tệp" (attachments) column** — `AdminContactTable`'s `<TableHeader>` row is Ticket / Email / Subject / Status / Date / Actions only. New test `list has no Files/attachments column header` asserts `getByRole("columnheader", { name: /files|tệp/i })` has count 0; also added to both the en and vi locale loop tests.
+- **Unchanged / still passing**: list ticket cell still renders the shortened `ShortId` (`/^[0-9a-f]{6}\.\.\.$/`), category column/filter still absent, no leaked i18n key.
+- Both locales (en `/admin/contact(/:id)` and vi `/vi/admin/contact(/:id)`) verify the breadcrumb full id and Files-column absence, consistent with the existing en/vi loop structure in this suite.
+- Gate A (`yarn e2e contact/`): 8/8 passed after reconciliation.
