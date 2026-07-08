@@ -9,7 +9,7 @@
 
 | Row | Group | Scenario | Describe (merge.e2e.ts) | Gate | Notes |
 |-----|-------|----------|-------------------------|------|-------|
-| 1 | Happy path | All six card sections render on `/profile` in one page | `Profile/Account merge — happy path` | A+B | Headings: title + personalInfo + connectedAccounts + notificationPreferences + changePassword + dangerZone |
+| 1 | Happy path | Remaining card sections render on `/profile`; trimmed sections absent | `Profile/Account merge — happy path` | A+B | Headings visible: title + personalInfo + changePassword + dangerZone. `connectedAccounts` + `notificationPreferences` asserted `toHaveCount(0)` (removed by `docs/specs/profile-trim/`). |
 | 2 | AuthN | Unauthenticated user redirected away from `/profile` → `/login` | `Profile/Account merge — AuthN` | A+B | Fresh browser context, no storageState, clearCookies |
 | 4 | Validation | Change-password form validation (empty, mismatch, policy violations) | **Delegated** → `e2e/change-password` suite | — | Suite repointed to `/profile` in Task 3 Step 1; rows 4/10/11 fully covered there |
 | 8 | Data rendering | Page title is "Account" (not the old "Profile"); old heading absent | `Profile/Account merge — page identity` | A+B | `getByRole("heading", { name: "Account" })` visible; `"Profile"` exact count = 0 |
