@@ -33,6 +33,7 @@ erDiagram
     USER ||--o{ NOTIFICATION : "receives"
     USER ||--o{ USER_FAVORITE : "favorites"
     WEB_APP ||--o{ USER_FAVORITE : "favorited-as"
+    USER ||--o{ CONTACT : "submits (nullable — guest submit = no owner)"
 
     AUTH {
         ObjectId _id PK
@@ -193,6 +194,7 @@ erDiagram
         Enum priority "default MEDIUM"
         String message
         Enum status "default NEW"
+        ObjectId user_id FK "nullable — → USER, null khi guest submit (không login)"
         Date created_at
         Date updated_at
     }
@@ -227,6 +229,11 @@ erDiagram
 
 ### Single-collection patterns
 - **ENTITLEMENT** gộp 2 concern còn lại: (1) grant của admin, (2) recently-used tracking. 1 user × 1 app = 1 document duy nhất.
+
+### DR-MYCONTACTS — CONTACT gắn owner `user_id` (2026-07)
+- **Quyết định**: `CONTACT.user_id` (ObjectId, nullable, ref `USER`, index `{user_id:1, created_at:-1}`) — gắn khi user đăng nhập lúc submit (`POST /contact/submit` dùng `optionalAuthGuard`), `null` khi guest submit.
+- **Lý do**: feature MyContacts (user xem list + detail contact của chính mình) cần owner-scope filter; KHÔNG match theo email (không đáng tin — email tùy chọn, guest có thể giả mạo email của người khác).
+- **Hệ quả**: contact ẩn danh/guest cũ (`user_id = null`) không thuộc MyContacts của ai — chấp nhận (feature mới, không cần backfill).
 
 ### DR-FAV — Favorite tách khỏi ENTITLEMENT (2026-06)
 - **Quyết định**: favorite lưu ở collection riêng `user_favorites` `{user_id, web_app_id, created_at}`, KHÔNG dùng `entitlements.is_favorite`.
