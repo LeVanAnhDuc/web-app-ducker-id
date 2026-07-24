@@ -55,12 +55,12 @@ None.
 
 ### Medium
 
-**M1 — Reset endpoint (and lock/unlock) have no rate limiter — email-bombing / victim session-DoS by a malicious or compromised admin.** *(open)*
+**M1 — Reset endpoint (and lock/unlock) have no rate limiter — email-bombing / victim session-DoS by a malicious or compromised admin.** *(✅ RESOLVED in `chore/admin-reset-followups`)*
 - **Axis**: rate-limiting / abuse.
 - **Location**: `server/src/modules/user/user.routes.ts` — `createUserAdminRoutes(controller)` takes no `RateLimiterMiddleware`; `/:id/reset-password`, `/:id/lock`, `/:id/unlock` are all unthrottled. (Only the non-admin `PATCH /users/me` uses `rl.updateProfileByIp`.)
 - **Exploit scenario**: an authenticated admin (insider, or an admin account whose access token was stolen) repeatedly POSTs reset for one victim id. Each call (a) enqueues another temp-password email → floods the victim's inbox and risks the SMTP sender being blacklisted, and (b) re-randomizes the victim's password + bumps `tokenVersion`, repeatedly locking the victim out even if they just changed it.
 - **Recommendation**: attach a rate limiter to the admin-mutation routes (reuse `RateLimiterMiddleware`, e.g. a per-admin + per-target-id limiter such as a few resets per 15 min), and/or throttle `ADMIN_RESET_PASSWORD` emails at the dispatcher. Apply consistently to lock/unlock.
-- **Status**: open. **Non-blocking** — see decision. Requires a privileged (admin) actor, matches the existing unthrottled lock/unlock convention, and the impact is bounded to email spam + session disruption of a single target (no data disclosure or auth bypass).
+- **Status**: ✅ **RESOLVED** (`chore/admin-reset-followups`). Added `RateLimiterMiddleware.adminUserMutationByIpAndUser` (20 requests / 15 min, keyed by IP + authenticated admin) and applied it to `/:id/reset-password`, `/:id/lock`, `/:id/unlock` in `createUserAdminRoutes` (after `authGuard+adminGuard`, before `paramsPipe`). GET list route left unthrottled. Exceeding the limit returns 429 (`user:errors.rateLimitExceeded`).
 
 ### Low
 
