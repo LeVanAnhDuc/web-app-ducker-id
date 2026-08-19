@@ -1,0 +1,64 @@
+{
+  "title": "Dashboard",
+  "description": "Explore our curated collection of apps designed to boost your productivity and creativity",
+  "header": {
+    "appName": "AppStore",
+    "searchPlaceholder": "Search apps...",
+    "menuToggleLabel": "Toggle navigation menu",
+    "searchLabel": "Open search",
+    "notificationsLabel": "Notifications",
+    "suggestedLabel": "Suggested apps",
+    "resultsLabel": "Apps",
+    "noResults": "No apps found",
+    "noResultsHint": "Try a different keyword",
+    "viewAll": "View All",
+    "openLabel": "Open",
+    "announce": {
+      "results": "{count} apps found",
+      "noResults": "No apps found",
+      "opened": "Opening {name}"
+    }
+  },
+  "welcome": {
+    "greeting": "Welcome back!",
+    "title": "Discover Amazing Apps",
+    "description": "Explore our curated collection of apps designed to boost your productivity and creativity."
+  },
+  "recentlyUsed": {
+    "title": "Recently Used",
+    "viewAll": "View All"
+  },
+  "allApps": {
+    "title": "All Apps"
+  },
+  "sidebar": {
+    "groups": {
+      "discover": "Discover",
+      "mine": "My Group",
+      "settings": "Settings"
+    },
+    "nav": {
+      "home": "Home",
+      "apps": "Apps",
+      "loginHistory": "Login History",
+      "favorites": "Favorites",
+      "recentlyUsed": "Recently Used",
+      "profile": "Account",
+      "billing": "Billing"
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all as read",
+    "all": "All",
+    "unread": "Unread",
+    "viewAll": "View all notifications",
+    "viewAllAnnounce": "Navigating to all notifications."
+  },
+  "sort": {
+    "featured": "Featured",
+    "rating": "Rating",
+    "downloads": "Downloads",
+    "name": "Name"
+  }
+}

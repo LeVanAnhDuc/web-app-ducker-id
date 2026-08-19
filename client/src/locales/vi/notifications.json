@@ -1,0 +1,29 @@
+{
+  "title": "Thông báo",
+  "description": "Cập nhật, cảnh báo và hoạt động của cửa hàng",
+  "actions": {
+    "markAllRead": "Đánh dấu tất cả đã đọc",
+    "markRead": "Đánh dấu đã đọc",
+    "loadMore": "Tải thêm thông báo"
+  },
+  "states": {
+    "empty": "Không có thông báo nào ở đây.",
+    "loading": "Đang tải thông báo...",
+    "error": "Không thể tải thông báo."
+  },
+  "tabs": {
+    "unread": "Chưa đọc",
+    "read": "Đã đọc"
+  },
+  "groups": {
+    "today": "Hôm nay",
+    "yesterday": "Hôm qua",
+    "earlier": "Trước đó"
+  },
+  "announce": {
+    "tabChanged": "Đang hiển thị thông báo {tab}.",
+    "markedRead": "Đã đánh dấu thông báo là đã đọc.",
+    "markedAllRead": "Đã đánh dấu tất cả thông báo là đã đọc.",
+    "loadingMore": "Đang tải thêm thông báo..."
+  }
+}

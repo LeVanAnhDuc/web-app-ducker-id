@@ -1,0 +1,8 @@
+const PAGINATION = {
+  DEFAULT_PAGE: 1,
+  DEFAULT_PAGE_SIZE: 20,
+  MAX_PAGE_SIZE: 100,
+  HEADER_SEARCH_RESULT_LIMIT: 5
+} as const;
+
+export default PAGINATION;

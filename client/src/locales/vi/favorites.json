@@ -1,0 +1,20 @@
+{
+  "title": "Yêu thích",
+  "description": "Các ứng dụng đã lưu, chỉ một cú nhấp.",
+  "search": { "placeholder": "Tìm trong yêu thích..." },
+  "categories": { "all": "Tất cả", "groupLabel": "Lọc theo danh mục" },
+  "sort": { "label": "Sắp xếp: {value}", "recent": "Gần đây", "name": "Tên" },
+  "card": {
+    "open": "Mở",
+    "add": "Thêm vào yêu thích",
+    "remove": "Xóa khỏi yêu thích"
+  },
+  "toast": { "error": "Cập nhật yêu thích thất bại. Vui lòng thử lại." },
+  "empty": "Bạn chưa yêu thích ứng dụng nào.",
+  "error": "Không tải được danh sách yêu thích. Vui lòng thử lại.",
+  "announce": {
+    "added": "Đã thêm vào yêu thích.",
+    "removed": "Đã xóa khỏi yêu thích.",
+    "error": "Cập nhật yêu thích thất bại."
+  }
+}

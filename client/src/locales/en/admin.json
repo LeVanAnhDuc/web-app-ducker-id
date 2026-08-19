@@ -1,0 +1,26 @@
+{
+  "modeBadge": "Admin Mode",
+  "sidebar": {
+    "groups": {
+      "overview": "Overview",
+      "identity": "Identity",
+      "apps": "App Registry"
+    },
+    "nav": {
+      "dashboard": "Dashboard",
+      "users": "Users",
+      "loginHistory": "Login History",
+      "contacts": "Contact Inbox",
+      "apps": "App Registry",
+      "entitlements": "Entitlements"
+    },
+    "backToDashboard": "Back to User Dashboard"
+  },
+  "stub": {
+    "comingSoon": "Coming soon",
+    "description": "This admin area is scaffolded but not yet designed. The full UI will land in an upcoming phase."
+  },
+  "announce": {
+    "exitedAdmin": "Returned to user dashboard."
+  }
+}

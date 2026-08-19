@@ -1,0 +1,27 @@
+{
+  "title": "Admin Console",
+  "description": "Manage identity, app registry, entitlements, and operations across the constellation.",
+  "openCta": "Open",
+  "cards": {
+    "apps": {
+      "title": "App Registry",
+      "description": "Register satellite apps, manage client credentials and redirect URIs."
+    },
+    "entitlements": {
+      "title": "Entitlements",
+      "description": "Grant or revoke per-user access to satellite apps."
+    },
+    "users": {
+      "title": "Users",
+      "description": "Lock/unlock accounts, reset passwords, force logout."
+    },
+    "contacts": {
+      "title": "Contact Inbox",
+      "description": "Review and resolve contact-admin submissions."
+    },
+    "loginHistory": {
+      "title": "Login History",
+      "description": "Audit sign-in activity across the constellation."
+    }
+  }
+}

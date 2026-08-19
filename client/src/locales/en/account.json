@@ -1,0 +1,93 @@
+{
+  "title": "Account",
+  "description": "Manage your profile, preferences, and account security",
+  "card": {
+    "edit": "Edit Profile",
+    "stats": {
+      "apps": "{count} Apps",
+      "teams": "{count} Teams",
+      "plan": "{plan} Plan"
+    }
+  },
+  "personalInfo": {
+    "title": "Personal Information",
+    "description": "Update your personal details",
+    "fields": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "phone": "Phone",
+      "address": "Address",
+      "dateOfBirth": "Date of Birth",
+      "gender": "Gender"
+    },
+    "placeholders": {
+      "firstName": "Enter your first name",
+      "lastName": "Enter your last name",
+      "phone": "+1 (555) 000-0000",
+      "address": "Enter your address",
+      "dateOfBirth": "Select date of birth",
+      "gender": "Select gender"
+    },
+    "genderOptions": {
+      "male": "Male",
+      "female": "Female",
+      "other": "Other",
+      "prefer_not_to_say": "Prefer not to say"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "save": "Save Changes"
+    },
+    "tooltips": {
+      "saving": "Saving in progress...",
+      "noChangesToCancel": "No changes to discard",
+      "noChangesToSave": "No changes to save"
+    },
+    "toast": {
+      "success": "Profile updated successfully",
+      "error": "Failed to update profile"
+    },
+    "announce": {
+      "saving": "Saving profile...",
+      "saved": "Profile saved successfully."
+    }
+  },
+  "changePassword": {
+    "title": "Change Password",
+    "description": "Update the password used to sign in to your account",
+    "fields": {
+      "currentPassword": "Current Password",
+      "newPassword": "New Password",
+      "confirmPassword": "Confirm New Password"
+    },
+    "placeholders": {
+      "currentPassword": "Enter current password",
+      "newPassword": "Enter new password",
+      "confirmPassword": "Re-enter new password"
+    },
+    "buttons": {
+      "cancel": "Cancel",
+      "save": "Update Password"
+    },
+    "tooltips": {
+      "noChanges": "No changes to save"
+    },
+    "toast": {
+      "success": "Password updated successfully",
+      "error": "Failed to update password"
+    },
+    "announce": {
+      "saving": "Updating password...",
+      "saved": "Password updated."
+    }
+  },
+  "dangerZone": {
+    "title": "Danger Zone",
+    "description": "Irreversible and destructive actions",
+    "delete": {
+      "title": "Delete Account",
+      "description": "Permanently remove your account and all associated data. This cannot be undone.",
+      "button": "Delete Account"
+    }
+  }
+}

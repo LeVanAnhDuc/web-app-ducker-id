@@ -1,0 +1,45 @@
+{
+  "dialog": {
+    "title": "Contact Support",
+    "description": "Tell us what's going on — we'll get back within 24 business hours."
+  },
+  "form": {
+    "input": {
+      "labelEmail": "Reply-to email",
+      "labelEmailHint": "Enter the email where you'd like to receive our reply.",
+      "labelEmailReadOnlyHint": "We'll reply to your account email.",
+      "labelEmailAutoFillHint": "Email pre-filled — change it if needed.",
+      "labelSubject": "Subject",
+      "placeholderSubject": "Summarize your issue...",
+      "labelMessage": "Detailed description",
+      "placeholderMessage": "Please describe your issue in detail. Include steps to reproduce..."
+    },
+    "hint": {
+      "minChars": "Minimum {count} characters",
+      "charCount": "{count} characters"
+    },
+    "button": {
+      "submit": "Send request",
+      "submitting": "Sending..."
+    },
+    "errors": {
+      "generic": "Failed to send support request. Please try again."
+    }
+  },
+  "success": {
+    "title": "Thanks for reaching out",
+    "description": "Your request has been received. We'll get back to you within 24 business hours.",
+    "ticketLabel": "Request code",
+    "saveTicketNote": "Please save this code for future reference.",
+    "button": {
+      "submitAnother": "Submit another request",
+      "close": "Close"
+    }
+  },
+  "announce": {
+    "submitting": "Submitting your support request...",
+    "success": "Support request submitted. Ticket number: {ticketNumber}",
+    "rateLimitError": "Too many requests. Please wait before trying again.",
+    "error": "Failed to send support request. Please try again."
+  }
+}

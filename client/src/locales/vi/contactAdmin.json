@@ -1,0 +1,113 @@
+{
+  "admin": {
+    "list": {
+      "title": "Yêu cầu liên hệ",
+      "description": "Quản lý tất cả yêu cầu hỗ trợ của người dùng",
+      "table": {
+        "caption": "Danh sách yêu cầu liên hệ do người dùng gửi",
+        "ticketNumber": "Mã ticket",
+        "email": "Email",
+        "subject": "Tiêu đề",
+        "status": "Trạng thái",
+        "createdAt": "Ngày tạo",
+        "actions": "Thao tác",
+        "empty": "Không tìm thấy yêu cầu liên hệ nào",
+        "viewDetail": "Xem",
+        "viewDetailFor": "Xem chi tiết ticket {id}"
+      },
+      "filters": {
+        "title": "Bộ lọc",
+        "status": "Trạng thái",
+        "email": "Email",
+        "search": "Tìm kiếm",
+        "searchPlaceholder": "Tìm theo tiêu đề, email...",
+        "fromDate": "Từ ngày",
+        "toDate": "Đến ngày",
+        "all": "Tất cả",
+        "clear": "Xóa"
+      },
+      "status": {
+        "new": "Mới",
+        "processing": "Đang xử lý",
+        "resolved": "Đã xử lý"
+      }
+    },
+    "detail": {
+      "title": "Chi tiết liên hệ",
+      "breadcrumb": {
+        "list": "Hộp thư liên hệ"
+      },
+      "fields": {
+        "ticketNumber": "Mã ticket",
+        "email": "Email",
+        "subject": "Tiêu đề",
+        "status": "Trạng thái",
+        "ipAddress": "Địa chỉ IP",
+        "userId": "Mã người dùng",
+        "message": "Tin nhắn",
+        "createdAt": "Ngày tạo",
+        "updatedAt": "Cập nhật lần cuối",
+        "attachments": "Tệp đính kèm"
+      },
+      "updateStatus": {
+        "label": "Cập nhật trạng thái",
+        "success": "Cập nhật trạng thái thành công",
+        "error": "Cập nhật trạng thái thất bại"
+      },
+      "attachments": {
+        "empty": "Không có tệp đính kèm",
+        "download": "Tải xuống",
+        "preview": "Xem trước",
+        "closePreview": "Đóng xem trước"
+      }
+    }
+  },
+  "announce": {
+    "statusUpdating": "Đang cập nhật trạng thái...",
+    "statusUpdated": "Cập nhật trạng thái thành công.",
+    "statusError": "Cập nhật trạng thái thất bại."
+  },
+  "myContacts": {
+    "title": "Yêu cầu của tôi",
+    "description": "Xem các yêu cầu hỗ trợ bạn đã gửi",
+    "table": {
+      "caption": "Các yêu cầu hỗ trợ bạn đã gửi",
+      "ticketNumber": "Mã ticket",
+      "subject": "Tiêu đề",
+      "status": "Trạng thái",
+      "priority": "Độ ưu tiên",
+      "createdAt": "Ngày tạo",
+      "empty": "Chưa gửi yêu cầu nào",
+      "viewDetailFor": "Xem chi tiết ticket {id}"
+    },
+    "filters": {
+      "status": "Trạng thái",
+      "searchPlaceholder": "Tìm theo tiêu đề..."
+    },
+    "priority": {
+      "low": "Thấp",
+      "medium": "Trung bình",
+      "high": "Cao"
+    },
+    "submitNew": "Gửi yêu cầu mới",
+    "detail": {
+      "title": "Chi tiết yêu cầu",
+      "breadcrumb": {
+        "list": "Yêu cầu của tôi",
+        "current": "Chi tiết yêu cầu"
+      },
+      "fields": {
+        "priority": "Độ ưu tiên",
+        "createdAt": "Ngày tạo",
+        "subject": "Tiêu đề",
+        "message": "Tin nhắn"
+      },
+      "notFound": "Không tìm thấy yêu cầu này.",
+      "announce": {
+        "loading": "Đang tải chi tiết yêu cầu...",
+        "loaded": "Đã tải chi tiết yêu cầu.",
+        "error": "Không tìm thấy yêu cầu này."
+      }
+    }
+  }
+}

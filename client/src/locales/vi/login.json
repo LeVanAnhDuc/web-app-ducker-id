@@ -1,0 +1,98 @@
+{
+  "title": "Trang đăng nhập",
+  "form": {
+    "title": "Đăng nhập",
+    "titleWelcome": "Chào mừng",
+    "titlePassword": "Nhập mật khẩu để đăng nhập",
+    "titleChooseMethod": "Chọn cách đăng nhập",
+    "description": "Tiếp tục để sử dụng dịch vụ",
+    "descriptionChooseMethod": "Chọn phương thức đăng nhập phù hợp với bạn",
+    "input": {
+      "labelEmail": "Email",
+      "labelPassword": "Mật khẩu",
+      "labelEnterPassword": "Nhập mật khẩu của bạn",
+      "placeholderPassword": "Nhập mật khẩu"
+    },
+    "button": {
+      "login": "Đăng nhập",
+      "loginWithGoogle": "Đăng nhập với Google",
+      "loginWithFacebook": "Đăng nhập với Facebook",
+      "comingSoon": "sắp ra mắt",
+      "next": "Tiếp tục với email",
+      "signIn": "Đăng nhập",
+      "tryAnother": "Thử cách khác",
+      "changeEmail": "Đổi email"
+    },
+    "alternative": {
+      "magicLink": {
+        "title": "Đăng nhập bằng Magic Link",
+        "description": "Nhận link đăng nhập qua email"
+      },
+      "otp": {
+        "title": "Đăng nhập bằng OTP",
+        "description": "Nhận mã xác thực qua email hoặc SMS"
+      },
+      "password": {
+        "title": "Đăng nhập bằng mật khẩu",
+        "description": "Sử dụng mật khẩu của bạn"
+      },
+      "contactAdmin": {
+        "title": "Liên hệ quản trị viên",
+        "description": "Yêu cầu hỗ trợ từ quản trị viên"
+      }
+    },
+    "otp": {
+      "title": "Nhập mã xác thực",
+      "description": "Chúng tôi đã gửi mã OTP đến",
+      "instruction": "Vui lòng nhập mã 6 chữ số được gửi đến email của bạn",
+      "verifying": "Đang xác thực...",
+      "resendSuccess": "Mã OTP đã được gửi lại!",
+      "button": {
+        "resend": "Gửi lại mã OTP",
+        "resendIn": "Gửi lại sau {seconds}s",
+        "sending": "Đang gửi...",
+        "tryOther": "Thử phương thức khác"
+      }
+    },
+    "magicLink": {
+      "title": "Kiểm tra email của bạn",
+      "titleVerifying": "Đang xác thực magic link...",
+      "subtitle": "Đăng nhập qua magic link gửi đến email của bạn",
+      "description": "Chúng tôi đã gửi magic link đến",
+      "instruction": {
+        "check": "Vui lòng kiểm tra hộp thư của bạn",
+        "detail": "Nhấp vào link trong email để đăng nhập ngay lập tức. Link này sẽ hết hạn sau {minutes} phút."
+      },
+      "hint": {
+        "title": "Không thấy email?",
+        "description": "Hãy kiểm tra thư mục spam hoặc thư rác"
+      },
+      "resendSuccess": "Magic link đã được gửi lại!",
+      "linkInvalid": "Magic link không hợp lệ hoặc đã hết hạn.",
+      "button": {
+        "resend": "Gửi lại magic link",
+        "resendIn": "Gửi lại sau {seconds}s",
+        "sending": "Đang gửi...",
+        "tryOther": "Thử phương thức khác"
+      }
+    }
+  },
+  "link": {
+    "forgotPassword": "Quên mật khẩu?",
+    "descriptionSignUp": "Chưa có tài khoản",
+    "signUp": "Tạo tài khoản"
+  },
+  "announce": {
+    "signingIn": "Đang đăng nhập...",
+    "signedIn": "Đăng nhập thành công.",
+    "sendingCode": "Đang gửi mã OTP...",
+    "codeSent": "Mã OTP đã được gửi đến email của bạn.",
+    "codeSendError": "Không thể gửi mã OTP.",
+    "sendingLink": "Đang gửi magic link...",
+    "linkSent": "Magic link đã được gửi đến email của bạn.",
+    "linkSendError": "Không thể gửi magic link.",
+    "verifying": "Đang xác thực...",
+    "verifyingLink": "Đang xác thực magic link...",
+    "linkInvalid": "Link không hợp lệ hoặc đã hết hạn. Đang chuyển về trang đăng nhập..."
+  }
+}

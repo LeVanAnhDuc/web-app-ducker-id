@@ -1,0 +1,160 @@
+{
+  "title": "Đăng ký ứng dụng",
+  "description": "Đăng ký và quản lý mọi app vệ tinh trong hệ thống — client credential, redirect URI, role yêu cầu và trạng thái vòng đời.",
+  "actions": {
+    "create": "Đăng ký ứng dụng",
+    "edit": "Chỉnh sửa",
+    "hide": "Ẩn",
+    "unhide": "Bỏ ẩn",
+    "confirmHide": "Tạm dừng ứng dụng",
+    "rowMenuLabel": "Thao tác với ứng dụng",
+    "addUri": "Thêm URI",
+    "removeUri": "Xóa URI",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "createSubmit": "Đăng ký",
+    "updateSubmit": "Lưu thay đổi",
+    "copy": "Sao chép",
+    "copied": "Đã sao chép"
+  },
+  "toolbar": {
+    "search": "Tìm kiếm",
+    "searchPlaceholder": "Tìm theo tên hoặc mô tả…",
+    "status": "Trạng thái",
+    "category": "Danh mục",
+    "all": "Tất cả",
+    "clear": "Xóa bộ lọc"
+  },
+  "status": {
+    "active": "Đang hoạt động",
+    "inactive": "Tạm dừng"
+  },
+  "roles": {
+    "user": "Người dùng",
+    "admin": "Quản trị viên"
+  },
+  "table": {
+    "app": "Ứng dụng",
+    "category": "Danh mục",
+    "status": "Trạng thái",
+    "roles": "Role yêu cầu",
+    "redirectUris": "Redirect URI",
+    "updatedAt": "Cập nhật gần nhất",
+    "actions": "Thao tác",
+    "empty": "Chưa có ứng dụng nào.",
+    "emptyCta": "Đăng ký app vệ tinh đầu tiên để bật SSO."
+  },
+  "form": {
+    "createTitle": "Đăng ký ứng dụng mới",
+    "createDescription": "Thêm app vệ tinh để người dùng có thể SSO từ dashboard.",
+    "editTitle": "Chỉnh sửa ứng dụng",
+    "editDescription": "Cập nhật thông tin đăng ký. Thay đổi áp dụng ngay.",
+    "fields": {
+      "name": {
+        "label": "Tên định danh",
+        "placeholder": "blog",
+        "hint": "Chữ thường — chỉ chữ cái, số và dấu gạch ngang."
+      },
+      "displayName": {
+        "label": "Tên hiển thị",
+        "placeholder": "Blog",
+        "hint": "Hiển thị trên tile dashboard cho người dùng."
+      },
+      "description": {
+        "label": "Mô tả",
+        "placeholder": "Ứng dụng này làm gì?"
+      },
+      "iconUrl": {
+        "label": "URL biểu tượng",
+        "placeholder": "https://…"
+      },
+      "homeUrl": {
+        "label": "URL trang chủ",
+        "placeholder": "https://…",
+        "hint": "Nơi người dùng được điều hướng khi click tile."
+      },
+      "categoryId": {
+        "label": "Danh mục",
+        "placeholder": "Chọn danh mục"
+      },
+      "status": {
+        "label": "Đang hoạt động"
+      },
+      "requiredRoles": {
+        "label": "Role yêu cầu",
+        "hint": "Người dùng phải có ít nhất một trong các role này để truy cập."
+      },
+      "redirectUris": {
+        "label": "Redirect URI",
+        "placeholder": "https://app.example.com/auth/callback",
+        "hint": "Whitelist redirect_uri của OAuth. Cần ít nhất một."
+      }
+    },
+    "validation": {
+      "name": {
+        "required": "Vui lòng nhập tên.",
+        "minLength": "Tên phải có ít nhất 2 ký tự.",
+        "maxLength": "Tên không được vượt quá 64 ký tự.",
+        "invalid": "Chỉ dùng chữ thường, số và dấu gạch ngang.",
+        "exists": "Đã tồn tại ứng dụng với tên này."
+      },
+      "displayName": {
+        "required": "Vui lòng nhập tên hiển thị.",
+        "minLength": "Tên hiển thị phải có ít nhất 2 ký tự.",
+        "maxLength": "Tên hiển thị không được vượt quá 80 ký tự."
+      },
+      "description": {
+        "maxLength": "Mô tả không được vượt quá 500 ký tự."
+      },
+      "iconUrl": {
+        "maxLength": "URL quá dài.",
+        "invalid": "Phải bắt đầu bằng http:// hoặc https://"
+      },
+      "homeUrl": {
+        "required": "Vui lòng nhập URL trang chủ.",
+        "maxLength": "URL quá dài.",
+        "invalid": "Phải bắt đầu bằng http:// hoặc https://"
+      },
+      "categoryId": {
+        "required": "Vui lòng chọn danh mục."
+      },
+      "requiredRoles": {
+        "required": "Chọn ít nhất một role."
+      },
+      "redirectUris": {
+        "required": "Thêm ít nhất một redirect URI.",
+        "invalid": "Phải bắt đầu bằng http:// hoặc https://",
+        "maxLength": "URL quá dài.",
+        "maxItems": "Tối đa 20 redirect URI."
+      }
+    }
+  },
+  "hide": {
+    "title": "Tạm dừng {name}?",
+    "description": "Thao tác này tạm dừng ứng dụng — vẫn giữ trong registry nhưng ẩn khỏi dashboard người dùng. Bạn có thể bỏ ẩn bất cứ lúc nào."
+  },
+  "toast": {
+    "createSuccess": "Đã đăng ký ứng dụng.",
+    "updateSuccess": "Đã cập nhật ứng dụng.",
+    "hidden": "Đã tạm dừng ứng dụng.",
+    "reactivated": "Đã kích hoạt lại ứng dụng.",
+    "error": "Đã có lỗi xảy ra. Vui lòng thử lại."
+  },
+  "announce": {
+    "created": "Đã đăng ký ứng dụng {name}.",
+    "updated": "Đã cập nhật ứng dụng {name}.",
+    "hidden": "Đã tạm dừng ứng dụng {name}.",
+    "reactivated": "Đã kích hoạt lại ứng dụng {name}."
+  },
+  "secretDialog": {
+    "title": "Đã đăng ký ứng dụng — sao chép thông tin xác thực",
+    "description": "Gửi các giá trị này cho lập trình viên của ứng dụng để cấu hình OAuth. Client secret chỉ hiển thị một lần.",
+    "clientIdLabel": "Client ID",
+    "clientSecretLabel": "Client Secret",
+    "warning": "Hãy lưu client secret ngay — nó sẽ không hiển thị lại.",
+    "done": "Xong",
+    "announce": {
+      "copied": "Đã sao chép vào clipboard."
+    }
+  }
+}

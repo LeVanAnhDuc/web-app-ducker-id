@@ -1,0 +1,27 @@
+{
+  "title": "Apps",
+  "description": "Browse and search all available web applications.",
+  "search": {
+    "placeholder": "Search apps..."
+  },
+  "categories": {
+    "all": "All",
+    "groupLabel": "Filter by category"
+  },
+  "view": {
+    "grid": "Grid view",
+    "list": "List view"
+  },
+  "card": {
+    "open": "Open",
+    "addFavorite": "Add to favorites",
+    "removeFavorite": "Remove from favorites"
+  },
+  "empty": "No apps found.",
+  "error": "Could not load apps. Please try again.",
+  "announce": {
+    "pageChanged": "Page {page} loaded.",
+    "loading": "Loading apps...",
+    "loaded": "{total} apps loaded."
+  }
+}

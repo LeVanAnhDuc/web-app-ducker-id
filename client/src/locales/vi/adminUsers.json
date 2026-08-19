@@ -1,0 +1,74 @@
+{
+  "title": "Người dùng",
+  "description": "Vận hành tài khoản người dùng — khóa/mở khóa, đặt lại mật khẩu, buộc đăng xuất và kiểm tra hoạt động session.",
+  "toolbar": {
+    "search": "Tìm kiếm",
+    "searchPlaceholder": "Tìm theo tên hoặc email…",
+    "role": "Vai trò",
+    "status": "Trạng thái",
+    "all": "Tất cả",
+    "clear": "Xóa bộ lọc"
+  },
+  "role": {
+    "user": "Người dùng",
+    "admin": "Quản trị viên"
+  },
+  "status": {
+    "active": "Đang hoạt động",
+    "locked": "Đã khóa"
+  },
+  "table": {
+    "user": "Người dùng",
+    "role": "Vai trò",
+    "status": "Trạng thái",
+    "lastLoginAt": "Đăng nhập gần nhất",
+    "createdAt": "Ngày tạo",
+    "actions": "Thao tác",
+    "neverLoggedIn": "Chưa từng",
+    "empty": "Không có người dùng phù hợp",
+    "emptyDescription": "Thử điều chỉnh tìm kiếm hoặc xóa bộ lọc.",
+    "error": "Không thể tải danh sách người dùng. Vui lòng thử lại.",
+    "rowMenuLabel": "Thao tác với người dùng"
+  },
+  "actions": {
+    "resetPassword": "Đặt lại mật khẩu",
+    "lock": "Khóa tài khoản",
+    "unlock": "Mở khóa tài khoản",
+    "forceLogout": "Buộc đăng xuất",
+    "cancel": "Hủy",
+    "confirmReset": "Gửi email",
+    "confirmLock": "Khóa tài khoản",
+    "confirmUnlock": "Mở khóa tài khoản",
+    "confirmForceLogout": "Buộc đăng xuất"
+  },
+  "resetDialog": {
+    "title": "Đặt lại mật khẩu cho {name}?",
+    "description": "Email đặt lại mật khẩu sẽ được gửi tới {email}. Người dùng sẽ phải đặt mật khẩu mới khi đăng nhập lần tiếp theo."
+  },
+  "lockDialog": {
+    "lockTitle": "Khóa tài khoản của {name}?",
+    "lockDescription": "Người dùng sẽ không thể đăng nhập cho tới khi admin mở khóa. Các session đang active vẫn giữ tới khi hết hạn — dùng Buộc đăng xuất để chấm dứt ngay.",
+    "unlockTitle": "Mở khóa tài khoản của {name}?",
+    "unlockDescription": "Người dùng sẽ có thể đăng nhập trở lại. Mật khẩu cũ vẫn còn hiệu lực."
+  },
+  "forceLogoutDialog": {
+    "title": "Buộc đăng xuất {name}?",
+    "description": "Mọi session đang active và refresh token của người dùng này sẽ bị thu hồi. Người dùng phải đăng nhập lại. Thao tác này không thể hoàn tác."
+  },
+  "toast": {
+    "resetSuccess": "Đã gửi email đặt lại mật khẩu.",
+    "lockSuccess": "Đã khóa tài khoản.",
+    "unlockSuccess": "Đã mở khóa tài khoản.",
+    "forceLogoutSuccess": "Đã đăng xuất người dùng khỏi mọi session.",
+    "error": "Đã có lỗi xảy ra. Vui lòng thử lại."
+  },
+  "announce": {
+    "loading": "Đang tải người dùng...",
+    "loaded": "Đã tải {total} người dùng",
+    "error": "Không thể tải danh sách người dùng. Vui lòng thử lại.",
+    "passwordReset": "Đã gửi email đặt lại mật khẩu cho {name}.",
+    "locked": "Đã khóa tài khoản của {name}.",
+    "unlocked": "Đã mở khóa tài khoản của {name}.",
+    "forceLoggedOut": "Đã đăng xuất {name} khỏi mọi session."
+  }
+}

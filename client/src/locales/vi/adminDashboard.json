@@ -1,0 +1,27 @@
+{
+  "title": "Bảng quản trị",
+  "description": "Quản lý định danh, đăng ký ứng dụng, phân quyền và vận hành toàn hệ thống.",
+  "openCta": "Mở",
+  "cards": {
+    "apps": {
+      "title": "Đăng ký ứng dụng",
+      "description": "Đăng ký app vệ tinh, quản lý client credential và redirect URI."
+    },
+    "entitlements": {
+      "title": "Phân quyền truy cập",
+      "description": "Cấp hoặc thu hồi quyền truy cập app theo từng người dùng."
+    },
+    "users": {
+      "title": "Người dùng",
+      "description": "Khóa/mở khóa tài khoản, đặt lại mật khẩu, buộc đăng xuất."
+    },
+    "contacts": {
+      "title": "Hộp thư liên hệ",
+      "description": "Xem và xử lý các yêu cầu liên hệ admin."
+    },
+    "loginHistory": {
+      "title": "Lịch sử đăng nhập",
+      "description": "Audit hoạt động đăng nhập toàn hệ thống."
+    }
+  }
+}

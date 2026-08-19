@@ -1,0 +1,30 @@
+{
+  "search": "Tìm kiếm",
+  "searchPlaceholder": "Tìm kiếm…",
+  "filters": "Bộ lọc",
+  "clearAll": "Xóa tất cả",
+  "clearFilters": "Xóa bộ lọc",
+  "all": "Tất cả",
+  "noResultsTitle": "Không tìm thấy kết quả",
+  "noResultsDescription": "Thử từ khóa khác hoặc xóa bộ lọc.",
+  "emptyTitle": "Chưa có gì ở đây",
+  "viewGrid": "Dạng lưới",
+  "viewList": "Dạng danh sách",
+  "table": { "empty": "Không có dữ liệu", "comingSoon": "Sắp ra mắt" },
+  "dateRange": {
+    "label": "Khoảng thời gian",
+    "all": "Tất cả",
+    "today": "Hôm nay",
+    "last7": "7 ngày qua",
+    "last30": "30 ngày qua",
+    "last90": "90 ngày qua",
+    "custom": "Tùy chỉnh",
+    "from": "Từ",
+    "to": "Đến"
+  },
+  "announce": {
+    "filtersApplied": "Đã áp dụng bộ lọc.",
+    "filtersCleared": "Đã xóa bộ lọc.",
+    "pageChanged": "Chuyển đến trang {page}"
+  }
+}

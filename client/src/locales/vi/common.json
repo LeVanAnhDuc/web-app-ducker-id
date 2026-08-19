@@ -1,0 +1,146 @@
+{
+  "app": {
+    "name": "App Store",
+    "description": "Ứng dụng Web App Store"
+  },
+  "categories": {
+    "content": "Nội dung",
+    "tools": "Công cụ nội bộ",
+    "identity": "Định danh",
+    "productivity": "Năng suất"
+  },
+  "userMenu": {
+    "trigger": "Mở menu người dùng",
+    "theme": "Giao diện",
+    "themeSubmenuLabel": "Tùy chọn giao diện",
+    "themeLight": "Sáng",
+    "themeDark": "Tối",
+    "themeSystem": "Theo hệ thống",
+    "language": "Ngôn ngữ",
+    "languageSubmenuLabel": "Tùy chọn ngôn ngữ",
+    "keyboardShortcuts": "Phím tắt",
+    "keyboardShortcutsHint": "⌘K",
+    "helpCenter": "Trung tâm trợ giúp",
+    "support": "Hỗ trợ",
+    "signOut": "Đăng xuất",
+    "signOutHint": "⇧⌘Q",
+    "signingOut": "Đang đăng xuất...",
+    "signedOut": "Bạn đã đăng xuất.",
+    "switchedToLight": "Đã chuyển sang chế độ sáng.",
+    "switchedToDark": "Đã chuyển sang chế độ tối.",
+    "switchedToSystem": "Đã chuyển sang giao diện theo hệ thống.",
+    "adminConsole": "Bảng quản trị"
+  },
+  "sidebar": {
+    "collapse": "Thu gọn thanh bên",
+    "expand": "Mở rộng thanh bên"
+  },
+  "passwordInput": {
+    "show": "Hiện mật khẩu",
+    "hide": "Ẩn mật khẩu"
+  },
+  "announce": {
+    "sidebarCollapsed": "Đã thu gọn thanh bên.",
+    "sidebarExpanded": "Đã mở rộng thanh bên.",
+    "mobileMenuOpened": "Đã mở menu điều hướng.",
+    "mobileMenuClosed": "Đã đóng menu điều hướng.",
+    "passwordShown": "Mật khẩu đang hiển thị.",
+    "passwordHidden": "Mật khẩu đã được ẩn.",
+    "languageChanged": "Đã đổi ngôn ngữ sang {language}."
+  },
+  "dateInput": {
+    "openCalendar": "Mở lịch"
+  },
+  "or": "hoặc",
+  "close": "Đóng",
+  "footer": {
+    "help": "Trợ giúp",
+    "privacy": "Bảo mật",
+    "terms": "Điều khoản"
+  },
+  "skipToContent": "Chuyển đến nội dung chính",
+  "validation": {
+    "email": {
+      "required": "Vui lòng nhập email",
+      "minLength": "Email phải có ít nhất 3 ký tự",
+      "maxLength": "Email không được vượt quá 254 ký tự",
+      "invalid": "Email không đúng định dạng",
+      "invalidHint": "Định dạng hợp lệ: name@domain.com • 3–254 ký tự • Không chứa ký tự điều khiển hoặc ký tự vô hình"
+    },
+    "password": {
+      "required": "Vui lòng nhập mật khẩu",
+      "minLength": "Mật khẩu phải có ít nhất 8 ký tự",
+      "minLengthHint": "Độ dài hợp lệ: 8–128 ký tự",
+      "maxLength": "Mật khẩu không được vượt quá 128 ký tự",
+      "requirements": "Mật khẩu phải chứa chữ hoa, chữ thường, số và ký tự đặc biệt",
+      "requirementsHint": "Ký tự cho phép: A–Z, a–z, 0–9, @$!%*?&"
+    },
+    "currentPassword": {
+      "required": "Vui lòng nhập mật khẩu hiện tại",
+      "wrongCurrentPassword": "Mật khẩu hiện tại không đúng"
+    },
+    "newPassword": {
+      "required": "Vui lòng nhập mật khẩu mới",
+      "sameAsCurrent": "Mật khẩu mới phải khác mật khẩu hiện tại",
+      "minLength": "Mật khẩu phải có ít nhất 8 ký tự",
+      "minLengthHint": "Độ dài hợp lệ: 8–128 ký tự",
+      "maxLength": "Mật khẩu không được vượt quá 128 ký tự",
+      "requirements": "Mật khẩu phải chứa chữ hoa, chữ thường, số và ký tự đặc biệt",
+      "requirementsHint": "Ký tự cho phép: A–Z, a–z, 0–9, @$!%*?&"
+    },
+    "confirmPassword": {
+      "required": "Vui lòng xác nhận mật khẩu",
+      "mismatch": "Mật khẩu không khớp"
+    },
+    "passwordConfirm": {
+      "required": "Vui lòng xác nhận mật khẩu",
+      "mismatch": "Mật khẩu không khớp"
+    },
+    "fullName": {
+      "required": "Vui lòng nhập họ tên",
+      "minLength": "Họ tên phải có ít nhất 2 ký tự",
+      "maxLength": "Họ tên không được vượt quá 100 ký tự",
+      "invalid": "Họ tên chứa ký tự không hợp lệ",
+      "invalidHint": "Ký tự cho phép: chữ cái (mọi ngôn ngữ), khoảng trắng, dấu gạch ngang (-), dấu nháy đơn ('), dấu chấm (.)"
+    },
+    "phone": {
+      "required": "Vui lòng nhập số điện thoại",
+      "maxLength": "Số điện thoại quá dài",
+      "invalid": "Định dạng số điện thoại không hợp lệ"
+    },
+    "address": {
+      "maxLength": "Địa chỉ không được vượt quá 500 ký tự",
+      "invalid": "Địa chỉ chứa ký tự không hợp lệ"
+    },
+    "dateOfBirth": {
+      "required": "Vui lòng chọn ngày sinh",
+      "invalid": "Ngày sinh phải là ngày trong quá khứ và không quá 100 năm"
+    },
+    "gender": {
+      "required": "Vui lòng chọn giới tính",
+      "invalid": "Giới tính không hợp lệ"
+    },
+    "birthday": {
+      "required": "Vui lòng chọn ngày sinh",
+      "invalid": "Ngày sinh phải trong khoảng 13–120 tuổi"
+    },
+    "subject": {
+      "required": "Vui lòng nhập tiêu đề",
+      "minLength": "Tiêu đề phải có ít nhất 5 ký tự",
+      "maxLength": "Tiêu đề không được vượt quá 200 ký tự"
+    },
+    "category": {
+      "required": "Vui lòng chọn danh mục"
+    },
+    "message": {
+      "required": "Vui lòng nhập nội dung",
+      "minLength": "Nội dung phải có ít nhất 20 ký tự",
+      "maxLength": "Nội dung không được vượt quá 5000 ký tự"
+    }
+  },
+  "table": {
+    "sortBy": "Sắp xếp theo {column}",
+    "sortedAscending": "Đã sắp xếp tăng dần.",
+    "sortedDescending": "Đã sắp xếp giảm dần."
+  }
+}

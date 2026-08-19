@@ -1,0 +1,61 @@
+{
+  "title": "Thanh toán",
+  "description": "Quản lý gói đăng ký, phương thức thanh toán và hóa đơn",
+  "currentPlan": {
+    "title": "Gói hiện tại",
+    "planName": "Gói Pro",
+    "price": "$12",
+    "perMonth": "/tháng",
+    "renewsOn": "Gia hạn vào {date}",
+    "features": [
+      "Không giới hạn ứng dụng",
+      "Hỗ trợ ưu tiên",
+      "Báo cáo & phân tích tùy chỉnh",
+      "Phân tích nâng cao"
+    ],
+    "buttons": {
+      "upgrade": "Nâng cấp gói",
+      "cancel": "Hủy đăng ký"
+    },
+    "badge": "Đang hoạt động"
+  },
+  "paymentMethod": {
+    "title": "Phương thức thanh toán",
+    "description": "Quản lý thông tin thanh toán",
+    "buttons": {
+      "add": "Thêm phương thức",
+      "edit": "Chỉnh sửa"
+    },
+    "default": "Mặc định",
+    "ending": "kết thúc bằng {last4}",
+    "expiresAt": "Hết hạn {expires}"
+  },
+  "history": {
+    "title": "Lịch sử thanh toán",
+    "description": "Tải hóa đơn cho các giao dịch trước đây",
+    "columns": {
+      "date": "Ngày",
+      "description": "Mô tả",
+      "amount": "Số tiền",
+      "status": "Trạng thái",
+      "action": "Hành động"
+    },
+    "buttons": {
+      "download": "Tải xuống"
+    },
+    "status": {
+      "paid": "Đã thanh toán",
+      "pending": "Đang chờ",
+      "failed": "Thất bại"
+    }
+  },
+  "usage": {
+    "title": "Sử dụng tháng này",
+    "subtitle": "{period} — đặt lại vào {resetDate}",
+    "stats": {
+      "totalPatches": "Tổng số bản vá",
+      "totalBranches": "Tổng số nhánh",
+      "apiCalls": "Lệnh gọi API"
+    }
+  }
+}

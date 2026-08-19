@@ -1,0 +1,98 @@
+{
+  "title": "Login Page",
+  "form": {
+    "title": "Login",
+    "titleWelcome": "Welcome",
+    "titlePassword": "Enter your password",
+    "titleChooseMethod": "Choose login method",
+    "description": "Continue to use the service",
+    "descriptionChooseMethod": "Choose the login method that suits you",
+    "input": {
+      "labelEmail": "Email",
+      "labelPassword": "Password",
+      "labelEnterPassword": "Enter your password",
+      "placeholderPassword": "Enter password"
+    },
+    "button": {
+      "login": "Sign in",
+      "loginWithGoogle": "Sign in with Google",
+      "loginWithFacebook": "Sign in with Facebook",
+      "comingSoon": "coming soon",
+      "next": "Continue with email",
+      "signIn": "Sign in",
+      "tryAnother": "Try another way",
+      "changeEmail": "Change email"
+    },
+    "alternative": {
+      "magicLink": {
+        "title": "Login with Magic Link",
+        "description": "Receive login link via email"
+      },
+      "otp": {
+        "title": "Login with OTP",
+        "description": "Receive verification code via email or SMS"
+      },
+      "password": {
+        "title": "Login with password",
+        "description": "Use your password"
+      },
+      "contactAdmin": {
+        "title": "Contact administrator",
+        "description": "Request support from administrator"
+      }
+    },
+    "otp": {
+      "title": "Enter verification code",
+      "description": "We have sent an OTP code to",
+      "instruction": "Please enter the 6-digit code sent to your email",
+      "verifying": "Verifying...",
+      "resendSuccess": "OTP code has been resent!",
+      "button": {
+        "resend": "Resend OTP code",
+        "resendIn": "Resend in {seconds}s",
+        "sending": "Sending...",
+        "tryOther": "Try another method"
+      }
+    },
+    "magicLink": {
+      "title": "Check your email",
+      "titleVerifying": "Verifying magic link...",
+      "subtitle": "Sign in with a magic link sent to your email",
+      "description": "We have sent a magic link to",
+      "instruction": {
+        "check": "Please check your inbox",
+        "detail": "Click the link in the email to sign in instantly. This link will expire in {minutes} minutes."
+      },
+      "hint": {
+        "title": "Can't find the email?",
+        "description": "Check your spam or junk folder"
+      },
+      "resendSuccess": "Magic link has been resent!",
+      "linkInvalid": "Magic link is invalid or expired.",
+      "button": {
+        "resend": "Resend magic link",
+        "resendIn": "Resend in {seconds}s",
+        "sending": "Sending...",
+        "tryOther": "Try another method"
+      }
+    }
+  },
+  "link": {
+    "forgotPassword": "Forgot Password?",
+    "descriptionSignUp": "Don't have an account",
+    "signUp": "Sign up"
+  },
+  "announce": {
+    "signingIn": "Signing in...",
+    "signedIn": "Signed in successfully.",
+    "sendingCode": "Sending OTP code...",
+    "codeSent": "OTP code sent to your email.",
+    "codeSendError": "Failed to send OTP code.",
+    "sendingLink": "Sending magic link...",
+    "linkSent": "Magic link sent to your email.",
+    "linkSendError": "Failed to send magic link.",
+    "verifying": "Verifying...",
+    "verifyingLink": "Verifying magic link...",
+    "linkInvalid": "Link is invalid or expired. Redirecting to login..."
+  }
+}

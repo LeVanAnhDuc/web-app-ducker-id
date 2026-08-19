@@ -1,0 +1,48 @@
+{
+  "title": "Trang đăng ký",
+  "infoStep": {
+    "title": "Thông tin cá nhân",
+    "input": {
+      "labelFullName": "Họ và tên",
+      "placeholderFullName": "Nguyễn Văn A",
+      "labelGender": "Giới tính",
+      "placeholderGender": "Chọn giới tính",
+      "gender": {
+        "male": "Nam",
+        "female": "Nữ",
+        "other": "Khác",
+        "prefer_not_to_say": "Không muốn nói"
+      },
+      "labelBirthday": "Ngày sinh",
+      "placeholderBirthday": "Chọn ngày sinh",
+      "labelPassword": "Mật khẩu",
+      "placeholderPassword": "Tối thiểu 8 ký tự",
+      "labelPasswordConfirm": "Xác nhận mật khẩu",
+      "placeholderPasswordConfirm": "Nhập lại mật khẩu"
+    },
+    "button": {
+      "submit": "Tạo tài khoản"
+    }
+  },
+  "otpStep": {
+    "title": "Xác thực email",
+    "description": "Chúng tôi đã gửi mã xác thực đến",
+    "instruction": "Vui lòng nhập mã 6 chữ số được gửi đến email của bạn để xác thực tài khoản",
+    "verifying": "Đang xác thực...",
+    "resendSuccess": "Mã OTP đã được gửi lại!",
+    "button": {
+      "resend": "Gửi lại mã OTP",
+      "resendIn": "Gửi lại sau {seconds}s",
+      "sending": "Đang gửi...",
+      "changeEmail": "Thay đổi email"
+    }
+  },
+  "announce": {
+    "sendingCode": "Đang gửi mã xác thực...",
+    "codeSent": "Mã xác thực đã được gửi đến email của bạn.",
+    "verifying": "Đang xác thực mã...",
+    "verified": "Email đã xác thực. Vui lòng điền thông tin cá nhân.",
+    "completing": "Đang tạo tài khoản...",
+    "completed": "Tạo tài khoản thành công."
+  }
+}

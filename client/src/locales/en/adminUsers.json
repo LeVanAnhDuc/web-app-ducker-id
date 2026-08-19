@@ -1,0 +1,74 @@
+{
+  "title": "Users",
+  "description": "Operate on user accounts — lock/unlock, reset passwords, force logout, and inspect session activity.",
+  "toolbar": {
+    "search": "Search",
+    "searchPlaceholder": "Search by name or email…",
+    "role": "Role",
+    "status": "Status",
+    "all": "All",
+    "clear": "Clear filters"
+  },
+  "role": {
+    "user": "User",
+    "admin": "Admin"
+  },
+  "status": {
+    "active": "Active",
+    "locked": "Locked"
+  },
+  "table": {
+    "user": "User",
+    "role": "Role",
+    "status": "Status",
+    "lastLoginAt": "Last Login",
+    "createdAt": "Created",
+    "actions": "Actions",
+    "neverLoggedIn": "Never",
+    "empty": "No users match",
+    "emptyDescription": "Try adjusting the search or clearing the filter.",
+    "error": "Could not load users. Please try again.",
+    "rowMenuLabel": "User actions"
+  },
+  "actions": {
+    "resetPassword": "Reset password",
+    "lock": "Lock account",
+    "unlock": "Unlock account",
+    "forceLogout": "Force logout",
+    "cancel": "Cancel",
+    "confirmReset": "Send reset",
+    "confirmLock": "Lock account",
+    "confirmUnlock": "Unlock account",
+    "confirmForceLogout": "Force logout"
+  },
+  "resetDialog": {
+    "title": "Reset password for {name}?",
+    "description": "A password reset email will be sent to {email}. The user will be required to set a new password on next sign-in."
+  },
+  "lockDialog": {
+    "lockTitle": "Lock {name}'s account?",
+    "lockDescription": "The user will be unable to sign in until an admin unlocks the account. Existing sessions will remain active until they expire — use Force logout to end them immediately.",
+    "unlockTitle": "Unlock {name}'s account?",
+    "unlockDescription": "The user will regain the ability to sign in. Their previous password remains valid."
+  },
+  "forceLogoutDialog": {
+    "title": "Force logout {name}?",
+    "description": "All active sessions and refresh tokens for this user will be revoked. The user will need to sign in again. This action cannot be undone."
+  },
+  "toast": {
+    "resetSuccess": "Reset email sent.",
+    "lockSuccess": "Account locked.",
+    "unlockSuccess": "Account unlocked.",
+    "forceLogoutSuccess": "User logged out from all sessions.",
+    "error": "Something went wrong. Please try again."
+  },
+  "announce": {
+    "loading": "Loading users...",
+    "loaded": "{total} users loaded",
+    "error": "Could not load users. Please try again.",
+    "passwordReset": "Password reset email sent to {name}.",
+    "locked": "{name}'s account locked.",
+    "unlocked": "{name}'s account unlocked.",
+    "forceLoggedOut": "{name} logged out from all sessions."
+  }
+}

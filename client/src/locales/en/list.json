@@ -1,0 +1,30 @@
+{
+  "search": "Search",
+  "searchPlaceholder": "Search…",
+  "filters": "Filters",
+  "clearAll": "Clear all",
+  "clearFilters": "Clear filters",
+  "all": "All",
+  "noResultsTitle": "No results found",
+  "noResultsDescription": "Try a different search or clear your filters.",
+  "emptyTitle": "Nothing here yet",
+  "viewGrid": "Grid view",
+  "viewList": "List view",
+  "table": { "empty": "No data", "comingSoon": "Coming soon" },
+  "dateRange": {
+    "label": "Date range",
+    "all": "All time",
+    "today": "Today",
+    "last7": "Last 7 days",
+    "last30": "Last 30 days",
+    "last90": "Last 90 days",
+    "custom": "Custom",
+    "from": "From",
+    "to": "To"
+  },
+  "announce": {
+    "filtersApplied": "Filters applied.",
+    "filtersCleared": "Filters cleared.",
+    "pageChanged": "Navigating to page {page}"
+  }
+}

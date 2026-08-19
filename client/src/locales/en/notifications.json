@@ -1,0 +1,29 @@
+{
+  "title": "Notifications",
+  "description": "Updates, alerts, and activity from your store",
+  "actions": {
+    "markAllRead": "Mark all as read",
+    "markRead": "Mark as read",
+    "loadMore": "Load more notifications"
+  },
+  "states": {
+    "empty": "No notifications here.",
+    "loading": "Loading notifications...",
+    "error": "Couldn't load notifications."
+  },
+  "tabs": {
+    "unread": "Unread",
+    "read": "Read"
+  },
+  "groups": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "earlier": "Earlier"
+  },
+  "announce": {
+    "tabChanged": "Showing {tab} notifications.",
+    "markedRead": "Notification marked as read.",
+    "markedAllRead": "All notifications marked as read.",
+    "loadingMore": "Loading more notifications..."
+  }
+}

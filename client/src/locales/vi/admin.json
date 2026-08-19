@@ -1,0 +1,26 @@
+{
+  "modeBadge": "Chế độ Quản trị",
+  "sidebar": {
+    "groups": {
+      "overview": "Tổng quan",
+      "identity": "Định danh",
+      "apps": "Đăng ký ứng dụng"
+    },
+    "nav": {
+      "dashboard": "Trang chủ",
+      "users": "Người dùng",
+      "loginHistory": "Lịch sử đăng nhập",
+      "contacts": "Hộp thư liên hệ",
+      "apps": "Đăng ký ứng dụng",
+      "entitlements": "Phân quyền truy cập"
+    },
+    "backToDashboard": "Về trang người dùng"
+  },
+  "stub": {
+    "comingSoon": "Sắp ra mắt",
+    "description": "Khu vực quản trị này đã được khởi tạo nhưng chưa hoàn thiện thiết kế. Giao diện đầy đủ sẽ ra mắt ở phase kế tiếp."
+  },
+  "announce": {
+    "exitedAdmin": "Đã trở về trang người dùng."
+  }
+}

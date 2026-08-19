@@ -1,0 +1,27 @@
+{
+  "title": "Ứng dụng",
+  "description": "Duyệt và tìm kiếm tất cả ứng dụng web khả dụng.",
+  "search": {
+    "placeholder": "Tìm ứng dụng..."
+  },
+  "categories": {
+    "all": "Tất cả",
+    "groupLabel": "Lọc theo danh mục"
+  },
+  "view": {
+    "grid": "Xem dạng lưới",
+    "list": "Xem dạng danh sách"
+  },
+  "card": {
+    "open": "Mở",
+    "addFavorite": "Thêm vào yêu thích",
+    "removeFavorite": "Xóa khỏi yêu thích"
+  },
+  "empty": "Không tìm thấy ứng dụng nào.",
+  "error": "Không thể tải ứng dụng. Vui lòng thử lại.",
+  "announce": {
+    "pageChanged": "Đã tải trang {page}.",
+    "loading": "Đang tải ứng dụng...",
+    "loaded": "Đã tải {total} ứng dụng."
+  }
+}

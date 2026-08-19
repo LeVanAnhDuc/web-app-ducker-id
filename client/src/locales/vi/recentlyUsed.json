@@ -1,0 +1,22 @@
+{
+  "title": "Đã dùng gần đây",
+  "description": "Truy cập nhanh các ứng dụng bạn đã dùng gần đây.",
+  "search": {
+    "placeholder": "Tìm trong gần đây..."
+  },
+  "clear": "Xóa lịch sử",
+  "groups": {
+    "today": "Hôm nay",
+    "yesterday": "Hôm qua",
+    "thisWeek": "Tuần này",
+    "earlier": "Trước đó"
+  },
+  "groupCount": "{count, plural, other {# ứng dụng}}",
+  "card": {
+    "open": "Mở"
+  },
+  "announce": {
+    "searchChanged": "{count} ứng dụng gần đây khớp với tìm kiếm.",
+    "cleared": "Đã xóa lịch sử gần đây."
+  }
+}

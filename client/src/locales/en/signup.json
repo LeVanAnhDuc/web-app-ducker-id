@@ -1,0 +1,48 @@
+{
+  "title": "Sign-up Page",
+  "infoStep": {
+    "title": "Personal Information",
+    "input": {
+      "labelFullName": "Full Name",
+      "placeholderFullName": "John Doe",
+      "labelGender": "Gender",
+      "placeholderGender": "Select gender",
+      "gender": {
+        "male": "Male",
+        "female": "Female",
+        "other": "Other",
+        "prefer_not_to_say": "Prefer not to say"
+      },
+      "labelBirthday": "Birthday",
+      "placeholderBirthday": "Select birthday",
+      "labelPassword": "Password",
+      "placeholderPassword": "At least 8 characters",
+      "labelPasswordConfirm": "Confirm Password",
+      "placeholderPasswordConfirm": "Re-enter password"
+    },
+    "button": {
+      "submit": "Create Account"
+    }
+  },
+  "otpStep": {
+    "title": "Verify Email",
+    "description": "We've sent a verification code to",
+    "instruction": "Please enter the 6-digit code sent to your email to verify your account",
+    "verifying": "Verifying...",
+    "resendSuccess": "OTP has been resent!",
+    "button": {
+      "resend": "Resend OTP",
+      "resendIn": "Resend in {seconds}s",
+      "sending": "Sending...",
+      "changeEmail": "Change email"
+    }
+  },
+  "announce": {
+    "sendingCode": "Sending verification code...",
+    "codeSent": "Verification code sent to your email.",
+    "verifying": "Verifying code...",
+    "verified": "Email verified. Please fill in your information.",
+    "completing": "Creating your account...",
+    "completed": "Account created successfully."
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "title": "Tài khoản",
+  "description": "Quản lý hồ sơ, tùy chọn và bảo mật tài khoản",
+  "card": {
+    "edit": "Chỉnh sửa hồ sơ",
+    "stats": {
+      "apps": "{count} Ứng dụng",
+      "teams": "{count} Nhóm",
+      "plan": "Gói {plan}"
+    }
+  },
+  "personalInfo": {
+    "title": "Thông tin cá nhân",
+    "description": "Cập nhật thông tin cá nhân của bạn",
+    "fields": {
+      "firstName": "Họ",
+      "lastName": "Tên",
+      "phone": "Số điện thoại",
+      "address": "Địa chỉ",
+      "dateOfBirth": "Ngày sinh",
+      "gender": "Giới tính"
+    },
+    "placeholders": {
+      "firstName": "Nhập họ",
+      "lastName": "Nhập tên",
+      "phone": "+84 90 000 0000",
+      "address": "Nhập địa chỉ của bạn",
+      "dateOfBirth": "Chọn ngày sinh",
+      "gender": "Chọn giới tính"
+    },
+    "genderOptions": {
+      "male": "Nam",
+      "female": "Nữ",
+      "other": "Khác",
+      "prefer_not_to_say": "Không muốn tiết lộ"
+    },
+    "buttons": {
+      "cancel": "Hủy",
+      "save": "Lưu thay đổi"
+    },
+    "tooltips": {
+      "saving": "Đang lưu...",
+      "noChangesToCancel": "Chưa có thay đổi để hủy",
+      "noChangesToSave": "Chưa có thay đổi để lưu"
+    },
+    "toast": {
+      "success": "Cập nhật hồ sơ thành công",
+      "error": "Không thể cập nhật hồ sơ"
+    },
+    "announce": {
+      "saving": "Đang lưu hồ sơ...",
+      "saved": "Đã lưu hồ sơ."
+    }
+  },
+  "changePassword": {
+    "title": "Đổi mật khẩu",
+    "description": "Cập nhật mật khẩu dùng để đăng nhập vào tài khoản",
+    "fields": {
+      "currentPassword": "Mật khẩu hiện tại",
+      "newPassword": "Mật khẩu mới",
+      "confirmPassword": "Xác nhận mật khẩu mới"
+    },
+    "placeholders": {
+      "currentPassword": "Nhập mật khẩu hiện tại",
+      "newPassword": "Nhập mật khẩu mới",
+      "confirmPassword": "Nhập lại mật khẩu mới"
+    },
+    "buttons": {
+      "cancel": "Hủy",
+      "save": "Cập nhật mật khẩu"
+    },
+    "tooltips": {
+      "noChanges": "Chưa có thay đổi nào để lưu"
+    },
+    "toast": {
+      "success": "Đã cập nhật mật khẩu thành công",
+      "error": "Không thể cập nhật mật khẩu"
+    },
+    "announce": {
+      "saving": "Đang cập nhật mật khẩu...",
+      "saved": "Đã cập nhật mật khẩu."
+    }
+  },
+  "dangerZone": {
+    "title": "Vùng nguy hiểm",
+    "description": "Các hành động không thể hoàn tác và mang tính phá hủy",
+    "delete": {
+      "title": "Xóa tài khoản",
+      "description": "Xóa vĩnh viễn tài khoản và toàn bộ dữ liệu liên quan. Không thể hoàn tác.",
+      "button": "Xóa tài khoản"
+    }
+  }
+}

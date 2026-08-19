@@ -1,0 +1,64 @@
+{
+  "title": "Bảng điều khiển",
+  "description": "Khám phá bộ sưu tập ứng dụng được tuyển chọn để nâng cao năng suất và sáng tạo của bạn",
+  "header": {
+    "appName": "Kho ứng dụng",
+    "searchPlaceholder": "Tìm kiếm ứng dụng...",
+    "menuToggleLabel": "Hiện/ẩn menu điều hướng",
+    "searchLabel": "Mở tìm kiếm",
+    "notificationsLabel": "Thông báo",
+    "suggestedLabel": "Ứng dụng gợi ý",
+    "resultsLabel": "Ứng dụng",
+    "noResults": "Không tìm thấy ứng dụng",
+    "noResultsHint": "Thử từ khoá khác",
+    "viewAll": "Xem tất cả",
+    "openLabel": "Mở",
+    "announce": {
+      "results": "{count} ứng dụng",
+      "noResults": "Không tìm thấy ứng dụng",
+      "opened": "Đang mở {name}"
+    }
+  },
+  "welcome": {
+    "greeting": "Chào mừng trở lại!",
+    "title": "Khám phá ứng dụng tuyệt vời",
+    "description": "Khám phá bộ sưu tập ứng dụng được tuyển chọn để nâng cao năng suất và sáng tạo của bạn."
+  },
+  "recentlyUsed": {
+    "title": "Sử dụng gần đây",
+    "viewAll": "Xem tất cả"
+  },
+  "allApps": {
+    "title": "Tất cả ứng dụng"
+  },
+  "sidebar": {
+    "groups": {
+      "discover": "Khám phá",
+      "mine": "Nhóm của tôi",
+      "settings": "Cài đặt"
+    },
+    "nav": {
+      "home": "Trang chủ",
+      "apps": "Ứng dụng",
+      "loginHistory": "Lịch sử đăng nhập",
+      "favorites": "Yêu thích",
+      "recentlyUsed": "Sử dụng gần đây",
+      "profile": "Tài khoản",
+      "billing": "Thanh toán"
+    }
+  },
+  "notifications": {
+    "title": "Thông báo",
+    "markAllRead": "Đánh dấu tất cả đã đọc",
+    "all": "Tất cả",
+    "unread": "Chưa đọc",
+    "viewAll": "Xem tất cả thông báo",
+    "viewAllAnnounce": "Đang chuyển đến trang tất cả thông báo."
+  },
+  "sort": {
+    "featured": "Nổi bật",
+    "rating": "Đánh giá",
+    "downloads": "Lượt tải",
+    "name": "Tên"
+  }
+}

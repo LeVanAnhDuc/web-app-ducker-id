@@ -1,0 +1,20 @@
+{
+  "title": "Favorites",
+  "description": "Your bookmarked apps, always one click away.",
+  "search": { "placeholder": "Search favorites..." },
+  "categories": { "all": "All", "groupLabel": "Filter by category" },
+  "sort": { "label": "Sort: {value}", "recent": "Recent", "name": "Name" },
+  "card": {
+    "open": "Open",
+    "add": "Add to favorites",
+    "remove": "Remove from favorites"
+  },
+  "toast": { "error": "Failed to update favorites. Please try again." },
+  "empty": "You haven't favorited any apps yet.",
+  "error": "Could not load favorites. Please try again.",
+  "announce": {
+    "added": "Added to favorites.",
+    "removed": "Removed from favorites.",
+    "error": "Failed to update favorites."
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "admin": {
+    "list": {
+      "title": "Contact Requests",
+      "description": "Manage all user support requests",
+      "table": {
+        "caption": "Contact requests submitted by users",
+        "ticketNumber": "Ticket",
+        "email": "Email",
+        "subject": "Subject",
+        "status": "Status",
+        "createdAt": "Date",
+        "actions": "Actions",
+        "empty": "No contact requests found",
+        "viewDetail": "View",
+        "viewDetailFor": "View details for ticket {id}"
+      },
+      "filters": {
+        "title": "Filters",
+        "status": "Status",
+        "email": "Email",
+        "search": "Search",
+        "searchPlaceholder": "Search by subject, email...",
+        "fromDate": "From Date",
+        "toDate": "To Date",
+        "all": "All",
+        "clear": "Clear"
+      },
+      "status": {
+        "new": "New",
+        "processing": "Processing",
+        "resolved": "Resolved"
+      }
+    },
+    "detail": {
+      "title": "Contact Detail",
+      "breadcrumb": {
+        "list": "Contact Inbox"
+      },
+      "fields": {
+        "ticketNumber": "Ticket Number",
+        "email": "Email",
+        "subject": "Subject",
+        "status": "Status",
+        "ipAddress": "IP Address",
+        "userId": "User ID",
+        "message": "Message",
+        "createdAt": "Created At",
+        "updatedAt": "Updated At",
+        "attachments": "Attachments"
+      },
+      "updateStatus": {
+        "label": "Update Status",
+        "success": "Status updated successfully",
+        "error": "Failed to update status"
+      },
+      "attachments": {
+        "empty": "No attachments",
+        "download": "Download",
+        "preview": "Preview",
+        "closePreview": "Close preview"
+      }
+    }
+  },
+  "announce": {
+    "statusUpdating": "Updating status...",
+    "statusUpdated": "Status updated successfully.",
+    "statusError": "Failed to update status."
+  },
+  "myContacts": {
+    "title": "My Requests",
+    "description": "View your submitted support requests",
+    "table": {
+      "caption": "Your submitted support requests",
+      "ticketNumber": "Ticket",
+      "subject": "Subject",
+      "status": "Status",
+      "priority": "Priority",
+      "createdAt": "Date",
+      "empty": "No requests submitted yet",
+      "viewDetailFor": "View details for ticket {id}"
+    },
+    "filters": {
+      "status": "Status",
+      "searchPlaceholder": "Search by subject..."
+    },
+    "priority": {
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "submitNew": "Submit new request",
+    "detail": {
+      "title": "Request Detail",
+      "breadcrumb": {
+        "list": "My Requests",
+        "current": "Request Detail"
+      },
+      "fields": {
+        "priority": "Priority",
+        "createdAt": "Date",
+        "subject": "Subject",
+        "message": "Message"
+      },
+      "notFound": "This request could not be found.",
+      "announce": {
+        "loading": "Loading request detail...",
+        "loaded": "Request detail loaded.",
+        "error": "This request could not be found."
+      }
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "title": "Home",
+  "description": "Your personal app dashboard",
+  "greeting": {
+    "morning": "Good morning",
+    "afternoon": "Good afternoon",
+    "evening": "Good evening",
+    "subtitle": "You have {count} apps to explore today.",
+    "date": "Wednesday, May 6, 2026"
+  },
+  "stats": {
+    "totalApps": "Total Apps Used",
+    "appsThisMonth": "Apps This Month",
+    "timeSaved": "Time Saved",
+    "currentStreak": "Current Streak",
+    "allTime": "All time",
+    "fromLastMonth": "+3 from last month",
+    "hoursThisMonth": "+5 hrs this month",
+    "personalBest": "Personal best!"
+  },
+  "weeklyActivity": {
+    "title": "Weekly Activity",
+    "subtitle": "Apps opened per day this week",
+    "legend": "30 opens this week"
+  },
+  "achievement": {
+    "title": "14-Day Streak — You're on fire!",
+    "subtitle": "You've opened at least one app every day for 2 weeks. Keep it going!",
+    "cta": "View Achievements"
+  },
+  "quickAccess": {
+    "title": "Quick Access",
+    "subtitle": "Jump back in",
+    "empty": "No apps yet.",
+    "error": "Could not load apps."
+  },
+  "recommended": {
+    "title": "Recommended for You",
+    "seeAll": "See all apps",
+    "empty": "No apps to recommend yet.",
+    "error": "Could not load apps."
+  },
+  "exploreCTA": {
+    "title": "Discover more apps in the store",
+    "subtitle": "Over 47 apps available — find your next favourite.",
+    "cta": "Browse All Apps"
+  }
+}

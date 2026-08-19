@@ -1,0 +1,125 @@
+{
+  "title": "Lịch sử đăng nhập",
+  "description": "Theo dõi truy cập tài khoản và sự kiện bảo mật",
+  "stats": {
+    "totalLogins": "Tổng lượt đăng nhập",
+    "successful": "Thành công",
+    "failed": "Thất bại"
+  },
+  "toolbar": {
+    "search": "Tìm log...",
+    "export": "Xuất"
+  },
+  "dateRange": {
+    "today": "Hôm nay",
+    "all": "Toàn bộ"
+  },
+  "tableHeader": {
+    "title": "Hoạt động đăng nhập gần đây"
+  },
+  "table": {
+    "caption": "Lịch sử đăng nhập admin",
+    "method": "Phương thức",
+    "status": "Trạng thái",
+    "ip": "Địa chỉ IP",
+    "country": "Quốc gia",
+    "city": "Thành phố",
+    "deviceType": "Thiết bị",
+    "browser": "Trình duyệt",
+    "os": "Hệ điều hành",
+    "clientType": "Loại client",
+    "createdAt": "Thời gian",
+    "failReason": "Lý do thất bại",
+    "empty": "Không có lịch sử đăng nhập",
+    "userId": "ID người dùng",
+    "usernameAttempted": "Tên đăng nhập thử",
+    "userAgent": "User Agent",
+    "timezoneOffset": "Múi giờ",
+    "isAnomaly": "Bất thường",
+    "anomalyReasons": "Lý do bất thường",
+    "anomalyYes": "Có",
+    "anomalyNo": "Không",
+    "ipLocation": "IP & Vị trí",
+    "action": "Thao tác",
+    "viewDetail": "Xem",
+    "viewDetailFor": "Xem chi tiết cho {name}"
+  },
+  "filters": {
+    "title": "Bộ lọc",
+    "status": "Trạng thái",
+    "method": "Phương thức",
+    "country": "Quốc gia",
+    "city": "Thành phố",
+    "fromDate": "Từ ngày",
+    "toDate": "Đến ngày",
+    "userId": "ID người dùng",
+    "ip": "Địa chỉ IP",
+    "all": "Tất cả",
+    "clear": "Xóa"
+  },
+  "status": {
+    "success": "Thành công",
+    "failed": "Thất bại"
+  },
+  "method": {
+    "password": "Mật khẩu",
+    "otp": "OTP",
+    "magic-link": "Magic Link",
+    "forgot-password": "Quên mật khẩu"
+  },
+  "location": {
+    "local": "Nội bộ (Local)",
+    "unknown": "Không xác định"
+  },
+  "deviceType": {
+    "DESKTOP": "Máy tính",
+    "MOBILE": "Di động",
+    "TABLET": "Máy tính bảng",
+    "UNKNOWN": "Không rõ"
+  },
+  "admin": {
+    "title": "Toàn bộ lịch sử đăng nhập",
+    "description": "Xem lịch sử đăng nhập của tất cả người dùng",
+    "detail": {
+      "title": "Chi tiết lần đăng nhập",
+      "breadcrumb": {
+        "list": "Lịch sử đăng nhập",
+        "current": "Chi tiết"
+      },
+      "notFound": "Không tìm thấy bản ghi lịch sử đăng nhập.",
+      "error": "Không thể tải bản ghi đăng nhập này. Vui lòng thử lại.",
+      "anomalyNone": "Không có",
+      "anomalyYes": "Có",
+      "anomalyNo": "Không",
+      "announce": {
+        "loading": "Đang tải chi tiết lần đăng nhập...",
+        "loaded": "Đã tải chi tiết lần đăng nhập",
+        "error": "Không thể tải bản ghi đăng nhập này. Vui lòng thử lại."
+      },
+      "fields": {
+        "userId": "User ID",
+        "usernameAttempted": "Tên đăng nhập đã dùng",
+        "method": "Phương thức",
+        "status": "Trạng thái",
+        "failReason": "Lý do thất bại",
+        "ip": "Địa chỉ IP",
+        "country": "Quốc gia",
+        "city": "Thành phố",
+        "deviceType": "Thiết bị",
+        "os": "Hệ điều hành",
+        "browser": "Trình duyệt",
+        "clientType": "Client",
+        "userAgent": "User Agent",
+        "timezoneOffset": "Múi giờ",
+        "isAnomaly": "Bất thường",
+        "anomalyReasons": "Lý do bất thường",
+        "createdAt": "Thời gian"
+      }
+    }
+  },
+  "announce": {
+    "loading": "Đang tải dữ liệu...",
+    "loaded": "Đã tải {total} kết quả",
+    "statsLoaded": "Đã tải thống kê: {total} lượt đăng nhập"
+  }
+}

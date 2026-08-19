@@ -1,0 +1,61 @@
+{
+  "title": "Billing",
+  "description": "Manage your subscription, payment methods, and invoices",
+  "currentPlan": {
+    "title": "Current Plan",
+    "planName": "Pro Plan",
+    "price": "$12",
+    "perMonth": "/mo",
+    "renewsOn": "Renews on {date}",
+    "features": [
+      "Unlimited Apps",
+      "Priority Support",
+      "Custom Reports & Analytics",
+      "Advanced Analytics"
+    ],
+    "buttons": {
+      "upgrade": "Upgrade Plan",
+      "cancel": "Cancel Subscription"
+    },
+    "badge": "Active"
+  },
+  "paymentMethod": {
+    "title": "Payment Methods",
+    "description": "Manage your billing information and payment methods",
+    "buttons": {
+      "add": "Add Method",
+      "edit": "Edit"
+    },
+    "default": "Default",
+    "ending": "ending in {last4}",
+    "expiresAt": "Expires {expires}"
+  },
+  "history": {
+    "title": "Billing History",
+    "description": "Download invoices for past charges",
+    "columns": {
+      "date": "Date",
+      "description": "Description",
+      "amount": "Amount",
+      "status": "Status",
+      "action": "Action"
+    },
+    "buttons": {
+      "download": "Download"
+    },
+    "status": {
+      "paid": "Paid",
+      "pending": "Pending",
+      "failed": "Failed"
+    }
+  },
+  "usage": {
+    "title": "Usage This Month",
+    "subtitle": "{period} — resets on {resetDate}",
+    "stats": {
+      "totalPatches": "Total Patches",
+      "totalBranches": "Total Branches",
+      "apiCalls": "API Calls"
+    }
+  }
+}

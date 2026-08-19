@@ -1,0 +1,146 @@
+{
+  "app": {
+    "name": "App Store",
+    "description": "App Store Web Application"
+  },
+  "categories": {
+    "content": "Content",
+    "tools": "Internal Tools",
+    "identity": "Identity",
+    "productivity": "Productivity"
+  },
+  "userMenu": {
+    "trigger": "Open user menu",
+    "theme": "Theme",
+    "themeSubmenuLabel": "Theme options",
+    "themeLight": "Light",
+    "themeDark": "Dark",
+    "themeSystem": "System",
+    "language": "Language",
+    "languageSubmenuLabel": "Language options",
+    "keyboardShortcuts": "Keyboard Shortcuts",
+    "keyboardShortcutsHint": "⌘K",
+    "helpCenter": "Help Center",
+    "support": "Support",
+    "signOut": "Log out",
+    "signOutHint": "⇧⌘Q",
+    "signingOut": "Signing out...",
+    "signedOut": "You have been signed out.",
+    "switchedToLight": "Switched to light mode.",
+    "switchedToDark": "Switched to dark mode.",
+    "switchedToSystem": "Switched to system theme.",
+    "adminConsole": "Admin Console"
+  },
+  "sidebar": {
+    "collapse": "Collapse sidebar",
+    "expand": "Expand sidebar"
+  },
+  "passwordInput": {
+    "show": "Show password",
+    "hide": "Hide password"
+  },
+  "announce": {
+    "sidebarCollapsed": "Sidebar collapsed.",
+    "sidebarExpanded": "Sidebar expanded.",
+    "mobileMenuOpened": "Navigation menu opened.",
+    "mobileMenuClosed": "Navigation menu closed.",
+    "passwordShown": "Password is now visible.",
+    "passwordHidden": "Password is now hidden.",
+    "languageChanged": "Language changed to {language}."
+  },
+  "dateInput": {
+    "openCalendar": "Open calendar"
+  },
+  "or": "or",
+  "close": "Close",
+  "footer": {
+    "help": "Help",
+    "privacy": "Privacy",
+    "terms": "Terms"
+  },
+  "skipToContent": "Skip to main content",
+  "validation": {
+    "email": {
+      "required": "Please enter email",
+      "minLength": "Email must be at least 3 characters",
+      "maxLength": "Email must not exceed 254 characters",
+      "invalid": "Invalid email format",
+      "invalidHint": "Valid format: name@domain.com • 3–254 characters • No control or invisible characters"
+    },
+    "password": {
+      "required": "Please enter password",
+      "minLength": "Password must be at least 8 characters",
+      "minLengthHint": "Valid length: 8–128 characters",
+      "maxLength": "Password must not exceed 128 characters",
+      "requirements": "Password must contain uppercase, lowercase, number and special character",
+      "requirementsHint": "Allowed characters: A–Z, a–z, 0–9, @$!%*?&"
+    },
+    "currentPassword": {
+      "required": "Please enter your current password",
+      "wrongCurrentPassword": "Current password is incorrect"
+    },
+    "newPassword": {
+      "required": "Please enter new password",
+      "sameAsCurrent": "New password must be different from your current password",
+      "minLength": "Password must be at least 8 characters",
+      "minLengthHint": "Valid length: 8–128 characters",
+      "maxLength": "Password must not exceed 128 characters",
+      "requirements": "Password must contain uppercase, lowercase, number and special character",
+      "requirementsHint": "Allowed characters: A–Z, a–z, 0–9, @$!%*?&"
+    },
+    "confirmPassword": {
+      "required": "Please confirm your password",
+      "mismatch": "Passwords do not match"
+    },
+    "passwordConfirm": {
+      "required": "Please confirm your password",
+      "mismatch": "Passwords do not match"
+    },
+    "fullName": {
+      "required": "Please enter full name",
+      "minLength": "Full name must be at least 2 characters",
+      "maxLength": "Full name must not exceed 100 characters",
+      "invalid": "Full name contains invalid characters",
+      "invalidHint": "Allowed: letters (any language), spaces, hyphens (-), apostrophes ('), periods (.)"
+    },
+    "phone": {
+      "required": "Please enter phone number",
+      "maxLength": "Phone number is too long",
+      "invalid": "Invalid phone number format"
+    },
+    "address": {
+      "maxLength": "Address must not exceed 500 characters",
+      "invalid": "Address contains invalid characters"
+    },
+    "dateOfBirth": {
+      "required": "Please select date of birth",
+      "invalid": "Date must be in the past and within 100 years"
+    },
+    "gender": {
+      "required": "Please select gender",
+      "invalid": "Invalid gender"
+    },
+    "birthday": {
+      "required": "Please select birthday",
+      "invalid": "Date of birth must be between 13–120 years old"
+    },
+    "subject": {
+      "required": "Please enter subject",
+      "minLength": "Subject must be at least 5 characters",
+      "maxLength": "Subject must not exceed 200 characters"
+    },
+    "category": {
+      "required": "Please select category"
+    },
+    "message": {
+      "required": "Please enter message",
+      "minLength": "Message must be at least 20 characters",
+      "maxLength": "Message must not exceed 5000 characters"
+    }
+  },
+  "table": {
+    "sortBy": "Sort by {column}",
+    "sortedAscending": "Sorted ascending.",
+    "sortedDescending": "Sorted descending."
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "title": "Trang chủ",
+  "description": "Bảng điều khiển ứng dụng cá nhân của bạn",
+  "greeting": {
+    "morning": "Chào buổi sáng",
+    "afternoon": "Chào buổi chiều",
+    "evening": "Chào buổi tối",
+    "subtitle": "Bạn có {count} ứng dụng để khám phá hôm nay.",
+    "date": "Thứ Tư, 6 tháng 5, 2026"
+  },
+  "stats": {
+    "totalApps": "Tổng ứng dụng đã dùng",
+    "appsThisMonth": "Ứng dụng tháng này",
+    "timeSaved": "Thời gian tiết kiệm",
+    "currentStreak": "Chuỗi hiện tại",
+    "allTime": "Mọi thời điểm",
+    "fromLastMonth": "+3 so tháng trước",
+    "hoursThisMonth": "+5 giờ tháng này",
+    "personalBest": "Kỷ lục cá nhân!"
+  },
+  "weeklyActivity": {
+    "title": "Hoạt động hàng tuần",
+    "subtitle": "Số ứng dụng mở mỗi ngày trong tuần",
+    "legend": "30 lần mở tuần này"
+  },
+  "achievement": {
+    "title": "Chuỗi 14 ngày — Bạn đang bốc lửa!",
+    "subtitle": "Bạn đã mở ít nhất một ứng dụng mỗi ngày trong 2 tuần. Tiếp tục nào!",
+    "cta": "Xem thành tích"
+  },
+  "quickAccess": {
+    "title": "Truy cập nhanh",
+    "subtitle": "Quay lại ngay",
+    "empty": "Chưa có ứng dụng nào.",
+    "error": "Không thể tải ứng dụng."
+  },
+  "recommended": {
+    "title": "Đề xuất cho bạn",
+    "seeAll": "Xem tất cả ứng dụng",
+    "empty": "Chưa có ứng dụng để đề xuất.",
+    "error": "Không thể tải ứng dụng."
+  },
+  "exploreCTA": {
+    "title": "Khám phá thêm ứng dụng trong kho",
+    "subtitle": "Hơn 47 ứng dụng có sẵn — tìm ứng dụng yêu thích tiếp theo của bạn.",
+    "cta": "Duyệt tất cả ứng dụng"
+  }
+}

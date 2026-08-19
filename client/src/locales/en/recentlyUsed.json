@@ -1,0 +1,22 @@
+{
+  "title": "Recently Used",
+  "description": "Quickly access the web apps you've used recently.",
+  "search": {
+    "placeholder": "Search recent apps..."
+  },
+  "clear": "Clear History",
+  "groups": {
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "thisWeek": "This Week",
+    "earlier": "Earlier"
+  },
+  "groupCount": "{count, plural, one {# app} other {# apps}}",
+  "card": {
+    "open": "Open"
+  },
+  "announce": {
+    "searchChanged": "{count} recent apps match the search.",
+    "cleared": "Recent history cleared."
+  }
+}

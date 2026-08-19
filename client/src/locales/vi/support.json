@@ -1,0 +1,45 @@
+{
+  "dialog": {
+    "title": "Liên hệ hỗ trợ",
+    "description": "Cho chúng tôi biết vấn đề của bạn — chúng tôi sẽ phản hồi trong vòng 24 giờ làm việc."
+  },
+  "form": {
+    "input": {
+      "labelEmail": "Email phản hồi",
+      "labelEmailHint": "Nhập email bạn muốn nhận phản hồi.",
+      "labelEmailReadOnlyHint": "Chúng tôi sẽ phản hồi qua email tài khoản của bạn.",
+      "labelEmailAutoFillHint": "Email được điền sẵn — bạn có thể thay đổi nếu cần.",
+      "labelSubject": "Tiêu đề",
+      "placeholderSubject": "Tóm tắt vấn đề của bạn...",
+      "labelMessage": "Mô tả chi tiết",
+      "placeholderMessage": "Vui lòng mô tả chi tiết vấn đề. Bao gồm các bước tái hiện lỗi nếu có..."
+    },
+    "hint": {
+      "minChars": "Tối thiểu {count} ký tự",
+      "charCount": "{count} ký tự"
+    },
+    "button": {
+      "submit": "Gửi yêu cầu",
+      "submitting": "Đang gửi..."
+    },
+    "errors": {
+      "generic": "Không gửi được yêu cầu. Vui lòng thử lại."
+    }
+  },
+  "success": {
+    "title": "Cảm ơn bạn đã liên hệ",
+    "description": "Yêu cầu của bạn đã được tiếp nhận. Chúng tôi sẽ phản hồi trong vòng 24 giờ làm việc.",
+    "ticketLabel": "Mã yêu cầu",
+    "saveTicketNote": "Vui lòng lưu lại mã này để theo dõi.",
+    "button": {
+      "submitAnother": "Gửi yêu cầu khác",
+      "close": "Đóng"
+    }
+  },
+  "announce": {
+    "submitting": "Đang gửi yêu cầu hỗ trợ...",
+    "success": "Yêu cầu đã được gửi. Mã ticket: {ticketNumber}",
+    "rateLimitError": "Quá nhiều yêu cầu. Vui lòng đợi rồi thử lại.",
+    "error": "Không gửi được yêu cầu. Vui lòng thử lại."
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "title": "Login History",
+  "description": "Monitor your account access and security events",
+  "stats": {
+    "totalLogins": "Total Logins",
+    "successful": "Successful",
+    "failed": "Failed"
+  },
+  "toolbar": {
+    "search": "Search logs...",
+    "export": "Export"
+  },
+  "dateRange": {
+    "today": "Today",
+    "all": "All time"
+  },
+  "tableHeader": {
+    "title": "Recent Login Activity"
+  },
+  "table": {
+    "caption": "Admin login audit history",
+    "method": "Method",
+    "status": "Status",
+    "ip": "IP Address",
+    "country": "Country",
+    "city": "City",
+    "deviceType": "Device",
+    "browser": "Browser",
+    "os": "OS",
+    "clientType": "Client",
+    "createdAt": "Date",
+    "failReason": "Fail Reason",
+    "empty": "No login history found",
+    "userId": "User ID",
+    "usernameAttempted": "Username Attempted",
+    "userAgent": "User Agent",
+    "timezoneOffset": "Timezone",
+    "isAnomaly": "Anomaly",
+    "anomalyReasons": "Anomaly Reasons",
+    "anomalyYes": "Yes",
+    "anomalyNo": "No",
+    "ipLocation": "IP & Location",
+    "action": "Actions",
+    "viewDetail": "View",
+    "viewDetailFor": "View details for {name}"
+  },
+  "filters": {
+    "title": "Filters",
+    "status": "Status",
+    "method": "Method",
+    "country": "Country",
+    "city": "City",
+    "fromDate": "From Date",
+    "toDate": "To Date",
+    "userId": "User ID",
+    "ip": "IP Address",
+    "all": "All",
+    "clear": "Clear"
+  },
+  "status": {
+    "success": "Success",
+    "failed": "Failed"
+  },
+  "method": {
+    "password": "Password",
+    "otp": "OTP",
+    "magic-link": "Magic Link",
+    "forgot-password": "Forgot Password"
+  },
+  "location": {
+    "local": "Local",
+    "unknown": "Unknown"
+  },
+  "deviceType": {
+    "DESKTOP": "Desktop",
+    "MOBILE": "Mobile",
+    "TABLET": "Tablet",
+    "UNKNOWN": "Unknown"
+  },
+  "admin": {
+    "title": "All Login History",
+    "description": "View all users' login activity",
+    "detail": {
+      "title": "Login Attempt Detail",
+      "breadcrumb": {
+        "list": "Login History",
+        "current": "Detail"
+      },
+      "notFound": "Login history record not found.",
+      "error": "Could not load this login record. Please try again.",
+      "anomalyNone": "None",
+      "anomalyYes": "Yes",
+      "anomalyNo": "No",
+      "announce": {
+        "loading": "Loading login attempt detail...",
+        "loaded": "Login attempt detail loaded",
+        "error": "Could not load this login record. Please try again."
+      },
+      "fields": {
+        "userId": "User ID",
+        "usernameAttempted": "Username Attempted",
+        "method": "Method",
+        "status": "Status",
+        "failReason": "Fail Reason",
+        "ip": "IP Address",
+        "country": "Country",
+        "city": "City",
+        "deviceType": "Device",
+        "os": "OS",
+        "browser": "Browser",
+        "clientType": "Client",
+        "userAgent": "User Agent",
+        "timezoneOffset": "Timezone",
+        "isAnomaly": "Anomaly",
+        "anomalyReasons": "Anomaly Reasons",
+        "createdAt": "Date"
+      }
+    }
+  },
+  "announce": {
+    "loading": "Loading data...",
+    "loaded": "{total} results loaded",
+    "statsLoaded": "Stats loaded: {total} logins"
+  }
+}

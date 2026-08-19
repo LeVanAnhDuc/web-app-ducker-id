@@ -1,0 +1,58 @@
+{
+  "title": "Phân quyền truy cập",
+  "subtitle": "Xem và chỉnh sửa quyền truy cập ứng dụng của từng người dùng.",
+  "picker": {
+    "searchPlaceholder": "Tìm người dùng theo tên hoặc email...",
+    "results": "Kết quả",
+    "showing": "Hiển thị {shown} trên {total} — hãy thu hẹp tìm kiếm",
+    "noResults": "Không tìm thấy người dùng",
+    "removeUser": "Bỏ chọn {name}",
+    "filtersLabel": "Bộ lọc",
+    "role": {
+      "label": "Vai trò",
+      "all": "Tất cả",
+      "admin": "Quản trị",
+      "user": "Người dùng"
+    }
+  },
+  "matrix": {
+    "title": "Quyền truy cập ứng dụng",
+    "userColumn": "Người dùng",
+    "edit": "Chỉnh sửa",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "saveDisabledTooltip": "Chưa có thay đổi nào để lưu.",
+    "checkAll": "Cấp tất cả ứng dụng khả dụng",
+    "uncheckAll": "Thu hồi tất cả ứng dụng",
+    "insufficientRoleTooltip": "Người dùng này không đủ quyền.",
+    "empty": {
+      "title": "Không có ứng dụng",
+      "description": "Chưa có ứng dụng nào để quản lý."
+    }
+  },
+  "cell": {
+    "granted": "Đã cấp",
+    "notGranted": "Chưa cấp",
+    "insufficientRole": "Cần quyền",
+    "grantAria": "Cấp {app} cho {user}"
+  },
+  "emptyUser": {
+    "title": "Chưa chọn người dùng",
+    "description": "Tìm và chọn một hoặc nhiều người dùng phía trên để quản lý quyền truy cập app của họ."
+  },
+  "toast": {
+    "saveSuccess": "Đã cập nhật quyền truy cập.",
+    "error": "Đã có lỗi xảy ra. Vui lòng thử lại."
+  },
+  "announce": {
+    "results": "Tìm thấy {count} người dùng.",
+    "selected": "Đã chọn {name}.",
+    "deselected": "Đã bỏ chọn {name}.",
+    "loaded": "Đã tải quyền truy cập ứng dụng.",
+    "editStart": "Đang chỉnh sửa quyền truy cập ứng dụng.",
+    "saved": "Đã lưu quyền truy cập ứng dụng.",
+    "canceled": "Đã hủy các thay đổi.",
+    "checkAll": "Đã cấp tất cả ứng dụng khả dụng cho {name}.",
+    "uncheckAll": "Đã thu hồi tất cả ứng dụng của {name}."
+  }
+}

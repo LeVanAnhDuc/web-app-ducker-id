@@ -1,0 +1,160 @@
+{
+  "title": "App Registry",
+  "description": "Register and manage every satellite app in the constellation — client credentials, redirect URIs, required roles, and lifecycle status.",
+  "actions": {
+    "create": "Register App",
+    "edit": "Edit",
+    "hide": "Hide",
+    "unhide": "Unhide",
+    "confirmHide": "Hide App",
+    "rowMenuLabel": "App actions",
+    "addUri": "Add URI",
+    "removeUri": "Remove URI",
+    "save": "Save",
+    "cancel": "Cancel",
+    "createSubmit": "Register",
+    "updateSubmit": "Save Changes",
+    "copy": "Copy",
+    "copied": "Copied"
+  },
+  "toolbar": {
+    "search": "Search",
+    "searchPlaceholder": "Search by name or description…",
+    "status": "Status",
+    "category": "Category",
+    "all": "All",
+    "clear": "Clear filters"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Paused"
+  },
+  "roles": {
+    "user": "User",
+    "admin": "Admin"
+  },
+  "table": {
+    "app": "App",
+    "category": "Category",
+    "status": "Status",
+    "roles": "Required Roles",
+    "redirectUris": "Redirect URIs",
+    "updatedAt": "Last Updated",
+    "actions": "Actions",
+    "empty": "No apps registered yet.",
+    "emptyCta": "Register your first satellite app to enable SSO."
+  },
+  "form": {
+    "createTitle": "Register New App",
+    "createDescription": "Add a satellite app so users can SSO into it from the dashboard.",
+    "editTitle": "Edit App",
+    "editDescription": "Update registration details. Changes apply immediately.",
+    "fields": {
+      "name": {
+        "label": "Name",
+        "placeholder": "blog",
+        "hint": "Lowercase identifier — letters, numbers, hyphens only."
+      },
+      "displayName": {
+        "label": "Display Name",
+        "placeholder": "Blog",
+        "hint": "Shown to users on dashboard tiles."
+      },
+      "description": {
+        "label": "Description",
+        "placeholder": "What does this app do?"
+      },
+      "iconUrl": {
+        "label": "Icon URL",
+        "placeholder": "https://…"
+      },
+      "homeUrl": {
+        "label": "Home URL",
+        "placeholder": "https://…",
+        "hint": "Where users land when clicking the tile."
+      },
+      "categoryId": {
+        "label": "Category",
+        "placeholder": "Select category"
+      },
+      "status": {
+        "label": "Active"
+      },
+      "requiredRoles": {
+        "label": "Required Roles",
+        "hint": "Users must have at least one of these roles to access the app."
+      },
+      "redirectUris": {
+        "label": "Redirect URIs",
+        "placeholder": "https://app.example.com/auth/callback",
+        "hint": "OAuth redirect_uri whitelist. At least one required."
+      }
+    },
+    "validation": {
+      "name": {
+        "required": "Please enter a name.",
+        "minLength": "Name must be at least 2 characters.",
+        "maxLength": "Name must not exceed 64 characters.",
+        "invalid": "Use lowercase letters, numbers, and hyphens only.",
+        "exists": "An app with this name already exists."
+      },
+      "displayName": {
+        "required": "Please enter a display name.",
+        "minLength": "Display name must be at least 2 characters.",
+        "maxLength": "Display name must not exceed 80 characters."
+      },
+      "description": {
+        "maxLength": "Description must not exceed 500 characters."
+      },
+      "iconUrl": {
+        "maxLength": "URL is too long.",
+        "invalid": "Must start with http:// or https://"
+      },
+      "homeUrl": {
+        "required": "Please enter a home URL.",
+        "maxLength": "URL is too long.",
+        "invalid": "Must start with http:// or https://"
+      },
+      "categoryId": {
+        "required": "Please select a category."
+      },
+      "requiredRoles": {
+        "required": "Select at least one role."
+      },
+      "redirectUris": {
+        "required": "Add at least one redirect URI.",
+        "invalid": "Must start with http:// or https://",
+        "maxLength": "URL is too long.",
+        "maxItems": "You can add at most 20 redirect URIs."
+      }
+    }
+  },
+  "hide": {
+    "title": "Hide {name}?",
+    "description": "This pauses the app — it stays in the registry but is hidden from users' dashboards. You can unhide it anytime."
+  },
+  "toast": {
+    "createSuccess": "App registered.",
+    "updateSuccess": "App updated.",
+    "hidden": "App hidden.",
+    "reactivated": "App reactivated.",
+    "error": "Something went wrong. Please try again."
+  },
+  "announce": {
+    "created": "App {name} registered.",
+    "updated": "App {name} updated.",
+    "hidden": "App {name} hidden.",
+    "reactivated": "App {name} reactivated."
+  },
+  "secretDialog": {
+    "title": "App registered — copy your credentials",
+    "description": "Share these with the app's developer to configure OAuth. The client secret is shown only once.",
+    "clientIdLabel": "Client ID",
+    "clientSecretLabel": "Client Secret",
+    "warning": "Store the client secret now — it will not be shown again.",
+    "done": "Done",
+    "announce": {
+      "copied": "Copied to clipboard."
+    }
+  }
+}
