@@ -1,0 +1,9 @@
+node_modules/
+.mcp.json
+.playwright-mcp/
+.mongo-e2e/
+.understand-anything/
+.worktree-state.json
+/.claude/
+**/.claude/settings.local.json
+**/.claude/settings.json
