@@ -16,7 +16,6 @@
     "test": "jest",
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
-    "prepare": "husky",
     "seed": "ts-node -r tsconfig-paths/register src/database/seeders/index.ts",
     "seed:clear": "ts-node -r tsconfig-paths/register src/database/seeders/index.ts --clear"
   },
