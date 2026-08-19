@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Entitlements — multi-user picker + bulk matrix</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            background: 'oklch(var(--background) / <alpha-value>)',
+            foreground: 'oklch(var(--foreground) / <alpha-value>)',
+            card: 'oklch(var(--card) / <alpha-value>)',
+            'card-foreground': 'oklch(var(--card-foreground) / <alpha-value>)',
+            popover: 'oklch(var(--popover) / <alpha-value>)',
+            'popover-foreground': 'oklch(var(--popover-foreground) / <alpha-value>)',
+            primary: 'oklch(var(--primary) / <alpha-value>)',
+            'primary-foreground': 'oklch(var(--primary-foreground) / <alpha-value>)',
+            secondary: 'oklch(var(--secondary) / <alpha-value>)',
+            'secondary-foreground': 'oklch(var(--secondary-foreground) / <alpha-value>)',
+            muted: 'oklch(var(--muted) / <alpha-value>)',
+            'muted-foreground': 'oklch(var(--muted-foreground) / <alpha-value>)',
+            accent: 'oklch(var(--accent) / <alpha-value>)',
+            'accent-foreground': 'oklch(var(--accent-foreground) / <alpha-value>)',
+            destructive: 'oklch(var(--destructive) / <alpha-value>)',
+            border: 'oklch(var(--border) / <alpha-value>)',
+            input: 'oklch(var(--input) / <alpha-value>)',
+            'input-background': 'oklch(var(--input-background) / <alpha-value>)',
+            ring: 'oklch(var(--ring) / <alpha-value>)',
+            success: 'oklch(var(--success) / <alpha-value>)',
+            warning: 'oklch(var(--warning) / <alpha-value>)',
+            info: 'oklch(var(--info) / <alpha-value>)'
+          },
+          borderRadius: { sm: '0.375rem', md: '0.5rem', lg: '0.625rem', xl: '0.875rem' },
+          boxShadow: {
+            xs: '0 1px 2px oklch(0 0 0 / 0.05)',
+            sm: '0 1px 2px oklch(0 0 0 / 0.05)',
+            md: '0 4px 6px oklch(0 0 0 / 0.07)',
+            lg: '0 10px 15px oklch(0 0 0 / 0.1)'
+          },
+          fontFamily: {
+            sans: ['ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif']
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    :root {
+      --background: 1 0 0;
+      --foreground: 0.141 0.005 285.823;
+      --card: 1 0 0;
+      --card-foreground: 0.141 0.005 285.823;
+      --popover: 1 0 0;
+      --popover-foreground: 0.141 0.005 285.823;
+      --primary: 0.141 0.005 285.823;
+      --primary-foreground: 0.985 0 0;
+      --secondary: 0.967 0.001 286.375;
+      --secondary-foreground: 0.21 0.006 285.885;
+      --muted: 0.967 0.001 286.375;
+      --muted-foreground: 0.552 0.016 285.938;
+      --accent: 0.967 0.001 286.375;
+      --accent-foreground: 0.21 0.006 285.885;
+      --destructive: 0.577 0.245 27.325;
+      --border: 0.92 0.004 286.32;
+      --input: 0.92 0.004 286.32;
+      --input-background: 0.967 0.001 286.375;
+      --ring: 0.141 0.005 285.823;
+      --success: 0.6 0.15 150;
+      --warning: 0.75 0.15 85;
+      --info: 0.45 0.12 260;
+    }
+    .dark {
+      --background: 0.141 0.005 285.823;
+      --foreground: 0.985 0 0;
+      --card: 0.21 0.006 285.885;
+      --card-foreground: 0.985 0 0;
+      --popover: 0.21 0.006 285.885;
+      --popover-foreground: 0.985 0 0;
+      --primary: 0.985 0 0;
+      --primary-foreground: 0.141 0.005 285.823;
+      --secondary: 0.274 0.006 286.033;
+      --secondary-foreground: 0.985 0 0;
+      --muted: 0.274 0.006 286.033;
+      --muted-foreground: 0.705 0.015 286.067;
+      --accent: 0.274 0.006 286.033;
+      --accent-foreground: 0.985 0 0;
+      --destructive: 0.704 0.191 22.216;
+      --border: 0.38 0.006 286;
+      --input: 0.45 0.006 286;
+      --input-background: 0.19 0.006 286;
+      --ring: 0.985 0 0;
+      --success: 0.55 0.12 150;
+      --warning: 0.75 0.15 85;
+      --info: 0.55 0.12 260;
+    }
+    body { font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+  </style>
+</head>
+<body class="bg-background text-foreground">
+  <template id="entitlements-content">
+    <main class="mx-auto max-w-3xl p-8">
+      <div class="mb-6">
+        <h1 class="text-2xl font-bold tracking-tight">Entitlements</h1>
+        <p class="mt-1 text-sm text-muted-foreground">Grant or revoke app access for one or more users at once.</p>
+      </div>
+      <div class="relative">
+        <div class="flex min-h-10 flex-wrap items-center gap-1.5 rounded-lg border border-input bg-input-background px-2 py-1.5 focus-within:ring-2 focus-within:ring-ring/20">
+          <iconify-icon icon="lucide:search" width="16" class="ml-1 text-muted-foreground"></iconify-icon>
+          <span class="inline-flex items-center gap-1.5 rounded-md bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
+            <span class="grid size-5 place-items-center rounded-full bg-primary/15 text-[10px] font-semibold">A</span>
+            Alice Nguyen
+            <button type="button" class="grid place-items-center rounded-sm hover:opacity-70" aria-label="Remove Alice Nguyen">
+              <iconify-icon icon="lucide:x" width="12"></iconify-icon>
+            </button>
+          </span>
+          <span class="inline-flex items-center gap-1.5 rounded-md bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
+            <span class="grid size-5 place-items-center rounded-full bg-primary/15 text-[10px] font-semibold">B</span>
+            Bob Tran
+            <button type="button" class="grid place-items-center rounded-sm hover:opacity-70" aria-label="Remove Bob Tran">
+              <iconify-icon icon="lucide:x" width="12"></iconify-icon>
+            </button>
+          </span>
+          <span class="inline-flex items-center gap-1.5 rounded-md bg-primary/10 px-2 py-1 text-xs font-medium text-primary">
+            <span class="grid size-5 place-items-center rounded-full bg-primary/15 text-[10px] font-semibold">C</span>
+            Carol Pham
+            <button type="button" class="grid place-items-center rounded-sm hover:opacity-70" aria-label="Remove Carol Pham">
+              <iconify-icon icon="lucide:x" width="12"></iconify-icon>
+            </button>
+          </span>
+          <input type="text" role="combobox" aria-expanded="true" value="ng" class="h-7 min-w-[8rem] flex-1 bg-transparent px-1 text-sm outline-none placeholder:text-muted-foreground" placeholder="Search users by name or email..." />
+        </div>
+        <div class="mt-2 w-full rounded-lg border border-border bg-popover p-2 shadow-md" role="listbox">
+          <div class="px-3 py-2 text-xs font-medium text-muted-foreground">Results</div>
+          <div role="option" aria-selected="true" class="group flex cursor-pointer items-center justify-between gap-3 rounded-md p-2.5 hover:bg-accent">
+            <div class="flex items-center gap-3">
+              <span class="grid size-10 place-items-center rounded-xl bg-primary/10 text-base font-semibold text-primary">A</span>
+              <div>
+                <div class="text-sm font-semibold text-foreground">Alice <span class="rounded-sm bg-primary/10 px-0.5 text-primary">Ng</span>uyen</div>
+                <div class="text-xs text-muted-foreground">alice@example.com</div>
+              </div>
+            </div>
+            <iconify-icon icon="lucide:check" width="18" class="text-primary"></iconify-icon>
+          </div>
+          <div role="option" aria-selected="false" class="group flex cursor-pointer items-center justify-between gap-3 rounded-md p-2.5 hover:bg-accent">
+            <div class="flex items-center gap-3">
+              <span class="grid size-10 place-items-center rounded-xl bg-primary/10 text-base font-semibold text-primary">D</span>
+              <div>
+                <div class="text-sm font-semibold text-foreground">Dave Le</div>
+                <div class="text-xs text-muted-foreground">dave<span class="rounded-sm bg-primary/10 px-0.5 text-primary">ng</span>@example.com</div>
+              </div>
+            </div>
+            <iconify-icon icon="lucide:plus" width="18" class="text-muted-foreground opacity-0 group-hover:opacity-100"></iconify-icon>
+          </div>
+          <div role="option" aria-selected="false" class="group flex cursor-pointer items-center justify-between gap-3 rounded-md p-2.5 hover:bg-accent">
+            <div class="flex items-center gap-3">
+              <span class="grid size-10 place-items-center rounded-xl bg-primary/10 text-base font-semibold text-primary">E</span>
+              <div>
+                <div class="text-sm font-semibold text-foreground">Emma Vuo<span class="rounded-sm bg-primary/10 px-0.5 text-primary">ng</span></div>
+                <div class="text-xs text-muted-foreground">emma@example.com</div>
+              </div>
+            </div>
+            <iconify-icon icon="lucide:plus" width="18" class="text-muted-foreground opacity-0 group-hover:opacity-100"></iconify-icon>
+          </div>
+          <div class="px-3 py-2 text-xs text-muted-foreground">Showing 20 of 128 — refine your search</div>
+        </div>
+      </div>
+      <div class="mt-6 rounded-xl border border-border bg-card">
+        <div class="flex items-center justify-between border-b border-border p-4">
+          <div>
+            <h3 class="text-base font-semibold">App access</h3>
+            <p class="mt-0.5 text-xs text-muted-foreground">Changes apply to all 3 selected users.</p>
+          </div>
+          <iconify-icon icon="lucide:users" width="18" class="text-muted-foreground"></iconify-icon>
+        </div>
+        <div class="divide-y divide-border">
+          <div class="flex items-center justify-between gap-4 p-4">
+            <div class="flex items-center gap-3">
+              <span class="grid size-10 place-items-center rounded-xl bg-primary/10 text-primary"><iconify-icon icon="lucide:file-text" width="18"></iconify-icon></span>
+              <div>
+                <div class="flex items-center gap-2"><span class="text-sm font-semibold">Blog</span><span class="rounded-md bg-secondary px-2 py-0.5 text-xs text-secondary-foreground">USER</span></div>
+                <div class="text-xs text-muted-foreground">Content publishing platform</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="inline-flex items-center gap-1 text-xs font-medium text-success"><iconify-icon icon="lucide:check-circle" width="14"></iconify-icon>All granted</span>
+              <button type="button" class="inline-flex h-9 items-center gap-1.5 rounded-lg border border-input bg-background px-3 text-sm font-medium hover:bg-accent"><iconify-icon icon="lucide:x" width="16"></iconify-icon>Revoke all</button>
+            </div>
+          </div>
+          <div class="flex items-center justify-between gap-4 p-4">
+            <div class="flex items-center gap-3">
+              <span class="grid size-10 place-items-center rounded-xl bg-primary/10 text-primary"><iconify-icon icon="lucide:calendar" width="18"></iconify-icon></span>
+              <div>
+                <div class="flex items-center gap-2"><span class="text-sm font-semibold">Calendar</span><span class="rounded-md bg-secondary px-2 py-0.5 text-xs text-secondary-foreground">USER</span></div>
+                <div class="text-xs text-muted-foreground">Scheduling and events</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="inline-flex items-center gap-1 text-xs font-medium text-warning"><iconify-icon icon="lucide:minus-circle" width="14"></iconify-icon>2/3 granted</span>
+              <button type="button" class="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground hover:opacity-90"><iconify-icon icon="lucide:check" width="16"></iconify-icon>Grant all</button>
+            </div>
+          </div>
+          <div class="flex items-center justify-between gap-4 p-4">
+            <div class="flex items-center gap-3">
+              <span class="grid size-10 place-items-center rounded-xl bg-primary/10 text-primary"><iconify-icon icon="lucide:sticky-note" width="18"></iconify-icon></span>
+              <div>
+                <div class="flex items-center gap-2"><span class="text-sm font-semibold">Notes</span><span class="rounded-md bg-secondary px-2 py-0.5 text-xs text-secondary-foreground">USER</span></div>
+                <div class="text-xs text-muted-foreground">Personal note taking</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground"><iconify-icon icon="lucide:circle" width="14"></iconify-icon>Not granted</span>
+              <button type="button" class="inline-flex h-9 items-center gap-1.5 rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground hover:opacity-90"><iconify-icon icon="lucide:check" width="16"></iconify-icon>Grant all</button>
+            </div>
+          </div>
+          <div class="flex items-center justify-between gap-4 p-4">
+            <div class="flex items-center gap-3">
+              <span class="grid size-10 place-items-center rounded-xl bg-primary/10 text-primary"><iconify-icon icon="lucide:layout-grid" width="18"></iconify-icon></span>
+              <div>
+                <div class="flex items-center gap-2"><span class="text-sm font-semibold">Dashboard</span><span class="rounded-md bg-secondary px-2 py-0.5 text-xs text-secondary-foreground">USER</span></div>
+                <div class="text-xs text-muted-foreground">Launcher portal home</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="inline-flex items-center gap-1 text-xs font-medium text-success"><iconify-icon icon="lucide:check-circle" width="14"></iconify-icon>All granted</span>
+              <button type="button" class="inline-flex h-9 items-center gap-1.5 rounded-lg border border-input bg-background px-3 text-sm font-medium hover:bg-accent"><iconify-icon icon="lucide:x" width="16"></iconify-icon>Revoke all</button>
+            </div>
+          </div>
+          <div class="flex items-center justify-between gap-4 p-4">
+            <div class="flex items-center gap-3">
+              <span class="grid size-10 place-items-center rounded-xl bg-primary/10 text-primary"><iconify-icon icon="lucide:shield" width="18"></iconify-icon></span>
+              <div>
+                <div class="flex items-center gap-2"><span class="text-sm font-semibold">Admin Console</span><span class="rounded-md bg-secondary px-2 py-0.5 text-xs text-secondary-foreground">ADMIN</span></div>
+                <div class="text-xs text-muted-foreground">Platform administration</div>
+              </div>
+            </div>
+            <div class="flex items-center gap-3">
+              <span class="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground"><iconify-icon icon="lucide:lock" width="14"></iconify-icon>Role required</span>
+              <button type="button" disabled title="Some selected users lack the ADMIN role" class="inline-flex h-9 cursor-not-allowed items-center gap-1.5 rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground opacity-50"><iconify-icon icon="lucide:check" width="16"></iconify-icon>Grant all</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mt-8 mb-2 text-xs font-medium text-muted-foreground">Empty state — no users selected</div>
+      <div class="rounded-xl border border-border bg-card">
+        <div class="flex flex-col items-center justify-center gap-2 px-6 py-14 text-center">
+          <iconify-icon icon="lucide:users" width="32" class="text-muted-foreground"></iconify-icon>
+          <div class="text-sm font-medium text-foreground">No users selected</div>
+          <div class="max-w-xs text-xs text-muted-foreground">Search and select one or more users above to manage their app access.</div>
+        </div>
+      </div>
+    </main>
+  </template>
+  <section class="bg-background text-foreground">
+    <div class="px-6 py-3 text-xs font-medium text-muted-foreground">Light</div>
+    <div data-mount="light"></div>
+  </section>
+  <section class="dark bg-background text-foreground">
+    <div class="px-6 py-3 text-xs font-medium text-muted-foreground">Dark</div>
+    <div data-mount="dark"></div>
+  </section>
+  <script>
+    const tpl = document.getElementById('entitlements-content').innerHTML;
+    document.querySelectorAll('[data-mount]').forEach((el) => { el.innerHTML = tpl; });
+  </script>
+</body>
+</html>
