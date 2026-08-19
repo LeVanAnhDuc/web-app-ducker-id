@@ -1,0 +1,314 @@
+{
+  "info": {
+    "name": "Contact Admin API — MyContacts",
+    "description": "Test scenarios for: POST /contact/submit (guest + authenticated), GET /contacts, GET /contacts/:id (owner-scoped)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "idToken",
+      "value": "your-id-token-here",
+      "type": "string",
+      "description": "Access token of the authenticated contact owner"
+    },
+    {
+      "key": "otherUserIdToken",
+      "value": "another-user-id-token-here",
+      "type": "string",
+      "description": "Access token of a different user — used to prove owner-scope 404"
+    },
+    {
+      "key": "myContactId",
+      "value": "your-own-contact-id-here",
+      "type": "string",
+      "description": "_id of a contact owned by idToken's user (from GET /contacts)"
+    },
+    {
+      "key": "otherUserContactId",
+      "value": "another-users-contact-id-here",
+      "type": "string",
+      "description": "_id of a contact owned by a different user"
+    }
+  ],
+  "item": [
+    {
+      "name": "POST /contact/submit - Submit Contact Request",
+      "item": [
+        {
+          "name": "TC-01.1 Happy - Guest submit (no token) creates contact with userId=null",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"guest@example.com\",\n  \"subject\": \"Cannot access my account\",\n  \"message\": \"I have been unable to log in for the past 2 days.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/contact/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["contact", "submit"]
+            },
+            "description": "Expect: 201, contact created. Owner attach is server-side only — response never echoes userId."
+          }
+        },
+        {
+          "name": "TC-01.2 Happy - Authenticated submit attaches userId",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{idToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subject\": \"Billing question about pro plan\",\n  \"message\": \"I was charged twice for the Pro plan this month. Please refund.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/contact/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["contact", "submit"]
+            },
+            "description": "Expect: 201. Follow-up with GET /contacts using the same idToken — the new contact must appear."
+          }
+        },
+        {
+          "name": "TC-01.3 Auth edge - Present but invalid token is rejected (optionalAuthGuard only skips auth when header is absent)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.invalid.signature"
+              },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subject\": \"Cannot access my account\",\n  \"message\": \"I have been unable to log in for the past 2 days.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/contact/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["contact", "submit"]
+            },
+            "description": "Expect: 401 — a malformed/tampered token is rejected (optionalAuthGuard only skips auth when the header is entirely absent, not when it's present-but-invalid)."
+          }
+        },
+        {
+          "name": "TC-01.4 Validation - subject too short",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subject\": \"Hi\",\n  \"message\": \"This message is long enough to pass validation on its own.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/contact/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["contact", "submit"]
+            },
+            "description": "Expect: 400 VALIDATION_ERROR (subject min length)"
+          }
+        },
+        {
+          "name": "TC-01.5 Rate limit - 6th request within window",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subject\": \"Rate limit probe\",\n  \"message\": \"Sending repeatedly to trigger the per-IP rate limiter.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/contact/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["contact", "submit"]
+            },
+            "description": "Run this request 6 times in a row. Expect: 429 on the 6th (5 requests / 15 min / IP)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET /contacts - List My Contacts",
+      "item": [
+        {
+          "name": "TC-02.1 Happy - List own contacts, default pagination",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{idToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/contacts",
+              "host": ["{{baseUrl}}"],
+              "path": ["contacts"]
+            },
+            "description": "Expect: 200, items only contain contacts owned by the caller (never other users' or guest/anonymous contacts)."
+          }
+        },
+        {
+          "name": "TC-02.2 Happy - Filter by status",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{idToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/contacts?status=processing",
+              "host": ["{{baseUrl}}"],
+              "path": ["contacts"],
+              "query": [{ "key": "status", "value": "processing" }]
+            },
+            "description": "Expect: 200, only status=processing contacts returned"
+          }
+        },
+        {
+          "name": "TC-02.3 Happy - Search by subject",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{idToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/contacts?search=billing",
+              "host": ["{{baseUrl}}"],
+              "path": ["contacts"],
+              "query": [{ "key": "search", "value": "billing" }]
+            },
+            "description": "Expect: 200, only contacts whose subject matches 'billing' (case-insensitive)"
+          }
+        },
+        {
+          "name": "TC-02.4 Error - No Authorization header",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/contacts",
+              "host": ["{{baseUrl}}"],
+              "path": ["contacts"]
+            },
+            "description": "Expect: 401 Unauthorized"
+          }
+        },
+        {
+          "name": "TC-02.5 Validation - status out of enum",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{idToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/contacts?status=archived",
+              "host": ["{{baseUrl}}"],
+              "path": ["contacts"],
+              "query": [{ "key": "status", "value": "archived" }]
+            },
+            "description": "Expect: 400 VALIDATION_ERROR"
+          }
+        },
+        {
+          "name": "TC-02.6 Boundary - limit above max",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{idToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/contacts?limit=1000",
+              "host": ["{{baseUrl}}"],
+              "path": ["contacts"],
+              "query": [{ "key": "limit", "value": "1000" }]
+            },
+            "description": "Expect: 400 VALIDATION_ERROR (limit max 100)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "GET /contacts/:id - My Contact Detail",
+      "item": [
+        {
+          "name": "TC-03.1 Happy - Get own contact detail",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{idToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/contacts/{{myContactId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["contacts", "{{myContactId}}"]
+            },
+            "description": "Expect: 200 with full message + status + priority"
+          }
+        },
+        {
+          "name": "TC-03.2 AuthZ - Another user's contact id → 404 (no leak)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{idToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/contacts/{{otherUserContactId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["contacts", "{{otherUserContactId}}"]
+            },
+            "description": "Expect: 404 CONTACT_NOT_FOUND — same response shape as a truly absent id, so existence is never leaked."
+          }
+        },
+        {
+          "name": "TC-03.3 Not Found - well-formed but absent ObjectId",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{idToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/contacts/507f1f77bcf86cd799439099",
+              "host": ["{{baseUrl}}"],
+              "path": ["contacts", "507f1f77bcf86cd799439099"]
+            },
+            "description": "Expect: 404 CONTACT_NOT_FOUND"
+          }
+        },
+        {
+          "name": "TC-03.4 Validation - malformed id",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{idToken}}" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/contacts/not-an-object-id",
+              "host": ["{{baseUrl}}"],
+              "path": ["contacts", "not-an-object-id"]
+            },
+            "description": "Expect: 400 VALIDATION_ERROR (invalid ObjectId format)"
+          }
+        },
+        {
+          "name": "TC-03.5 Error - No Authorization header",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/contacts/{{myContactId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["contacts", "{{myContactId}}"]
+            },
+            "description": "Expect: 401 Unauthorized"
+          }
+        }
+      ]
+    }
+  ]
+}

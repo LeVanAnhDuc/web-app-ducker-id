@@ -1,0 +1,14 @@
+{
+  "errors": {
+    "notFound": "Không tìm thấy",
+    "internalServer": "Lỗi máy chủ nội bộ",
+    "invalidToken": "Token không hợp lệ",
+    "tokenExpired": "Token đã hết hạn",
+    "validationFailed": "Dữ liệu không hợp lệ",
+    "unauthorized": "Không có quyền truy cập",
+    "forbidden": "Truy cập bị từ chối",
+    "duplicateKey": "Giá trị '{{field}}' đã tồn tại",
+    "duplicateKeyGeneric": "Giá trị bị trùng lặp",
+    "invalidObjectId": "Định dạng ID không hợp lệ"
+  }
+}

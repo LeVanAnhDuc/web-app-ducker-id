@@ -1,0 +1,12 @@
+{
+  "success": {
+    "getMyHistory": "Lấy lịch sử đăng nhập thành công",
+    "getMyStats": "Lấy thống kê đăng nhập thành công",
+    "getAllHistory": "Lấy toàn bộ lịch sử đăng nhập thành công",
+    "getHistoryDetail": "Lấy chi tiết lịch sử đăng nhập thành công"
+  },
+  "errors": {
+    "notFound": "Không tìm thấy bản ghi lịch sử đăng nhập",
+    "invalidId": "Id lịch sử đăng nhập không hợp lệ"
+  }
+}

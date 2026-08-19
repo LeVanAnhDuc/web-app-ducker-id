@@ -1,0 +1,15 @@
+export { default as common } from "./common.json";
+export { default as validation } from "./validation.json";
+export { default as signup } from "./signup.json";
+export { default as login } from "./login.json";
+export { default as logout } from "./logout.json";
+export { default as unlockAccount } from "./unlockAccount.json";
+export { default as sendEmail } from "./sendEmail.json";
+export { default as forgotPassword } from "./forgotPassword.json";
+export { default as changePassword } from "./changePassword.json";
+export { default as contactAdmin } from "./contactAdmin.json";
+export { default as loginHistory } from "./loginHistory.json";
+export { default as user } from "./user.json";
+export { default as webApp } from "./webApp.json";
+export { default as favorite } from "./favorite.json";
+export { default as notification } from "./notification.json";

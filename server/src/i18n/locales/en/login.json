@@ -1,0 +1,28 @@
+{
+  "validation": {
+    "tokenRequired": "Token is required",
+    "tokenInvalid": "Token is invalid"
+  },
+  "errors": {
+    "invalidCredentials": "Invalid email or password",
+    "invalidEmail": "Email address not found",
+    "accountInactive": "Your account has been deactivated. Please contact support",
+    "emailNotVerified": "Please verify your email address before logging in",
+    "rateLimitExceeded": "Too many login attempts. Please try again later",
+    "accountLocked": "Account temporarily locked after {{attempts}} failed attempts. Please try again in {{seconds}} seconds",
+    "otpCooldown": "Please wait {{seconds}} seconds before requesting a new OTP",
+    "otpLocked": "Too many failed OTP attempts. Please try again in {{minutes}} minutes",
+    "invalidOtpWithRemaining": "Invalid OTP code. {{remaining}} attempts remaining",
+    "otpResendLimitExceeded": "Maximum OTP requests reached. Please try again later",
+    "magicLinkCooldown": "Please wait {{seconds}} seconds before requesting a new magic link",
+    "invalidMagicLink": "Invalid or expired magic link",
+    "refreshTokenRequired": "Refresh token is required",
+    "invalidRefreshToken": "Invalid or expired refresh token"
+  },
+  "success": {
+    "loginSuccessful": "Login successful",
+    "otpSent": "OTP code has been sent to your email",
+    "magicLinkSent": "Magic link has been sent to your email",
+    "tokenRefreshed": "Access token refreshed successfully"
+  }
+}

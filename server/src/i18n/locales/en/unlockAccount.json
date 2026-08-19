@@ -1,0 +1,18 @@
+{
+  "validation": {
+    "tempPasswordRequired": "Temporary password is required",
+    "tempPasswordTooShort": "Temporary password must be at least 12 characters"
+  },
+  "errors": {
+    "unlockCooldown": "Please wait {{seconds}} seconds before requesting another unlock email",
+    "unlockRateLimit": "Too many unlock requests. Please try again later",
+    "accountNotLocked": "Account is not locked",
+    "accountDisabled": "Account has been suspended. Please contact support",
+    "invalidTempPassword": "Invalid or expired temporary password",
+    "tempPasswordExpired": "Temporary password has expired. Please request a new one"
+  },
+  "success": {
+    "unlockEmailSent": "If this email is registered, an unlock email has been sent",
+    "accountUnlocked": "Account unlocked successfully. You must change your password"
+  }
+}

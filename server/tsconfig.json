@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "module": "node16",
+    "lib": ["esnext"],
+    "esModuleInterop": true,
+    "target": "es6",
+    "moduleResolution": "node16",
+    "sourceMap": true,
+    "outDir": "dist",
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "resolveJsonModule": true,
+    "jsx": "react-jsx",
+    "skipLibCheck": true,
+    "typeRoots": ["./node_modules/@types"],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@test/*": ["./test/*"]
+    }
+  },
+  "lib": ["es2015"],
+  "include": ["src/**/*", "test/**/*", "jest.config.ts"],
+  "exclude": ["node_modules", "dist", "backup"]
+}

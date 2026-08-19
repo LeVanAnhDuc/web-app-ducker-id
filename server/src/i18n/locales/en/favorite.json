@@ -1,0 +1,19 @@
+{
+  "success": {
+    "add": "App added to favorites.",
+    "remove": "App removed from favorites.",
+    "list": "Favorite apps retrieved successfully."
+  },
+  "errors": {
+    "appNotFound": "App not found or not available."
+  },
+  "validation": {
+    "appId": {
+      "required": "App id is required.",
+      "invalid": "Invalid app id."
+    },
+    "sort": {
+      "invalid": "Invalid sort value."
+    }
+  }
+}

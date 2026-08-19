@@ -1,0 +1,28 @@
+{
+  "validation": {
+    "tokenRequired": "Token là bắt buộc",
+    "tokenInvalid": "Token không hợp lệ"
+  },
+  "errors": {
+    "invalidCredentials": "Email hoặc mật khẩu không chính xác",
+    "invalidEmail": "Không tìm thấy địa chỉ email",
+    "accountInactive": "Tài khoản của bạn đã bị vô hiệu hóa. Vui lòng liên hệ hỗ trợ",
+    "emailNotVerified": "Vui lòng xác thực email trước khi đăng nhập",
+    "rateLimitExceeded": "Quá nhiều lần đăng nhập. Vui lòng thử lại sau",
+    "accountLocked": "Tài khoản tạm thời bị khóa sau {{attempts}} lần đăng nhập sai. Vui lòng thử lại sau {{seconds}} giây",
+    "otpCooldown": "Vui lòng đợi {{seconds}} giây trước khi yêu cầu OTP mới",
+    "otpLocked": "Quá nhiều lần nhập sai OTP. Vui lòng thử lại sau {{minutes}} phút",
+    "invalidOtpWithRemaining": "Mã OTP không hợp lệ. Còn {{remaining}} lần thử",
+    "otpResendLimitExceeded": "Đã vượt quá số lần yêu cầu OTP. Vui lòng thử lại sau",
+    "magicLinkCooldown": "Vui lòng đợi {{seconds}} giây trước khi yêu cầu magic link mới",
+    "invalidMagicLink": "Magic link không hợp lệ hoặc đã hết hạn",
+    "refreshTokenRequired": "Refresh token là bắt buộc",
+    "invalidRefreshToken": "Refresh token không hợp lệ hoặc đã hết hạn"
+  },
+  "success": {
+    "loginSuccessful": "Đăng nhập thành công",
+    "otpSent": "Mã OTP đã được gửi đến email của bạn",
+    "magicLinkSent": "Magic link đã được gửi đến email của bạn",
+    "tokenRefreshed": "Làm mới access token thành công"
+  }
+}

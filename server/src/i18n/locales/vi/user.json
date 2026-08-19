@@ -1,0 +1,19 @@
+{
+  "success": {
+    "getProfile": "Lấy thông tin hồ sơ thành công",
+    "updateProfile": "Cập nhật hồ sơ thành công",
+    "getPublicProfile": "Lấy hồ sơ công khai thành công",
+    "getAdminUsers": "Lấy danh sách người dùng thành công.",
+    "lockUser": "Đã khóa người dùng",
+    "unlockUser": "Đã mở khóa người dùng",
+    "resetPassword": "Đã đặt lại mật khẩu. Mật khẩu tạm đã gửi tới email người dùng."
+  },
+  "errors": {
+    "rateLimitExceeded": "Quá nhiều yêu cầu. Vui lòng thử lại sau",
+    "notFound": "Không tìm thấy người dùng",
+    "invalidId": "Định dạng ID người dùng không hợp lệ",
+    "cannotLockSelf": "Bạn không thể tự khóa tài khoản của chính mình",
+    "cannotLockLastAdmin": "Không thể khóa tài khoản admin đang hoạt động cuối cùng",
+    "cannotResetSelf": "Bạn không thể tự đặt lại mật khẩu của mình ở đây."
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "errors": {
+    "rateLimitExceeded": "You have sent too many contact requests. Please try again later",
+    "fileUploadFailed": "File upload failed. Please try again",
+    "fileTooLarge": "File size exceeds the 5MB limit",
+    "fileTypeNotSupported": "File type is not supported. Allowed: jpg, jpeg, png, gif, pdf, doc, docx",
+    "maxFilesExceeded": "You can attach a maximum of 5 files",
+    "subjectRequired": "Subject is required",
+    "subjectTooShort": "Subject must be at least 5 characters",
+    "subjectTooLong": "Subject must not exceed 200 characters",
+    "categoryRequired": "Category is required",
+    "categoryInvalid": "Invalid category",
+    "messageRequired": "Message is required",
+    "messageTooShort": "Message must be at least 20 characters",
+    "messageTooLong": "Message must not exceed 5000 characters",
+    "ticketGenerationFailed": "Unable to generate ticket number. Please try again",
+    "notFound": "Contact request not found"
+  },
+  "success": {
+    "submitted": "Your request has been submitted successfully",
+    "updateContactCategory": "Category updated successfully",
+    "getMyContacts": "Contacts retrieved successfully",
+    "getMyContactDetail": "Contact detail retrieved successfully"
+  }
+}

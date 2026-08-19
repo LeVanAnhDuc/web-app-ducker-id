@@ -1,0 +1,10 @@
+export type { SendOtpResponseDto } from "./send-otp.dto";
+export { toSendOtpResponseDto } from "./send-otp.dto";
+export type { VerifyOtpResponseDto } from "./verify-otp.dto";
+export { toVerifyOtpResponseDto } from "./verify-otp.dto";
+export type { SendMagicLinkResponseDto } from "./send-magic-link.dto";
+export { toSendMagicLinkResponseDto } from "./send-magic-link.dto";
+export type { VerifyMagicLinkResponseDto } from "./verify-magic-link.dto";
+export { toVerifyMagicLinkResponseDto } from "./verify-magic-link.dto";
+export type { ResetPasswordResponseDto } from "./reset-password.dto";
+export { toResetPasswordResponseDto } from "./reset-password.dto";

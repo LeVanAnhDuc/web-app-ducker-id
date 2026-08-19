@@ -1,0 +1,9 @@
+{
+  "success": {
+    "list": "Notifications fetched successfully",
+    "unreadCount": "Unread count fetched successfully",
+    "markRead": "Notification marked as read",
+    "markAllRead": "All notifications marked as read"
+  },
+  "errors": { "notFound": "Notification not found" }
+}

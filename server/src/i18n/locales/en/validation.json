@@ -1,0 +1,68 @@
+{
+  "email": {
+    "required": "Email is required",
+    "invalid": "Please provide a valid email address",
+    "minLength": "Email must be at least 3 characters",
+    "maxLength": "Email must not exceed 254 characters"
+  },
+  "password": {
+    "required": "Password is required",
+    "minLength": "Password must be at least 8 characters",
+    "maxLength": "Password must not exceed 128 characters",
+    "pattern": "Password must contain at least one uppercase, one lowercase, one number, and one special character (@$!%*?&)"
+  },
+  "otp": {
+    "required": "OTP is required",
+    "length": "OTP must be 6 digits",
+    "digitsOnly": "OTP must contain only digits"
+  },
+  "fullName": {
+    "required": "Full name is required",
+    "minLength": "Full name must be at least 2 characters",
+    "maxLength": "Full name must not exceed 100 characters",
+    "invalid": "Full name can only contain letters, spaces, hyphens, apostrophes, and periods"
+  },
+  "phone": {
+    "invalid": "Please provide a valid phone number"
+  },
+  "gender": {
+    "required": "Gender is required",
+    "invalid": "Gender must be male, female, other, or prefer not to say"
+  },
+  "dateOfBirth": {
+    "required": "Date of birth is required",
+    "invalid": "Please provide a valid date of birth",
+    "tooYoung": "You must be at least 13 years old",
+    "tooOld": "Date of birth cannot be more than 120 years ago"
+  },
+  "categoryId": {
+    "invalid": "Invalid category id."
+  },
+  "search": {
+    "invalid": "Search term is too long."
+  },
+  "role": {
+    "invalid": "Invalid role filter."
+  },
+  "status": {
+    "invalid": "Invalid status filter."
+  },
+  "page": {
+    "invalid": "Invalid page number."
+  },
+  "limit": {
+    "invalid": "Invalid page size."
+  },
+  "sortBy": {
+    "invalid": "Invalid sort field."
+  },
+  "sortOrder": {
+    "invalid": "Invalid sort order."
+  },
+  "isRead": {
+    "invalid": "isRead must be a boolean"
+  },
+  "id": {
+    "invalid": "Invalid identifier"
+  }
+}

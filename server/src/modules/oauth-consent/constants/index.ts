@@ -1,0 +1,4 @@
+export const OAUTH_CONSENT_CONFIG = {
+  MAX_SCOPES: 50,
+  SCOPE_SET_HASH_MAX_LENGTH: 128
+} as const;

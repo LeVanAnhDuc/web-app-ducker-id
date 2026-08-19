@@ -1,0 +1,9 @@
+{
+  "success": {
+    "list": "Lấy danh sách thông báo thành công",
+    "unreadCount": "Lấy số lượng thông báo chưa đọc thành công",
+    "markRead": "Đã đánh dấu thông báo là đã đọc",
+    "markAllRead": "Đã đánh dấu tất cả thông báo là đã đọc"
+  },
+  "errors": { "notFound": "Không tìm thấy thông báo" }
+}

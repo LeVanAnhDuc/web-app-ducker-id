@@ -1,0 +1,60 @@
+{
+  "success": {
+    "listApps": "Apps retrieved successfully.",
+    "listCategories": "Categories retrieved successfully.",
+    "createApp": "App registered successfully.",
+    "updateApp": "App updated successfully."
+  },
+  "errors": {
+    "nameExists": "An app with this name already exists.",
+    "categoryNotFound": "The selected category does not exist.",
+    "notFound": "App not found.",
+    "rateLimitExceeded": "Too many requests. Please try again later"
+  },
+  "validation": {
+    "name": {
+      "required": "App name is required.",
+      "minLength": "App name must be at least 2 characters.",
+      "maxLength": "App name must not exceed 64 characters.",
+      "invalid": "Use lowercase letters, numbers, and hyphens only."
+    },
+    "displayName": {
+      "required": "Display name is required.",
+      "minLength": "Display name must be at least 2 characters.",
+      "maxLength": "Display name must not exceed 80 characters."
+    },
+    "description": {
+      "maxLength": "Description must not exceed 500 characters."
+    },
+    "iconUrl": {
+      "maxLength": "Icon URL is too long.",
+      "invalid": "Icon URL must start with http:// or https://."
+    },
+    "homeUrl": {
+      "required": "Home URL is required.",
+      "maxLength": "Home URL is too long.",
+      "invalid": "Home URL must start with http:// or https://."
+    },
+    "categoryId": {
+      "required": "Category is required.",
+      "invalid": "Invalid category id."
+    },
+    "status": { "invalid": "Status must be active or inactive." },
+    "requiredRoles": {
+      "required": "Select at least one required role.",
+      "invalid": "Invalid role value."
+    },
+    "redirectUris": {
+      "required": "Add at least one redirect URI.",
+      "maxItems": "Too many redirect URIs (max 20).",
+      "invalid": "Each redirect URI must start with http:// or https://."
+    },
+    "id": {
+      "required": "App id is required.",
+      "invalid": "Invalid app id."
+    },
+    "body": {
+      "empty": "Provide at least one field to update."
+    }
+  }
+}

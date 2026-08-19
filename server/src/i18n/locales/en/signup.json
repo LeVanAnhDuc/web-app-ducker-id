@@ -1,0 +1,23 @@
+{
+  "errors": {
+    "emailAlreadyExists": "Email is already registered",
+    "rateLimitExceeded": "You have exceeded the allowed number of attempts",
+    "resendCoolDown": "Please wait before resending OTP",
+    "resendLimitExceeded": "You have exceeded the maximum number of OTP resends",
+    "invalidOtpWithRemaining": "Invalid OTP. You have {{remaining}} attempt(s) remaining",
+    "otpAttemptsExceeded": "Too many failed attempts. Please try again later",
+    "sessionTokenRequired": "Session token is required",
+    "sessionTokenInvalid": "Invalid session token format",
+    "invalidSession": "Session expired or invalid. Please verify OTP again",
+    "acceptTermsRequired": "You must accept the terms and conditions",
+    "acceptTermsInvalid": "Accept terms must be a boolean value",
+    "confirmPasswordRequired": "Confirm password is required",
+    "passwordMismatch": "Passwords do not match"
+  },
+  "success": {
+    "otpSent": "OTP code has been sent to your email",
+    "otpResent": "OTP code has been resent to your email",
+    "otpVerified": "OTP code has been verified",
+    "signupCompleted": "Account created successfully"
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "success": {
+    "add": "Đã thêm ứng dụng vào yêu thích.",
+    "remove": "Đã xóa ứng dụng khỏi yêu thích.",
+    "list": "Lấy danh sách ứng dụng yêu thích thành công."
+  },
+  "errors": {
+    "appNotFound": "Không tìm thấy ứng dụng hoặc ứng dụng không khả dụng."
+  },
+  "validation": {
+    "appId": {
+      "required": "Thiếu mã ứng dụng.",
+      "invalid": "Mã ứng dụng không hợp lệ."
+    },
+    "sort": {
+      "invalid": "Giá trị sắp xếp không hợp lệ."
+    }
+  }
+}

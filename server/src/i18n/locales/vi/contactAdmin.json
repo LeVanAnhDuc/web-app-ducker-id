@@ -1,0 +1,25 @@
+{
+  "errors": {
+    "rateLimitExceeded": "Bạn đã gửi quá nhiều yêu cầu liên hệ. Vui lòng thử lại sau",
+    "fileUploadFailed": "Tải file thất bại. Vui lòng thử lại",
+    "fileTooLarge": "Kích thước file vượt quá giới hạn 5MB",
+    "fileTypeNotSupported": "Loại file không được hỗ trợ. Cho phép: jpg, jpeg, png, gif, pdf, doc, docx",
+    "maxFilesExceeded": "Bạn chỉ có thể đính kèm tối đa 5 file",
+    "subjectRequired": "Tiêu đề là bắt buộc",
+    "subjectTooShort": "Tiêu đề phải có ít nhất 5 ký tự",
+    "subjectTooLong": "Tiêu đề không được vượt quá 200 ký tự",
+    "categoryRequired": "Danh mục là bắt buộc",
+    "categoryInvalid": "Danh mục không hợp lệ",
+    "messageRequired": "Nội dung là bắt buộc",
+    "messageTooShort": "Nội dung phải có ít nhất 20 ký tự",
+    "messageTooLong": "Nội dung không được vượt quá 5000 ký tự",
+    "ticketGenerationFailed": "Không thể tạo mã ticket. Vui lòng thử lại",
+    "notFound": "Không tìm thấy yêu cầu liên hệ"
+  },
+  "success": {
+    "submitted": "Yêu cầu của bạn đã được gửi thành công",
+    "updateContactCategory": "Cập nhật danh mục thành công",
+    "getMyContacts": "Lấy danh sách liên hệ thành công",
+    "getMyContactDetail": "Lấy chi tiết liên hệ thành công"
+  }
+}

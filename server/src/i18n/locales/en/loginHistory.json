@@ -1,0 +1,12 @@
+{
+  "success": {
+    "getMyHistory": "Login history retrieved successfully",
+    "getMyStats": "Login statistics retrieved successfully",
+    "getAllHistory": "All login history retrieved successfully",
+    "getHistoryDetail": "Login history detail retrieved successfully"
+  },
+  "errors": {
+    "notFound": "Login history record not found",
+    "invalidId": "Invalid login history id"
+  }
+}

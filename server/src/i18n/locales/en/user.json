@@ -1,0 +1,19 @@
+{
+  "success": {
+    "getProfile": "Profile retrieved successfully",
+    "updateProfile": "Profile updated successfully",
+    "getPublicProfile": "Public profile retrieved successfully",
+    "getAdminUsers": "Users retrieved successfully.",
+    "lockUser": "User locked successfully",
+    "unlockUser": "User unlocked successfully",
+    "resetPassword": "Password reset. A temporary password was emailed to the user."
+  },
+  "errors": {
+    "rateLimitExceeded": "Too many requests. Please try again later",
+    "notFound": "User not found",
+    "invalidId": "Invalid user ID format",
+    "cannotLockSelf": "You cannot lock your own account",
+    "cannotLockLastAdmin": "Cannot lock the last active admin account",
+    "cannotResetSelf": "You cannot reset your own password here."
+  }
+}

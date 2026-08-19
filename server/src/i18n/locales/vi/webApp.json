@@ -1,0 +1,58 @@
+{
+  "success": {
+    "listApps": "Lấy danh sách ứng dụng thành công.",
+    "listCategories": "Lấy danh sách danh mục thành công.",
+    "createApp": "Đăng ký ứng dụng thành công.",
+    "updateApp": "Cập nhật ứng dụng thành công."
+  },
+  "errors": {
+    "nameExists": "Đã tồn tại ứng dụng với tên này.",
+    "categoryNotFound": "Danh mục đã chọn không tồn tại.",
+    "notFound": "Không tìm thấy ứng dụng.",
+    "rateLimitExceeded": "Quá nhiều yêu cầu. Vui lòng thử lại sau"
+  },
+  "validation": {
+    "name": {
+      "required": "Vui lòng nhập tên ứng dụng.",
+      "minLength": "Tên ứng dụng tối thiểu 2 ký tự.",
+      "maxLength": "Tên ứng dụng tối đa 64 ký tự.",
+      "invalid": "Chỉ dùng chữ thường, số và dấu gạch ngang."
+    },
+    "displayName": {
+      "required": "Vui lòng nhập tên hiển thị.",
+      "minLength": "Tên hiển thị tối thiểu 2 ký tự.",
+      "maxLength": "Tên hiển thị tối đa 80 ký tự."
+    },
+    "description": { "maxLength": "Mô tả tối đa 500 ký tự." },
+    "iconUrl": {
+      "maxLength": "URL icon quá dài.",
+      "invalid": "URL icon phải bắt đầu bằng http:// hoặc https://."
+    },
+    "homeUrl": {
+      "required": "Vui lòng nhập Home URL.",
+      "maxLength": "Home URL quá dài.",
+      "invalid": "Home URL phải bắt đầu bằng http:// hoặc https://."
+    },
+    "categoryId": {
+      "required": "Vui lòng chọn danh mục.",
+      "invalid": "Danh mục không hợp lệ."
+    },
+    "status": { "invalid": "Trạng thái phải là active hoặc inactive." },
+    "requiredRoles": {
+      "required": "Chọn ít nhất một vai trò.",
+      "invalid": "Giá trị vai trò không hợp lệ."
+    },
+    "redirectUris": {
+      "required": "Thêm ít nhất một redirect URI.",
+      "maxItems": "Quá nhiều redirect URI (tối đa 20).",
+      "invalid": "Mỗi redirect URI phải bắt đầu bằng http:// hoặc https://."
+    },
+    "id": {
+      "required": "Thiếu id ứng dụng.",
+      "invalid": "id ứng dụng không hợp lệ."
+    },
+    "body": {
+      "empty": "Cần ít nhất một trường để cập nhật."
+    }
+  }
+}

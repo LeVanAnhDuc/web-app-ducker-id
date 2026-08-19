@@ -1,0 +1,68 @@
+{
+  "email": {
+    "required": "Email là bắt buộc",
+    "invalid": "Email không hợp lệ",
+    "minLength": "Email phải có ít nhất 3 ký tự",
+    "maxLength": "Email không được vượt quá 254 ký tự"
+  },
+  "password": {
+    "required": "Mật khẩu là bắt buộc",
+    "minLength": "Mật khẩu phải có ít nhất 8 ký tự",
+    "maxLength": "Mật khẩu không được vượt quá 128 ký tự",
+    "pattern": "Mật khẩu phải chứa ít nhất một chữ hoa, một chữ thường, một số và một ký tự đặc biệt (@$!%*?&)"
+  },
+  "otp": {
+    "required": "Mã OTP là bắt buộc",
+    "length": "Mã OTP phải có 6 chữ số",
+    "digitsOnly": "Mã OTP chỉ được chứa số"
+  },
+  "fullName": {
+    "required": "Họ và tên là bắt buộc",
+    "minLength": "Họ và tên phải có ít nhất 2 ký tự",
+    "maxLength": "Họ và tên không được vượt quá 100 ký tự",
+    "invalid": "Họ và tên chỉ được chứa chữ cái, khoảng trắng, dấu gạch ngang, dấu nháy đơn và dấu chấm"
+  },
+  "phone": {
+    "invalid": "Số điện thoại không hợp lệ"
+  },
+  "gender": {
+    "required": "Giới tính là bắt buộc",
+    "invalid": "Giới tính phải là nam, nữ, khác hoặc không muốn nói"
+  },
+  "dateOfBirth": {
+    "required": "Ngày sinh là bắt buộc",
+    "invalid": "Ngày sinh không hợp lệ",
+    "tooYoung": "Bạn phải từ 13 tuổi trở lên",
+    "tooOld": "Ngày sinh không thể quá 120 năm trước"
+  },
+  "categoryId": {
+    "invalid": "Mã danh mục không hợp lệ."
+  },
+  "search": {
+    "invalid": "Từ khoá tìm kiếm quá dài."
+  },
+  "role": {
+    "invalid": "Vai trò lọc không hợp lệ."
+  },
+  "status": {
+    "invalid": "Trạng thái lọc không hợp lệ."
+  },
+  "page": {
+    "invalid": "Số trang không hợp lệ."
+  },
+  "limit": {
+    "invalid": "Kích thước trang không hợp lệ."
+  },
+  "sortBy": {
+    "invalid": "Trường sắp xếp không hợp lệ."
+  },
+  "sortOrder": {
+    "invalid": "Thứ tự sắp xếp không hợp lệ."
+  },
+  "isRead": {
+    "invalid": "isRead phải là giá trị boolean"
+  },
+  "id": {
+    "invalid": "Định danh không hợp lệ"
+  }
+}

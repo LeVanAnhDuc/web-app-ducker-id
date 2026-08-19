@@ -1,0 +1,18 @@
+{
+  "validation": {
+    "tempPasswordRequired": "Mật khẩu tạm thời là bắt buộc",
+    "tempPasswordTooShort": "Mật khẩu tạm thời phải có ít nhất 12 ký tự"
+  },
+  "errors": {
+    "unlockCooldown": "Vui lòng đợi {{seconds}} giây trước khi yêu cầu email mở khóa khác",
+    "unlockRateLimit": "Quá nhiều yêu cầu mở khóa. Vui lòng thử lại sau",
+    "accountNotLocked": "Tài khoản không bị khóa",
+    "accountDisabled": "Tài khoản đã bị đình chỉ. Vui lòng liên hệ hỗ trợ",
+    "invalidTempPassword": "Mật khẩu tạm thời không hợp lệ hoặc đã hết hạn",
+    "tempPasswordExpired": "Mật khẩu tạm thời đã hết hạn. Vui lòng yêu cầu mật khẩu mới"
+  },
+  "success": {
+    "unlockEmailSent": "Nếu email này đã đăng ký, email mở khóa đã được gửi",
+    "accountUnlocked": "Mở khóa tài khoản thành công. Bạn phải đổi mật khẩu"
+  }
+}

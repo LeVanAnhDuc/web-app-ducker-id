@@ -1,0 +1,23 @@
+{
+  "errors": {
+    "emailAlreadyExists": "Email đã được đăng ký",
+    "rateLimitExceeded": "Bạn đã vượt quá số lần thử cho phép",
+    "resendCoolDown": "Vui lòng đợi trước khi gửi lại OTP",
+    "resendLimitExceeded": "Bạn đã vượt quá số lần gửi lại OTP tối đa",
+    "invalidOtpWithRemaining": "Mã OTP không hợp lệ. Bạn còn {{remaining}} lần thử",
+    "otpAttemptsExceeded": "Quá nhiều lần thử sai. Vui lòng thử lại sau",
+    "sessionTokenRequired": "Session token là bắt buộc",
+    "sessionTokenInvalid": "Định dạng session token không hợp lệ",
+    "invalidSession": "Phiên đã hết hạn hoặc không hợp lệ. Vui lòng xác thực OTP lại",
+    "acceptTermsRequired": "Bạn phải chấp nhận điều khoản và điều kiện",
+    "acceptTermsInvalid": "Chấp nhận điều khoản phải là giá trị boolean",
+    "confirmPasswordRequired": "Xác nhận mật khẩu là bắt buộc",
+    "passwordMismatch": "Mật khẩu không khớp"
+  },
+  "success": {
+    "otpSent": "Mã OTP đã được gửi đến email",
+    "otpResent": "Mã OTP đã được gửi lại đến email",
+    "otpVerified": "Mã OTP đã được xác thực",
+    "signupCompleted": "Tạo tài khoản thành công"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "watch": ["src", ".env"],
+  "ext": "ts,js,json",
+  "ignore": [
+    "src/**/*.spec.ts",
+    "src/**/*.test.ts",
+    ".git",
+    "node_modules",
+    "dist",
+    "build",
+    "coverage",
+    "logs",
+    "*.log"
+  ],
+  "exec": "ts-node --transpile-only -r tsconfig-paths/register ./src/server.ts",
+  "env": {
+    "NODE_ENV": "development"
+  },
+  "restartable": "rs",
+  "delay": 1000,
+  "verbose": false,
+  "colours": true,
+  "legacyWatch": false,
+  "signal": "SIGTERM",
+  "events": {
+    "restart": "echo '\n🔄 Server restarting...\n'",
+    "crash": "echo '\n💥 Server crashed! Fix the error and save to restart.\n'"
+  }
+}

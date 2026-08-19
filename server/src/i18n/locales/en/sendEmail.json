@@ -1,0 +1,80 @@
+{
+  "common": {
+    "automated": "This is an automated email. Please do not reply.",
+    "footer": "© 2025 App Store web System. All rights reserved."
+  },
+  "loginOtp": {
+    "title": "Login Verification Code",
+    "greeting": "Hello,",
+    "body": "You requested to sign in to your account. Use the verification code below to complete your login.",
+    "expiryPrefix": "This code will expire in",
+    "expirySuffix": "minutes.",
+    "securityNote": "For your security, please do not share this code with anyone.",
+    "warning": "If you didn't request this code, please ignore this email and secure your account."
+  },
+  "signupOtp": {
+    "title": "Email Verification Code",
+    "greeting": "Hello,",
+    "body": "Thank you for signing up! Use the verification code below to verify your email address.",
+    "expiryPrefix": "This code will expire in",
+    "expirySuffix": "minutes.",
+    "securityNote": "For your security, please do not share this code with anyone.",
+    "warning": "If you didn't request this code, please ignore this email."
+  },
+  "magicLink": {
+    "title": "Magic Link Login",
+    "greeting": "Hello,",
+    "body": "You requested to sign in to your account without a password. Click the button below to complete your login instantly.",
+    "signInButton": "Sign In Now",
+    "tip": "Tip: Right-click the button and select \"Copy link\" to copy the URL",
+    "expiryPrefix": "This link will expire in",
+    "expirySuffix": "minutes.",
+    "oneTimeNote": "For your security, this is a one-time use link. After clicking, it cannot be used again.",
+    "warning": "If you didn't request this link, please ignore this email and secure your account."
+  },
+  "forgotPasswordOtp": {
+    "title": "Password Reset Verification Code",
+    "greeting": "Hello,",
+    "body": "You requested to reset your password. Use the verification code below to proceed with resetting your password.",
+    "expiryPrefix": "This code will expire in",
+    "expirySuffix": "minutes.",
+    "securityNote": "For your security, please do not share this code with anyone.",
+    "warning": "If you didn't request a password reset, please ignore this email. Your password will remain unchanged."
+  },
+  "unlockTempPassword": {
+    "title": "Unlock Your Account",
+    "greeting": "Hello,",
+    "body": "Your account has been temporarily locked. Use the temporary password below to unlock and log in:",
+    "passwordLabel": "Temporary Password:",
+    "expiryNote": "This password expires in 15 minutes and can only be used once.",
+    "changePasswordNote": "After logging in with this temporary password, you will be required to change it immediately.",
+    "loginButton": "Log In Now",
+    "securityTitle": "Security Warning",
+    "securityWarning": "If you didn't request this, please contact support immediately.",
+    "securityListTitle": "For your security:",
+    "securityList1": "Do not share this password with anyone",
+    "securityList2": "This password can only be used once",
+    "securityList3": "Change your password immediately after logging in",
+    "securityList4": "Use a strong, unique password",
+    "footerNote": "This is an automated message. Please do not reply to this email.",
+    "copyright": "© 2025 Apartment Management System. All rights reserved."
+  },
+  "passwordChanged": {
+    "title": "Your Password Was Changed",
+    "greeting": "Hello,",
+    "body": "Your account password was successfully changed at",
+    "warning": "If you did not make this change, your account may be compromised. Please reset your password and contact support immediately."
+  },
+  "adminResetPassword": {
+    "title": "Your Password Was Reset by an Administrator",
+    "greeting": "Hello,",
+    "body": "An administrator has reset your account password. Use the temporary password below to log in:",
+    "passwordLabel": "Temporary Password:",
+    "changePasswordNote": "You will be required to set a new password immediately after logging in.",
+    "loginButton": "Log In Now",
+    "securityTitle": "Security Notice",
+    "securityWarning": "If you did not expect this, please contact support immediately.",
+    "footerNote": "This is an automated message. Please do not reply to this email.",
+    "copyright": "© 2025 Apartment Management System. All rights reserved."
+  }
+}

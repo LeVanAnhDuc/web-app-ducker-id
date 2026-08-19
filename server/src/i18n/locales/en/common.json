@@ -1,0 +1,14 @@
+{
+  "errors": {
+    "notFound": "Not Found",
+    "internalServer": "Internal Server error",
+    "invalidToken": "Invalid token",
+    "tokenExpired": "Token expired",
+    "validationFailed": "Validation failed",
+    "unauthorized": "Unauthorized access",
+    "forbidden": "Forbidden access",
+    "duplicateKey": "Value for '{{field}}' already exists",
+    "duplicateKeyGeneric": "Duplicate value",
+    "invalidObjectId": "Invalid ID format"
+  }
+}
