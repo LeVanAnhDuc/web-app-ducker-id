@@ -1,4 +1,4 @@
-# ERD — web-app-store-idms
+# ERD — web-app-ducker-id
 
 > Schema MongoDB cho **IDMS (Identity Management System)**. Source-of-truth: file này (sync tay với Mongoose schemas trong `server/src/modules/*/entities/`).
 > Render: GitHub native, hoặc VS Code extension `bierner.markdown-mermaid`.

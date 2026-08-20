@@ -1,4 +1,4 @@
-# IDMS (web-app-store)
+# IDMS (web-app-ducker-id)
 
 IDMS (Identity Management System) is the sign-in gateway and app launcher portal for the owner's constellation of satellite web apps: it owns accounts, authentication flows, the app registry and the admin console. Monorepo with `client/` (Next.js 15, React 19, TypeScript, Tailwind v4, shadcn/ui, TanStack Query, Zustand, next-intl) and `server/` (Express 4, MongoDB/Mongoose 8, Redis + BullMQ, JWT, Joi, Jest) — formerly the two separate repos `web-store-apps` (client) and `api-web-store-apps` (api), merged via `git subtree`.
 

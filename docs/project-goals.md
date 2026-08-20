@@ -1,4 +1,4 @@
-# Project Goals & Requirements — `web-app-store-idms`
+# Project Goals & Requirements — `web-app-ducker-id`
 
 > **Status**: Living document — single source of truth về định vị và scope dự án.
 > **Last updated**: 2026-05-23
@@ -9,7 +9,7 @@
 
 ## 1. Identity & Vision
 
-**Tên dự án**: `web-app-store-idms`
+**Tên dự án**: `web-app-ducker-id`
 **IDMS** = **Identity Management System**.
 
 **Định vị**: IDMS là một **central Identity Provider (IdP)** kết hợp **Launcher Portal** cho một hệ "constellation" gồm nhiều web app vệ tinh thuộc cùng một tổ chức/owner.

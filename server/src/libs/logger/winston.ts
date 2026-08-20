@@ -63,7 +63,7 @@ const combinedFileRotateTransport = new DailyRotateFile({
 const logger = createLogger({
   level: ENV.LOG_LEVEL,
   levels: LEVELS,
-  defaultMeta: { service: "web-app-store-server" },
+  defaultMeta: { service: "web-app-ducker-id-server" },
   exitOnError: false,
   transports: [errorFileRotateTransport, combinedFileRotateTransport]
 });
