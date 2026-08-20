@@ -6,7 +6,7 @@ export const webAppPaths: OpenAPIV3.PathsObject = {
     post: {
       summary: "Register a new app (admin)",
       description: `
-Register a satellite app with the IDMS. Generates an OAuth \`clientId\` and \`clientSecret\` — the secret is returned **once** in the response and will not be retrievable again.
+Register a satellite app with Ducker ID. Generates an OAuth \`clientId\` and \`clientSecret\` — the secret is returned **once** in the response and will not be retrievable again.
 
 **Authentication:**
 - Requires valid Bearer token (admin role)

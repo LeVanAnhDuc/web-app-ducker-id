@@ -11,7 +11,7 @@ Folder `docs/` chứa 4 nhóm tài liệu source-of-truth:
 
 ## 2. `erd.md` — Data model
 
-- `erd.md` — schema MongoDB chính cho IDMS (Identity + App Registry + Entitlement + OAuth + Notification + Support)
+- `erd.md` — schema MongoDB chính cho Ducker ID (Identity + App Registry + Entitlement + OAuth + Notification + Support)
 - Source-of-truth: file ERD. Sync **TAY** với Mongoose schemas tại `server/src/modules/*/entities/`
 - Drift giữa ERD và entity code:
   - Code mới hơn ERD → developer update ERD trong cùng commit/PR

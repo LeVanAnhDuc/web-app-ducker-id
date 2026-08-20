@@ -10,18 +10,18 @@
 ## 1. Identity & Vision
 
 **Tên dự án**: `web-app-ducker-id`
-**IDMS** = **Identity Management System**.
+**Ducker ID** = **Identity Management System**.
 
-**Định vị**: IDMS là một **central Identity Provider (IdP)** kết hợp **Launcher Portal** cho một hệ "constellation" gồm nhiều web app vệ tinh thuộc cùng một tổ chức/owner.
+**Định vị**: Ducker ID là một **central Identity Provider (IdP)** kết hợp **Launcher Portal** cho một hệ "constellation" gồm nhiều web app vệ tinh thuộc cùng một tổ chức/owner.
 
 **Câu chuyện sử dụng (user journey gốc)**:
 
 1. User vào `idms.example.com` → đăng nhập 1 lần.
 2. Sau khi login, user thấy **dashboard liệt kê các app vệ tinh** (Blog, App-2, App-3…). Click vào tile → mở app đó với session đã sẵn sàng (không phải đăng nhập lại).
-3. Hoặc user truy cập thẳng `blog.example.com` (chưa đăng nhập) → app vệ tinh redirect về `idms.example.com/oauth/authorize?...&redirect_uri=blog...` → user login → IDMS redirect ngược về Blog tại đúng URL ban đầu đã truy cập.
-4. Quản trị: admin của IDMS quản lý danh sách app, gán quyền user-vào-app, xem login-history, xử lý contact, lock/unlock account.
+3. Hoặc user truy cập thẳng `blog.example.com` (chưa đăng nhập) → app vệ tinh redirect về `idms.example.com/oauth/authorize?...&redirect_uri=blog...` → user login → Ducker ID redirect ngược về Blog tại đúng URL ban đầu đã truy cập.
+4. Quản trị: admin của Ducker ID quản lý danh sách app, gán quyền user-vào-app, xem login-history, xử lý contact, lock/unlock account.
 
-**Một câu**: IDMS là cái cổng đăng nhập + danh bạ app cho hệ thống web nội bộ của owner.
+**Một câu**: Ducker ID là cái cổng đăng nhập + danh bạ app cho hệ thống web nội bộ của owner.
 
 ---
 
@@ -29,7 +29,7 @@
 
 ```
                        ┌───────────────────────┐
-                       │  IDMS (this project)  │
+                       │  Ducker ID (this project)  │
                        │  - IdP (OAuth/OIDC)   │
                        │  - User Profile       │
                        │  - App Registry       │
@@ -48,8 +48,8 @@
 
 **Vai trò**:
 
-- **IDMS**: Identity Provider + portal + canonical user profile.
-- **Satellite App** (gọi tắt "app vệ tinh"): Web app vệ tinh đăng ký vào IDMS như một OAuth client. Có client_id, redirect_uri, requiredRoles.
+- **Ducker ID**: Identity Provider + portal + canonical user profile.
+- **Satellite App** (gọi tắt "app vệ tinh"): Web app vệ tinh đăng ký vào Ducker ID như một OAuth client. Có client_id, redirect_uri, requiredRoles.
 
 ---
 
@@ -57,9 +57,9 @@
 
 | Persona         | Mô tả                                                                                                         | Role    |
 | --------------- | ------------------------------------------------------------------------------------------------------------- | ------- |
-| Guest           | Khách chưa đăng ký, chỉ truy cập được trang public của IDMS (login/signup/forgot-password/contact-admin form) | —       |
+| Guest           | Khách chưa đăng ký, chỉ truy cập được trang public của Ducker ID (login/signup/forgot-password/contact-admin form) | —       |
 | Registered User | User đã verify email, vào dashboard, dùng các app vệ tinh đã được entitle                                     | `USER`  |
-| Admin           | Vận hành IDMS: CRUD app registry, grant/revoke entitlement, force logout, lock/unlock, reset password         | `ADMIN` |
+| Admin           | Vận hành Ducker ID: CRUD app registry, grant/revoke entitlement, force logout, lock/unlock, reset password         | `ADMIN` |
 
 ---
 
@@ -82,14 +82,14 @@
 
 ### G3 — Centralized user profile (2-tier)
 
-- **Tier 1 (core, @ IDMS)**: email, fullName, avatar, phone, dateOfBirth, gender, address. Là single source of truth, app vệ tinh đọc qua API (`GET /users/me` với access token).
+- **Tier 1 (core, @ Ducker ID)**: email, fullName, avatar, phone, dateOfBirth, gender, address. Là single source of truth, app vệ tinh đọc qua API (`GET /users/me` với access token).
 - **Tier 2 (app-specific, @ satellite)**: mỗi app vệ tinh được quyền tự lưu setting/preference riêng (vd: blog lưu bio author, signature). Không chạm vào tier 1.
 
 ### G4 — App registry & launcher dashboard
 
 - Admin CRUD app entries qua UI: `name, url, iconUrl, description, category, status, requiredRoles, redirectUris[]`.
 - Dashboard hiển thị danh sách app user **được phép truy cập** (đã được entitle).
-- Click tile → bắt đầu OAuth flow tới app đó với session IDMS hiện tại → SSO.
+- Click tile → bắt đầu OAuth flow tới app đó với session Ducker ID hiện tại → SSO.
 - User personalization: **Favorites** (đánh dấu app yêu thích), **Recently Used** (track app vừa launch), **Discover** (gợi ý app mới available).
 
 ### G5 — Per-user entitlement
@@ -100,13 +100,13 @@
 
 ### G6 — Asymmetric session lifecycle
 
-- **Logout @ IDMS** → invalidate refresh token + back-channel logout notify tới mọi app vệ tinh đang có session của user đó → global sign-out.
-- **Logout @ satellite** → chỉ đóng session của app đó. IDMS và app khác vẫn active.
-- **Admin force logout** → tương đương "logout @ IDMS" do admin trigger.
+- **Logout @ Ducker ID** → invalidate refresh token + back-channel logout notify tới mọi app vệ tinh đang có session của user đó → global sign-out.
+- **Logout @ satellite** → chỉ đóng session của app đó. Ducker ID và app khác vẫn active.
+- **Admin force logout** → tương đương "logout @ Ducker ID" do admin trigger.
 
 ### G7 — Cross-app locale sync
 
-- User chọn ngôn ngữ (EN/VI) ở IDMS.
+- User chọn ngôn ngữ (EN/VI) ở Ducker ID.
 - Locale được embed vào **ID token claim** (`locale: "vi"` hoặc `"en"`).
 - App vệ tinh đọc claim này khi bootstrap để render đúng ngôn ngữ → UX nhất quán.
 
@@ -122,12 +122,12 @@
 
 ## 5. Non-Goals
 
-Rõ ràng **KHÔNG** thuộc scope của IDMS:
+Rõ ràng **KHÔNG** thuộc scope của Ducker ID:
 
 - **Không phải e-commerce**: không có product/SKU, cart, checkout, payment gateway, order, inventory.
 - **Không phải apartment/property management** (sửa lại README đang ghi sai).
 - **Không phải social network**: không follow/feed/messaging giữa user.
-- **Không host nội dung của satellite**: blog/khác sẽ tách ra src riêng. IDMS không lưu post, không proxy nội dung.
+- **Không host nội dung của satellite**: blog/khác sẽ tách ra src riêng. Ducker ID không lưu post, không proxy nội dung.
 - **Không phải workflow engine / RBAC chi tiết per-resource**: entitlement chỉ ở mức "user X có vào được app Y không". Quyền chi tiết trong nội bộ app là việc của app đó.
 - **Không là multi-tenant** (chỉ 1 tổ chức / owner duy nhất quản trị toàn constellation ở phase hiện tại).
 
@@ -135,7 +135,7 @@ Rõ ràng **KHÔNG** thuộc scope của IDMS:
 
 ## 6. Functional Scope
 
-### 6.1 IDMS Core API
+### 6.1 Ducker ID Core API
 
 | Nhóm                 | Endpoint                                                                                                                                                                                   | Trạng thái                             |
 | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------- |
@@ -153,7 +153,7 @@ Rõ ràng **KHÔNG** thuộc scope của IDMS:
 | Contact Admin        | `POST /contact/submit`, admin CRUD                                                                                                                                                         | ✅ có                                  |
 | **Admin Power**      | force-logout user, lock/unlock, reset-password override                                                                                                                                    | ⚠️ cần bổ sung                         |
 
-### 6.2 IDMS Frontend (Next.js 15)
+### 6.2 Ducker ID Frontend (Next.js 15)
 
 | Route group  | Routes                                                                                                        | Trạng thái                                         |
 | ------------ | ------------------------------------------------------------------------------------------------------------- | -------------------------------------------------- |
@@ -163,17 +163,17 @@ Rõ ràng **KHÔNG** thuộc scope của IDMS:
 | Settings     | `/profile`, `/account-settings`, `/security`, `/billing`                                                     | ✅ có (Billing giữ như placeholder, không gỡ)     |
 | Admin        | `/admin/contact`, `/admin/login-history`, **`/admin/apps`**, **`/admin/entitlements`**, **`/admin/users`**    | ✅ phần đầu / ❌ phần in đậm cần build             |
 
-**Loại bỏ**: khu vực "Categories" 10 mục cứng trong sidebar (Productivity/Creativity/Health/Shopping…) — không phù hợp với IDMS portal. Category vẫn tồn tại như metadata của App entry (admin tự định nghĩa, vd: "Content", "Internal Tools"), không hardcode.
+**Loại bỏ**: khu vực "Categories" 10 mục cứng trong sidebar (Productivity/Creativity/Health/Shopping…) — không phù hợp với Ducker ID portal. Category vẫn tồn tại như metadata của App entry (admin tự định nghĩa, vd: "Content", "Internal Tools"), không hardcode.
 
 ### 6.3 Satellite App Integration Contract (OAuth Client)
 
 Mỗi app vệ tinh phải:
 
-1. **Đăng ký** với IDMS qua admin UI để nhận `client_id` + `client_secret` (nếu confidential) + đăng ký `redirect_uris`.
+1. **Đăng ký** với Ducker ID qua admin UI để nhận `client_id` + `client_secret` (nếu confidential) + đăng ký `redirect_uris`.
 2. **Implement Authorization Code + PKCE flow** chuẩn OIDC.
 3. **Validate access token** bằng JWKS local cho request thông thường; gọi `/oauth/introspect` cho action nhạy cảm (vd: thanh toán, admin action, xoá vĩnh viễn).
 4. **Đọc profile** từ ID token claims hoặc gọi `/oauth/userinfo`; KHÔNG lưu copy của profile core (tier 1) — chỉ cache với TTL ngắn.
-5. **Lắng nghe back-channel logout** tại `/auth/backchannel-logout` (callback do IDMS post tới khi global sign-out).
+5. **Lắng nghe back-channel logout** tại `/auth/backchannel-logout` (callback do Ducker ID post tới khi global sign-out).
 6. **Đọc `locale` claim** để render đúng ngôn ngữ.
 
 ---
@@ -185,7 +185,7 @@ Mỗi app vệ tinh phải:
 | **i18n**          | EN (default, no URL prefix) + VI (`/vi`). next-intl @ FE, i18next @ BE (email/error). Locale truyền sang satellite qua ID token claim.                                                            |
 | **A11y**          | WCAG 2.1 AA.                                                                                                                                                                                      |
 | **Performance**   | SSR/RSC mặc định, code-split, React Query cache; theo `standard-performance`.                                                                                                                     |
-| **Security**      | JWT trong HttpOnly cookie ở IDMS UI. Bcrypt password. Rate limit per-module (signup/login/contact). Helmet + Joi validation. PKCE bắt buộc cho public client. Refresh token rotation + blacklist. |
+| **Security**      | JWT trong HttpOnly cookie ở Ducker ID UI. Bcrypt password. Rate limit per-module (signup/login/contact). Helmet + Joi validation. PKCE bắt buộc cho public client. Refresh token rotation + blacklist. |
 | **Observability** | Winston structured logging (daily rotate). BullMQ dashboard cho job queue.                                                                                                                        |
 | **Reliability**   | BullMQ retry + fallback cho email.                                                                                                                                                                |
 | **Compatibility** | Dev: localhost multi-port. Prod: cross-domain (không dựa vào cookie share). Mọi giả định cross-origin phải config CORS rõ ràng.                                                                   |
@@ -199,10 +199,10 @@ Mỗi app vệ tinh phải:
 | ADR-001 | OAuth 2.0 / OIDC chuẩn (không cookie-share, không custom token)   | App vệ tinh sẽ cross-domain ở prod; OIDC là chuẩn industry, có ecosystem (lib client sẵn).           |
 | ADR-002 | Authorization Code + PKCE + consent screen                        | First-party app vẫn cần consent để minh bạch + tránh confused deputy. PKCE bảo vệ public SPA client. |
 | ADR-003 | Token validation hybrid: JWKS local + introspection cho sensitive | Cân bằng latency vs revoke real-time.                                                                |
-| ADR-004 | Profile 2-tier: core @ IDMS, app-specific @ satellite             | SSOT cho identity, nhưng cho phép app mở rộng metadata mà không phình schema IDMS.                   |
-| ADR-005 | Asymmetric logout (IDMS = global, satellite = local)              | Match mental model: "đăng xuất khỏi tài khoản" ≠ "đóng app".                                         |
+| ADR-004 | Profile 2-tier: core @ Ducker ID, app-specific @ satellite             | SSOT cho identity, nhưng cho phép app mở rộng metadata mà không phình schema Ducker ID.                   |
+| ADR-005 | Asymmetric logout (Ducker ID = global, satellite = local)              | Match mental model: "đăng xuất khỏi tài khoản" ≠ "đóng app".                                         |
 | ADR-006 | Per-user entitlement (không chỉ role-based)                       | Linh hoạt: cùng role nhưng admin có thể grant/revoke cá biệt.                                        |
-| ADR-007 | App registry DB-managed (không hardcoded)                         | Thêm app không phải redeploy IDMS.                                                                   |
+| ADR-007 | App registry DB-managed (không hardcoded)                         | Thêm app không phải redeploy Ducker ID.                                                                   |
 | ADR-008 | Locale sync qua ID token claim                                    | Một nguồn chân lý, app không tự đoán.                                                                |
 
 Mỗi ADR sẽ có file chi tiết riêng trong `docs/adr/` khi feature tương ứng được spec.
@@ -229,7 +229,7 @@ Chi tiết version: `.claude/techstack/frontend.md`, `.claude/techstack/backend.
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
 | **MVP-1**   | OAuth/OIDC server                                                                                                               | Đủ Authorization Code + PKCE + consent + JWKS + introspection + RP-initiated logout + back-channel logout. Test bằng client giả lập.         | —                               |
 | **MVP-2**   | App registry + entitlement                                                                                                      | App model + admin CRUD UI + per-user entitlement + dashboard hiển thị app theo entitlement + Favorites/RecentlyUsed wired.                   | MVP-1 (để có client_id mapping) |
-| **MVP-3**   | Tách Blog thành satellite                                                                                                       | Scaffold project blog mới, migrate `apps/blog/*` ra src riêng, đăng ký Blog vào IDMS như app vệ tinh đầu tiên, validate end-to-end SSO flow. | MVP-1, MVP-2                    |
+| **MVP-3**   | Tách Blog thành satellite                                                                                                       | Scaffold project blog mới, migrate `apps/blog/*` ra src riêng, đăng ký Blog vào Ducker ID như app vệ tinh đầu tiên, validate end-to-end SSO flow. | MVP-1, MVP-2                    |
 | **MVP-4**   | UI polish + Admin tools                                                                                                         | Hoàn thiện admin force-logout, lock/unlock, reset-password override. Loại bỏ Categories hardcoded. Notifications wire vào event thật.        | MVP-2                           |
 | **Backlog** | Discover algorithm, Billing thực, Anomaly detection nâng cao, OAuth provider khác (Google/GitHub login social) | —                                                                                                                                            | —                               |
 
@@ -261,5 +261,5 @@ Chi tiết version: `.claude/techstack/frontend.md`, `.claude/techstack/backend.
 
 | Date       | Change                                            |
 | ---------- | ------------------------------------------------- |
-| 2026-05-23 | Initial — định vị IDMS, scope MVP-1..4, glossary. |
+| 2026-05-23 | Initial — định vị Ducker ID, scope MVP-1..4, glossary. |
 | 2026-06-29 | Gỡ bỏ Team collaboration placeholder (FE + docs); Team thành Non-Goal dứt khoát (single-tenant). |

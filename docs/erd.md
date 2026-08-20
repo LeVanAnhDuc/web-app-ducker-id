@@ -1,6 +1,6 @@
 # ERD — web-app-ducker-id
 
-> Schema MongoDB cho **IDMS (Identity Management System)**. Source-of-truth: file này (sync tay với Mongoose schemas trong `server/src/modules/*/entities/`).
+> Schema MongoDB cho **Ducker ID (Identity Management System)**. Source-of-truth: file này (sync tay với Mongoose schemas trong `server/src/modules/*/entities/`).
 > Render: GitHub native, hoặc VS Code extension `bierner.markdown-mermaid`.
 > Phạm vi: chỉ Identity + App Registry + Entitlement + OAuth. ERD của app vệ tinh xem [Satellite ERDs](#satellite-erds).
 
@@ -68,7 +68,7 @@ erDiagram
     REFRESH_TOKEN {
         ObjectId _id PK
         ObjectId auth_id FK "→ AUTH"
-        ObjectId web_app_id FK "→ WEB_APP, nullable (null = IDMS UI session)"
+        ObjectId web_app_id FK "→ WEB_APP, nullable (null = Ducker ID UI session)"
         String token_hash UK
         Boolean is_revoked "default false"
         Date revoked_at "nullable"
@@ -132,7 +132,7 @@ erDiagram
         String client_secret_hash "bcrypt, nullable cho public client (PKCE-only)"
         StringArray redirect_uris "OAuth redirect_uri whitelist"
         StringArray post_logout_redirect_uris "RP-initiated logout targets"
-        String backchannel_logout_uri "nullable — IDMS POST khi global sign-out"
+        String backchannel_logout_uri "nullable — Ducker ID POST khi global sign-out"
         StringArray grant_types "default [authorization_code, refresh_token]"
         StringArray response_types "default [code]"
         StringArray scopes "scopes app này được phép request"
@@ -248,9 +248,9 @@ erDiagram
 - Confidential client (BE-rendered): `token_endpoint_auth_method = "client_secret_basic"`, có `client_secret_hash`.
 
 ### External reference pattern (cho satellite apps)
-- App vệ tinh KHÔNG share Mongo DB với IDMS.
-- Satellite lưu `user_id` (ObjectId) trỏ về `users._id` của IDMS như một **external reference** — không có FK constraint DB-level, không $lookup được.
-- Lookup profile satellite → IDMS qua `GET /oauth/userinfo` (access token) hoặc `GET /users/:id` (admin/service token), cache TTL ngắn 5–15 phút.
+- App vệ tinh KHÔNG share Mongo DB với Ducker ID.
+- Satellite lưu `user_id` (ObjectId) trỏ về `users._id` của Ducker ID như một **external reference** — không có FK constraint DB-level, không $lookup được.
+- Lookup profile satellite → Ducker ID qua `GET /oauth/userinfo` (access token) hoặc `GET /users/:id` (admin/service token), cache TTL ngắn 5–15 phút.
 
 ### OAuth authorization codes — lưu Redis, không Mongo
 - Authorization code (code flow) TTL 10 phút, chỉ dùng 1 lần → lưu Redis với key `oauth:authcode:{code}` và TTL.
@@ -261,7 +261,7 @@ Field `login_histories.userId` (theo memory: `project_login_history_userid_namin
 
 ## Satellite ERDs
 
-Các app vệ tinh có ERD riêng. IDMS chỉ giữ ObjectId `user_id` làm external reference (xem [External reference pattern](#external-reference-pattern-cho-satellite-apps)):
+Các app vệ tinh có ERD riêng. Ducker ID chỉ giữ ObjectId `user_id` làm external reference (xem [External reference pattern](#external-reference-pattern-cho-satellite-apps)):
 
 - [Blog](./erd-blog.md) — sẽ migrate sang repo blog vệ tinh khi vào MVP-3 (xem [`project-goals.md`](../project-goals.md) §10).
 

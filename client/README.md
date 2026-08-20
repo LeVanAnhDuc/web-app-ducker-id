@@ -1,6 +1,6 @@
 # web-app-ducker-id — Client
 
-Next.js 15 frontend for **IDMS (Identity Management System)** — a central Identity Provider combined with a launcher portal for a constellation of satellite web apps. Provides the UI for multi-factor auth flows, the OAuth consent screen, an app dashboard (entitlement-aware), user profile / account settings, and admin operations.
+Next.js 15 frontend for **Ducker ID (Identity Management System)** — a central Identity Provider combined with a launcher portal for a constellation of satellite web apps. Provides the UI for multi-factor auth flows, the OAuth consent screen, an app dashboard (entitlement-aware), user profile / account settings, and admin operations.
 
 ## Tech Stack
 

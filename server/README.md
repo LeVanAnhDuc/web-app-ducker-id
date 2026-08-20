@@ -1,6 +1,6 @@
 # web-app-ducker-id — Server
 
-RESTful API server for **IDMS (Identity Management System)** — a central OAuth 2.0 / OIDC Identity Provider combined with a launcher portal for a constellation of satellite web apps. Provides multi-factor auth (password / OTP / magic-link), JWT issuance, user profile as single source of truth, app registry, per-user entitlement, login history, email queue, and admin operations.
+RESTful API server for **Ducker ID (Identity Management System)** — a central OAuth 2.0 / OIDC Identity Provider combined with a launcher portal for a constellation of satellite web apps. Provides multi-factor auth (password / OTP / magic-link), JWT issuance, user profile as single source of truth, app registry, per-user entitlement, login history, email queue, and admin operations.
 
 ## Tech Stack
 

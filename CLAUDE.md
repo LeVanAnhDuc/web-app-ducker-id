@@ -1,6 +1,15 @@
-# IDMS (web-app-ducker-id)
+# Ducker ID (web-app-ducker-id)
 
-IDMS (Identity Management System) is the sign-in gateway and app launcher portal for the owner's constellation of satellite web apps: it owns accounts, authentication flows, the app registry and the admin console. Monorepo with `client/` (Next.js 15, React 19, TypeScript, Tailwind v4, shadcn/ui, TanStack Query, Zustand, next-intl) and `server/` (Express 4, MongoDB/Mongoose 8, Redis + BullMQ, JWT, Joi, Jest) — formerly the two separate repos `web-store-apps` (client) and `api-web-store-apps` (api), merged via `git subtree`.
+Ducker ID (Identity Management System) is the sign-in gateway and app launcher portal for the owner's constellation of satellite web apps: it owns accounts, authentication flows, the app registry and the admin console. Monorepo with `client/` (Next.js 15, React 19, TypeScript, Tailwind v4, shadcn/ui, TanStack Query, Zustand, next-intl) and `server/` (Express 4, MongoDB/Mongoose 8, Redis + BullMQ, JWT, Joi, Jest) — formerly the two separate repos `web-store-apps` (client) and `api-web-store-apps` (api), merged via `git subtree`.
+
+> **Naming debt from the 2026-08-20 rename:** the product is **Ducker ID** and the slug is
+> `web-app-ducker-id`, but two places still say `IDMS` on purpose. The demo app seeded as
+> `IDMS Portal` in `server/src/database/seeders/data/web-apps.ts` is asserted on by 22 lines
+> across five Playwright specs, and `client/e2e/favorite-apps/favorites-page.e2e.ts` reasons
+> about its **alphabetical position** to tell Recent order apart from alphabetical order.
+> Renaming the fixture and its assertions is one atomic change that has to be verified by
+> running e2e — which needs MongoDB plus a running client and server, so it was not attempted
+> blind. Dated specs under `docs/specs/` keep `IDMS` as historical record.
 
 Note: despite the OAuth client metadata stored on app-registry entries, the OAuth 2.0 / OIDC endpoints (`/oauth/authorize`, `/oauth/token`, JWKS, consent screen) are **not implemented yet** — see `docs/project-goals.md` (MVP-1) and `docs/unfinished-features.md`.
 

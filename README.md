@@ -1,6 +1,6 @@
-# IDMS — one account and one launcher for a constellation of web apps
+# Ducker ID — one account and one launcher for a constellation of web apps
 
-IDMS (Identity Management System) is the sign-in gateway and app portal for the owner's family of web apps. Users register once, sign in with a password, an email OTP or a magic link, and land on a dashboard that lists the apps they can open, plus their own login history, notifications and support tickets. Administrators use the same site to register apps, manage accounts and work the support inbox.
+Ducker ID (Identity Management System) is the sign-in gateway and app portal for the owner's family of web apps. Users register once, sign in with a password, an email OTP or a magic link, and land on a dashboard that lists the apps they can open, plus their own login history, notifications and support tickets. Administrators use the same site to register apps, manage accounts and work the support inbox.
 
 This repository is a monorepo: `client/` is the Next.js web UI, `server/` is the Express REST API. It was assembled from the two former repositories `web-store-apps` (client) and `api-web-store-apps` (api).
 
