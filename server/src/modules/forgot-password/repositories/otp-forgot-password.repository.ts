@@ -40,9 +40,7 @@ export type OtpForgotPasswordRepository = {
   cleanupAll(email: string): Promise<void>;
 };
 
-export class RedisOtpForgotPasswordRepository
-  implements OtpForgotPasswordRepository
-{
+export class RedisOtpForgotPasswordRepository implements OtpForgotPasswordRepository {
   readonly OTP_EXPIRY_SECONDS =
     FORGOT_PASSWORD_OTP_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
   readonly OTP_COOLDOWN_SECONDS = FORGOT_PASSWORD_OTP_CONFIG.COOLDOWN_SECONDS;

@@ -41,8 +41,10 @@ export interface LoginHistoryQuery extends Partial<PaginationParams> {
   sortOrder?: SortOrder;
 }
 
-export interface LoginHistoryAdminQuery
-  extends Omit<LoginHistoryQuery, "sortBy"> {
+export interface LoginHistoryAdminQuery extends Omit<
+  LoginHistoryQuery,
+  "sortBy"
+> {
   userId?: string;
   ip?: string;
   sortBy?: LoginHistorySortByAdmin;

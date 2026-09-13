@@ -35,9 +35,7 @@ export type MagicLinkForgotPasswordRepository = {
   cleanupAll(email: string): Promise<void>;
 };
 
-export class RedisMagicLinkForgotPasswordRepository
-  implements MagicLinkForgotPasswordRepository
-{
+export class RedisMagicLinkForgotPasswordRepository implements MagicLinkForgotPasswordRepository {
   readonly MAGIC_LINK_EXPIRY_SECONDS =
     FORGOT_PASSWORD_MAGIC_LINK_CONFIG.EXPIRY_MINUTES * SECONDS_PER_MINUTE;
   readonly MAGIC_LINK_COOLDOWN_SECONDS =
