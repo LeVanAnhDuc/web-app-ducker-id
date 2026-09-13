@@ -15,23 +15,23 @@ Note: despite the OAuth client metadata stored on app-registry entries, the OAut
 
 ## Commands
 
-Yarn (classic) everywhere. There is no docker-compose and no Makefile; MongoDB and Redis must be running locally (see `server/.env.example`).
+pnpm everywhere (`packageManager` pins the version in each `package.json`). There is no docker-compose and no Makefile; MongoDB and Redis must be running locally (see `server/.env.example`).
 
 | Where     | Command                                             | Purpose                                     |
 | --------- | --------------------------------------------------- | ------------------------------------------- |
-| repo root | `yarn install`                                       | installs husky only (`prepare`) — root has no app deps |
-| `client/` | `yarn install`                                       | install frontend deps                        |
-| `client/` | `yarn dev`                                           | Next.js dev server (Turbopack) on :3000      |
-| `client/` | `yarn build` / `yarn start`                          | production build / serve                     |
-| `client/` | `yarn lint` / `yarn lint:fix` / `yarn format`         | ESLint / autofix / Prettier                  |
-| `client/` | `yarn e2e` / `yarn e2e:ui` / `yarn e2e:headed`        | Playwright E2E (needs client + server + DB up) |
-| `server/` | `yarn install`                                       | install backend deps                         |
-| `server/` | `yarn dev`                                           | nodemon + ts-node API on :5000               |
-| `server/` | `yarn dev:check` / `yarn type-check`                 | tsc watch / one-shot                         |
-| `server/` | `yarn build` / `yarn start`                          | compile to `dist/` / build+run               |
-| `server/` | `yarn test` / `yarn test:watch` / `yarn test:coverage` | Jest unit tests (no DB needed)             |
-| `server/` | `yarn seed` / `yarn seed:clear`                      | seed / clear MongoDB — the only schema tooling; there is no migration framework |
-| `server/` | `yarn lint` / `yarn lint:fix` / `yarn format`          | ESLint / autofix / Prettier                  |
+| repo root | `pnpm install`                                       | installs husky only (`prepare`) — root has no app deps |
+| `client/` | `pnpm install`                                       | install frontend deps                        |
+| `client/` | `pnpm dev`                                           | Next.js dev server (Turbopack) on :3000      |
+| `client/` | `pnpm build` / `pnpm start`                          | production build / serve                     |
+| `client/` | `pnpm lint` / `pnpm lint:fix` / `pnpm format`         | ESLint / autofix / Prettier                  |
+| `client/` | `pnpm e2e` / `pnpm e2e:ui` / `pnpm e2e:headed`        | Playwright E2E (needs client + server + DB up) |
+| `server/` | `pnpm install`                                       | install backend deps                         |
+| `server/` | `pnpm dev`                                           | nodemon + ts-node API on :5000               |
+| `server/` | `pnpm dev:check` / `pnpm type-check`                 | tsc watch / one-shot                         |
+| `server/` | `pnpm build` / `pnpm start`                          | compile to `dist/` / build+run               |
+| `server/` | `pnpm test` / `pnpm test:watch` / `pnpm test:coverage` | Jest unit tests (no DB needed)             |
+| `server/` | `pnpm seed` / `pnpm seed:clear`                      | seed / clear MongoDB — the only schema tooling; there is no migration framework |
+| `server/` | `pnpm lint` / `pnpm lint:fix` / `pnpm format`          | ESLint / autofix / Prettier                  |
 
 ## README (REQUIRED — keep in sync with features)
 

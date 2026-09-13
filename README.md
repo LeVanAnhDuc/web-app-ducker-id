@@ -81,7 +81,7 @@ These have a user interface but no working backend, or are named in `docs/projec
 | Client    | Next.js 15.3 (App Router) · React 19 · TypeScript 5 · Tailwind CSS v4 · shadcn/ui + Radix · TanStack Query 5 · Zustand 5 · React Hook Form 7 + Zod 4 · next-intl 4 · Axios · Framer Motion |
 | Server    | Node.js · Express 4 · TypeScript 5 · MongoDB with Mongoose 8 · Redis + BullMQ · JWT + bcrypt · Joi 17 · i18next · Nodemailer + React Email · Winston · Swagger UI |
 | Testing   | Jest 30 + ts-jest on the server — **43 suites / 276 tests, all passing**. Playwright 1.60 on the client — 30 E2E spec files under `client/e2e/` (require a running client, server, MongoDB and Redis, so they are not counted here) |
-| Tooling   | Yarn (classic) · ESLint · Prettier · Husky pre-commit running lint-staged in both `client/` and `server/`                 |
+| Tooling   | pnpm · ESLint · Prettier · Husky pre-commit running lint-staged in both `client/` and `server/`                 |
 
 ## Running
 
@@ -90,26 +90,26 @@ MongoDB and Redis must be running locally. There is no docker-compose or Makefil
 **1. Hooks (once, at the repo root)**
 
 ```bash
-yarn install          # installs husky only — the root package has no app dependencies
+pnpm install          # installs husky only — the root package has no app dependencies
 ```
 
 **2. Server** — from `server/`
 
 ```bash
 cp .env.example .env  # then fill in the values
-yarn install
-yarn seed             # optional: seed apps, categories, users, contacts, notifications
-yarn dev              # API on http://localhost:5000, Swagger UI at /api-docs
+pnpm install
+pnpm seed             # optional: seed apps, categories, users, contacts, notifications
+pnpm dev              # API on http://localhost:5000, Swagger UI at /api-docs
 ```
 
-Required environment variables are listed in `server/.env.example`: `APP_PORT`, `CLIENT_URL`, `CORS_ORIGINS`, `TRUST_PROXY`, `DB_URL` / `DB_NAME`, the `REDIS_*` group, `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` / `JWT_ID_SECRET`, and `USERNAME_EMAIL` / `PASSWORD_EMAIL` for outgoing mail. There is no migration framework — Mongoose creates collections and indexes on boot, and `yarn seed` / `yarn seed:clear` manage sample data.
+Required environment variables are listed in `server/.env.example`: `APP_PORT`, `CLIENT_URL`, `CORS_ORIGINS`, `TRUST_PROXY`, `DB_URL` / `DB_NAME`, the `REDIS_*` group, `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` / `JWT_ID_SECRET`, and `USERNAME_EMAIL` / `PASSWORD_EMAIL` for outgoing mail. There is no migration framework — Mongoose creates collections and indexes on boot, and `pnpm seed` / `pnpm seed:clear` manage sample data.
 
 **3. Client** — from `client/`
 
 ```bash
 cp .env.example .env.local
-yarn install
-yarn dev              # http://localhost:3000
+pnpm install
+pnpm dev              # http://localhost:3000
 ```
 
 `client/.env.example` covers `NEXT_PUBLIC_API_PREFIX`, `API_SERVER_URL` (the backend origin that `next.config.ts` rewrites the API prefix to), `NEXT_PUBLIC_SITE_URL`, and the `E2E_*` variables used by Playwright.
@@ -117,8 +117,8 @@ yarn dev              # http://localhost:3000
 **4. Tests**
 
 ```bash
-cd server && yarn test     # Jest unit tests — no database needed
-cd client && yarn e2e      # Playwright — needs client, server, MongoDB and Redis up and the DB seeded
+cd server && pnpm test     # Jest unit tests — no database needed
+cd client && pnpm e2e      # Playwright — needs client, server, MongoDB and Redis up and the DB seeded
 ```
 
 ## Project structure
