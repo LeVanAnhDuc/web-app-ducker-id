@@ -75,8 +75,10 @@ export interface MyContactsQueryRequest extends Omit<Request, "query"> {
   query: MyContactsQuery;
 }
 
-export interface UpdateContactStatusRequest
-  extends Omit<Request, "params" | "body"> {
+export interface UpdateContactStatusRequest extends Omit<
+  Request,
+  "params" | "body"
+> {
   params: { id: string };
   body: { status: ContactStatus };
 }

@@ -108,8 +108,10 @@ export interface AdminAppIdParams {
   id: string;
 }
 
-export interface AdminUpdateAppRequest
-  extends Omit<Request, "body" | "params"> {
+export interface AdminUpdateAppRequest extends Omit<
+  Request,
+  "body" | "params"
+> {
   body: AdminAppUpdateBody;
   params: { id: string };
 }
