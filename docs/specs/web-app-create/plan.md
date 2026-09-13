@@ -19,7 +19,7 @@ Two worktrees already exist on branch `feat/web-app-create`. **Every BE task** r
 | BE | `D:\Learn\web-app-store-server-client\server\.worktrees\web-app-create` | `feat/web-app-create` |
 | FE | `D:\Learn\web-app-store-server-client\client\.worktrees\web-app-create` | `feat/web-app-create` |
 
-Deps installed, baseline green (client: tsc clean). **Server `feat/web-app-create` is based on `c4ddaca`** — the `chore/web-app-list-followup` tip that includes the ReDoS fix VULN-BE-1 (touches `web-app/helpers/index.ts` + spec). Run `npx jest --testMatch "**/?(*.)+(spec).ts"` once at start to capture the current baseline count before BE-2. Commits land on `feat/web-app-create` in each respective sub-repo.
+Deps installed, baseline green (client: tsc clean). **Server `feat/web-app-create` is based on `c4ddaca`** — the `chore/web-app-list-followup` tip that includes the ReDoS fix VULN-BE-1 (touches `web-app/helpers/index.ts` + spec). Run `pnpm exec jest --testMatch "**/?(*.)+(spec).ts"` once at start to capture the current baseline count before BE-2. Commits land on `feat/web-app-create` in each respective sub-repo.
 
 **Note — untracked swagger:** `server/src/modules/web-app/swagger/` (`index.ts`, `paths.ts`, `schemas.ts`) exists ONLY in the main server checkout (untracked, not carried into the worktree). Task BE-8 ports/creates Swagger in the worktree.
 
@@ -27,7 +27,7 @@ Deps installed, baseline green (client: tsc clean). **Server `feat/web-app-creat
 - BE touches only `server/src/**`; FE touches only `client/src/**`.
 - BE: `standard-typescript`, `module-struct`, `standard-restful-api`, `standard-mongodb`, `standard-jwt`, `standard-doc-api`.
 - FE: `standard-react`, `standard-nextjs`, `standard-tailwind`, `standard-shadcn`, `standard-accessibility`; rules `views.md` (mutations → `hooks/`), `accessibility.md` (`useAnnounce` on copy/dialog), `imports.md`, `component-folder.md`, `types.md`.
-- FE mandatory after each task: `yarn format && yarn lint && yarn tsc` (all clean before commit).
+- FE mandatory after each task: `pnpm format && pnpm lint && pnpm exec tsc` (all clean before commit).
 
 ---
 
@@ -70,7 +70,7 @@ Deps installed, baseline green (client: tsc clean). **Server `feat/web-app-creat
 
 ## BE Tasks
 
-> Run all BE commands from `server/.worktrees/web-app-create`. Test command (worktree jest glob workaround): `npx jest --testMatch "**/?(*.)+(spec).ts" <path>`.
+> Run all BE commands from `server/.worktrees/web-app-create`. Test command (worktree jest glob workaround): `pnpm exec jest --testMatch "**/?(*.)+(spec).ts" <path>`.
 
 ### Task BE-1: Error codes + module constants
 
@@ -104,7 +104,7 @@ export const CLIENT_CREDENTIALS_CONFIG = {
 
 - [ ] **Step 3: Type-check**
 
-Run: `npx tsc --noEmit`
+Run: `pnpm exec tsc --noEmit`
 Expected: no errors.
 
 - [ ] **Step 4: Commit**
@@ -164,7 +164,7 @@ describe("generateClientSecret", () => {
 
 - [ ] **Step 2: Run tests — verify they fail**
 
-Run: `npx jest --testMatch "**/?(*.)+(spec).ts" src/modules/web-app/helpers/index.spec.ts`
+Run: `pnpm exec jest --testMatch "**/?(*.)+(spec).ts" src/modules/web-app/helpers/index.spec.ts`
 Expected: FAIL — `toInternalStatus`/`generateClientId`/`generateClientSecret` are not exported.
 
 - [ ] **Step 3: Implement the helpers**
@@ -208,7 +208,7 @@ export const generateClientSecret = (): string =>
 
 - [ ] **Step 4: Run tests — verify they pass**
 
-Run: `npx jest --testMatch "**/?(*.)+(spec).ts" src/modules/web-app/helpers/index.spec.ts`
+Run: `pnpm exec jest --testMatch "**/?(*.)+(spec).ts" src/modules/web-app/helpers/index.spec.ts`
 Expected: PASS (all helper + filter tests).
 
 - [ ] **Step 5: Commit**
@@ -376,7 +376,7 @@ export const adminCreateAppBodySchema: Joi.ObjectSchema<AdminAppCreateBody> =
 
 - [ ] **Step 3: Type-check**
 
-Run: `npx tsc --noEmit`
+Run: `pnpm exec tsc --noEmit`
 Expected: no errors.
 
 - [ ] **Step 4: Commit**
@@ -467,7 +467,7 @@ Add the method to the class:
 
 - [ ] **Step 3: Type-check**
 
-Run: `npx tsc --noEmit`
+Run: `pnpm exec tsc --noEmit`
 Expected: no errors.
 
 - [ ] **Step 4: Commit**
@@ -516,7 +516,7 @@ describe("toAdminAppCreatedDto", () => {
 
 - [ ] **Step 2: Run test — verify it fails**
 
-Run: `npx jest --testMatch "**/?(*.)+(spec).ts" src/modules/web-app/dtos/admin-app.dto.spec.ts`
+Run: `pnpm exec jest --testMatch "**/?(*.)+(spec).ts" src/modules/web-app/dtos/admin-app.dto.spec.ts`
 Expected: FAIL — `toAdminAppCreatedDto` is not exported.
 
 - [ ] **Step 3: Implement the DTO + mapper**
@@ -546,7 +546,7 @@ export { toAdminAppCreatedDto } from "./admin-app.dto";
 
 - [ ] **Step 4: Run test — verify it passes**
 
-Run: `npx jest --testMatch "**/?(*.)+(spec).ts" src/modules/web-app/dtos/admin-app.dto.spec.ts`
+Run: `pnpm exec jest --testMatch "**/?(*.)+(spec).ts" src/modules/web-app/dtos/admin-app.dto.spec.ts`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -664,7 +664,7 @@ describe("WebAppService.createApp", () => {
 
 - [ ] **Step 2: Run tests — verify they fail**
 
-Run: `npx jest --testMatch "**/?(*.)+(spec).ts" src/modules/web-app/web-app.service.spec.ts`
+Run: `pnpm exec jest --testMatch "**/?(*.)+(spec).ts" src/modules/web-app/web-app.service.spec.ts`
 Expected: FAIL — `createApp` is not a method on `WebAppService`.
 
 - [ ] **Step 3: Implement createApp**
@@ -744,7 +744,7 @@ Add the method inside the class (after `listCategories`):
 
 - [ ] **Step 4: Run tests — verify they pass**
 
-Run: `npx jest --testMatch "**/?(*.)+(spec).ts" src/modules/web-app/web-app.service.spec.ts`
+Run: `pnpm exec jest --testMatch "**/?(*.)+(spec).ts" src/modules/web-app/web-app.service.spec.ts`
 Expected: PASS (3 tests).
 
 - [ ] **Step 5: Commit**
@@ -816,7 +816,7 @@ Add after the existing `GET /` registration:
 
 - [ ] **Step 3: Type-check + full suite**
 
-Run: `npx tsc --noEmit && npx jest --testMatch "**/?(*.)+(spec).ts"`
+Run: `pnpm exec tsc --noEmit && pnpm exec jest --testMatch "**/?(*.)+(spec).ts"`
 Expected: tsc clean; all suites pass (157 baseline + new web-app tests).
 
 - [ ] **Step 4: Commit**
@@ -950,7 +950,7 @@ Read `server/.claude/skills/standard-doc-api` for the project Swagger convention
 
 - [ ] **Step 4: Verify build + tests**
 
-Run: `npx tsc --noEmit && npx jest --testMatch "**/?(*.)+(spec).ts"`
+Run: `pnpm exec tsc --noEmit && pnpm exec jest --testMatch "**/?(*.)+(spec).ts"`
 Expected: clean + all pass.
 
 - [ ] **Step 5: Commit**
@@ -964,7 +964,7 @@ git commit -m "feat(web-app): add create-app i18n messages and Swagger docs"
 
 ## FE Tasks
 
-> Run all FE commands from `client/.worktrees/web-app-create`. After EVERY task: `yarn format && yarn lint && yarn tsc` must pass before commit.
+> Run all FE commands from `client/.worktrees/web-app-create`. After EVERY task: `pnpm format && pnpm lint && pnpm exec tsc` must pass before commit.
 
 ### Task FE-1: Result type
 
@@ -981,7 +981,7 @@ export type AdminAppCreateResult = WebApp & { clientSecret: string };
 
 - [ ] **Step 2: Verify**
 
-Run: `yarn tsc`
+Run: `pnpm exec tsc`
 Expected: clean.
 
 - [ ] **Step 3: Commit**
@@ -1028,7 +1028,7 @@ export const createAdminApp = async (
 
 - [ ] **Step 2: Verify**
 
-Run: `yarn tsc`
+Run: `pnpm exec tsc`
 Expected: clean.
 
 - [ ] **Step 3: Commit**
@@ -1080,7 +1080,7 @@ export default useCreateAdminApp;
 
 - [ ] **Step 2: Verify**
 
-Run: `yarn tsc`
+Run: `pnpm exec tsc`
 Expected: clean.
 
 - [ ] **Step 3: Commit**
@@ -1144,7 +1144,7 @@ export default SecretField;
 
 - [ ] **Step 2: Verify**
 
-Run: `yarn tsc`
+Run: `pnpm exec tsc`
 Expected: clean.
 
 - [ ] **Step 3: Commit**
@@ -1247,7 +1247,7 @@ export default AdminAppsSecretDialog;
 
 - [ ] **Step 2: Verify**
 
-Run: `yarn tsc`
+Run: `pnpm exec tsc`
 Expected: clean (locale keys added in FE-7; tsc on next-intl strings is not type-blocking).
 
 - [ ] **Step 3: Commit**
@@ -1382,7 +1382,7 @@ import AdminAppsSecretDialog from "./mains/AdminAppsSecretDialog";
 
 - [ ] **Step 3: Verify (full FE gate)**
 
-Run: `yarn format && yarn lint && yarn tsc`
+Run: `pnpm format && pnpm lint && pnpm exec tsc`
 Expected: all clean. Re-read modified files if format/lint auto-fixed them.
 
 - [ ] **Step 4: Commit**
@@ -1439,7 +1439,7 @@ In `src/locales/vi/adminApps.json`: add `"copy": "Sao chép"` to `actions`, and:
 
 - [ ] **Step 3: Verify (full FE gate)**
 
-Run: `yarn format && yarn lint && yarn tsc`
+Run: `pnpm format && pnpm lint && pnpm exec tsc`
 Expected: all clean.
 
 - [ ] **Step 4: Commit**
@@ -1457,11 +1457,11 @@ git commit -m "feat(admin-apps): add secret dialog i18n keys (en, vi)"
 
 - [ ] **Step 1: Run the app + exercise the flow**
 
-With the BE worktree server running (real DB seeded), run `yarn dev` in the FE worktree. Use the `webapp-testing` skill (Playwright) to: log in as admin → open App Registry → Register App → fill valid data → submit → assert the secret dialog shows `Client ID` + `Client Secret` + warning → copy buttons announce → Done closes dialog → new app appears in the table. Also verify a duplicate name surfaces the 409 toast.
+With the BE worktree server running (real DB seeded), run `pnpm dev` in the FE worktree. Use the `webapp-testing` skill (Playwright) to: log in as admin → open App Registry → Register App → fill valid data → submit → assert the secret dialog shows `Client ID` + `Client Secret` + warning → copy buttons announce → Done closes dialog → new app appears in the table. Also verify a duplicate name surfaces the 409 toast.
 
 - [ ] **Step 2: Final full gate**
 
-Run: `yarn format && yarn lint && yarn tsc`
+Run: `pnpm format && pnpm lint && pnpm exec tsc`
 Expected: all clean. No commit needed unless fixes were made.
 
 ---

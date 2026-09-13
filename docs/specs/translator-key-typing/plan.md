@@ -1,6 +1,6 @@
 # Plan — Type-safe translator params (`LeafKeyOf`)
 
-Nguồn: `design.md`. Refactor client-only, không đổi behavior. TS (`npx tsc --noEmit`) + `yarn lint` + `yarn build` là verification gate. Không E2E.
+Nguồn: `design.md`. Refactor client-only, không đổi behavior. TS (`pnpm exec tsc --noEmit`) + `pnpm lint` + `pnpm build` là verification gate. Không E2E.
 
 ## Namespace map (resolved từ call-site — authoritative)
 
@@ -62,7 +62,7 @@ Sửa signature param + **call-site truyền translator trực tiếp** (bỏ wr
 - Thêm rule ngắn vào `client/.claude/rules/` (hoặc mục i18n trong types.md): "translator param → `LeafKeyOf<Messages[...ns]>`, KHÔNG `(k:string)`/cast/union". (client/.claude gitignored — [[reference_client_claude_gitignored]] — flag: không vào PR.)
 
 ## Verify (§4.7)
-`cd client && yarn lint && npx tsc --noEmit && yarn build` — xanh hết. Grep audit: hết `as Parameters<typeof t` (trừ FormFieldMessage), hết `(k: string) => string` / `(key: string) => string` translator param.
+`cd client && pnpm lint && pnpm exec tsc --noEmit && pnpm build` — xanh hết. Grep audit: hết `as Parameters<typeof t` (trừ FormFieldMessage), hết `(k: string) => string` / `(key: string) => string` translator param.
 
 ## Security (§4.5)
 Skip — pure type refactor, không đụng auth/input/data nhạy cảm. Ghi lý do.

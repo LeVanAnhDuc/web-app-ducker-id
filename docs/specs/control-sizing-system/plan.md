@@ -19,8 +19,8 @@
 Cấm hardcode `h-*` hoặc `text-*` lên control để ép kích thước (trừ width như `w-full`/`size-8` toggle inline có chủ đích).
 
 **Lệnh verify chuẩn (chạy trong `client/.worktrees/control-sizing-system`):**
-- Lint file đụng: `yarn lint` (hoặc `npx eslint <files>`), `npx prettier --write <files>`.
-- Type+build cuối: `yarn build`.
+- Lint file đụng: `pnpm lint` (hoặc `pnpm exec eslint <files>`), `pnpm exec prettier --write <files>`.
+- Type+build cuối: `pnpm build`.
 - Grep sạch: không còn `h-12`/`h-11`/`h-14` trên button/input control (trừ allow-list nêu ở Task 11).
 
 ---
@@ -107,7 +107,7 @@ const CustomButton = ({
 
 Đổi slot `className="h-14 w-12 text-xl"` → `className="h-12 w-12 text-xl"` (48² square, giữ text-xl cho dễ đọc số).
 
-- [ ] **Step 6: Verify** — `npx prettier --write` 5 file trên; `yarn lint`. Expected: no errors. (Build chạy ở Task 11.)
+- [ ] **Step 6: Verify** — `pnpm exec prettier --write` 5 file trên; `pnpm lint`. Expected: no errors. (Build chạy ở Task 11.)
 
 - [ ] **Step 7: Commit**
 
@@ -129,7 +129,7 @@ git commit -m "refactor(client): unified control size tokens (36/40/48), CustomB
 - Modify: `src/views/Logins/Login/mains/SocialAuthenButtons/index.tsx`
 
 - [ ] **Step 1:** Mỗi file: xoá `h-12` khỏi `className` của `<CustomButton>`/`<Button>`. Giữ nguyên các class khác (`fullWidth`, `border-input`, `justify-between`, `transition-colors`…). Nếu sau khi xoá `className` rỗng → bỏ luôn prop `className`. KHÔNG thêm `size` (default = 40px standard).
-- [ ] **Step 2: Verify** — grep `h-12` trên 6 file: phải sạch. `npx prettier --write` + `yarn lint` các file. Expected: no `h-12`, no lint error.
+- [ ] **Step 2: Verify** — grep `h-12` trên 6 file: phải sạch. `pnpm exec prettier --write` + `pnpm lint` các file. Expected: no `h-12`, no lint error.
 - [ ] **Step 3: Commit**
 
 ```bash
@@ -149,7 +149,7 @@ git commit -m "refactor(client): auth buttons to 40px standard (remove h-12 over
 - `src/components/AuthOptionCard/AuthOptionCardButton/index.tsx`
 
 - [ ] **Step 1:** Trong mỗi file, audit từng `<CustomButton>` theo cây quyết định. Lưu ý: các *OptionCardButton này là card lựa chọn nhiều dòng dùng `h-auto py-4` — **giữ `h-auto py-4`** (đó là layout đa dòng có chủ đích, KHÔNG phải ép chiều cao control 1 dòng), nhưng xoá mọi `h-12`/`text-*` ép cỡ chữ nếu có. Button submit/CTA full-width → default (40px). Bỏ `size="lg"` nếu chỉ để lấy chữ 16px.
-- [ ] **Step 2: Verify** — `npx prettier --write` + `yarn lint`. Expected: no errors.
+- [ ] **Step 2: Verify** — `pnpm exec prettier --write` + `pnpm lint`. Expected: no errors.
 - [ ] **Step 3: Commit** `refactor(client): auth-shared option buttons follow control sizing`
 
 ---
@@ -166,7 +166,7 @@ git commit -m "refactor(client): auth buttons to 40px standard (remove h-12 over
 - `src/views/MyContacts/mains/MyContactsTable/index.tsx`
 
 - [ ] **Step 1:** Row-action text button → `size="sm"` (36px). Row menu trigger / icon trong row → `size="icon-sm"` + `aria-label` (i18n). GrantToggleButton (toggle trong cell) → `size="sm"`. Bỏ mọi `h-*`/`text-*` ép.
-- [ ] **Step 2: Verify** — `npx prettier --write` + `yarn lint`. Expected: no errors.
+- [ ] **Step 2: Verify** — `pnpm exec prettier --write` + `pnpm lint`. Expected: no errors.
 - [ ] **Step 3: Commit** `refactor(client): admin table row actions to compact (sm/icon-sm)`
 
 ---
@@ -183,7 +183,7 @@ git commit -m "refactor(client): auth buttons to 40px standard (remove h-12 over
 - `src/views/LoginHistory/mains/LoginHistoryFilters/index.tsx`
 
 - [ ] **Step 1:** Button trong toolbar/filter (filter/clear/add) → `size="sm"` (36px). **Input trong toolbar/filter**: xoá `!h-12`/`h-12` (qua `inputClassName`) → để input về 40px standard (đơn giản, đồng nhất). Page-header primary action (vd "Create app" ở AdminAppsHeader) → `default` (40px). Icon-only → pair + `aria-label`.
-- [ ] **Step 2: Verify** — grep `h-12` trên các file: sạch. `npx prettier --write` + `yarn lint`. Expected: no errors.
+- [ ] **Step 2: Verify** — grep `h-12` trên các file: sạch. `pnpm exec prettier --write` + `pnpm lint`. Expected: no errors.
 - [ ] **Step 3: Commit** `refactor(client): admin toolbars/filters control sizing (sm buttons, 40px inputs)`
 
 ---
@@ -202,7 +202,7 @@ git commit -m "refactor(client): auth buttons to 40px standard (remove h-12 over
 - `src/views/AdminApps/components/SecretField/index.tsx`
 
 - [ ] **Step 1:** Dialog confirm + cancel → `default` (40px) — bỏ `size="sm"` lệch nếu có (vd FormSheet cancel đang `sm`). **KHÔNG đổi variant** (giữ destructive/default/outline hiện tại — ngoài phạm vi). FormSheet submit (có input 40px) → `default`. StringListField/SecretField: input → 40px (xoá `h-12`), nút remove icon → `icon-sm` + `aria-label`.
-- [ ] **Step 2: Verify** — grep `h-12` các file: sạch. `npx prettier --write` + `yarn lint`. Expected: no errors.
+- [ ] **Step 2: Verify** — grep `h-12` các file: sạch. `pnpm exec prettier --write` + `pnpm lint`. Expected: no errors.
 - [ ] **Step 3: Commit** `refactor(client): admin dialogs/forms control sizing (default actions, 40px inputs)`
 
 ---
@@ -218,7 +218,7 @@ git commit -m "refactor(client): auth buttons to 40px standard (remove h-12 over
 - `src/views/Notifications/mains/PageHeader/index.tsx`, `src/views/Notifications/mains/NotificationList/index.tsx`, `src/views/Notifications/components/NotificationItem/index.tsx`
 
 - [ ] **Step 1:** "See all"/nav phụ trong card, filter chip, row inline → `size="sm"`. View-toggle/close icon → `icon-sm` (dày) hoặc `icon` (header) + `aria-label`. CTA chính của card → `default`. Bỏ mọi `h-*`/`text-*` ép. NotificationItem close button đang `size="icon"` (40²) trong card dày → đổi `icon-sm` (36²).
-- [ ] **Step 2: Verify** — `npx prettier --write` + `yarn lint`. Expected: no errors.
+- [ ] **Step 2: Verify** — `pnpm exec prettier --write` + `pnpm lint`. Expected: no errors.
 - [ ] **Step 3: Commit** `refactor(client): dashboard views control sizing`
 
 ---
@@ -233,7 +233,7 @@ git commit -m "refactor(client): auth buttons to 40px standard (remove h-12 over
 - `src/views/AccountSettings/mains/DangerZoneCard/index.tsx`, `src/views/AccountSettings/mains/ChangePasswordCard/index.tsx`, `src/views/AccountSettings/components/SessionRow/index.tsx`
 
 - [ ] **Step 1:** Row action (member/session/account/payment row) → `size="sm"` (+`aria-label` nếu icon). Card CTA chính / DangerZone action → `default`. Form trong card (PersonalInfoForm, ChangePasswordCard) → input 40px (xoá `h-12` nếu có) + submit `default`. Bỏ mọi `h-*`/`text-*` ép.
-- [ ] **Step 2: Verify** — `npx prettier --write` + `yarn lint`. Expected: no errors.
+- [ ] **Step 2: Verify** — `pnpm exec prettier --write` + `pnpm lint`. Expected: no errors.
 - [ ] **Step 3: Commit** `refactor(client): account/profile/security/billing/team control sizing`
 
 ---
@@ -248,7 +248,7 @@ git commit -m "refactor(client): auth buttons to 40px standard (remove h-12 over
 - `src/components/FavoriteButton/index.tsx`, `src/components/CategoryChip/index.tsx`, `src/components/AppCard/index.tsx`, `src/components/CustomDateInput/index.tsx`
 
 - [ ] **Step 1:** Header nav icon (menu/bell/search) → `size="icon"` (40²) + `aria-label`. UserMenu avatar trigger → giữ `icon`/rounded-full hiện có. SupportDialog submit → `default`. Chip/AppCard inline CTA → `sm`. CustomDateInput calendar trigger → `icon-sm` + `aria-label` (nếu thiếu). Bỏ mọi `h-*`/`text-*` ép.
-- [ ] **Step 2: Verify** — `npx prettier --write` + `yarn lint`. Expected: no errors.
+- [ ] **Step 2: Verify** — `pnpm exec prettier --write` + `pnpm lint`. Expected: no errors.
 - [ ] **Step 3: Commit** `refactor(client): shared components & layouts control sizing`
 
 ---
@@ -258,7 +258,7 @@ git commit -m "refactor(client): auth buttons to 40px standard (remove h-12 over
 **Files:** toàn `src/` (verify-and-fix).
 
 - [ ] **Step 1:** Grep `size="icon"` / `size="icon-sm"` / `size="icon-lg"` trên `src/`. Với mỗi icon-only button (không có text con), kiểm tra có `aria-label` không. **Chỉ thêm** cho chỗ thiếu; string qua i18n (thêm key vào `src/locales/en/*` + `src/locales/vi/*` namespace tương ứng — KHÔNG hardcode). Bỏ qua chỗ đã có (vd PasswordInput đã có).
-- [ ] **Step 2: Verify** — `npx prettier --write` các file đụng + `yarn lint`. Expected: no errors; mọi icon-only button có `aria-label`.
+- [ ] **Step 2: Verify** — `pnpm exec prettier --write` các file đụng + `pnpm lint`. Expected: no errors; mọi icon-only button có `aria-label`.
 - [ ] **Step 3: Commit** `a11y(client): aria-label for icon-only buttons missing it`
 
 ---
@@ -268,8 +268,8 @@ git commit -m "refactor(client): auth buttons to 40px standard (remove h-12 over
 **Files:** none (verification).
 
 - [ ] **Step 1: Grep sạch control overrides** — trong `src/`, grep `h-12`/`h-11`/`h-14`. **Allow-list hợp lệ** (không phải button/input control): icon-container `h-12 w-12` trong RecoveryOptionCard/AuthOptionCardBody/LoginOptionCard (icon box), Skeleton `h-12/h-14 rounded-lg`, table header cell `h-12` (`ui/table.tsx`), `ui/sidebar.tsx` (shadcn). Mọi hit còn lại trên `<CustomButton>`/`<CustomInput>`/control phải = 0.
-- [ ] **Step 2: Build** — `yarn build`. Expected: build success, no type error.
-- [ ] **Step 3: Lint toàn bộ** — `yarn lint`. Expected: no error. (Nếu `.worktrees` gây nhiễu repo-wide → lint scope `src/` theo [[reference_worktrees_lint_noise]].)
+- [ ] **Step 2: Build** — `pnpm build`. Expected: build success, no type error.
+- [ ] **Step 3: Lint toàn bộ** — `pnpm lint`. Expected: no error. (Nếu `.worktrees` gây nhiễu repo-wide → lint scope `src/` theo [[reference_worktrees_lint_noise]].)
 - [ ] **Step 4:** Không commit (verification-only). Báo kết quả.
 
 ---

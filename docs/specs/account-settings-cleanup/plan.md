@@ -57,7 +57,7 @@ Kết quả nhóm settings:
 
 ```bash
 cd client/.worktrees/account-settings-cleanup
-npx tsc --noEmit
+pnpm exec tsc --noEmit
 grep -rn "ROUTES.SECURITY\|views/Security\|mocks/Security\|sidebar.nav.security\|\"security\"" src
 ```
 Expected: `tsc` PASS; grep không còn hit nào liên quan security (trừ chuỗi không liên quan).
@@ -184,7 +184,7 @@ git rm -r src/views/AccountSettings/mains/TwoFactorCard src/views/AccountSetting
 - [ ] **Step 6: Type-check + grep**
 
 ```bash
-npx tsc --noEmit
+pnpm exec tsc --noEmit
 grep -rn "accountSettings.twoFactor\|accountSettings.sessions\|accountSettings.dangerZone\|ACTIVE_SESSIONS_MOCK\|TwoFactorCard\|ActiveSessionsCard\|SessionRow" src
 ```
 Expected: `tsc` PASS; grep không còn hit.
@@ -288,7 +288,7 @@ git rm -r src/components/DangerZoneCard
 - [ ] **Step 3: Type-check + grep dead-ref**
 
 ```bash
-npx tsc --noEmit
+pnpm exec tsc --noEmit
 grep -rn "@/components/DangerZoneCard\|SharedDangerZoneCard" src
 ```
 Expected: `tsc` PASS; grep 0 hit.
@@ -308,13 +308,13 @@ git commit -m "refactor(client): inline danger zone into profile, drop shared co
 
 ```bash
 cd client/.worktrees/account-settings-cleanup
-yarn format
-yarn lint
-yarn build
+pnpm format
+pnpm lint
+pnpm build
 ```
 Expected: lint 0 error; `next build` PASS (đã bao gồm type-check). Build PASS = không còn missing i18n message reference / orphan import.
 
-- [ ] **Step 2: Fix nếu fail** — lint/build fail thì sửa (systematic-debugging) rồi chạy lại Step 1 từ đầu. Re-read file sau khi `yarn format`/`yarn lint --fix` đổi.
+- [ ] **Step 2: Fix nếu fail** — lint/build fail thì sửa (systematic-debugging) rồi chạy lại Step 1 từ đầu. Re-read file sau khi `pnpm format`/`pnpm lint --fix` đổi.
 
 - [ ] **Step 3: Commit nếu có thay đổi do format/lint**
 
@@ -348,7 +348,7 @@ git commit -m "chore(client): format & lint fixes for account-settings cleanup" 
 
 ```bash
 cd client/.worktrees/account-settings-cleanup
-yarn e2e account-settings-cleanup
+pnpm e2e account-settings-cleanup
 ```
 Expected: PASS. (Tiền đề app-running + gate B MCP walk theo CLAUDE.md §4.3 do main loop điều phối ở bước E2E.)
 

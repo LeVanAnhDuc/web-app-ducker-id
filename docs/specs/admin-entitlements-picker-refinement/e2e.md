@@ -31,6 +31,6 @@ Scope: user picker + role filter + layout. User search = REAL `/admin/users`; en
 
 ## Dual-gate (§4.3)
 
-- **Gate A** — `cd client && yarn e2e --project=admin -g "Admin Entitlements"` trên app thật.
+- **Gate A** — `cd client && pnpm e2e --project=admin -g "Admin Entitlements"` trên app thật.
 - **Gate B** — MCP browser walk cùng matrix (auth context riêng, đọc/render only; mock mutation an toàn vì in-memory per-context).
 - Fail → `systematic-debugging` → `e2e-bugs.md` → fix → re-run (max 3 vòng).

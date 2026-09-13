@@ -4,7 +4,7 @@
 
 **Goal:** Rename `components/list/` → `PageContainer/` (`List*`→`Page*`), extract a reusable `CustomTable`, and drop `ListPagination` in favor of `CustomPagination` — no behavior change.
 
-**Architecture:** Pure FE refactor. Foundation first (types → utils → CustomTable → i18n), then rename folder, then update consumers (dataSources → views), then docs. Verify with `yarn lint` + `yarn build` (FE has no jest; `next build` type-checks).
+**Architecture:** Pure FE refactor. Foundation first (types → utils → CustomTable → i18n), then rename folder, then update consumers (dataSources → views), then docs. Verify with `pnpm lint` + `pnpm build` (FE has no jest; `next build` type-checks).
 
 **Tech Stack:** Next.js 15, React 19, TypeScript 5, Tailwind 4, next-intl.
 
@@ -15,7 +15,7 @@
 - Imports grouped per `rules/imports.md`. Component = folder + `index.tsx`, single default export (`rules/component-folder.md`).
 - No behavior change. Keep `useListQuery`, `ListQueryState`, i18n namespace `list`, `CONSTANTS.LIST`.
 - Every touched string goes through i18n; no hardcoded copy.
-- Verification per task: `cd client/.worktrees/page-container-refactor && npx tsc --noEmit` (scope) — full `yarn lint && yarn build` at Task 9.
+- Verification per task: `cd client/.worktrees/page-container-refactor && pnpm exec tsc --noEmit` (scope) — full `pnpm lint && pnpm build` at Task 9.
 
 ---
 
@@ -32,8 +32,8 @@ New-Item -ItemType Junction -Path "D:/Learn/web-app-store-server-client/client/.
 
 - [ ] **Step 2:** Verify tsc runs.
 
-Run: `cd "D:/Learn/web-app-store-server-client/client/.worktrees/page-container-refactor" && npx tsc --noEmit`
-Expected: compiles (baseline may have 0 errors). If main node_modules incomplete → `cd client && yarn install` first.
+Run: `cd "D:/Learn/web-app-store-server-client/client/.worktrees/page-container-refactor" && pnpm exec tsc --noEmit`
+Expected: compiles (baseline may have 0 errors). If main node_modules incomplete → `cd client && pnpm install` first.
 
 ---
 
@@ -81,7 +81,7 @@ import type { SORT_ORDER } from "@/constants/list";
 ```
 Delete blocks: `export type ColumnBreakpoint = ...`, `export type ColumnAlign = ...`, `export interface ListColumn<T> { ... }`.
 
-- [ ] **Step 3: Verify** `npx tsc --noEmit` — expect errors ONLY in files still importing `ListColumn`/`ColumnAlign`/`ColumnBreakpoint` from `@/types/List` (fixed in later tasks: utils, ListTable, dataSources). Note them; proceed.
+- [ ] **Step 3: Verify** `pnpm exec tsc --noEmit` — expect errors ONLY in files still importing `ListColumn`/`ColumnAlign`/`ColumnBreakpoint` from `@/types/List` (fixed in later tasks: utils, ListTable, dataSources). Note them; proceed.
 
 - [ ] **Step 4: Commit** `git add src/types && git commit -m "refactor(types): add CustomTableColumn, trim List column types"`
 
@@ -94,7 +94,7 @@ Delete blocks: `export type ColumnBreakpoint = ...`, `export type ColumnAlign = 
 **Consumes:** `ColumnAlign`, `ColumnBreakpoint` from `@/types/CustomTable` (Task 1).
 
 - [ ] **Step 1:** Change import (line ~16) from `import type { ColumnAlign, ColumnBreakpoint } from "@/types/List";` → `import type { ColumnAlign, ColumnBreakpoint } from "@/types/CustomTable";`
-- [ ] **Step 2: Verify** `npx tsc --noEmit` — utils no longer errors on these types.
+- [ ] **Step 2: Verify** `pnpm exec tsc --noEmit` — utils no longer errors on these types.
 - [ ] **Step 3: Commit** `git add src/utils && git commit -m "refactor(utils): import column types from CustomTable"`
 
 ---
@@ -122,7 +122,7 @@ vi:
 
 - [ ] **Step 2:** In `list.json` (en + vi) **remove** keys: `sortBy`, `pagination`, `announce.sortedAsc`, `announce.sortedDesc`. Keep `announce.filtersApplied/filtersCleared/pageChanged` and everything else.
 
-- [ ] **Step 3: Verify** `npx tsc --noEmit` (message types regenerate from JSON on build; tsc ok). Commit `git add src/locales && git commit -m "refactor(i18n): move table sort strings to common, drop list.pagination"`
+- [ ] **Step 3: Verify** `pnpm exec tsc --noEmit` (message types regenerate from JSON on build; tsc ok). Commit `git add src/locales && git commit -m "refactor(i18n): move table sort strings to common, drop list.pagination"`
 
 ---
 
@@ -380,7 +380,7 @@ const CustomTable = <T,>({
 export default CustomTable;
 ```
 
-- [ ] **Step 3: Verify** `npx tsc --noEmit` — CustomTable compiles.
+- [ ] **Step 3: Verify** `pnpm exec tsc --noEmit` — CustomTable compiles.
 - [ ] **Step 4: Commit** `git add src/components/CustomTable && git commit -m "feat(CustomTable): reusable table with fullHeight opt-in"`
 
 ---
@@ -400,7 +400,7 @@ Internal import fixes:
 - [ ] **Step 1:** `git mv src/components/list src/components/PageContainer`
 - [ ] **Step 2:** For each of the 7: `git mv src/components/PageContainer/<Old> src/components/PageContainer/<New>`, then edit its `index.tsx` — rename the `const`/default-export identifier and fix internal imports above. (`PageToolbar` keeps `useTranslations("list")`; `PageDateRangeFilter` keeps `useTranslations("list.dateRange")`; `PageEmptyState` keeps `useTranslations("list")` — namespace unchanged.)
 - [ ] **Step 3:** Delete `src/components/PageContainer/ListTable`, `ListTableCard`, `ListSortHeader`, `ListPagination` (`git rm -r`).
-- [ ] **Step 4: Verify** `npx tsc --noEmit` — errors now only in consumers (views/dataSources importing old paths), fixed in Tasks 6-7.
+- [ ] **Step 4: Verify** `pnpm exec tsc --noEmit` — errors now only in consumers (views/dataSources importing old paths), fixed in Tasks 6-7.
 - [ ] **Step 5: Commit** `git add -A src/components/PageContainer && git commit -m "refactor(PageContainer): rename list/ components List*->Page*, drop table/pagination"`
 
 ---
@@ -410,7 +410,7 @@ Internal import fixes:
 **Files:** Modify `src/dataSources/{AdminApps,AdminEntitlements,AdminUsers,ContactAdmin,LoginHistory}/index.tsx`
 
 - [ ] **Step 1:** In each, replace `import type { ListColumn } from "@/types/List"` → `import type { CustomTableColumn } from "@/types/CustomTable"` and every `ListColumn<X>` → `CustomTableColumn<X>` (builder return types). If a file imports both `ListColumn` and other List types, keep the other List import and add the CustomTable import.
-- [ ] **Step 2: Verify** `npx tsc --noEmit` — dataSources clean.
+- [ ] **Step 2: Verify** `pnpm exec tsc --noEmit` — dataSources clean.
 - [ ] **Step 3: Commit** `git add src/dataSources && git commit -m "refactor(dataSources): column type CustomTableColumn"`
 
 ---
@@ -436,7 +436,7 @@ Per file:
   - `@/components/list/ListTable` → `@/components/CustomTable` (name `CustomTable`)
   - `@/components/list/ListPagination` → **remove**; add `import CustomPagination from "@/components/CustomPagination"` (if not present)
 - [ ] **Step 2:** JSX rewrites: `<ListPageShell>`→`<PageShell>`, `<ListPageHeader>`→`<PageHeader>`, `<ListToolbar>`→`<PageToolbar>`, `<ListContent>`→`<PageContent>`, `<ListTable ...>`→`<CustomTable fullHeight ...>` (add `fullHeight` where the view uses `<ListContent fullHeight>`). Replace `<ListPagination page={query.page} totalPages={N} total={...} onPageChange={query.setPage} loading={isLoading} />` with `{N > 1 && (<CustomPagination page={query.page} totalPages={N} onPageChange={query.setPage} />)}` (use the same `totalPages` expression the view passed; drop `total`/`loading`). For views passing `totalPages={1}`, the guard renders nothing (same as before).
-- [ ] **Step 3: Verify** `npx tsc --noEmit` after all 8 — clean.
+- [ ] **Step 3: Verify** `pnpm exec tsc --noEmit` after all 8 — clean.
 - [ ] **Step 4: Commit** `git add src/views && git commit -m "refactor(views): use PageContainer + CustomTable + CustomPagination"`
 
 ---
@@ -453,8 +453,8 @@ Per file:
 
 ### Task 9: Green checks + finish
 
-- [ ] **Step 1:** `cd client/.worktrees/page-container-refactor && yarn lint` → fix any issues, re-run until clean.
-- [ ] **Step 2:** `yarn build` → must succeed (type-check + missing-message check). Fix until green.
+- [ ] **Step 1:** `cd client/.worktrees/page-container-refactor && pnpm lint` → fix any issues, re-run until clean.
+- [ ] **Step 2:** `pnpm build` → must succeed (type-check + missing-message check). Fix until green.
 - [ ] **Step 3:** Confirm no leftover references: grep `components/list/` and `ListColumn` and `ListPagination` across `src/` → expect 0 (except intended `@/types/List` non-column exports).
 - [ ] **Step 4:** Commit any lint autofixes. Proceed to finishing-a-development-branch → creating-github-pr (per-repo client + docs), squash-merge + cleanup worktrees.
 

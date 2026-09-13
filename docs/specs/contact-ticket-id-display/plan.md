@@ -14,7 +14,7 @@
 - Đọc `client/.claude/CLAUDE.md` + rules (`views.md`) trước khi sửa code FE.
 - Component dùng chung → `client/src/components/` (views.md quy tắc #1).
 - Mọi string UI đi qua next-intl (không hardcode). Ký tự rút gọn dùng literal `"..."`, số ký tự đầu = `6`.
-- FE không có script `test`/`type-check`; verify = `cd client && yarn lint && yarn build` (next build đã type-check). Behavior verify ở Task 4 (E2E dual-gate).
+- FE không có script `test`/`type-check`; verify = `cd client && pnpm lint && pnpm build` (next build đã type-check). Behavior verify ở Task 4 (E2E dual-gate).
 - `client/.claude` bị gitignore ở client repo (memory) — nếu sửa rule sẽ không vào PR, flag user (task này không sửa rule).
 
 ---
@@ -56,7 +56,7 @@ export default ShortId;
 
 - [ ] **Step 2: Verify build/lint xanh**
 
-Run: `cd client && yarn lint`
+Run: `cd client && pnpm lint`
 Expected: PASS, không lỗi ở `components/ShortId`.
 
 - [ ] **Step 3: Commit**
@@ -156,7 +156,7 @@ const SupportSuccess = ({
 
 - [ ] **Step 6: Verify build/lint xanh**
 
-Run: `cd client && yarn lint && yarn build`
+Run: `cd client && pnpm lint && pnpm build`
 Expected: PASS (không còn tham chiếu `ticketNumber` trong support flow, không type error).
 
 - [ ] **Step 7: Commit**
@@ -292,7 +292,7 @@ Giữ `admin.list.table.ticketNumber` và `admin.detail.fields.ticketNumber` (nh
 
 - [ ] **Step 7: Verify build/lint xanh**
 
-Run: `cd client && yarn lint && yarn build`
+Run: `cd client && pnpm lint && pnpm build`
 Expected: PASS. Không còn `category`, `ticketNumber`-as-field, `tCategory`, `isContactCategory`, `CONTACT_CATEGORY_VALUES` trong FE (trừ app-category không liên quan). Grep kiểm: `grep -rn "ContactCategory\|isContactCategory\|CONTACT_CATEGORY_VALUES\|tCategory" client/src` → 0 hit liên quan contact.
 
 - [ ] **Step 8: Commit**
@@ -331,7 +331,7 @@ Chuyển E2E Scenario Matrix trong `design.md` thành danh sách scenario cụ t
 - [ ] **Step 3: Dual-gate (§4.3)**
 
 Tiền đề app-running: agent tự check BE/FE/Mongo/Redis; chưa chạy → hỏi user (a) tự run / (b) agent run. Dispatch song song:
-- Gate A: `cd client && yarn e2e` scope contact.
+- Gate A: `cd client && pnpm e2e` scope contact.
 - Gate B: MCP walk matrix (auth context riêng; scenario mutation `A only` chỉ verify read/render).
 
 Fail ≥1 gate → systematic-debugging → `e2e-bugs.md` → fix → chạy lại (max 3 vòng).

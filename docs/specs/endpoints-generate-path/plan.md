@@ -6,14 +6,14 @@
 
 **Architecture:** Thêm `generatePath` vào `src/utils/index.ts`; đổi 2 function endpoint + chuẩn hoá 6 chỗ nối chuỗi inline thành endpoint placeholder khai báo sẵn trong `src/constants/endpoints.ts`; cập nhật call site trong `src/requests/*`.
 
-**Tech Stack:** TypeScript 5, Next.js 15. FE **không có** unit test runner (jest/vitest) — verify bằng `yarn lint` + `yarn build` (next build type-check) + sanity check node.
+**Tech Stack:** TypeScript 5, Next.js 15. FE **không có** unit test runner (jest/vitest) — verify bằng `pnpm lint` + `pnpm build` (next build type-check) + sanity check node.
 
 ## Global Constraints
 
 - URL gửi lên BE phải **byte-identical** với hiện tại (refactor thuần, không đổi behavior).
 - Endpoint/path luôn qua `CONSTANTS.END_POINTS` — không hard-code (client CLAUDE.md §Core Patterns).
 - `:param` syntax giống react-router; params `string | number`; encode từng giá trị; throw khi thiếu param.
-- Chạy 3 check sau khi đổi code: `yarn format`, `yarn lint`, `npx tsc --noEmit` (hoặc `yarn build`).
+- Chạy 3 check sau khi đổi code: `pnpm format`, `pnpm lint`, `pnpm exec tsc --noEmit` (hoặc `pnpm build`).
 
 ---
 
@@ -115,9 +115,9 @@ Expected: 0 dòng.
 
 ### Task 3: Green-checks gate
 
-- [ ] **Step 1:** `cd client && yarn format`
-- [ ] **Step 2:** `cd client && yarn lint` → 0 error
-- [ ] **Step 3:** `cd client && yarn build` → build pass (type-check xanh)
+- [ ] **Step 1:** `cd client && pnpm format`
+- [ ] **Step 2:** `cd client && pnpm lint` → 0 error
+- [ ] **Step 3:** `cd client && pnpm build` → build pass (type-check xanh)
 - [ ] **Step 4:** Commit (sau khi user duyệt diff — §7 commit gate)
 
 ## Self-Review

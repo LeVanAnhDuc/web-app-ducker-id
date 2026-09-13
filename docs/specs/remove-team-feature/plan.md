@@ -4,7 +4,7 @@
 
 **Goal:** Remove the mock-only Team (`/team`) collaboration placeholder from the FE entirely, and codify "Team collaboration" as a definitive Non-Goal in `project-goals.md`.
 
-**Architecture:** Pure deletion + reference cleanup. The Settings sidebar renders dynamically from `NAV_GROUPS`, so dropping the dataSources nav entry auto-removes the link — no sidebar component edit. Verification is `next build` (type-checks dangling refs), `yarn lint`, a grep audit, and a negative-assertion E2E suite (Team absent, `/team` not-found, i18n en+vi clean).
+**Architecture:** Pure deletion + reference cleanup. The Settings sidebar renders dynamically from `NAV_GROUPS`, so dropping the dataSources nav entry auto-removes the link — no sidebar component edit. Verification is `next build` (type-checks dangling refs), `pnpm lint`, a grep audit, and a negative-assertion E2E suite (Team absent, `/team` not-found, i18n en+vi clean).
 
 **Tech Stack:** Next.js 15 / React 19 / TypeScript, next-intl, Playwright E2E.
 
@@ -13,7 +13,7 @@
 - **Branch / isolation**: `chore/remove-team-feature` worktrees already created for `client/` and `docs/` from `origin/main`. All edits happen in those worktrees.
 - **No new behavior**: this is a removal — do not add redirects, replacement pages, or new copy.
 - **i18n**: every locale file edit applies to BOTH `en/` and `vi/`. JSON must stay valid (mind trailing commas).
-- **FE convention**: obey `client/.claude/CLAUDE.md` — after FE edits run `yarn format && yarn lint && npx tsc --noEmit` (or `yarn build`); fix all errors before handing off.
+- **FE convention**: obey `client/.claude/CLAUDE.md` — after FE edits run `pnpm format && pnpm lint && pnpm exec tsc --noEmit` (or `pnpm build`); fix all errors before handing off.
 - **`team` i18n namespace** (`team.json`) is consumed ONLY in `views/Team/**`; the Settings nav label is a different key `dashboard.sidebar.nav.team`. Both go away.
 - **Scope guard**: do NOT touch the Billing placeholder or any non-Team file.
 
@@ -110,7 +110,7 @@ Expected: NO matches referencing the removed Team feature. (Unrelated substrings
 - [ ] **Step 8: Green checks**
 
 ```bash
-cd client && yarn format && yarn lint && yarn build
+cd client && pnpm format && pnpm lint && pnpm build
 ```
 Expected: lint clean, build succeeds (type-check passes → confirms no dangling `NavKey`/`ROUTES.TEAM`/`team` namespace reference).
 
@@ -266,7 +266,7 @@ test.describe("Team placeholder removal", () => {
 - [ ] **Step 2: Run the suite (gate A)**
 
 ```bash
-cd client && yarn e2e --grep "Team placeholder removal"
+cd client && pnpm e2e --grep "Team placeholder removal"
 ```
 Expected: all tests PASS (requires the app running — BE :5000, FE :3000 — and Task 1 applied). If `/team` returns a status other than 404, confirm Next.js not-found behavior for the locale.
 

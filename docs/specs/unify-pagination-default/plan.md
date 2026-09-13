@@ -32,6 +32,6 @@ File: `client/src/views/Notifications/hooks/useNotifications.ts`
 - `limit: PAGE_SIZE` → `limit: CONSTANTS.LIST.DEFAULT_PAGE_SIZE` (CONSTANTS already imported)
 
 ## Verification
-- BE: `yarn lint && yarn type-check && yarn test && yarn build`
-- FE: `yarn lint && npx tsc --noEmit` (and `yarn build` if feasible in worktree)
+- BE: `pnpm lint && pnpm type-check && pnpm test && pnpm build`
+- FE: `pnpm lint && pnpm exec tsc --noEmit` (and `pnpm build` if feasible in worktree)
 - Manual sanity: grep shows no remaining divergent page-size literal (excluding Home `HOME_APPS_LIMIT`, Team i18n `limit`, `MAX_*`).

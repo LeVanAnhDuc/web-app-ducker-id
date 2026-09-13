@@ -12,7 +12,7 @@
 
 - Chỉ chạm `client/src/**` + i18n. BE không đổi. Đọc `client/.claude/CLAUDE.md` (đọc từ main checkout — `.claude/` gitignore trong worktree) + `.claude/rules/views.md` trước khi sửa.
 - Mọi string UI qua next-intl. Full id = `contact._id` / route param `id` (24-hex), render `font-mono`.
-- FE verify = `cd client && yarn lint && yarn build`. Behavior verify ở Task 4 (E2E).
+- FE verify = `cd client && pnpm lint && pnpm build`. Behavior verify ở Task 4 (E2E).
 - Backward-compat: mở rộng `CustomBreadcrumb` KHÔNG được làm hỏng breadcrumb hiện có (item không có `label` vẫn dịch qua `key`).
 
 ---
@@ -44,7 +44,7 @@ const label = item.label ?? t(item.key as Parameters<typeof t>[0]);
 
 - [ ] **Step 3: Verify**
 
-Run: `cd client && yarn lint`
+Run: `cd client && pnpm lint`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
@@ -119,7 +119,7 @@ Trong `ContactDetailCard/index.tsx`: đổi header ticket `<ShortId value={conta
 
 - [ ] **Step 6: Verify**
 
-Run: `cd client && yarn lint && yarn build`
+Run: `cd client && pnpm lint && pnpm build`
 Expected: PASS.
 
 - [ ] **Step 7: Commit**
@@ -163,7 +163,7 @@ Trong `types/ContactAdmin/index.ts`: xoá `attachmentCount: number;` khỏi `Con
 
 - [ ] **Step 4: Verify**
 
-Run: `cd client && yarn lint && yarn build`
+Run: `cd client && pnpm lint && pnpm build`
 Expected: PASS. `grep -rn "attachmentCount" src` → 0 hit.
 
 - [ ] **Step 5: Commit**
@@ -205,7 +205,7 @@ Append vào `docs/specs/contact-ticket-id-display/e2e.md` một mục "Delta (co
 
 - [ ] **Step 6: Gate A**
 
-Bring up worktree FE (`worktree.mjs up contact-detail-fullid-cleanup`, verify đúng owner :3100 + curl), rồi `yarn e2e contact/`. Tất cả pass. Gate B (MCP) nếu môi trường có; không thì flag skip.
+Bring up worktree FE (`worktree.mjs up contact-detail-fullid-cleanup`, verify đúng owner :3100 + curl), rồi `pnpm e2e contact/`. Tất cả pass. Gate B (MCP) nếu môi trường có; không thì flag skip.
 
 - [ ] **Step 7: Commit (2 repo)**
 

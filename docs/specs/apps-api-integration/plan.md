@@ -101,7 +101,7 @@ Thêm vào `describe("WebAppService.listUserApps", ...)` trong `web-app.service.
 
 Run (worktree jest glob hỏng — dùng testMatch tường minh, xem memory):
 ```bash
-cd server/.worktrees/apps-api-integration && npx jest --testMatch "**/web-app.service.spec.ts" -t "categoryId"
+cd server/.worktrees/apps-api-integration && pnpm exec jest --testMatch "**/web-app.service.spec.ts" -t "categoryId"
 ```
 Expected: FAIL — `filter.categoryId` là `undefined` ở test đầu (service chưa truyền categoryId).
 
@@ -129,7 +129,7 @@ Trong `src/modules/web-app/web-app.service.ts`, sửa block tạo filter (dòng 
 
 - [ ] **Step 5: Chạy lại test — PASS**
 
-Run: `cd server/.worktrees/apps-api-integration && npx jest --testMatch "**/web-app.service.spec.ts" -t "categoryId"`
+Run: `cd server/.worktrees/apps-api-integration && pnpm exec jest --testMatch "**/web-app.service.spec.ts" -t "categoryId"`
 Expected: PASS (2 test mới).
 
 - [ ] **Step 6: Thêm `categoryId` vào `listAppsQuerySchema`**
@@ -162,7 +162,7 @@ export const listAppsQuerySchema: Joi.ObjectSchema<UserAppsQuery> = Joi.object({
 
 - [ ] **Step 7: Type-check**
 
-Run: `cd server/.worktrees/apps-api-integration && npx tsc --noEmit`
+Run: `cd server/.worktrees/apps-api-integration && pnpm exec tsc --noEmit`
 Expected: 0 error.
 
 - [ ] **Step 8: Stage**
@@ -216,7 +216,7 @@ describe("WebAppService.listUserCategories", () => {
 
 - [ ] **Step 2: Chạy test — FAIL**
 
-Run: `cd server/.worktrees/apps-api-integration && npx jest --testMatch "**/web-app.service.spec.ts" -t "listUserCategories"`
+Run: `cd server/.worktrees/apps-api-integration && pnpm exec jest --testMatch "**/web-app.service.spec.ts" -t "listUserCategories"`
 Expected: FAIL — `service.listUserCategories is not a function`.
 
 - [ ] **Step 3: Tạo DTO `UserCategoryDto`**
@@ -280,7 +280,7 @@ import {
 
 - [ ] **Step 6: Chạy lại test — PASS**
 
-Run: `cd server/.worktrees/apps-api-integration && npx jest --testMatch "**/web-app.service.spec.ts" -t "listUserCategories"`
+Run: `cd server/.worktrees/apps-api-integration && pnpm exec jest --testMatch "**/web-app.service.spec.ts" -t "listUserCategories"`
 Expected: PASS.
 
 - [ ] **Step 7: Thêm controller method**
@@ -314,7 +314,7 @@ Trong `src/modules/web-app/web-app.routes.ts`, thêm dòng `/categories` TRƯỚ
 
 - [ ] **Step 9: Type-check + full test**
 
-Run: `cd server/.worktrees/apps-api-integration && npx tsc --noEmit && npx jest --testMatch "**/web-app.service.spec.ts"`
+Run: `cd server/.worktrees/apps-api-integration && pnpm exec tsc --noEmit && pnpm exec jest --testMatch "**/web-app.service.spec.ts"`
 Expected: 0 type error; tất cả test PASS.
 
 - [ ] **Step 10: Stage**
@@ -427,7 +427,7 @@ export default useAppCategories;
 
 - [ ] **Step 5: Type-check**
 
-Run: `cd client/.worktrees/apps-api-integration && yarn tsc`
+Run: `cd client/.worktrees/apps-api-integration && pnpm exec tsc`
 Expected: 0 error.
 
 - [ ] **Step 6: Stage** — `git add src/constants/endpoints.ts src/types/Apps/index.ts src/requests/apps.ts src/views/Apps/hooks/useAppCategories.ts`
@@ -632,7 +632,7 @@ import useAppCategories from "../../hooks/useAppCategories";
 
 - [ ] **Step 5: Verify checks**
 
-Run: `cd client/.worktrees/apps-api-integration && yarn format && yarn lint && yarn tsc`
+Run: `cd client/.worktrees/apps-api-integration && pnpm format && pnpm lint && pnpm exec tsc`
 Expected: 0 lỗi. Re-read file đã sửa nếu format/lint auto-fix.
 
 - [ ] **Step 6: Stage** — `git add src/views/Apps/components/CategoryFilter/ src/views/Apps/mains/AppsBoard/index.tsx src/locales/en/apps.json src/locales/vi/apps.json`
@@ -665,7 +665,7 @@ export default useHomeApps;
 ```
 > Query key dùng namespace `"apps"` (chung cache với trang Apps, params khác → entry riêng). Cố ý, không tách key.
 
-- [ ] **Step 2: Type-check** — `cd client/.worktrees/apps-api-integration && yarn tsc` → 0 error.
+- [ ] **Step 2: Type-check** — `cd client/.worktrees/apps-api-integration && pnpm exec tsc` → 0 error.
 - [ ] **Step 3: Stage** — `git add src/views/Home/hooks/useHomeApps.ts`
 
 ---
@@ -818,7 +818,7 @@ export default QuickAccessSection;
 
 - [ ] **Step 3: Thêm i18n keys** `home.quickAccess.empty` + `home.quickAccess.error` (en+vi), **xoá** `home.quickAccess.lastOpened`. (Thực hiện cùng Task FE-6.)
 
-- [ ] **Step 4: Verify** — `yarn tsc` (chạy đầy đủ ở FE-7). Stage:
+- [ ] **Step 4: Verify** — `pnpm exec tsc` (chạy đầy đủ ở FE-7). Stage:
 ```bash
 git add src/views/Home/components/QuickAccessCard/index.tsx src/views/Home/mains/QuickAccessSection/index.tsx
 ```
@@ -1059,7 +1059,7 @@ Run: `cd client/.worktrees/apps-api-integration && rm src/mocks/Home/index.ts`
 
 ### Task FE-7: Verify Home
 
-- [ ] **Step 1:** `cd client/.worktrees/apps-api-integration && yarn format && yarn lint && yarn tsc` → 0 lỗi. Re-read file auto-fixed.
+- [ ] **Step 1:** `cd client/.worktrees/apps-api-integration && pnpm format && pnpm lint && pnpm exec tsc` → 0 lỗi. Re-read file auto-fixed.
 
 ---
 
@@ -1127,7 +1127,7 @@ Expected: chỉ còn `sidebar.groups.discover` (group label) + copy `exploreCTA`
 
 - [ ] **Step 6: Verify checks**
 
-Run: `yarn format && yarn lint && yarn tsc` → 0 lỗi.
+Run: `pnpm format && pnpm lint && pnpm exec tsc` → 0 lỗi.
 
 - [ ] **Step 7: Stage** — `git add -A src/locales src/constants/routes.ts src/dataSources/Dashboard/index.ts`
 
@@ -1204,7 +1204,7 @@ test.describe("Apps catalog (/apps EN locale)", () => {
 
 - [ ] **Step 3: Chạy E2E Apps**
 
-Run: `cd client/.worktrees/apps-api-integration && yarn e2e --grep "Apps catalog"`
+Run: `cd client/.worktrees/apps-api-integration && pnpm e2e --grep "Apps catalog"`
 Expected: tất cả PASS (app + seed đang chạy).
 
 - [ ] **Step 4: Stage** — `git add e2e/web-app-user-list/apps-list.e2e.ts`
@@ -1267,7 +1267,7 @@ test.describe("Home dashboard (/vi/home)", () => {
 
 - [ ] **Step 2: Chạy E2E Home**
 
-Run: `cd client/.worktrees/apps-api-integration && yarn e2e --grep "Home dashboard"`
+Run: `cd client/.worktrees/apps-api-integration && pnpm e2e --grep "Home dashboard"`
 Expected: PASS. Nếu selector totalApps trùng nhiều text → tinh chỉnh dùng `getByLabel`/scope StatCard.
 
 - [ ] **Step 3: Stage** — `git add e2e/home/home.e2e.ts`
@@ -1285,9 +1285,9 @@ Expected: PASS. Nếu selector totalApps trùng nhiều text → tinh chỉnh d�
 
 ## Phase 7 — Verification tổng thể & commit gate
 
-- [ ] **Step 1: BE full check** — `cd server/.worktrees/apps-api-integration && npx tsc --noEmit && npx jest --testMatch "**/?(*.)+(spec).ts"` → 0 lỗi, test xanh.
-- [ ] **Step 2: FE full check** — `cd client/.worktrees/apps-api-integration && yarn format && yarn lint && yarn tsc` → 0 lỗi.
-- [ ] **Step 3: E2E xanh** — `cd client/.worktrees/apps-api-integration && yarn e2e` (Apps + Home) → xanh.
+- [ ] **Step 1: BE full check** — `cd server/.worktrees/apps-api-integration && pnpm exec tsc --noEmit && pnpm exec jest --testMatch "**/?(*.)+(spec).ts"` → 0 lỗi, test xanh.
+- [ ] **Step 2: FE full check** — `cd client/.worktrees/apps-api-integration && pnpm format && pnpm lint && pnpm exec tsc` → 0 lỗi.
+- [ ] **Step 3: E2E xanh** — `cd client/.worktrees/apps-api-integration && pnpm e2e` (Apps + Home) → xanh.
 - [ ] **Step 4: Code review** — `superpowers:requesting-code-review` theo side (BE convention cho server, FE convention cho client) + `security-auditor` nếu cần (endpoint mới + query param).
 - [ ] **Step 5: Commit gate (§7)** — trình diff tổng thể 3 repo cho user review → duyệt → commit per-repo (server/client/docs) với Conventional Commit.
 - [ ] **Step 6: Finish** — `superpowers:finishing-a-development-branch` → `creating-github-pr` (PR riêng từng repo).

@@ -18,7 +18,7 @@
 - Route paths / endpoints via `CONSTANTS.<DOMAIN>` — never hardcode.
 - i18n: all header labels, kebab labels, and row aria-labels from locale files (`en` + `vi`); no hardcoded strings.
 - Responsive: height/sticky constraints are `md:`-gated; align/row-click/kebab are NOT gated.
-- No unit test framework on FE → per-task verification = `cd client/.worktrees/list-table-ux && yarn format && yarn lint && npx tsc --noEmit`. Final gate = `yarn build`. E2E + SuperDesign SKIPPED (design §9).
+- No unit test framework on FE → per-task verification = `cd client/.worktrees/list-table-ux && pnpm format && pnpm lint && pnpm exec tsc --noEmit`. Final gate = `pnpm build`. E2E + SuperDesign SKIPPED (design §9).
 - Commit review gate §7: subagents STAGE only, do NOT commit per-task; main loop presents overall diff.
 - Worktree client path: `D:/Learn/web-app-store-server-client/client/.worktrees/list-table-ux`. Docs path: `D:/Learn/web-app-store-server-client/docs/.worktrees/list-table-ux`.
 
@@ -64,7 +64,7 @@ export const alignClass = (align?: ColumnAlign) =>
       : "text-left";
 ```
 
-- [ ] **Step 3: Verify** — `cd <client worktree> && yarn format && yarn lint && npx tsc --noEmit` → 0 errors.
+- [ ] **Step 3: Verify** — `cd <client worktree> && pnpm format && pnpm lint && pnpm exec tsc --noEmit` → 0 errors.
 - [ ] **Step 4: Stage** — `git -C <client worktree> add src/types/List/index.ts src/utils/index.ts`
 
 ---
@@ -185,7 +185,7 @@ export default ListTable;
 
 Notes: stretched `<Link>` at `z-[1]` overlays the row (TableRow is `relative`), so the whole row navigates; actions cell at `z-10` stays clickable above it. Display-only cells are not individually clickable (accepted stretched-link tradeoff). `TableRow` base already has `hover:bg-muted/50`.
 
-- [ ] **Step 2: Verify** — `yarn format && yarn lint && npx tsc --noEmit` → 0 errors.
+- [ ] **Step 2: Verify** — `pnpm format && pnpm lint && pnpm exec tsc --noEmit` → 0 errors.
 - [ ] **Step 3: Stage** — `git -C <client worktree> add src/components/list/ListTable/index.tsx`
 
 ---
@@ -205,7 +205,7 @@ In the `fullHeight` return branch, change the wrapper div className from
 
 Remove `md:flex-1` from the card div className (keep `md:flex md:min-h-0 md:flex-col` + `bg-card overflow-hidden rounded-xl border` + the `[&_thead_th]` sticky/bg classes). Result class (order may differ after Prettier): `bg-card overflow-hidden rounded-xl border [&_thead_th]:bg-card md:flex md:min-h-0 md:flex-col md:[&_thead_th]:sticky md:[&_thead_th]:top-0 md:[&_thead_th]:z-10`.
 
-- [ ] **Step 3: Verify** — `yarn format && yarn lint && npx tsc --noEmit` → 0 errors.
+- [ ] **Step 3: Verify** — `pnpm format && pnpm lint && pnpm exec tsc --noEmit` → 0 errors.
 - [ ] **Step 4: Stage** — `git -C <client worktree> add src/components/list/ListContent/index.tsx src/components/list/ListTableCard/index.tsx`
 
 ---
@@ -241,7 +241,7 @@ Change the outer wrapper to force one line, and pass an override className to `C
 
 `className="w-auto justify-end"` overrides the shadcn `Pagination` base `mx-auto flex w-full justify-center` via tailwind-merge. Do NOT edit `ui/pagination.tsx`.
 
-- [ ] **Step 2: Verify** — `yarn format && yarn lint && npx tsc --noEmit` → 0 errors.
+- [ ] **Step 2: Verify** — `pnpm format && pnpm lint && pnpm exec tsc --noEmit` → 0 errors.
 - [ ] **Step 3: Stage** — `git -C <client worktree> add src/components/list/ListPagination/index.tsx`
 
 ---
@@ -257,7 +257,7 @@ Change the outer wrapper to force one line, and pass an override className to `C
 3. Detail table → pass `getRowHref` + `rowLabel`; remove the trailing "View"/ChevronRight button + its column. Actions table → pass `rowActions={(row) => <XxxRowActions … />}` + `actionsLabel`.
 4. Read the current view file first; preserve cell JSX and behavior exactly.
 
-Each migration task: **Steps** = (1) add builder to dataSource, (2) rewire view, (3) `yarn format && yarn lint && npx tsc --noEmit` → 0 errors, (4) stage `git -C <client worktree> add src/dataSources/<Feature> src/views/<Feature>`.
+Each migration task: **Steps** = (1) add builder to dataSource, (2) rewire view, (3) `pnpm format && pnpm lint && pnpm exec tsc --noEmit` → 0 errors, (4) stage `git -C <client worktree> add src/dataSources/<Feature> src/views/<Feature>`.
 
 ---
 
@@ -354,7 +354,7 @@ Each migration task: **Steps** = (1) add builder to dataSource, (2) rewire view,
 
 **Files:** none.
 
-- [ ] **Step 1: Green-checks §4.7** — `cd <client worktree> && yarn lint && yarn build` → build success, 0 lint errors. (Copy `.env.local` from main client into the worktree first if `yarn build` fails on the `next.config` rewrite — the env is gitignored and not checked out into worktrees.)
+- [ ] **Step 1: Green-checks §4.7** — `cd <client worktree> && pnpm lint && pnpm build` → build success, 0 lint errors. (Copy `.env.local` from main client into the worktree first if `pnpm build` fails on the `next.config` rewrite — the env is gitignored and not checked out into worktrees.)
 - [ ] **Step 2: Manual visual (main loop coordinates, app running):** record PASS/FAIL for design §9 checklist —
   1. Few items → card height fits content (no full-viewport stretch); many items → internal scroll + sticky header.
   2. Pagination: results left / controls right, one line, all 6 tables.

@@ -10,7 +10,7 @@ Backfill coverage theo skill `e2e-scenario-coverage` — expand toàn bộ `## E
 
 ## Tiền đề (app-running — phải thỏa trước khi chạy)
 
-Theo CLAUDE.md §4.3, agent tự check app-running trước khi `yarn e2e`. Feature này đụng cả BE (endpoint `PATCH /admin/apps/:id`) lẫn FE, nên app đang chạy phải là **bản worktree `feat/edit-apps`**, không phải `main`:
+Theo CLAUDE.md §4.3, agent tự check app-running trước khi `pnpm e2e`. Feature này đụng cả BE (endpoint `PATCH /admin/apps/:id`) lẫn FE, nên app đang chạy phải là **bản worktree `feat/edit-apps`**, không phải `main`:
 
 1. **Redis** (:6379) + **Mongo** (:27017) up.
 2. **BE worktree** chạy code `feat/edit-apps` (có endpoint PATCH). Nếu BE `main` ở :5000 chạy mà không có endpoint → edit/hide trả 404. Chạy BE từ `server/.worktrees/edit-apps`.
@@ -36,7 +36,7 @@ Theo CLAUDE.md §4.3, agent tự check app-running trước khi `yarn e2e`. Feat
 
 ```
 cd client && E2E_BASE_URL=http://localhost:3100 \
-  yarn e2e --project=setup --project=admin-setup --project=admin
+  pnpm e2e --project=setup --project=admin-setup --project=admin
 ```
 
 ## Coverage — 12 nhóm rubric (matrix ↔ test ↔ gate)

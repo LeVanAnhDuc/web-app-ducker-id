@@ -15,7 +15,7 @@
 - **View structure**: `index.tsx` chỉ import từ `mains/`; query/mutation ở `views/<Page>/hooks/` (rules/views.md).
 - **i18n**: mọi string qua next-intl; key phải tồn tại cả `en/` và `vi/`; namespace import qua `@/i18n/navigation` cho navigation.
 - **Constants**: route paths qua `CONSTANTS.ROUTES.*` (rules/constants.md).
-- **Quality gate** (sau mỗi task, BẮT BUỘC, theo client CLAUDE.md): `cd client && yarn format && yarn lint && yarn build` — phải xanh hết. `yarn build` (next build) đã type-check + validate IntlMessages.
+- **Quality gate** (sau mỗi task, BẮT BUỘC, theo client CLAUDE.md): `cd client && pnpm format && pnpm lint && pnpm build` — phải xanh hết. `pnpm build` (next build) đã type-check + validate IntlMessages.
 - **Worktree**: làm trong `client/.worktrees/profile-account-merge/` (đã tạo, branch `feat/profile-account-merge`).
 - **Route `/profile` + folder `views/Profile/` + nav key `profile` GIỮ NGUYÊN** — chỉ đổi label hiển thị (design §2.6).
 - **Commit gate**: user opt-out review → subagent commit per-task tự động (Review OFF).
@@ -110,7 +110,7 @@ Trong `client/src/locales/en/index.ts` VÀ `client/src/locales/vi/index.ts`:
 - [ ] **Step 5: Verify build + no missing-message**
 
 ```bash
-cd client && yarn format && yarn lint && yarn build
+cd client && pnpm format && pnpm lint && pnpm build
 ```
 Expected: PASS. Grep chốt không còn reference cũ ở `src/` ngoài file profile.json/accountSettings.json (sẽ xoá Task 2):
 ```bash
@@ -206,7 +206,7 @@ rm client/src/locales/en/accountSettings.json client/src/locales/vi/accountSetti
 - [ ] **Step 9: Verify build + grep dead refs**
 
 ```bash
-cd client && yarn format && yarn lint && yarn build
+cd client && pnpm format && pnpm lint && pnpm build
 grep -rn 'ACCOUNT_SETTINGS\|views/AccountSettings\|accountSettings\|"profile\.\|profile\.json\|account-settings' src || echo "clean"
 ```
 Expected: build PASS; grep `clean` (chỉ còn `/profile` route + nav key `profile` nếu match — kiểm tra kỹ các hit còn lại đều là nav key `profile` hợp lệ, không phải reference đã xoá).

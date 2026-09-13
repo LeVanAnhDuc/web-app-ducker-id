@@ -77,7 +77,7 @@ Bỏ toàn bộ card mock (2FA, Active Sessions, Danger Zone). Còn lại: `Page
 - Trang `/billing`, `/team` (có thể cũng mock) — không trong yêu cầu.
 
 ## 5. Rủi ro & lưu ý
-- Sau khi xoá namespace locale, phải đảm bảo **không còn reference** (`security.*`, `accountSettings.{twoFactor,sessions,dangerZone}.*`) → next-intl missing-message. Chốt bằng `yarn build` + grep.
+- Sau khi xoá namespace locale, phải đảm bảo **không còn reference** (`security.*`, `accountSettings.{twoFactor,sessions,dangerZone}.*`) → next-intl missing-message. Chốt bằng `pnpm build` + grep.
 - Kiểm tra import `Shield` / `Switch` không còn orphan (lint bắt).
 - Người dùng đã bookmark `/security` sẽ gặp `not-found` (chấp nhận — trang chưa public).
 
@@ -101,6 +101,6 @@ Thay đổi observable (mất nav item + route, trang account-settings trimmed) 
 | 12 | Accessibility | ✅ | account-settings/profile dùng role/label selector; link "Security" không còn trong tab order sidebar. | A+B |
 | F1 | Route removal `[ST]` | ✅ | Vào `/security` và `/vi/security` → `not-found`/404 (invalid transition: route từng hợp lệ nay không còn). | A+B |
 | F2 | Nav integrity | ✅ | Sidebar nhóm Settings liệt kê profile, account-settings, billing, team — **không** có security; các link còn lại điều hướng đúng. | A+B |
-| F3 | Dead-reference guard | ✅ | Không còn import/string tham chiếu `ROUTES.SECURITY`/`views/Security`/`mocks/Security`/locale `security`/các card đã xoá — chốt bằng `yarn build` (type-check) + grep, không cần E2E. | — |
+| F3 | Dead-reference guard | ✅ | Không còn import/string tham chiếu `ROUTES.SECURITY`/`views/Security`/`mocks/Security`/locale `security`/các card đã xoá — chốt bằng `pnpm build` (type-check) + grep, không cần E2E. | — |
 
 **Test-design techniques**: EP/BVA/DT không kích hoạt (không có input domain / boundary / điều kiện kết hợp mới). Chỉ ST cho F1 (route removal = invalid transition). Completeness-critic: chưa yêu cầu "thorough/≥90%" → không chạy (có thể bật nếu cần).

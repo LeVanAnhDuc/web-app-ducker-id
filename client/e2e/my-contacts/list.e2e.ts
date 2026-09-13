@@ -13,7 +13,7 @@ import type { Page } from "@playwright/test";
 // this suite relies on those exact subjects/status/priority existing. If the
 // seeder has not been run against the target DB, the happy-path/filter/data-
 // rendering tests below will fail with "not visible" (see e2e.md
-// Prerequisites). Idempotent — safe to re-run `yarn seed` any number of times.
+// Prerequisites). Idempotent — safe to re-run `pnpm seed` any number of times.
 //
 // Real backend throughout (no `page.route` stubbing) EXCEPT the
 // "error / loading" describe block, which stubs the list endpoint on that

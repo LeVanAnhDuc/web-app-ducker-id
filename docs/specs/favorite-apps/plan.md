@@ -562,9 +562,9 @@ describe("FavoriteService", () => {
 
 - [ ] **Step 2: Run test, expect FAIL** (service not implemented):
 
-Run: `cd server && npx jest --testMatch "**/favorite.service.spec.ts"`
+Run: `cd server && pnpm exec jest --testMatch "**/favorite.service.spec.ts"`
 Expected: FAIL ("Cannot find module './favorite.service'").
-(Trong worktree, jest <rootDir> glob có thể hỏng — dùng `npx jest --testMatch "**/?(*.)+(spec).ts" -t FavoriteService` nếu cần — xem reference_jest_worktree_testmatch.)
+(Trong worktree, jest <rootDir> glob có thể hỏng — dùng `pnpm exec jest --testMatch "**/?(*.)+(spec).ts" -t FavoriteService` nếu cần — xem reference_jest_worktree_testmatch.)
 
 - [ ] **Step 3: Implement** `server/src/modules/favorite/favorite.service.ts`:
 
@@ -630,7 +630,7 @@ export class FavoriteService {
 }
 ```
 
-- [ ] **Step 4: Run test, expect PASS.** Run: `cd server && npx jest --testMatch "**/favorite.service.spec.ts"` → all pass.
+- [ ] **Step 4: Run test, expect PASS.** Run: `cd server && pnpm exec jest --testMatch "**/favorite.service.spec.ts"` → all pass.
 
 - [ ] **Step 5: Commit**
 
@@ -966,7 +966,7 @@ describe("WebAppService.listUserApps isFavorite", () => {
 
 Add `import { RequestContext } from "@/utils/request-context";` to spec; `afterEach(() => jest.restoreAllMocks())`.
 
-- [ ] **Step 6: Run BE tests, expect PASS.** Run: `cd server && npx jest --testMatch "**/web-app.service.spec.ts" "**/favorite.service.spec.ts"` → pass.
+- [ ] **Step 6: Run BE tests, expect PASS.** Run: `cd server && pnpm exec jest --testMatch "**/web-app.service.spec.ts" "**/favorite.service.spec.ts"` → pass.
 
 - [ ] **Step 7: Commit**
 
@@ -991,8 +991,8 @@ git commit -m "docs(favorite): swagger for favorites endpoints + isFavorite"
 
 ## Task BE-GREEN: Backend green checks
 
-- [ ] Run (must all pass): `cd server && yarn format && yarn lint && yarn type-check && yarn test && yarn build`
-- [ ] Fix any error, re-run until green. (Trong worktree: nếu jest `<rootDir>` glob hỏng → `npx jest --testMatch "**/?(*.)+(spec).ts"`; lint/tsc nhiễu `.worktrees` → lint touched files trực tiếp — xem [[reference_worktrees_lint_noise]].)
+- [ ] Run (must all pass): `cd server && pnpm format && pnpm lint && pnpm type-check && pnpm test && pnpm build`
+- [ ] Fix any error, re-run until green. (Trong worktree: nếu jest `<rootDir>` glob hỏng → `pnpm exec jest --testMatch "**/?(*.)+(spec).ts"`; lint/tsc nhiễu `.worktrees` → lint touched files trực tiếp — xem [[reference_worktrees_lint_noise]].)
 
 ---
 
@@ -1735,7 +1735,7 @@ git commit -m "feat(fe-favorite): i18n en+vi for favorites + apps card labels"
 
 ## Task FE-GREEN: Frontend green checks
 
-- [ ] Run (must pass): `cd client && yarn format && yarn lint && npx tsc --noEmit && yarn build`
+- [ ] Run (must pass): `cd client && pnpm format && pnpm lint && pnpm exec tsc --noEmit && pnpm build`
 - [ ] Fix all errors, re-run until green. Re-read auto-fixed files.
 
 ---
@@ -1772,7 +1772,7 @@ git commit -m "test(fe-favorite): e2e suite for favorite apps"
 # git -C docs/.worktrees/favorite-apps add specs/favorite-apps/e2e.md && git commit -m "docs(favorite-apps): e2e scenarios"
 ```
 
-> **Dual-gate (§4.3)** chạy ở bước E2E của flow (sau code review), KHÔNG trong writing-plans: gate A `cd client && yarn e2e` (scope favorite-apps) + gate B MCP walk (auth context riêng, skip mutation của `A only` rows). Fail → `systematic-debugging` → `e2e-bugs.md` → fix → lặp max 3.
+> **Dual-gate (§4.3)** chạy ở bước E2E của flow (sau code review), KHÔNG trong writing-plans: gate A `cd client && pnpm e2e` (scope favorite-apps) + gate B MCP walk (auth context riêng, skip mutation của `A only` rows). Fail → `systematic-debugging` → `e2e-bugs.md` → fix → lặp max 3.
 
 ---
 

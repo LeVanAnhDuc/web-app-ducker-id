@@ -57,7 +57,7 @@
 
 # PHASE A — Backend (server worktree)
 
-> Run BE checks after each task group: `yarn format && yarn lint && yarn tsc`. Jest in a worktree needs an explicit testMatch (see [[reference_jest_worktree_testmatch]]): `npx jest --testMatch "**/?(*.)+(spec).ts" <path>`.
+> Run BE checks after each task group: `pnpm format && pnpm lint && pnpm exec tsc`. Jest in a worktree needs an explicit testMatch (see [[reference_jest_worktree_testmatch]]): `pnpm exec jest --testMatch "**/?(*.)+(spec).ts" <path>`.
 
 ### Task A1: Module constants
 
@@ -73,7 +73,7 @@ export const NOTIFICATION_PAGINATION = {
 } as const;
 ```
 
-- [ ] **Step 2: Verify** — `yarn tsc` passes.
+- [ ] **Step 2: Verify** — `pnpm exec tsc` passes.
 
 ---
 
@@ -88,7 +88,7 @@ export const NOTIFICATION_PAGINATION = {
   NOTIFICATION_NOT_FOUND: "NOTIFICATION_NOT_FOUND",
 ```
 
-- [ ] **Step 2: Verify** — `yarn tsc` passes.
+- [ ] **Step 2: Verify** — `pnpm exec tsc` passes.
 
 ---
 
@@ -139,7 +139,7 @@ export interface NotificationIdRequest extends Omit<Request, "params"> {
 
 > Note: the existing `import type { Schema } from "mongoose"` line stays; add the `express` import in the `// types` group per `.claude/rules/imports.md`.
 
-- [ ] **Step 2: Verify** — `yarn tsc` passes.
+- [ ] **Step 2: Verify** — `pnpm exec tsc` passes.
 
 ---
 
@@ -189,7 +189,7 @@ export const notificationIdParamSchema = Joi.object({
 
 - [ ] **Step 2:** Verify `OBJECTID_PATTERN` exists in `validators/constants.ts` (it is used by `login-history.ts`). If `validation:id.invalid` is absent, it is added in Task A5.
 
-- [ ] **Step 3: Verify** — `yarn tsc` passes.
+- [ ] **Step 3: Verify** — `pnpm exec tsc` passes.
 
 ---
 
@@ -226,7 +226,7 @@ And `i18n/locales/vi/notification.json` (Vietnamese translations of the same key
 
 - [ ] **Step 3:** Register the namespace in `i18n/locales/en/index.ts` and `vi/index.ts` following the existing `webApp` import pattern (`import notification from "./notification.json"` + add `notification` to the exported resources object).
 
-- [ ] **Step 4: Verify** — `yarn tsc` passes; app boot (`yarn dev`) shows no i18n load error.
+- [ ] **Step 4: Verify** — `pnpm exec tsc` passes; app boot (`pnpm dev`) shows no i18n load error.
 
 ---
 
@@ -272,7 +272,7 @@ export { toNotificationItemDto } from "./notification-item.dto";
 export type { NotificationItemDto } from "./notification-item.dto";
 ```
 
-- [ ] **Step 3: Verify** — `yarn tsc` passes.
+- [ ] **Step 3: Verify** — `pnpm exec tsc` passes.
 
 ---
 
@@ -296,7 +296,7 @@ export const buildNotificationFilter = (
 };
 ```
 
-- [ ] **Step 2: Verify** — `yarn tsc` passes.
+- [ ] **Step 2: Verify** — `pnpm exec tsc` passes.
 
 ---
 
@@ -400,7 +400,7 @@ export class MongoNotificationRepository implements NotificationRepository {
 
 - [ ] **Step 2:** Confirm `PaginationOptions` is exported from `@/types/common` (login-history imports it from there). If not, define `{ skip: number; limit: number; sort: Record<string, 1 | -1> }` locally in module types instead and import that.
 
-- [ ] **Step 3: Verify** — `yarn tsc` passes.
+- [ ] **Step 3: Verify** — `pnpm exec tsc` passes.
 
 ---
 
@@ -485,7 +485,7 @@ describe("NotificationService", () => {
 });
 ```
 
-- [ ] **Step 2: Run, expect FAIL** — `npx jest --testMatch "**/?(*.)+(spec).ts" src/modules/notification` → fails (no `NotificationService`).
+- [ ] **Step 2: Run, expect FAIL** — `pnpm exec jest --testMatch "**/?(*.)+(spec).ts" src/modules/notification` → fails (no `NotificationService`).
 
 - [ ] **Step 3: Implement service:**
 
@@ -626,7 +626,7 @@ export class NotificationController {
 }
 ```
 
-- [ ] **Step 2: Verify** — `yarn tsc` passes.
+- [ ] **Step 2: Verify** — `pnpm exec tsc` passes.
 
 ---
 
@@ -680,7 +680,7 @@ export const createNotificationUserRoutes = (
 
 - [ ] **Step 2:** Confirm `paramsPipe` is exported from `@/middlewares` (it is used elsewhere per CLAUDE.md).
 
-- [ ] **Step 3: Verify** — `yarn tsc` passes.
+- [ ] **Step 3: Verify** — `pnpm exec tsc` passes.
 
 ---
 
@@ -711,7 +711,7 @@ export const createNotificationModule = () => {
 
 - [ ] **Step 2:** In `loaders/modules.loader.ts`: add `import { createNotificationModule } from "@/modules/notification/notification.module";`; add `notification: Router;` to the `ModuleRoutes` interface; instantiate `const notificationModule = createNotificationModule();`; add `notification: notificationModule.notificationUserRouter` to the routes object; and in `mountRoutes` add `v1Router.use(routes.notification);` near the User group.
 
-- [ ] **Step 3: Verify** — `yarn tsc`; `yarn dev` boots; `GET /api/v1/notifications` returns 401 without auth, 200 `{ items: [], meta: {...} }` with a valid session.
+- [ ] **Step 3: Verify** — `pnpm exec tsc`; `pnpm dev` boots; `GET /api/v1/notifications` returns 401 without auth, 200 `{ items: [], meta: {...} }` with a valid session.
 
 ---
 
@@ -819,15 +819,15 @@ export const clearNotifications = async (): Promise<void> => {
 
 - [ ] **Step 3:** Wire into `database/seeders/index.ts`: import `seedNotifications, clearNotifications`; call `await clearNotifications();` in the clear block (before/after users is fine — it looks up the user) and `await seedNotifications();` after `seedUsers()` (must run after users exist).
 
-- [ ] **Step 4: Verify** — `yarn seed` then query Mongo: `user@test.com` has 26 notifications, ~ a third unread, spread across days. `yarn seed:clear` removes them.
+- [ ] **Step 4: Verify** — `pnpm seed` then query Mongo: `user@test.com` has 26 notifications, ~ a third unread, spread across days. `pnpm seed:clear` removes them.
 
-- [ ] **Step 5: Run BE quality gate** — `yarn format && yarn lint && yarn tsc` all clean. Run the service spec once more (Task A9 command) → PASS.
+- [ ] **Step 5: Run BE quality gate** — `pnpm format && pnpm lint && pnpm exec tsc` all clean. Run the service spec once more (Task A9 command) → PASS.
 
 ---
 
 # PHASE B — Frontend (client worktree)
 
-> Run FE checks after each task group: `yarn format && yarn lint && yarn tsc`. The worktree may need a `node_modules` junction to run these — see [[reference_worktree_node_modules_junction]].
+> Run FE checks after each task group: `pnpm format && pnpm lint && pnpm exec tsc`. The worktree may need a `node_modules` junction to run these — see [[reference_worktree_node_modules_junction]].
 
 ### Task B1: Constants
 
@@ -852,7 +852,7 @@ export const clearNotifications = async (): Promise<void> => {
   NOTIFICATIONS_UNREAD_COUNT: "notificationsUnreadCount",
 ```
 
-- [ ] **Step 3: Verify** — `yarn tsc` passes.
+- [ ] **Step 3: Verify** — `pnpm exec tsc` passes.
 
 ---
 
@@ -895,7 +895,7 @@ export interface NotificationListParams {
 }
 ```
 
-- [ ] **Step 2: Verify** — `yarn tsc` passes.
+- [ ] **Step 2: Verify** — `pnpm exec tsc` passes.
 
 ---
 
@@ -954,7 +954,7 @@ export const markAllNotificationsRead = async (): Promise<{
 };
 ```
 
-- [ ] **Step 2: Verify** — `yarn tsc` passes.
+- [ ] **Step 2: Verify** — `pnpm exec tsc` passes.
 
 ---
 
@@ -999,7 +999,7 @@ export const NOTIFICATION_VISUALS: Record<
 };
 ```
 
-- [ ] **Step 2: Verify** — `yarn tsc` passes; all imported icons exist in `lucide-react`.
+- [ ] **Step 2: Verify** — `pnpm exec tsc` passes; all imported icons exist in `lucide-react`.
 
 ---
 
@@ -1085,7 +1085,7 @@ export default useMarkNotificationRead;
 
 - [ ] **Step 4:** `useMarkAllRead.ts` — same shape, `mutationFn: markAllNotificationsRead`, same invalidations, `onError: toast.error(tToast("markAllError"))`.
 
-- [ ] **Step 5: Verify** — `yarn tsc` passes. (`toast` from `sonner` is the project pattern per `views.md`.)
+- [ ] **Step 5: Verify** — `pnpm exec tsc` passes. (`toast` from `sonner` is the project pattern per `views.md`.)
 
 ---
 
@@ -1173,7 +1173,7 @@ const NotificationItem = ({
 export default NotificationItem;
 ```
 
-- [ ] **Step 2: Verify** — `yarn tsc` passes.
+- [ ] **Step 2: Verify** — `pnpm exec tsc` passes.
 
 ---
 
@@ -1290,7 +1290,7 @@ Render each item: `<NotificationItem type={n.type} title={n.title} message={n.me
 
 > Keep this file ≤200 lines; if it grows, extract the grouped-list rendering into `components/NotificationGroups`.
 
-- [ ] **Step 5: Verify** — `yarn tsc` + `yarn lint` pass.
+- [ ] **Step 5: Verify** — `pnpm exec tsc` + `pnpm lint` pass.
 
 ---
 
@@ -1306,7 +1306,7 @@ Render each item: `<NotificationItem type={n.type} title={n.title} message={n.me
 
 - [ ] **Step 3:** Delete the `NOTIFICATIONS_MOCK` export from `mocks/Dashboard/index.ts` and the now-unused `AppNotification` import there. Grep `NOTIFICATIONS_MOCK` repo-wide → zero hits. If `mocks/Notifications/index.ts` is now unused, delete it and remove imports.
 
-- [ ] **Step 4: Verify** — `yarn tsc` + `yarn lint` pass; no dangling mock imports.
+- [ ] **Step 4: Verify** — `pnpm exec tsc` + `pnpm lint` pass; no dangling mock imports.
 
 ---
 
@@ -1316,23 +1316,23 @@ Render each item: `<NotificationItem type={n.type} title={n.title} message={n.me
 
 - [ ] **Step 1:** Add to both locales (en shown; vi translated): under `actions` add `"markRead": "Mark as read"`; add a `states` block `{ "empty": "No notifications here.", "emptyRead": "No read notifications yet.", "emptyUnread": "You're all caught up.", "loading": "Loading notifications...", "error": "Couldn't load notifications." }`; add to `announce` `"markedRead": "Notification marked as read."`; add a `toast` block `{ "markReadError": "Could not mark as read.", "markAllError": "Could not mark all as read." }`. Remove the now-unused `items.*` mock keys only after confirming nothing references them.
 
-- [ ] **Step 2: Verify** — `yarn tsc` (next-intl typed messages) passes for both locales; keys exist in en AND vi (symmetry).
+- [ ] **Step 2: Verify** — `pnpm exec tsc` (next-intl typed messages) passes for both locales; keys exist in en AND vi (symmetry).
 
-- [ ] **Step 3: Run FE quality gate** — `yarn format && yarn lint && yarn tsc` all clean.
+- [ ] **Step 3: Run FE quality gate** — `pnpm format && pnpm lint && pnpm exec tsc` all clean.
 
 ---
 
 # PHASE C — E2E (client worktree)
 
-> Precondition per CLAUDE.md §4.3: BE :5000 + FE :3000 + Mongo + Redis running and DB seeded (`yarn seed`). Agent self-checks ports; if not running, ask the user (a) they run it or (b) agent starts it in background, then teardown only what it started. E2E in a worktree needs its own dev server on a separate port — see [[reference_e2e_worktree_devserver]].
+> Precondition per CLAUDE.md §4.3: BE :5000 + FE :3000 + Mongo + Redis running and DB seeded (`pnpm seed`). Agent self-checks ports; if not running, ask the user (a) they run it or (b) agent starts it in background, then teardown only what it started. E2E in a worktree needs its own dev server on a separate port — see [[reference_e2e_worktree_devserver]].
 
 ### Task C1: E2E helper + spec scaffolding
 
 **Files:** Create `e2e/helpers/notifications.ts`, `e2e/notifications/notifications.e2e.ts`
 
-- [ ] **Step 1: Helper** — a reseed/teardown utility (mark-read mutations are destructive and there is no mark-unread API, so `afterAll` must restore state). The cleanest restore is to call the BE seeder's clear+seed. Since E2E can't run `yarn seed` mid-suite easily, the helper logs in as `user@test.com` and, in `afterAll`, leaves a note; the durable fix is to **re-run `yarn seed` (clear+seed) between E2E runs**. Document this in `e2e.md`. (If a programmatic reset is wanted, add a test-only reseed step that deletes + re-inserts via a seeded admin endpoint — out of scope here; flagged.)
+- [ ] **Step 1: Helper** — a reseed/teardown utility (mark-read mutations are destructive and there is no mark-unread API, so `afterAll` must restore state). The cleanest restore is to call the BE seeder's clear+seed. Since E2E can't run `pnpm seed` mid-suite easily, the helper logs in as `user@test.com` and, in `afterAll`, leaves a note; the durable fix is to **re-run `pnpm seed` (clear+seed) between E2E runs**. Document this in `e2e.md`. (If a programmatic reset is wanted, add a test-only reseed step that deletes + re-inserts via a seeded admin endpoint — out of scope here; flagged.)
 
-> **Mutation-safety teardown decision (record in `e2e.md`):** the suite reseeds notifications by running `yarn seed --clear` + `yarn seed` before the run; within the run, mark-read/mark-all tests assert state transitions but the suite is ordered so read-state assertions tolerate prior mutations (query unread count deltas rather than absolute counts where possible).
+> **Mutation-safety teardown decision (record in `e2e.md`):** the suite reseeds notifications by running `pnpm seed --clear` + `pnpm seed` before the run; within the run, mark-read/mark-all tests assert state transitions but the suite is ordered so read-state assertions tolerate prior mutations (query unread count deltas rather than absolute counts where possible).
 
 - [ ] **Step 2: Spec file** — implement one test per ✅ scenario from the design matrix (§6). Use the global `auth.setup.ts` storageState (logged in as `user@test.com`). Selectors prefer role/label.
 
@@ -1350,7 +1350,7 @@ Render each item: `<NotificationItem type={n.type} title={n.title} message={n.me
 - [ ] **Mutation: mark all** — click Mark all as read → unread tab empties; badge → 0. `afterAll`: trigger reseed (documented).
 - [ ] **A11y** — mark-read button has accessible name (`getByRole("button", { name: <markRead label> })`); keyboard `Tab` reaches it; Load more reachable by keyboard.
 
-- [ ] **Step: Run** — `cd client && yarn e2e` (against the running, seeded app) → all green before code review. Reseed afterward if mutations ran.
+- [ ] **Step: Run** — `cd client && pnpm e2e` (against the running, seeded app) → all green before code review. Reseed afterward if mutations ran.
 
 > AuthZ-FE-UI and validation-FE-form scenarios are **N/A** (no UI path to a foreign id; no manual page/limit input) — covered by the BE service spec (Task A9) instead. Recorded in the matrix; do not author empty FE tests for them.
 
@@ -1379,13 +1379,13 @@ Render each item: `<NotificationItem type={n.type} title={n.title} message={n.me
 
 ## E2E Backfill Plan
 
-> **Mục đích**: backfill các scenario `NEW` trong Scenario Matrix (`design.md` §6) mà suite hiện tại (13 `test(...)` blocks trong `client/e2e/notifications/notifications.e2e.ts`) chưa cover. Đây là **reconcile**, KHÔNG rebuild: chỉ ADD/extend test cho behavior chưa được assert; không xóa test cũ. Mỗi task = 1 checkbox = 1 scenario `NEW`/extended. Code đầy đủ cho case NON-OBVIOUS (header bell, intercept-per-tab, mutation-failure, idempotency, persistence, vi relative-time, announcer, keyboard). TDD: viết test → chạy `yarn e2e` (chỉ file này) → đỏ nếu app chưa đúng → xanh.
+> **Mục đích**: backfill các scenario `NEW` trong Scenario Matrix (`design.md` §6) mà suite hiện tại (13 `test(...)` blocks trong `client/e2e/notifications/notifications.e2e.ts`) chưa cover. Đây là **reconcile**, KHÔNG rebuild: chỉ ADD/extend test cho behavior chưa được assert; không xóa test cũ. Mỗi task = 1 checkbox = 1 scenario `NEW`/extended. Code đầy đủ cho case NON-OBVIOUS (header bell, intercept-per-tab, mutation-failure, idempotency, persistence, vi relative-time, announcer, keyboard). TDD: viết test → chạy `pnpm e2e` (chỉ file này) → đỏ nếu app chưa đúng → xanh.
 >
 > **File mục tiêu (extend, không tạo mới)**: `client/e2e/notifications/notifications.e2e.ts`. Tất cả test chạy dưới project `chromium` (user storageState từ `auth.setup.ts`, login `user@test.com`).
 >
 > **Drift đã chốt (bám sát code thật — KHÔNG optimistic UI)**: `useMarkNotificationRead` / `useMarkAllRead` chỉ `invalidateQueries` trong `onSuccess` (KHÔNG `onMutate`, KHÔNG rollback). Mutation **fail** → cache giữ nguyên → item ở lại unread + toast từ `onError`. Mark-read button `disabled={isMarking}` với `isMarking = markRead.isPending` **dùng chung cho mọi item** (1 mutation hook cho cả list) → trong lúc pending, **TẤT CẢ** nút mark-read bị disabled (quan trọng cho test idempotency).
 >
-> **Restoration (drift fix)**: KHÔNG có mark-unread API và `afterAll` **KHÔNG** auto-reseed (block là no-op documented). Test mutate seed thật (mark-single thật, mark-all thật) → DEFER auto-revert với lý do "no mark-unread API"; restore THỦ CÔNG bằng `cd server && yarn seed --clear && yarn seed`. Ưu tiên `page.route` intercept ở mọi case có thể để KHÔNG mutate seed.
+> **Restoration (drift fix)**: KHÔNG có mark-unread API và `afterAll` **KHÔNG** auto-reseed (block là no-op documented). Test mutate seed thật (mark-single thật, mark-all thật) → DEFER auto-revert với lý do "no mark-unread API"; restore THỦ CÔNG bằng `cd server && pnpm seed --clear && pnpm seed`. Ưu tiên `page.route` intercept ở mọi case có thể để KHÔNG mutate seed.
 >
 > **Gate**: scenario read/render = `A+B`; scenario mutation-heavy (chạy PATCH thật) = **`A only`** (gate B MCP chỉ verify read/render, không mutate song song — contamination rule §4.3).
 
@@ -1809,14 +1809,14 @@ test("double-clicking mark-read fires the PATCH once, not twice", async ({
 
 ### Task D9: Persistence after reload (matrix row 11e) — `A only` (REAL mark-single)
 
-- [ ] **11e persistence sau reload** [State Transition] — sau mark-single **thật**, **reload** trang → item ở lại Read / ra khỏi Unread (invalidate refetch server state authoritative). REAL mutation → `A only`. **DEFER auto-revert** (no mark-unread API); restore thủ công `cd server && yarn seed --clear && yarn seed`.
+- [ ] **11e persistence sau reload** [State Transition] — sau mark-single **thật**, **reload** trang → item ở lại Read / ra khỏi Unread (invalidate refetch server state authoritative). REAL mutation → `A only`. **DEFER auto-revert** (no mark-unread API); restore thủ công `cd server && pnpm seed --clear && pnpm seed`.
 
 Đây là test mutate seed thật duy nhất được thêm (cùng nhóm với test mark-single thật đã có). Đặt trong `describe.serial("Notifications — mutations")`, **sau** test mark-single hiện có:
 
 ```ts
 // REAL mutation (A only) — permanently flips one seeded item to read.
 // No mark-unread API → afterAll cannot revert; restore via:
-//   cd server && yarn seed --clear && yarn seed
+//   cd server && pnpm seed --clear && pnpm seed
 test("a marked item stays read after a full page reload", async ({ page }) => {
   await gotoNotifications(page);
   const firstButton = markReadButtons(page).first();
@@ -1957,17 +1957,17 @@ test.describe("Notifications — keyboard activation", () => {
   - **§3 bảng Scenarios**: ADD rows cho: 1b header bell/panel (Real+intercept, A only), 5a per-tab empty Read (Intercept), 5c null-readAt (Intercept), 6b single-full-page no-load-more (Intercept), 7 read-tab content (Real), 9 vi `/trước/` (Real), 10c mark-read failure (Intercept), 11c mark-all no-op (Intercept), 11d double-click idempotent (Intercept, A only), 11e persistence-after-reload (**Real mutates**, A only), 12 announcer tab-change/load-more (Real/Intercept), 12 keyboard Enter/Space (Intercept, A only). Cập nhật cột Gate (`A+B` vs `A only`) cho khớp matrix.
   - **§5 Teardown/reseed**: bổ sung **test 11e (persistence)** vào danh sách test mutate seed thật cần reseed thủ công (hiện chỉ liệt kê test 9). Nêu rõ: 2 test mutate thật = mark-single (cũ) + persistence-reload (mới); tất cả còn lại dùng intercept.
   - **§6 Follow-ups**: ghi các assertion **DEFER** + lý do: (a) `announce.markedRead`/`markedAllRead` live-region không test riêng (mutate-only, đã cover qua tab-change/load-more + optional piggyback trên D9); (b) auto-revert mark-single/persistence DEFER vì no mark-unread API.
-  - **Verified-run note (§2)**: KHÔNG sửa số "14/14" cũ — thêm dòng mới ghi rằng suite mở rộng cần re-run + cập nhật test-count thực tế sau khi chạy `yarn e2e` (đừng claim con số chưa verify).
+  - **Verified-run note (§2)**: KHÔNG sửa số "14/14" cũ — thêm dòng mới ghi rằng suite mở rộng cần re-run + cập nhật test-count thực tế sau khi chạy `pnpm e2e` (đừng claim con số chưa verify).
   - Giữ matrix (`design.md` §6) ↔ `e2e.md` ↔ test file đồng bộ: mỗi `NEW` trong matrix có đúng 1 test + 1 row e2e.md.
 
 ### Step cuối: chạy & verify (TDD green)
 
-- [ ] **Run** — `cd client && yarn e2e e2e/notifications/notifications.e2e.ts` trên app thật đã seed (worktree FE riêng port + `E2E_BASE_URL` nếu chạy trong worktree — [[reference_e2e_worktree_devserver]], [[reference_worktree_missing_env]]). Tất cả xanh trước khi sang `requesting-code-review`. **Reseed sau khi chạy** nếu test mutate thật (D9 + mark-single cũ) đã fire: `cd server && yarn seed --clear && yarn seed`.
+- [ ] **Run** — `cd client && pnpm e2e e2e/notifications/notifications.e2e.ts` trên app thật đã seed (worktree FE riêng port + `E2E_BASE_URL` nếu chạy trong worktree — [[reference_e2e_worktree_devserver]], [[reference_worktree_missing_env]]). Tất cả xanh trước khi sang `requesting-code-review`. **Reseed sau khi chạy** nếu test mutate thật (D9 + mark-single cũ) đã fire: `cd server && pnpm seed --clear && pnpm seed`.
 
 ### Deferred (ghi rõ lý do — KHÔNG để gap im lặng)
 
 - **`announce.markedRead` / `announce.markedAllRead` live-region (row 12)** — DEFER assertion riêng: chỉ fire trên mutation `onSuccess` thật; test riêng = mutate seed thừa, không thêm coverage so với D9/D7. Có thể piggyback trên D9 nếu muốn thorough.
-- **Auto-revert cho mark-single (cũ) + persistence D9** — DEFER: **không có mark-unread API**; `afterAll` là no-op documented; restore thủ công `yarn seed --clear && yarn seed`.
+- **Auto-revert cho mark-single (cũ) + persistence D9** — DEFER: **không có mark-unread API**; `afterAll` là no-op documented; restore thủ công `pnpm seed --clear && pnpm seed`.
 - **Per-tab 2-page pagination trên backend thật** — vẫn defer (seed/tab < 20), cover bằng intercept (đã ghi trong e2e.md §6). Không đổi.
 - **Loading-skeleton (`states.loading`)** — giữ defer (transient, race-prone) như e2e.md §3 hiện tại; row 10b vẫn N/A-deterministic.
 - **AuthZ-FE (row 3) / Validation-FE-form (row 4)** — N/A như cũ (không có UI path foreign id; không có form page/limit). Cover ở BE. Không thêm.

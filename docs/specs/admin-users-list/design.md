@@ -128,7 +128,7 @@ Bổ sung path + schema cho `GET /admin/users` theo `standard-doc-api` (develope
 ## 6. Error handling & Testing
 
 - **Error**: `adminGuard` → 403 (không phải admin); `queryPipe` → 400 (param sai). Dùng cơ chế response/exception sẵn có.
-- **BE test** (jest): unit cho service (map DTO, build meta, role mapping) + repository (filter/aggregation). Lưu ý chạy jest trong worktree: dùng `npx jest --testMatch "**/?(*.)+(spec).ts"`.
+- **BE test** (jest): unit cho service (map DTO, build meta, role mapping) + repository (filter/aggregation). Lưu ý chạy jest trong worktree: dùng `pnpm exec jest --testMatch "**/?(*.)+(spec).ts"`.
 - **FE E2E** (Playwright, §4.3): trang `admin/users` — load list thật, filter theo role/status/search, đổi trang. Artifact `client/e2e/admin-users-list/*.e2e.ts` + `docs/specs/admin-users-list/e2e.md`.
 
 ## 7. Drift đã ghi nhận (cần biết khi plan)
@@ -145,7 +145,7 @@ Worktree per-repo đã tạo từ `origin/main`, branch `feat/admin-users-list`:
 
 > Trang đích: `/admin/users` (en) · `/vi/admin/users` (vi). Read-only list, filter/page driven qua URL searchParams. Auth dùng admin storageState (`auth.setup` với `E2E_USER_EMAIL=admin@test.com`). Seed reference: `admin@test.com`, `user@test.com`, `inactive@test.com`.
 >
-> Walk đủ 12 nhóm rubric `e2e-scenario-coverage` (breadth) + tag `[technique]` + giá trị cụ thể (depth). Cột `Gate`: `A` = `yarn e2e` (deterministic, committed), `B` = MCP walk (visual/UX/console/network). Marker `[EXISTS]` = đã có trong `admin-users-list.e2e.ts`; `[NEW]` = chưa có, cần bổ sung. Một số row phụ thuộc code-fix prereq (xem §10).
+> Walk đủ 12 nhóm rubric `e2e-scenario-coverage` (breadth) + tag `[technique]` + giá trị cụ thể (depth). Cột `Gate`: `A` = `pnpm e2e` (deterministic, committed), `B` = MCP walk (visual/UX/console/network). Marker `[EXISTS]` = đã có trong `admin-users-list.e2e.ts`; `[NEW]` = chưa có, cần bổ sung. Một số row phụ thuộc code-fix prereq (xem §10).
 
 | # | Category | Status (✅/N/A) | Scenario(s) + expected + [technique] + values | Gate |
 | --- | --- | --- | --- | --- |

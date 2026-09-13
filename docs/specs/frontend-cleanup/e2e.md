@@ -29,7 +29,7 @@ authN, authZ, validation (change-pw msgs only relocated, same text), filter-sear
 ## Dual-gate run status — ✅ PASSED (2026-06-21)
 Stack: main BE :5000 (local Mongo + cloud Redis) + worktree FE :3100.
 
-- **Gate A (`yarn e2e`, scoped):** 8/8 pass (6 behavior tests + 2 auth setup).
+- **Gate A (`pnpm e2e`, scoped):** 8/8 pass (6 behavior tests + 2 auth setup).
 - **Gate B (MCP real-browser walk, fresh user login):** notifications page renders groups correctly (loading→loaded, 13 articles), no console errors attributable to the change (only pre-existing `auth/token/refresh` 403 bootstrap noise). Copy-button covered by Gate A (mutation-heavy create flow not re-walked per §4.3).
 
 ### Bug fixed during the run (test-only, no app code touched)

@@ -126,7 +126,7 @@ Không đổi request/schema/query. Chỉ đổi tầng render bảng (inline JS
   4. Row-click: AdminContact/AdminLoginHistory bấm row → detail; hover đổi nền + cursor; Tab tới row + Enter mở; kebab (nếu có) không trigger nav.
   5. Kebab: AdminUsers/AdminApps/AdminEntitlements action giữ nguyên hành vi.
   6. light/dark + en/vi + `<md`.
-- **Green-checks §4.7 (FE):** `cd client && yarn lint && yarn build`.
+- **Green-checks §4.7 (FE):** `cd client && pnpm lint && pnpm build`.
 
 ## 10. Convention & skills
 

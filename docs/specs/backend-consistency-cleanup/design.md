@@ -12,7 +12,7 @@
 - **E2E (§4.3)**: SKIP — không đổi behavior user thấy/tương tác.
 - **Security review (§4.5)**: nhẹ — không sửa auth logic (token version & guard chỉ giải
   thích, không thay đổi). Xác nhận lại sau khi code.
-- **Green gate (§4.7)**: `yarn lint && yarn type-check && yarn test && yarn build` phải xanh,
+- **Green gate (§4.7)**: `pnpm lint && pnpm type-check && pnpm test && pnpm build` phải xanh,
   đặc biệt test hiện có không được vỡ.
 
 ## 2. Phần A — Q&A (giải thích, không sửa code trừ khi ghi rõ)
@@ -220,12 +220,12 @@ Nhóm 1 (B-1, B-2)  ──► Nhóm 2 (B-3)  ──► Nhóm 3 (B-4, B-5)
 | Xoá `stripUnknown` ở schema dùng ngoài pipe | B-9 bắt buộc grep confirm trước khi xoá. |
 | Rename router sót chỗ tham chiếu | Grep toàn repo identifier cũ; type-check bắt lỗi còn sót. |
 | Sweep comment đụng nhầm comment tốt | Chỉ sửa what/lặp; giữ comment giải thích "why". |
-| Test hiện có vỡ do refactor | Green gate §4.7 chạy `yarn test` + type-check + build trước khi xong. |
+| Test hiện có vỡ do refactor | Green gate §4.7 chạy `pnpm test` + type-check + build trước khi xong. |
 
 ## 6. Tiêu chí hoàn thành (Definition of Done)
 
 - [ ] Toàn bộ B-1…B-10 xong theo thứ tự Nhóm.
-- [ ] `yarn lint` xanh, `yarn type-check` xanh, `yarn test` xanh, `yarn build` xanh (trong
+- [ ] `pnpm lint` xanh, `pnpm type-check` xanh, `pnpm test` xanh, `pnpm build` xanh (trong
       worktree, dùng junction node_modules).
 - [ ] Không thay đổi behavior: default limit (12/20), kết quả sort, route path, response shape
       giữ nguyên.

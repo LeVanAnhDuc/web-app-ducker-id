@@ -12,7 +12,7 @@
 
 **Per-task verification (FE has no unit-test suite):** unless a task says otherwise, "verify" =
 ```bash
-cd client/.worktrees/frontend-cleanup && yarn format && yarn lint && npx tsc --noEmit
+cd client/.worktrees/frontend-cleanup && pnpm format && pnpm lint && pnpm exec tsc --noEmit
 ```
 All three must be clean. Behavior tasks (13, 15, 21) additionally get E2E coverage in Task 21.
 
@@ -470,14 +470,14 @@ If any error copy is inline, move it to the i18n config. If already centralized,
   - **#3 Toast dedup:** admin app status toggle forced error → assert exactly one error toast (`A only` gate, no double-mutation in MCP walk).
   - **#13 i18n:** new `common.json` keys render in `en` and `vi`.
 - [ ] **Step 3:** Reuse `client/e2e/helpers/` + global `auth.setup.ts` storageState. Mutation test (#3) reverts/avoids real data change. Do not modify app code from tests.
-- [ ] **Step 4:** This task's verification is the §4.3 **dual-gate** run (handled by the main loop after all tasks): `yarn e2e` (Gate A) + Playwright MCP walk (Gate B), both over this matrix.
+- [ ] **Step 4:** This task's verification is the §4.3 **dual-gate** run (handled by the main loop after all tasks): `pnpm e2e` (Gate A) + Playwright MCP walk (Gate B), both over this matrix.
 
 ---
 
 ## Post-implementation gates (main loop, not subagents)
 
-1. **§4.7 green checks:** `cd client && yarn lint && yarn build` (FE) — must be green.
-2. **§4.3 E2E dual-gate:** Gate A `yarn e2e` (scope: frontend-cleanup) + Gate B MCP walk, both PASS.
+1. **§4.7 green checks:** `cd client && pnpm lint && pnpm build` (FE) — must be green.
+2. **§4.3 E2E dual-gate:** Gate A `pnpm e2e` (scope: frontend-cleanup) + Gate B MCP walk, both PASS.
 3. **Step 4 code review:** `superpowers:requesting-code-review` (FE convention).
 4. **§4.5 security review:** likely **skip** (no auth/input/sensitive-data surface — cleanup only); record skip rationale in `security-report.md` if confirmed skip, else dispatch security-audit.
 5. **§4.6 CLAUDE.md drift audit:** run if any fact in `client/.claude/CLAUDE.md` changed (new shared hook idioms, constants conventions). Non-blocking.

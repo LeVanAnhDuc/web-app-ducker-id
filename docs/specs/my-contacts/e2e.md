@@ -9,7 +9,7 @@ Real backend throughout both files (no seed-data stubbing) **except**:
 
 ## Seed prerequisite (BLOCKING for the run phase)
 
-`server/src/database/seeders/data/contacts.ts` + `contact.seeder.ts` (`attachMyContactsOwner`, task A4) must have run against the target DB (`yarn seed`, idempotent) so that `user@test.com` owns exactly these 3 sample contacts, spanning all 3 statuses:
+`server/src/database/seeders/data/contacts.ts` + `contact.seeder.ts` (`attachMyContactsOwner`, task A4) must have run against the target DB (`pnpm seed`, idempotent) so that `user@test.com` owns exactly these 3 sample contacts, spanning all 3 statuses:
 
 | Subject | Status | Priority |
 |---|---|---|
@@ -19,7 +19,7 @@ Real backend throughout both files (no seed-data stubbing) **except**:
 
 Plus at least one seeded contact NOT owned by `user@test.com` (guest, `userId: null`) — the seeder already provides this ("Cannot login with Google OAuth", "Anonymous bug report...", etc.) — used to assert list data-isolation (Row 3).
 
-If the seeder has not been run, the happy-path / filter / data-rendering / i18n tests will fail with "element not visible" (not a app bug — a seed-state gap). Re-running `yarn seed` is safe (idempotent, matches on subject).
+If the seeder has not been run, the happy-path / filter / data-rendering / i18n tests will fail with "element not visible" (not a app bug — a seed-state gap). Re-running `pnpm seed` is safe (idempotent, matches on subject).
 
 ## Scenario Matrix → test mapping
 
@@ -73,22 +73,22 @@ These are the authoritative owner-scope contract tests. The Playwright AuthZ tes
 
 ## Dual-gate plan (§4.3)
 
-- **Gate A**: `cd client && yarn e2e --project=chromium e2e/my-contacts` (or `-g "MyContacts|MyContact Detail"` to scope by title) — runs against the real running app. Requires: BE + FE up, Mongo seeded (see Prerequisites below).
+- **Gate A**: `cd client && pnpm e2e --project=chromium e2e/my-contacts` (or `-g "MyContacts|MyContact Detail"` to scope by title) — runs against the real running app. Requires: BE + FE up, Mongo seeded (see Prerequisites below).
 - **Gate B**: MCP browser walk (Playwright MCP `browser_*` tools), auth context **separate** from Gate A (own login, no shared storageState) — walks the full Scenario Matrix rows 1–10, 12 as **read/render-only** verification (visual, console, network). Row 11 (mutation — submit new request) is `Gate: A only` — Gate B does **not** drive a second real submission concurrently (would double-consume the 5/15min `contact:submit` per-IP rate limit and risk racing Gate A's own submission/list-refetch assertions). Gate B may passively observe the "Submit new request" button + dialog OPEN state without clicking Send.
 - **Fail → systematic-debugging → `e2e-bugs.md` → fix → re-run (max 3)**, per §4.3.
 
 ## Prerequisites / blockers for the run phase
 
-1. **Seed**: `cd server && yarn seed` (idempotent) — MUST include the `attachMyContactsOwner` step (task A4) so `user@test.com` owns the 3 sample contacts listed above.
+1. **Seed**: `cd server && pnpm seed` (idempotent) — MUST include the `attachMyContactsOwner` step (task A4) so `user@test.com` owns the 3 sample contacts listed above.
 2. **App up**: BE (`:5000` or worktree port) + FE (`:3000` or worktree port) + Mongo + Redis running. Use `node .claude/scripts/worktree.mjs up my-contacts` (or user's own dev servers) per root CLAUDE.md §4.3 tiered app-running step.
 3. **Env**: `E2E_USER_EMAIL`/`E2E_USER_PASSWORD` default to `user@test.com`/`User@123` (matches the seed owner) — no override needed unless the target env uses different seed creds.
 4. **Rate-limit budget**: this suite makes 3 real `POST /contact/submit` calls total (1 authenticated in `list.e2e.ts` mutation test + 2 guest in `detail.e2e.ts` AuthZ tests) against the 5-requests/15-min per-IP `contact:submit` limiter — safe in isolation, but if run repeatedly in quick succession (e.g. retries) may hit 429. Space out re-runs by 15 min if this budget is exhausted, or clear the Redis rate-limit key (`rate-limit:contact:ip:*`) between runs.
-5. **Type-check**: `npx tsc --noEmit` passes clean (verified this pass). `yarn lint` + `npx prettier --check` also verified clean on both new files.
-6. **NOT yet run**: `yarn e2e` was intentionally NOT executed this pass (app was not up) — this is deferred to the run phase (dual-gate above).
+5. **Type-check**: `pnpm exec tsc --noEmit` passes clean (verified this pass). `pnpm lint` + `pnpm exec prettier --check` also verified clean on both new files.
+6. **NOT yet run**: `pnpm e2e` was intentionally NOT executed this pass (app was not up) — this is deferred to the run phase (dual-gate above).
 
 ## Run-phase status (2026-07-24) — verification caveat
 
-- **Gate A — verified in isolation (not a single consolidated green run).** With the app up + seeded, the suite was run: `detail.e2e.ts` **12/12 pass** (twice), `list.e2e.ts` submit test **2/2 pass**, `npx tsc --noEmit` + `eslint` clean. A full-suite run landed **37/39**, where the only 2 reds were **BE per-IP `contact:submit` rate-limit (429) exhaustion** from cumulative real submits across the iteration session — confirmed via the captured toast, NOT a test/app defect; each of those 2 tests passes when run individually. Round-1 selector defects fixed + logged in `e2e-bugs.md`.
+- **Gate A — verified in isolation (not a single consolidated green run).** With the app up + seeded, the suite was run: `detail.e2e.ts` **12/12 pass** (twice), `list.e2e.ts` submit test **2/2 pass**, `pnpm exec tsc --noEmit` + `eslint` clean. A full-suite run landed **37/39**, where the only 2 reds were **BE per-IP `contact:submit` rate-limit (429) exhaustion** from cumulative real submits across the iteration session — confirmed via the captured toast, NOT a test/app defect; each of those 2 tests passes when run individually. Round-1 selector defects fixed + logged in `e2e-bugs.md`.
 - **A final consolidated 39/39 run + Gate B (MCP visual walk) were NOT obtained** — the local MongoDB service (localhost `rs0`, db `Apartment_App`) went down mid-run and could not be restarted (no admin rights in the agent shell). Per the user's explicit instruction ("bỏ qua bước mongo"), the merge proceeded on the isolation-verified Gate A evidence above; **Gate B is deferred** as a follow-up to run once MongoDB is back up.
 - Green checks §4.7 (DB-independent) all pass: BE `lint`+`type-check`+`test` (276) +`build`; FE `lint`+`build`.
 - **A11y follow-up (pre-existing, not this feature)**: `SupportDialog` `SubjectField`/`EmailField` label↔input association is broken — `useFieldProps` sets `field.id = field.name`, overriding shadcn `FormControl`'s Slot-injected id that `<FormLabel htmlFor>` targets. Flagged, not fixed (out of MyContacts scope).

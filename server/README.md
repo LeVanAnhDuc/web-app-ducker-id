@@ -16,12 +16,12 @@ RESTful API server for **Ducker ID (Identity Management System)** — a central 
 | Documentation   | Swagger UI (OpenAPI)                   |
 | Logging         | Winston (daily rotate files)           |
 | Testing         | Jest 30 + ts-jest                      |
-| Package Manager | Yarn                                   |
+| Package Manager | pnpm                                   |
 
 ## Prerequisites
 
 - **Node.js** >= 18
-- **Yarn** (classic)
+- **pnpm** (the exact version is pinned by `packageManager` in `package.json`)
 - **MongoDB** — local instance or remote connection string
 - **Redis** — required for rate limiting, caching, and job queues
 
@@ -30,7 +30,7 @@ RESTful API server for **Ducker ID (Identity Management System)** — a central 
 ### 1. Install dependencies
 
 ```bash
-yarn install
+pnpm install
 ```
 
 ### 2. Configure environment variables
@@ -76,19 +76,19 @@ LOG_LEVEL=http
 ### 3. Seed the database (optional)
 
 ```bash
-yarn seed
+pnpm seed
 ```
 
 To remove seeded data:
 
 ```bash
-yarn seed:clear
+pnpm seed:clear
 ```
 
 ### 4. Start the development server
 
 ```bash
-yarn dev
+pnpm dev
 ```
 
 The server runs at **http://localhost:5000** by default.
@@ -97,10 +97,10 @@ The server runs at **http://localhost:5000** by default.
 
 ```bash
 # Terminal 1 — Development server (fast reload via nodemon)
-yarn dev
+pnpm dev
 
 # Terminal 2 — TypeScript type checking (watch mode)
-yarn dev:check
+pnpm dev:check
 ```
 
 Nodemon is configured with `--transpile-only` for fast restarts (1s delay to avoid rapid reloads). Type `rs` in the terminal to force a restart.
@@ -109,19 +109,19 @@ Nodemon is configured with `--transpile-only` for fast restarts (1s delay to avo
 
 | Command              | Description                                 |
 | -------------------- | ------------------------------------------- |
-| `yarn dev`           | Start dev server with nodemon (fast reload) |
-| `yarn dev:check`     | TypeScript watch mode (separate terminal)   |
-| `yarn type-check`    | One-time TypeScript validation              |
-| `yarn build`         | Compile TypeScript to `dist/`               |
-| `yarn start`         | Build and run production server             |
-| `yarn lint`          | Run ESLint                                  |
-| `yarn lint:fix`      | Auto-fix lint errors                        |
-| `yarn format`        | Format code with Prettier                   |
-| `yarn test`          | Run Jest tests                              |
-| `yarn test:coverage` | Run tests with coverage report              |
-| `yarn test:watch`    | Jest in watch mode                          |
-| `yarn seed`          | Populate database with seed data            |
-| `yarn seed:clear`    | Remove seeded data                          |
+| `pnpm dev`           | Start dev server with nodemon (fast reload) |
+| `pnpm dev:check`     | TypeScript watch mode (separate terminal)   |
+| `pnpm type-check`    | One-time TypeScript validation              |
+| `pnpm build`         | Compile TypeScript to `dist/`               |
+| `pnpm start`         | Build and run production server             |
+| `pnpm lint`          | Run ESLint                                  |
+| `pnpm lint:fix`      | Auto-fix lint errors                        |
+| `pnpm format`        | Format code with Prettier                   |
+| `pnpm test`          | Run Jest tests                              |
+| `pnpm test:coverage` | Run tests with coverage report              |
+| `pnpm test:watch`    | Jest in watch mode                          |
+| `pnpm seed`          | Populate database with seed data            |
+| `pnpm seed:clear`    | Remove seeded data                          |
 
 ## Project Structure
 
@@ -326,7 +326,7 @@ All errors are caught by `asyncHandler` and processed by the global error handle
 - **Husky** — pre-commit hooks
 - **lint-staged** — auto-lint and format on commit
 
-> **Important:** This project uses Yarn. Only commit `yarn.lock` — do not commit `package-lock.json`.
+> **Important:** This project uses pnpm. Only commit `pnpm-lock.yaml` — do not commit `package-lock.json` or `yarn.lock`.
 
 ## Documentation
 

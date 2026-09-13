@@ -16,7 +16,7 @@
 - Route/endpoint/key/enum qua `CONSTANTS.*`; role values từ `CONSTANTS.AUTHENTICATION_ROLES` (USER/ADMIN).
 - Mọi string mới → i18n en + vi; announce keys en + vi.
 - `useQuery` của view → `views/AdminEntitlements/hooks/`; effect → `ghosts/`.
-- Green checks trước handover: `yarn format` → `yarn lint` → `npx tsc --noEmit`.
+- Green checks trước handover: `pnpm format` → `pnpm lint` → `pnpm exec tsc --noEmit`.
 - Đọc `.claude/uiux/` (token/icon-map/ux-copy) khi thêm UI; conflict → uiux thắng.
 
 ---
@@ -31,7 +31,7 @@
 - Produces: Board render `<PageShell fullHeight>` chứa `<PageHeader title={t("title")} description={t("subtitle")} />` + picker toolbar + chips + matrix/empty + revoke dialog.
 
 - [ ] **Step 1:** Thay `<main className="mx-auto w-full max-w-3xl p-8">` + `<div className="mb-6"><h1>…</h1><p>…</p></div>` bằng `PageShell fullHeight` + `PageHeader`. Bỏ padding/max-width custom (layout `#main-content` lo). Giữ `UserMultiSelect`, khối selected/matrix, `AdminEntitlementsRevokeDialog`. Import theo nhóm (`imports.md`).
-- [ ] **Step 2:** `cd client && yarn format && yarn lint && npx tsc --noEmit` → PASS.
+- [ ] **Step 2:** `cd client && pnpm format && pnpm lint && pnpm exec tsc --noEmit` → PASS.
 - [ ] **Step 3:** Commit `feat(admin-entitlements): standard PageShell + PageHeader layout`.
 
 ---
@@ -46,7 +46,7 @@
 - Produces: `useAdminUsersSearch(search: string, role: AuthenticationRole | null, enabled: boolean)` → `useQuery`. `limit = (search === "" && role === null) ? 6 : 20`. queryKey `[ADMIN_USERS, search, role]`. queryFn `getAdminUsers({ ...(search && {search}), ...(role && {role}), limit })`.
 
 - [ ] **Step 1:** Refactor hook theo signature trên. Constant `DEFAULT_LIMIT = 6`, `SEARCH_LIMIT = 20` (khai báo trong hook file).
-- [ ] **Step 2:** `cd client && npx tsc --noEmit` → PASS.
+- [ ] **Step 2:** `cd client && pnpm exec tsc --noEmit` → PASS.
 - [ ] **Step 3:** Commit `feat(admin-entitlements): search hook supports role filter + default limit`.
 
 ---
@@ -65,7 +65,7 @@
 - Produces (dưới `announce`): `filterChanged`: EN "Filtered by {role}." / VI "Đã lọc theo {role}."
 
 - [ ] **Step 1:** Thêm keys trên vào cả 2 file, giữ JSON hợp lệ + đồng bộ cấu trúc en↔vi.
-- [ ] **Step 2:** `cd client && npx tsc --noEmit` → PASS (next-intl type-check messages).
+- [ ] **Step 2:** `cd client && pnpm exec tsc --noEmit` → PASS (next-intl type-check messages).
 - [ ] **Step 3:** Commit `feat(admin-entitlements): i18n role filter labels`.
 
 ---
@@ -81,7 +81,7 @@
 
 - [ ] **Step 1:** Kiểm tra tồn tại `@/components/ui/radio-group` (`ls client/src/components/ui/radio-group*`). Có → dùng RadioGroup; không → list `CustomButton variant={selected?"secondary":"ghost"}`.
 - [ ] **Step 2:** Viết component (≤200 lines, props inline, 1 default export). Badge active khi `role !== null`. `aria-label` cho nút Filters.
-- [ ] **Step 3:** `cd client && yarn lint && npx tsc --noEmit` → PASS.
+- [ ] **Step 3:** `cd client && pnpm lint && pnpm exec tsc --noEmit` → PASS.
 - [ ] **Step 4:** Commit `feat(admin-entitlements): role filter popover component`.
 
 ---
@@ -96,7 +96,7 @@
 - Produces: `SelectedUserChips({ users, onRemove, removeLabel })` — `users: AdminUser[]`, `onRemove: (u) => void`, `removeLabel: (name: string) => string`. Render `null` khi `users.length === 0`; ngược lại `<div className="flex flex-wrap gap-1.5">` các `UserChip`. (Board đã có empty state riêng khi chưa chọn.)
 
 - [ ] **Step 1:** Viết component (one markup block; nhánh empty = `return null`, hợp lệ theo `views.md`).
-- [ ] **Step 2:** `cd client && yarn lint && npx tsc --noEmit` → PASS.
+- [ ] **Step 2:** `cd client && pnpm lint && pnpm exec tsc --noEmit` → PASS.
 - [ ] **Step 3:** Commit `feat(admin-entitlements): selected-user chips row component`.
 
 ---
@@ -115,7 +115,7 @@
 - [ ] **Step 1:** Refactor `UserMultiSelect`: bỏ khối chips + `<CustomInput>` viền tự chế; dùng `SearchInput` (value/onChange/placeholder/ariaLabel), bọc trong `PopoverAnchor`. Thêm `UserRoleFilter` cạnh SearchInput trong 1 row `flex items-center gap-3`. Enable query khi `isFocused` (focus → fetch 6 default). Dropdown `PopoverContent` giữ `UserResultsList`. Announcer nhận `role` để announce khi count đổi (bỏ điều kiện `query` bắt buộc → announce cả khi focus default). Giữ ≤200 lines (tách nếu cần).
 - [ ] **Step 2:** `AdminEntitlementsBoard`: render `<SelectedUserChips users={selectedUsers} onRemove={removeUser} removeLabel={(name)=>tPicker("removeUser",{name})} />` NGAY DƯỚI `UserMultiSelect` (chips row dưới toolbar). Import `tPicker = useTranslations("adminEntitlements.picker")`.
 - [ ] **Step 3:** `PickerResultsAnnouncer`: announce `results` khi `isOpen` (bỏ ràng buộc `query` không rỗng vì giờ default cũng hiện user); giữ `useUpdateEffect`.
-- [ ] **Step 4:** `cd client && yarn format && yarn lint && npx tsc --noEmit` → PASS.
+- [ ] **Step 4:** `cd client && pnpm format && pnpm lint && pnpm exec tsc --noEmit` → PASS.
 - [ ] **Step 5:** Commit `feat(admin-entitlements): SearchInput + role filter toolbar, focus-default users`.
 
 ---
@@ -131,7 +131,7 @@
 
 - [ ] **Step 1:** Viết `e2e.md` từ matrix §7 (final scenarios + follow-up gaps nếu có).
 - [ ] **Step 2:** Author `picker.e2e.ts` — 1 test / scenario Applicable (admin project). Case cần >6/>20 user hoặc seed đặc thù → defer ghi rõ lý do trong `e2e.md` (no silent cap).
-- [ ] **Step 3:** Chạy §4.3 **dual-gate** (gate A `yarn e2e` scope feature + gate B MCP walk) theo tiền đề app-running. Fail → `systematic-debugging` → `e2e-bugs.md` → fix → lặp (max 3).
+- [ ] **Step 3:** Chạy §4.3 **dual-gate** (gate A `pnpm e2e` scope feature + gate B MCP walk) theo tiền đề app-running. Fail → `systematic-debugging` → `e2e-bugs.md` → fix → lặp (max 3).
 - [ ] **Step 4:** Commit `test(admin-entitlements): E2E picker search + role filter`.
 
 ---

@@ -96,7 +96,7 @@ listUserCategories = async (req: Request, res: Response): Promise<void> => {
 
 - [ ] **Step 4: Verify anonymous access manually (evidence)**
 
-With BE running (`cd server && yarn dev`), run:
+With BE running (`cd server && pnpm dev`), run:
 ```bash
 curl -s -o /dev/null -w "%{http_code}\n" http://localhost:5000/api/v1/apps/categories
 ```
@@ -109,7 +109,7 @@ Expected: `401`.
 - [ ] **Step 5: Quality gate + commit**
 
 ```bash
-cd server && yarn format && yarn lint && yarn type-check
+cd server && pnpm format && pnpm lint && pnpm type-check
 git add src/modules/web-app/web-app.routes.ts src/modules/web-app/web-app.controller.ts src/middlewares/index.ts
 git commit -m "feat(web-app): make GET /apps/categories public via optionalAuthGuard"
 ```
@@ -224,7 +224,7 @@ Expected: `RateLimit-*` headers + `Cache-Control: public, max-age=300`.
 - [ ] **Step 6: Quality gate + commit**
 
 ```bash
-cd server && yarn format && yarn lint && yarn type-check
+cd server && pnpm format && pnpm lint && pnpm type-check
 git add src/constants/redis/rate-limit.ts src/middlewares/common/rate-limiter.middleware.ts src/modules/web-app/web-app.routes.ts src/modules/web-app/web-app.module.ts src/loaders/modules.loader.ts src/i18n/locales/en/webApp.json src/i18n/locales/vi/webApp.json
 git commit -m "feat(web-app): IP rate-limit + cache headers on public categories endpoint"
 ```
@@ -281,7 +281,7 @@ If `#/components/responses/TooManyRequests` does not exist, omit the 429 ref (ke
 - [ ] **Step 2: Quality gate + commit**
 
 ```bash
-cd server && yarn format && yarn lint && yarn type-check
+cd server && pnpm format && pnpm lint && pnpm type-check
 git add src/modules/web-app/swagger/paths.ts
 git commit -m "docs(web-app): swagger — mark GET /apps/categories public"
 ```
@@ -329,7 +329,7 @@ export const getServerAppCategories = async (): Promise<
 - [ ] **Step 2: Quality gate + commit**
 
 ```bash
-cd client && yarn format && yarn lint && npx tsc --noEmit
+cd client && pnpm format && pnpm lint && pnpm exec tsc --noEmit
 git add src/requests/server/apps.ts
 git commit -m "feat(apps): server-side category fetch util"
 ```
@@ -445,7 +445,7 @@ Everything downstream (`categoryOptions`, `resolveCategoryLabel`, `buildAppsFilt
 - [ ] **Step 6: Quality gate + commit**
 
 ```bash
-cd client && yarn format && yarn lint && npx tsc --noEmit
+cd client && pnpm format && pnpm lint && pnpm exec tsc --noEmit
 git add src/app/[locale]/\(private\)/\(dashboard\)/apps/page.tsx src/views/Apps/index.tsx src/views/Apps/mains/AppsBoard/index.tsx src/views/Apps/hooks/useAppCategories.ts
 git commit -m "feat(apps): render categories from Server Component with client fallback"
 ```
@@ -481,7 +481,7 @@ Ensure every added/updated test has a matching row in `docs/specs/web-app-user-l
 - [ ] **Step 4: Commit**
 
 ```bash
-cd client && yarn lint
+cd client && pnpm lint
 git add e2e/web-app-user-list/
 git commit -m "test(apps): E2E for public categories + SSR hybrid (reconcile web-app-user-list)"
 # docs commit happens in the docs repo/worktree
@@ -491,13 +491,13 @@ git commit -m "test(apps): E2E for public categories + SSR hybrid (reconcile web
 
 ## §4.3 E2E Dual-Gate (execution step, after Task 6)
 
-Run gate A (`cd client && yarn e2e` scoped to web-app-user-list) + gate B (Playwright MCP walk of the matrix) in parallel; both must pass. Precondition: check BE :5000 / FE :3000 / Mongo / Redis running (agent self-checks once; if down, ask user run vs agent run — CLAUDE.md §4.3). Mutation-heavy rows are `A only`; gate B verifies read/render only. Fail → systematic-debugging → `e2e-bugs.md` → fix → re-run (max 3 rounds).
+Run gate A (`cd client && pnpm e2e` scoped to web-app-user-list) + gate B (Playwright MCP walk of the matrix) in parallel; both must pass. Precondition: check BE :5000 / FE :3000 / Mongo / Redis running (agent self-checks once; if down, ask user run vs agent run — CLAUDE.md §4.3). Mutation-heavy rows are `A only`; gate B verifies read/render only. Fail → systematic-debugging → `e2e-bugs.md` → fix → re-run (max 3 rounds).
 
 ## Post-implementation gates (CLAUDE.md §4.5–4.8)
 
 - **§4.5 Security review** — feature touches auth surface (guard swap) + makes an endpoint public → **run** (agent self-runs `/security-review` or a security-audit subagent). Save `docs/specs/apps-category-ssr/security-report.md`. BLOCK if Critical.
 - **§4.6 CLAUDE.md drift audit** — deps unchanged; route/middleware convention unchanged structurally. Likely minimal; run `claude-md-improver` on `server/.claude/CLAUDE.md` only if a documented fact changed (e.g. new public-route convention). Non-blocking.
-- **§4.7 Green checks** — BE: `cd server && yarn lint && yarn type-check && yarn test && yarn build`. FE: `cd client && yarn lint && yarn build`. All green before PR.
+- **§4.7 Green checks** — BE: `cd server && pnpm lint && pnpm type-check && pnpm test && pnpm build`. FE: `cd client && pnpm lint && pnpm build`. All green before PR.
 - **§4.8 Finish branch + README** — setup/env/deps unchanged → README sync likely skip. Then §5 step 5 `creating-github-pr` per-repo (server + client + docs) — **STOP before merge, ask user** (per user preference).
 
 ## Self-Review (plan vs spec)

@@ -56,7 +56,7 @@ async adminResetPassword(authId: string, hashedPassword: string): Promise<void> 
 ```
 - [ ] Trong `updatePassword`, thêm `mustChangePassword: false` vào object `$set`/update (đặt mật khẩu mới ⇒ hết phải đổi).
 - [ ] `user.repository.findAuthIdById`: đảm bảo projection lấy cả `email` từ user doc; cập nhật return type + type ở `user/types`.
-- [ ] Chạy `yarn type-check`; commit: `feat(auth): adminResetPassword repo + clear mustChangePassword on updatePassword`.
+- [ ] Chạy `pnpm type-check`; commit: `feat(auth): adminResetPassword repo + clear mustChangePassword on updatePassword`.
 
 ### Task A3: Auth service passthrough
 
@@ -79,7 +79,7 @@ async adminResetPassword(authId: string, hashedPassword: string): Promise<void> 
 - [ ] `IdTokenPayload` (token/types) thêm `mustChangePassword?: boolean`.
 - [ ] `generateAuthTokensResponse` thêm param `mustChangePassword: boolean` → truyền vào `generateIdToken({ sub, name, email, picture, mustChangePassword })`.
 - [ ] Mỗi call-site truyền `mustChangePassword: auth.mustChangePassword ?? false`. (change-password: sau khi updatePassword đã set false, đọc lại hoặc truyền `false` tường minh.)
-- [ ] `yarn type-check` + `yarn test` (sửa spec nếu snapshot payload). Commit: `feat(token): expose mustChangePassword as idToken claim`.
+- [ ] `pnpm type-check` + `pnpm test` (sửa spec nếu snapshot payload). Commit: `feat(token): expose mustChangePassword as idToken claim`.
 
 ### Task A5: Email template `ADMIN_RESET_PASSWORD`
 
@@ -126,7 +126,7 @@ async adminResetPassword(id: string): Promise<{ _id: string; email: string }> {
 - [ ] Controller `resetUserPassword` → `OkSuccess({ data, message: "user:success.resetPassword" })`.
 - [ ] Route trong `createUserAdminRoutes`: `adminUsers.post("/:id/reset-password", paramsPipe(adminUserIdParamsSchema), asyncHandler(controller.resetUserPassword))`.
 - [ ] Swagger path + schema `{ _id, email }`; Postman.
-- [ ] `yarn lint && yarn type-check && yarn test`. Commit: `feat(user): admin reset-password endpoint`.
+- [ ] `pnpm lint && pnpm type-check && pnpm test`. Commit: `feat(user): admin reset-password endpoint`.
 
 ### Task A7: BE tests
 
@@ -164,7 +164,7 @@ export const resetAdminUserPassword = async (id: string): Promise<{ _id: string;
 ```
 - [ ] Hook `useResetAdminUserPassword`: đổi import `@/mocks/AdminUsers` → `@/requests/adminUsers`. Giữ toast `resetSuccess` + announce (dialog đã lo announce).
 - [ ] `mocks/AdminUsers.ts`: xóa `resetAdminUserPassword`.
-- [ ] `yarn lint && npx tsc --noEmit`. Commit: `feat(admin-users): wire reset-password to real API`.
+- [ ] `pnpm lint && pnpm exec tsc --noEmit`. Commit: `feat(admin-users): wire reset-password to real API`.
 
 ### Task B3: Expose `mustChangePassword` claim
 
@@ -197,7 +197,7 @@ export const resetAdminUserPassword = async (id: string): Promise<{ _id: string;
 - [ ] `page.tsx` render `<ForceChangePassword />`.
 - [ ] View: form current(temp)+new+confirm dùng `useChangePassword` (nếu hook ở Profile/hooks — nâng lên `src/hooks/` để dùng chung, HOẶC tạo hook view-local tương tự). On success → `router.replace(HOME)` + announce.
 - [ ] Ghost `ForceChangeGuard`: nếu `mustChangePassword=false` → `router.replace(HOME)` (không cần thì không cho ở lại).
-- [ ] `yarn lint && npx tsc --noEmit && yarn build`. Commit: `feat(force-change): dedicated change-password route + form`.
+- [ ] `pnpm lint && pnpm exec tsc --noEmit && pnpm build`. Commit: `feat(force-change): dedicated change-password route + form`.
 
 ### Task B6: i18n `forceChangePassword`
 

@@ -2,7 +2,7 @@
 
 Reconcile (không rebuild) từ Scenario Matrix trong `design.md`. Feature là **fix** cho views login-history đã có — delta chỉ nằm ở cách render **IP** (normalize) và **country/location** (`LOCAL`/`UNKNOWN`/ISO) ở 3 view: user list (`/login-history`), admin list (`/admin/login-history`), admin detail (`/admin/login-history/[id]`).
 
-Cả 2 gate (§4.3): **Gate A** `cd client && yarn e2e` (suite committed) + **Gate B** MCP Playwright walk (browser thật, auth context riêng). Chưa chạy ở bước này — dual-gate chạy sau, khi app đã up.
+Cả 2 gate (§4.3): **Gate A** `cd client && pnpm e2e` (suite committed) + **Gate B** MCP Playwright walk (browser thật, auth context riêng). Chưa chạy ở bước này — dual-gate chạy sau, khi app đã up.
 
 ## Covered scenarios
 

@@ -4,7 +4,7 @@ Append-only. One entry per fail round (§4.3, max 3 rounds).
 
 ## Round 1 — 2026-07-02
 
-**Gate fail:** A (`yarn e2e web-app-user-list` → 8 failed / 4 passed).
+**Gate fail:** A (`pnpm e2e web-app-user-list` → 8 failed / 4 passed).
 **Gate B:** ⚠️ NOT RUN — Playwright MCP (`browser_*` tools) is not connected in this environment; ToolSearch returns no browser-automation tools. Gate B (MCP browser walk) cannot execute here. Documented as environment limitation, not a pass.
 
 ### Triệu chứng

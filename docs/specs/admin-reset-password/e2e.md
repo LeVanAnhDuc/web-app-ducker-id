@@ -1,6 +1,6 @@
 # E2E — Admin Reset Password (+ force-change enforcement)
 
-> Author phase only (this doc). Suites are NOT run yet (`yarn e2e` needs the
+> Author phase only (this doc). Suites are NOT run yet (`pnpm e2e` needs the
 > app up — see Dual-gate below and CLAUDE.md §4.3). Scenario source of truth:
 > `design.md` > "## E2E Scenario Matrix" (12 rows, S1 admin-reset-action,
 > S2 force-change flow). Plan task: `plan.md` > PHẦN C > Task C1.
@@ -73,8 +73,8 @@ instructions rather than inventing untracked infra)**:
    password to an unknown value with no way to log back in as them or revert
    — the fixture would become permanently "spent" after one real test run
    (`server/src/database/seeders/user.seeder.ts`'s `seedUsers()` **skips**
-   already-existing users, so `yarn seed` alone does not restore a changed
-   password — only `yarn seed:clear && yarn seed` would, which is a much
+   already-existing users, so `pnpm seed` alone does not restore a changed
+   password — only `pnpm seed:clear && pnpm seed` would, which is a much
    heavier reset than a normal test run should require).
 
 Once both exist, un-`fixme` the three scenarios above and wire them exactly
@@ -159,7 +159,7 @@ wrong.
 
 ## Dual-gate plan (§4.3)
 
-- **Gate A**: `cd client && yarn e2e --project=admin -g "Admin reset-password|Force change-password"` (adjust the grep to the suite's actual `describe` titles once run — see file headers above for the literal titles used).
+- **Gate A**: `cd client && pnpm e2e --project=admin -g "Admin reset-password|Force change-password"` (adjust the grep to the suite's actual `describe` titles once run — see file headers above for the literal titles used).
 - **Gate B**: MCP browser walk of the same matrix, own auth context (fresh browser + the `mockSessionWithClaims`-equivalent manual network stubs, or real admin login for S1's UI portion). Walk every `A+B` row; SKIP the real-mutation "valid target → 200" check (S1) — verify its read/render/i18n/a11y equivalents only, per the `A only` convention.
 - Fail → `systematic-debugging` → `e2e-bugs.md` → fix → re-run (max 3 rounds, per CLAUDE.md §4.3).
 

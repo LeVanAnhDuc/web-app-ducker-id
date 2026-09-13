@@ -54,6 +54,6 @@ Gate B walks the **read/render** surface in a separate auth context: open `/apps
 
 ## Notes / preconditions
 
-- App stack must be running (BE :5000, FE :3000 or worktree port, Mongo, Redis) and seeded (`cd server && yarn seed`). The helper reaches the API via the proxy `baseURL`, logging in fresh (the page storageState cookie is not reusable from a bare request context — `reference_worktree_missing_env`, `helpers/notifications.ts`).
+- App stack must be running (BE :5000, FE :3000 or worktree port, Mongo, Redis) and seeded (`cd server && pnpm seed`). The helper reaches the API via the proxy `baseURL`, logging in fresh (the page storageState cookie is not reusable from a bare request context — `reference_worktree_missing_env`, `helpers/notifications.ts`).
 - Suites that mutate favorites run `serial` and self-revert in `afterAll` to the snapshot captured in `beforeAll`.
 - Locale switch is URL-prefix based (next-intl `as-needed`): en = no prefix, vi = `/vi` prefix.

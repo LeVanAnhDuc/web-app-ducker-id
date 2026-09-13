@@ -20,7 +20,7 @@ nhất; các module tiêu thụ thay cho hằng/logic rải rác. Email service 
 **Commit mode:** User đã opt-out commit-review gate → commit per-task (Review OFF), continuous.
 
 **Pre-req mỗi task code:** đọc `server/.claude/CLAUDE.md` + skill liên quan
-(`standard-typescript`, `module-struct`). Sau mỗi task chạy `yarn type-check` (xanh mới commit).
+(`standard-typescript`, `module-struct`). Sau mỗi task chạy `pnpm type-check` (xanh mới commit).
 Lệnh chạy trong worktree cần `node_modules` (junction tới main — xem Task 0).
 
 ---
@@ -37,15 +37,15 @@ Run (PowerShell, từ root):
 ```powershell
 cmd /c mklink /J "server\.worktrees\backend-consistency-cleanup\node_modules" "server\node_modules"
 ```
-Nếu main `server/node_modules` khuyết package → `cd server && yarn install` trước.
+Nếu main `server/node_modules` khuyết package → `cd server && pnpm install` trước.
 
 - [ ] **Step 2: Verify baseline xanh trong worktree**
 
 Run:
 ```bash
 cd server/.worktrees/backend-consistency-cleanup
-yarn type-check
-npx jest --testMatch "**/?(*.)+(spec).ts"
+pnpm type-check
+pnpm exec jest --testMatch "**/?(*.)+(spec).ts"
 ```
 Expected: type-check PASS; jest PASS (dùng `--testMatch` vì glob `<rootDir>` hỏng trong
 worktree — memory `reference_jest_worktree_testmatch`). Nếu baseline đỏ → báo user trước khi
@@ -119,7 +119,7 @@ PAGINATION;` (giá trị giống hệt 20/100 → không đổi behavior).
 
 - [ ] **Step 6: Verify + commit**
 
-Run: `yarn type-check` → PASS.
+Run: `pnpm type-check` → PASS.
 ```bash
 git add -A && git commit -m "refactor(common): centralize pagination defaults, web-app keeps 12 via override"
 ```
@@ -183,7 +183,7 @@ describe("sort util", () => {
 
 - [ ] **Step 3: Run test (đỏ → xanh)**
 
-Run: `npx jest src/common/sort/index.spec.ts` → PASS (util đã viết ở Step 1).
+Run: `pnpm exec jest src/common/sort/index.spec.ts` → PASS (util đã viết ở Step 1).
 
 - [ ] **Step 4: Thay logic lặp trong services**
 
@@ -203,7 +203,7 @@ build `{ [sortBy]: sortDirection }` (hoặc dùng `buildSort(sortBy, rawSortOrde
 
 - [ ] **Step 6: Verify + commit**
 
-Run: `yarn type-check && npx jest --testMatch "**/?(*.)+(spec).ts"` → PASS.
+Run: `pnpm type-check && pnpm exec jest --testMatch "**/?(*.)+(spec).ts"` → PASS.
 ```bash
 git add -A && git commit -m "refactor(common): shared sort enum + resolveSortDirection/buildSort util"
 ```
@@ -257,7 +257,7 @@ export type AdminUsersSortBy = (typeof ADMIN_USERS_SORT_BY)[number];
 
 - [ ] **Step 4: Verify + commit**
 
-Run: `yarn type-check` → PASS (type derive đúng, không literal lệch).
+Run: `pnpm type-check` → PASS (type derive đúng, không literal lệch).
 ```bash
 git add -A && git commit -m "refactor(types): derive sort & admin-user-status unions from const (single source)"
 ```
@@ -284,7 +284,7 @@ hành vi không đổi, chỉ bỏ literal `"active"`.)
 
 - [ ] **Step 2: Verify + commit**
 
-Run: `yarn type-check` → PASS.
+Run: `pnpm type-check` → PASS.
 ```bash
 git add -A && git commit -m "refactor(web-app): use WEB_APP_STATUS_PUBLIC.ACTIVE instead of magic string"
 ```
@@ -318,7 +318,7 @@ export type FavoriteSort =
 
 - [ ] **Step 3: Verify + commit**
 
-Run: `yarn type-check` → PASS.
+Run: `pnpm type-check` → PASS.
 ```bash
 git add -A && git commit -m "refactor(favorite): derive favorite sort values from const"
 ```
@@ -358,7 +358,7 @@ từ `@/types/services/email`; constructor param `private readonly emailService:
 
 - [ ] **Step 4: Verify + commit**
 
-Run: `yarn type-check` → PASS (loaders truyền `SendEmailService` instance vẫn thoả `Mailer`).
+Run: `pnpm type-check` → PASS (loaders truyền `SendEmailService` instance vẫn thoả `Mailer`).
 ```bash
 git add -A && git commit -m "refactor(email): introduce Mailer interface, depend on abstraction"
 ```
@@ -383,7 +383,7 @@ chiếu trực tiếp biến đã destructure.
 
 - [ ] **Step 2: Verify + commit**
 
-Run: `yarn type-check` → PASS.
+Run: `pnpm type-check` → PASS.
 ```bash
 git add -A && git commit -m "refactor(loader): destructure notification module inline for consistency"
 ```
@@ -423,7 +423,7 @@ return {
 Run:
 ```bash
 grep -rn "contactAdminQueryAdminRouter\|createContactAdminRoutes" src && echo "STILL PRESENT" || echo "clean"
-yarn type-check
+pnpm type-check
 ```
 Expected: "clean" + type-check PASS.
 ```bash
@@ -454,7 +454,7 @@ chỉ xoá key `stripUnknown`, giữ phần còn lại.
 Run:
 ```bash
 grep -rn "stripUnknown" src/validators/schemas && echo "STILL PRESENT" || echo "clean"
-yarn type-check && npx jest --testMatch "**/?(*.)+(spec).ts"
+pnpm type-check && pnpm exec jest --testMatch "**/?(*.)+(spec).ts"
 ```
 Expected: "clean" + PASS.
 ```bash
@@ -482,7 +482,7 @@ Tìm arrow function `=> { return X; }` đơn giản → đổi `=> X` khi rõ r�
 
 - [ ] **Step 3: Verify + commit**
 
-Run: `yarn lint && yarn type-check` → PASS (lint bắt unused/format sau khi xoá comment).
+Run: `pnpm lint && pnpm type-check` → PASS (lint bắt unused/format sau khi xoá comment).
 ```bash
 git add -A && git commit -m "chore: remove what-comments, prefer return shorthand where clear"
 ```
@@ -497,7 +497,7 @@ git add -A && git commit -m "chore: remove what-comments, prefer return shorthan
 
 Run trong worktree:
 ```bash
-yarn lint && yarn type-check && npx jest --testMatch "**/?(*.)+(spec).ts" && yarn build
+pnpm lint && pnpm type-check && pnpm exec jest --testMatch "**/?(*.)+(spec).ts" && pnpm build
 ```
 Expected: tất cả PASS. Fail → systematic-debugging, fix, chạy lại.
 

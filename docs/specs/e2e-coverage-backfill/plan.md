@@ -6,7 +6,7 @@
 
 **Goal:** Nâng E2E coverage của 6 feature đã có test lên đạt rubric `e2e-scenario-coverage` (12 nhóm), kèm 5 code fix mà coverage phụ thuộc, rồi verify bằng dual-gate.
 
-**Architecture:** Code fixes trước (unblock test) → per-feature E2E expansion (TDD, mỗi scenario 1 test) → dual-gate (gate A `yarn e2e` + gate B MCP walk) → teardown.
+**Architecture:** Code fixes trước (unblock test) → per-feature E2E expansion (TDD, mỗi scenario 1 test) → dual-gate (gate A `pnpm e2e` + gate B MCP walk) → teardown.
 
 **Tech Stack:** Next.js 15 + React 19, Playwright, next-intl (en/vi), React Query, RHF+Zod. Test ở `client/e2e/<feature>/*.e2e.ts`.
 
@@ -86,7 +86,7 @@ for (const route of ADMIN_ROUTES) {
 }
 ```
 
-- [ ] **Step 4: Verify** — `cd client && yarn e2e --project=admin` (admin suites pass) + `--project=chromium e2e/admin-authz` (deny pass). Expected: PASS.
+- [ ] **Step 4: Verify** — `cd client && pnpm e2e --project=admin` (admin suites pass) + `--project=chromium e2e/admin-authz` (deny pass). Expected: PASS.
 - [ ] **Step 5: Commit** (chờ review gate §7).
 
 > Lưu ý: hành vi deny thực tế (redirect đích nào / 403 component) phải xác minh khi chạy app; chỉnh assertion cho khớp, KHÔNG sửa app code trong test.
@@ -114,7 +114,7 @@ if (isError) {
 }
 ```
 
-- [ ] **Step 3: Verify** `yarn tsc` + `yarn lint` pass; error UI render khi route-intercept 500 (sẽ test ở admin-users-list plan row 10).
+- [ ] **Step 3: Verify** `pnpm exec tsc` + `pnpm lint` pass; error UI render khi route-intercept 500 (sẽ test ở admin-users-list plan row 10).
 - [ ] **Step 4: Commit** (review gate).
 
 ### Task CF-3: edit-apps `redirectUris` max(20) + locale key
@@ -135,7 +135,7 @@ const REDIRECT_URIS_MAX = 20;
 ```
 
 - [ ] **Step 2: Locale key** `redirectUris.maxItems` (en: "You can add at most 20 redirect URIs." / vi: "Tối đa 20 redirect URI.") — đặt đúng namespace mà form đang đọc (verify key path hiện tại của `redirectUris.required`).
-- [ ] **Step 3: Verify** `yarn tsc`/`yarn lint`; 21 URIs → field error (test ở edit-apps row 6).
+- [ ] **Step 3: Verify** `pnpm exec tsc`/`pnpm lint`; 21 URIs → field error (test ở edit-apps row 6).
 - [ ] **Step 4: Commit** (review gate).
 
 ### Task CF-4: `useAnnounce` cho AdminUsers table + LoginHistoryDetail card
@@ -160,7 +160,7 @@ useEffect(() => {
 
 - [ ] **Step 1: AdminUsers** — announce khi đổi page/filter/search + loading/loaded (theo `rules/accessibility.md`). Thêm key `announce.*` locale (en+vi).
 - [ ] **Step 2: LoginHistoryDetailCard** — announce on load (data về). Thêm key `announce.loaded`/`announce.loading` locale.
-- [ ] **Step 3: Verify** `yarn tsc`/`yarn lint`; `#announcer` có nội dung (test ở row 12 của 2 feature).
+- [ ] **Step 3: Verify** `pnpm exec tsc`/`pnpm lint`; `#announcer` có nội dung (test ở row 12 của 2 feature).
 - [ ] **Step 4: Commit** (review gate).
 
 > Nếu cấu trúc announce hiện tại khác (vd announce theo từng action thay vì effect), follow pattern file tham chiếu — KHÔNG áp template cứng.
@@ -184,9 +184,9 @@ useEffect(() => {
 - [ ] **DG-1: Tiền đề app-running** — agent check port BE :5000, FE :3000, Mongo, Redis.
   - Mongo/Redis/BE chưa chạy → agent tự dựng background (BE từ main `server/`, KHÔNG đổi code). Verify `.env`/`.env.local` tồn tại ở main (xem `reference_worktree_missing_env`).
   - FE worktree dev port riêng: `node .claude/scripts/worktree.mjs up e2e-coverage-backfill` (chỉ có client worktree → script start FE; junction node_modules + copy/patch env tự lo).
-  - Seed nếu cần (`cd server && yarn seed --clear && yarn seed`).
+  - Seed nếu cần (`cd server && pnpm seed --clear && pnpm seed`).
 - [ ] **DG-2: Dispatch 2 gate SONG SONG** (1 message, 2 Agent):
-  - **Gate A** — subagent: `cd client/.worktrees/e2e-coverage-backfill && yarn e2e` (scope 6 feature + admin-authz). Auto-target FE port qua `.worktree-state.json`. Report PASS/FAIL + output. Lưu ý session contamination: chạy change-password (revoke token) RIÊNG khỏi user-auth suites (`reference_e2e_suite_session_contamination`).
+  - **Gate A** — subagent: `cd client/.worktrees/e2e-coverage-backfill && pnpm e2e` (scope 6 feature + admin-authz). Auto-target FE port qua `.worktree-state.json`. Report PASS/FAIL + output. Lưu ý session contamination: chạy change-password (revoke token) RIÊNG khỏi user-auth suites (`reference_e2e_suite_session_contamination`).
   - **Gate B** — subagent (general-purpose + Playwright MCP `browser_*`): nhận Scenario Matrix từ mỗi `docs/specs/<feature>/e2e.md`, auth context RIÊNG (login qua browser, không share storageState với A), walk từng scenario `A+B`; scenario `A only` chỉ verify read/render. Report PASS/FAIL per-scenario + evidence (`browser_snapshot`/`browser_console_messages`/`browser_network_requests`). i18n rows verify cả en+vi.
 - [ ] **DG-3: Fail ≥1 gate** → `superpowers:systematic-debugging` root cause → ghi `docs/specs/<feature>/e2e-bugs.md` (append/round) → fix (subagent-driven/TDD) → re-run CẢ 2 gate. Max 3 vòng; quá → DỪNG + báo user.
 - [ ] **DG-4: Cả 2 PASS** → sang requesting-code-review.

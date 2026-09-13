@@ -145,7 +145,7 @@ Suite: `client/e2e/my-contacts/*.e2e.ts` (project user — cần user thường 
 - `getMyContactDetail`: của mình → ok; của người khác/không tồn tại → 404.
 
 ### Dual-gate (§4.3)
-- Gate A: `cd client && yarn e2e --project=user -g "My Contacts"` (hoặc project phù hợp) trên app thật.
+- Gate A: `cd client && pnpm e2e --project=user -g "My Contacts"` (hoặc project phù hợp) trên app thật.
 - Gate B: MCP browser walk cùng matrix (auth context user riêng); row `A only` (submit) chỉ verify read/render, không mutate song song.
 - Fail → systematic-debugging → `e2e-bugs.md` → fix → re-run (max 3).
 

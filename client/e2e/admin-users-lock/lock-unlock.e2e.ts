@@ -2,7 +2,7 @@ import { test, expect, request as playwrightRequest } from "@playwright/test";
 import type { Page, APIRequestContext } from "@playwright/test";
 import { ADMIN_EMAIL, ADMIN_PASSWORD } from "../helpers/env";
 
-// Admin lock/unlock user — gate A (yarn e2e). Runs under the `admin` project
+// Admin lock/unlock user — gate A (pnpm e2e). Runs under the `admin` project
 // (admin storageState, see playwright.config.ts admin-users-lock testMatch).
 //
 // Seeded users used (server/src/database/seeders/data/users.ts):

@@ -10,7 +10,7 @@
 
 **Side tagging:** Toàn bộ là **FE** (`client/src/**`) trừ Task 1 là **FS** (shared types). KHÔNG đụng `server/src/**` (không đổi API contract). KHÔNG env mới, KHÔNG đổi Mongoose schema.
 
-**Verification note (FE):** Client KHÔNG có jest/unit test (`next build` lo type-check; behavior do E2E dual-gate §4.3 lo). Vì vậy mỗi task "verify" = `cd client && yarn lint && npx tsc --noEmit` (+ `yarn build` ở task green-checks cuối). Behavior verify ở Phase 2 (E2E). Đây là lệch có chủ đích so với TDD-unit của skill, theo client CLAUDE.md.
+**Verification note (FE):** Client KHÔNG có jest/unit test (`next build` lo type-check; behavior do E2E dual-gate §4.3 lo). Vì vậy mỗi task "verify" = `cd client && pnpm lint && pnpm exec tsc --noEmit` (+ `pnpm build` ở task green-checks cuối). Behavior verify ở Phase 2 (E2E). Đây là lệch có chủ đích so với TDD-unit của skill, theo client CLAUDE.md.
 
 **Commit gate:** Review ON (mặc định §7) → implementer **stage** mỗi task, KHÔNG commit per-task; main loop trình diff tổng thể cho user duyệt 1 lần rồi mới commit. (Các bước "Commit" dưới đây ghi message gợi ý cho trường hợp Review OFF.)
 
@@ -83,7 +83,7 @@ export interface ListQueryState {
 }
 ```
 
-- [ ] **Step 2: Verify** — `cd client && npx tsc --noEmit` → PASS.
+- [ ] **Step 2: Verify** — `cd client && pnpm exec tsc --noEmit` → PASS.
 - [ ] **Step 3: Commit** — `git commit -m "feat(list): add shared list filter/query types"`
 
 ---
@@ -144,7 +144,7 @@ export const computeDateRange = (
 };
 ```
 
-- [ ] **Step 4: Verify** — `cd client && yarn lint && npx tsc --noEmit` → PASS.
+- [ ] **Step 4: Verify** — `cd client && pnpm lint && pnpm exec tsc --noEmit` → PASS.
 - [ ] **Step 5: Commit** — `git commit -m "feat(list): add list constants and date-range util"`
 
 ---
@@ -229,7 +229,7 @@ export const computeDateRange = (
 
 - [ ] **Step 3: Đăng ký namespace** — trong `src/locales/en/index.ts` và `vi/index.ts`, import `list.json` và thêm `list` vào object messages (theo đúng pattern các namespace hiện có — mỗi key = tên file).
 
-- [ ] **Step 4: Verify** — `cd client && npx tsc --noEmit` → PASS (JSON imports typed).
+- [ ] **Step 4: Verify** — `cd client && pnpm exec tsc --noEmit` → PASS (JSON imports typed).
 - [ ] **Step 5: Commit** — `git commit -m "feat(list): add shared list i18n namespace (en+vi)"`
 
 ---
@@ -417,7 +417,7 @@ export default useListQuery;
 
 - [ ] **Step 2: Export trong `src/hooks/index.ts`** — thêm `export { default as useListQuery } from "./useListQuery";`
 
-- [ ] **Step 3: Verify** — `cd client && yarn lint && npx tsc --noEmit` → PASS.
+- [ ] **Step 3: Verify** — `cd client && pnpm lint && pnpm exec tsc --noEmit` → PASS.
 - [ ] **Step 4: Commit** — `git commit -m "feat(list): add useListQuery URL-state hook"`
 
 ---
@@ -485,7 +485,7 @@ export default DateRangeFilter;
 
 > **YAGNI:** "custom" (from/to inputs) deferred — current pages only use presets. Khi 1 trang thực sự cần custom from/to, mở lại preset "custom" + render 2 `<CustomDateInput>` (đã có pattern ở FromDateFilter cũ). Ghi defer này vào e2e.md. `ChevronDown` import giữ cho lần mở rộng; nếu lint báo unused thì bỏ.
 
-- [ ] **Step 2: Verify** — `cd client && yarn lint && npx tsc --noEmit` → PASS.
+- [ ] **Step 2: Verify** — `cd client && pnpm lint && pnpm exec tsc --noEmit` → PASS.
 - [ ] **Step 3: Commit** — `git commit -m "feat(list): add DateRangeFilter (preset)"`
 
 ---
@@ -596,7 +596,7 @@ export default ListFilterPanel;
 
 > **Note text filter:** `setFilter` (qua `push`) ghi URL ngay mỗi keystroke. Nếu trang có text filter "nặng" (email), implementer có thể bọc debounce cục bộ; mặc định giữ tức thì cho đơn giản. Hiện chỉ Admin Contact dùng text filter (email, ticketNumber).
 
-- [ ] **Step 2: Verify** — `cd client && yarn lint && npx tsc --noEmit` → PASS.
+- [ ] **Step 2: Verify** — `cd client && pnpm lint && pnpm exec tsc --noEmit` → PASS.
 - [ ] **Step 3: Commit** — `git commit -m "feat(list): add ListFilterPanel (declarative)"`
 
 ---
@@ -684,7 +684,7 @@ const ListToolbar = ({
 export default ListToolbar;
 ```
 
-- [ ] **Step 2: Verify** — `cd client && yarn lint && npx tsc --noEmit` → PASS.
+- [ ] **Step 2: Verify** — `cd client && pnpm lint && pnpm exec tsc --noEmit` → PASS.
 - [ ] **Step 3: Commit** — `git commit -m "feat(list): add ListToolbar (search + filters popover)"`
 
 ---
@@ -738,7 +738,7 @@ export default ListPagination;
 
 > Thay thế `TablePagination` cho list pages mới (dùng namespace `list` chung thay vì labels từng trang). `TablePagination` cũ giữ nguyên cho tới khi mọi trang migrate xong (Task 22 cân nhắc xoá nếu không còn ai dùng).
 
-- [ ] **Step 2: Verify** — `cd client && yarn lint && npx tsc --noEmit` → PASS.
+- [ ] **Step 2: Verify** — `cd client && pnpm lint && pnpm exec tsc --noEmit` → PASS.
 - [ ] **Step 3: Commit** — `git commit -m "feat(list): add ListPagination"`
 
 ---
@@ -801,7 +801,7 @@ const ListEmptyState = ({
 export default ListEmptyState;
 ```
 
-- [ ] **Step 2: Verify** — `cd client && yarn lint && npx tsc --noEmit` → PASS.
+- [ ] **Step 2: Verify** — `cd client && pnpm lint && pnpm exec tsc --noEmit` → PASS.
 - [ ] **Step 3: Commit** — `git commit -m "feat(list): add ListEmptyState"`
 
 ---
@@ -862,7 +862,7 @@ const ListContent = ({
 export default ListContent;
 ```
 
-- [ ] **Step 2: Verify** — `cd client && yarn lint && npx tsc --noEmit` → PASS.
+- [ ] **Step 2: Verify** — `cd client && pnpm lint && pnpm exec tsc --noEmit` → PASS.
 - [ ] **Step 3: Commit** — `git commit -m "feat(list): add ListContent (loading/empty/data)"`
 
 ---
@@ -916,7 +916,7 @@ const ListPageShell = ({ children }: { children: ReactNode }) => (
 export default ListPageShell;
 ```
 
-- [ ] **Step 3: Verify** — `cd client && yarn lint && npx tsc --noEmit` → PASS.
+- [ ] **Step 3: Verify** — `cd client && pnpm lint && pnpm exec tsc --noEmit` → PASS.
 - [ ] **Step 4: Commit** — `git commit -m "feat(list): add ListPageShell and ListPageHeader"`
 
 ---
@@ -1139,7 +1139,7 @@ export default AdminUsers;
 
 - [ ] **Step 4: Xoá** `AdminUsersToolbar/` và `AdminUsersHeader/` (sau khi xác nhận header không có logic khác). `TABLE_COLUMN_COUNT` không còn dùng cho empty row → có thể bỏ; giữ nếu lint không phàn nàn.
 - [ ] **Step 5: i18n** — đảm bảo `adminUsers.toolbar.searchPlaceholder/role/status`, `adminUsers.role.*`, `adminUsers.status.*` còn tồn tại (đã có). Empty title/description giờ lấy từ namespace `list` (generic) — nếu muốn message riêng "No users found", truyền `emptyTitle={tTable("empty")}`/`emptyDescription` vào `ListContent`.
-- [ ] **Step 6: Verify** — `cd client && yarn lint && npx tsc --noEmit` → PASS. Manual: mở `/admin/users`, gõ search → URL `?search=` đổi sau 300ms; mở Filters → đổi role → URL `?role=` + page reset 1; clear → URL sạch.
+- [ ] **Step 6: Verify** — `cd client && pnpm lint && pnpm exec tsc --noEmit` → PASS. Manual: mở `/admin/users`, gõ search → URL `?search=` đổi sau 300ms; mở Filters → đổi role → URL `?role=` + page reset 1; clear → URL sạch.
 - [ ] **Step 7: Commit** — `git commit -m "refactor(admin-users): migrate to unified list shell"`
 
 ---
@@ -1167,7 +1167,7 @@ export const buildAdminAppsFilterDefs = (
 
 - [ ] **Step 2: Rewrite `AdminAppsTable`** theo pattern Task 12: `useListQuery(filterDefs)`, build params, render shell + table. Category options từ `useQuery` categories hiện có (giữ nguyên hook đó), map `{value:id,label:name}`. Status options từ `APP_STATUSES.map(s => ({value:s,label:tStatus(s)}))`.
 - [ ] **Step 3: `AdminApps/index.tsx`** render table. Xoá `AdminAppsToolbar`.
-- [ ] **Step 4: Verify** — `cd client && yarn lint && npx tsc --noEmit` → PASS. Manual: filter status/category đổi URL tức thì; pagination hiện (trước đây thiếu).
+- [ ] **Step 4: Verify** — `cd client && pnpm lint && pnpm exec tsc --noEmit` → PASS. Manual: filter status/category đổi URL tức thì; pagination hiện (trước đây thiếu).
 - [ ] **Step 5: Commit** — `git commit -m "refactor(admin-apps): migrate to unified list shell"`
 
 ---
@@ -1212,7 +1212,7 @@ export const buildAdminContactFilterDefs = (
 - [ ] **Step 2: Rewrite `AdminContactTable`** — bỏ `<AdminContactFilters>`, dùng `useListQuery(filterDefs)`. Build `AdminContactQuery` params: `{ page, ...(search), ...(status), ...(category), ...(email), ...(ticketNumber), ...(fromDate), ...(toDate) }` từ `query.filters`. Validate status/category bằng type-guard (giống isRole). Render shell + table + `ListPagination` (thay pagination inline cũ).
 - [ ] **Step 3: `AdminContact/index.tsx`** render table.
 - [ ] **Step 4: Xoá** `AdminContactFilters/` + 7 filter component. Kiểm tra không còn import nào tới chúng (`grep`). `AdminContactFilterFormValues` type + field-name group `ADMIN_CONTACT_FILTER_FIELD_NAMES` không còn dùng → xoá khỏi types/constants nếu không ai import.
-- [ ] **Step 5: Verify** — `cd client && yarn lint && npx tsc --noEmit` → PASS. Manual: đổi status → URL đổi tức thì + page reset (trước cần bấm Apply); date preset "Last 30 days" → set `dateRange/fromDate/toDate`.
+- [ ] **Step 5: Verify** — `cd client && pnpm lint && pnpm exec tsc --noEmit` → PASS. Manual: đổi status → URL đổi tức thì + page reset (trước cần bấm Apply); date preset "Last 30 days" → set `dateRange/fromDate/toDate`.
 - [ ] **Step 6: Commit** — `git commit -m "refactor(admin-contact): replace RHF filters with unified instant filters"`
 
 ---
@@ -1224,7 +1224,7 @@ export const buildAdminContactFilterDefs = (
 
 - [ ] **Step 1: filterDefs** — status (select), method (select), `dateRange` (preset — thay `computeDateRange` cũ của trang này). Lấy options từ dataSources `LoginHistory` (method colors đã có; thêm value list).
 - [ ] **Step 2: Rewrite table** theo pattern; bỏ DropdownMenu filter cũ + `applyDateRange` cục bộ (giờ `query.setDateRange`). Dùng `ListPagination`.
-- [ ] **Step 3: Verify** — `cd client && yarn lint && npx tsc --noEmit` → PASS.
+- [ ] **Step 3: Verify** — `cd client && pnpm lint && pnpm exec tsc --noEmit` → PASS.
 - [ ] **Step 4: Commit** — `git commit -m "refactor(admin-login-history): migrate to unified list shell"`
 
 ---
@@ -1236,7 +1236,7 @@ export const buildAdminContactFilterDefs = (
 
 - [ ] **Step 1:** Dùng cùng filterDefs (status/method/dateRange). Trang này không có search (theo khảo sát) → vẫn render `ListToolbar` nhưng search vẫn dùng được (nếu BE hỗ trợ); nếu BE không hỗ trợ search cho endpoint này thì truyền `filterDefs` nhưng ẩn search bằng cách… **giữ search** (vô hại, BE bỏ qua param lạ) HOẶC thêm prop `showSearch={false}` vào `ListToolbar`. **Quyết định:** thêm optional `showSearch?: boolean` (default true) vào `ListToolbar` để trang không search ẩn ô search. Cập nhật Task 7 component nếu cần (thêm prop, render search có điều kiện).
 - [ ] **Step 2: Rewrite** table + `ListPagination`.
-- [ ] **Step 3: Verify** — `cd client && yarn lint && npx tsc --noEmit` → PASS.
+- [ ] **Step 3: Verify** — `cd client && pnpm lint && pnpm exec tsc --noEmit` → PASS.
 - [ ] **Step 4: Commit** — `git commit -m "refactor(login-history): migrate to unified list shell"`
 
 ---
@@ -1248,7 +1248,7 @@ export const buildAdminContactFilterDefs = (
 
 - [ ] **Step 1:** Trang có user-picker (giữ nguyên — đây là context selector, không phải filter list chuẩn; để như slot trái hoặc giữ ngoài shell) + search app (client-side `useMemo`). Dùng `useListQuery([])` (không filterDefs, chỉ search) cho phần search → đọc `query.search`, lọc rows client-side bằng `useMemo` (như cũ). Render `ListToolbar` với `rightSlot`/hoặc user-picker phía trên. `userId` vẫn ghi URL như cũ.
 - [ ] **Step 2:** Dùng `ListContent` cho empty/loading + `ListPagination` nếu áp dụng (entitlements có thể không phân trang → bỏ).
-- [ ] **Step 3: Verify** — `cd client && yarn lint && npx tsc --noEmit` → PASS.
+- [ ] **Step 3: Verify** — `cd client && pnpm lint && pnpm exec tsc --noEmit` → PASS.
 - [ ] **Step 4: Commit** — `git commit -m "refactor(admin-entitlements): adopt unified toolbar/search"`
 
 ---
@@ -1260,7 +1260,7 @@ export const buildAdminContactFilterDefs = (
 
 - [ ] **Step 1:** Chuyển local state → URL: `const query = useListQuery(filterDefs)`. Search debounce giờ do hook lo (bỏ `useDebouncedValue` cục bộ + `useState search`). Category: theo mock đã duyệt, giữ là filter trong popover HOẶC chips. **Quyết định (theo mock §S4):** category vào popover (đồng nhất); view toggle (grid/list) là `rightSlot` của `ListToolbar`. `sort` (nếu có) → `query.setSort`.
 - [ ] **Step 2:** View toggle: 1 component nhỏ (segmented 2 nút grid/list) đọc/ghi `view` param qua `searchParams` hoặc local (view là client-only preference — có thể giữ local state, KHÔNG cần URL). **Quyết định:** view = local `useState` (preference, không cần share); category/search/page = URL. Render grid trong `ListContent` (skeleton = grid skeleton hiện có). `ListPagination` cho phân trang apps.
-- [ ] **Step 3: Verify** — `cd client && yarn lint && npx tsc --noEmit` → PASS. Manual: search apps đẩy URL; category filter trong popover; toggle grid/list đổi layout.
+- [ ] **Step 3: Verify** — `cd client && pnpm lint && pnpm exec tsc --noEmit` → PASS. Manual: search apps đẩy URL; category filter trong popover; toggle grid/list đổi layout.
 - [ ] **Step 4: Commit** — `git commit -m "refactor(apps): migrate dashboard apps to unified list (URL state + grid)"`
 
 ---
@@ -1272,7 +1272,7 @@ export const buildAdminContactFilterDefs = (
 
 - [ ] **Step 1:** `const query = useListQuery(filterDefs)` (category filter nếu có). Lọc `FAVORITE_APPS_MOCK` bằng `useMemo` trên `[query.search, query.filters]` (vẫn client-side, KHÔNG gọi API) — nhưng search/filter đọc từ URL (cùng concept). Page: nếu danh sách nhỏ, bỏ pagination; nếu cần, phân trang client-side.
 - [ ] **Step 2:** Render `ListPageShell > ListPageHeader + ListToolbar + ListContent(grid) `. Empty state qua `ListContent`.
-- [ ] **Step 3: Verify** — `cd client && yarn lint && npx tsc --noEmit` → PASS. Manual: search favorites đổi URL `?search=`; reload giữ filter.
+- [ ] **Step 3: Verify** — `cd client && pnpm lint && pnpm exec tsc --noEmit` → PASS. Manual: search favorites đổi URL `?search=`; reload giữ filter.
 - [ ] **Step 4: Commit** — `git commit -m "refactor(favorites): migrate to unified list (URL-driven client filter)"`
 
 ---
@@ -1319,7 +1319,7 @@ test("changing filter resets page to 1", async ({ page }) => {
 
 - [ ] **Step 2: i18n en+vi** — lặp test render toolbar/empty ở cả `/admin/users` (en) và `/vi/admin/users` (vi); assert chuỗi "Filters"/"Bộ lọc".
 - [ ] **Step 3: empty + clear** — search no-match → `ListEmptyState` hiện + nút Clear filters → click → URL sạch.
-- [ ] **Step 4:** Chạy `cd client && yarn e2e unified-list` → PASS. (Tiền đề app-running theo §4.3 — agent self-check trước khi dispatch dual-gate.)
+- [ ] **Step 4:** Chạy `cd client && pnpm e2e unified-list` → PASS. (Tiền đề app-running theo §4.3 — agent self-check trước khi dispatch dual-gate.)
 - [ ] **Step 5: Commit** — `git commit -m "test(unified-list): implement e2e for admin-users + favorites"`
 
 ---
@@ -1329,8 +1329,8 @@ test("changing filter resets page to 1", async ({ page }) => {
 ### Task 22 (FE): Cleanup + green checks + drift audit
 
 - [ ] **Step 1: Dead code** — `grep -r "AdminUsersToolbar\|AdminContactFilters\|TablePagination" client/src` xác nhận không còn import mồ côi. Xoá `TablePagination` nếu không trang nào dùng (nếu vẫn còn trang chưa migrate dùng, giữ). Bỏ `ALL_VALUE` cục bộ thừa, `AdminContactFilterFormValues`/`ADMIN_CONTACT_FILTER_FIELD_NAMES` nếu mồ côi.
-- [ ] **Step 2: Green checks (§4.7)** — `cd client && yarn lint && yarn build` → xanh hết. Fix mọi lỗi.
-- [ ] **Step 3: §4.3 E2E dual-gate** — self-check app running (BE:5000/FE:3000/Mongo/Redis); dispatch song song Gate A (`yarn e2e unified-list`) + Gate B (Playwright MCP walk matrix trên Admin Users + Favorites, auth context riêng). Cả 2 PASS mới qua. Fail → `systematic-debugging` → `e2e-bugs.md` → fix (max 3 vòng).
+- [ ] **Step 2: Green checks (§4.7)** — `cd client && pnpm lint && pnpm build` → xanh hết. Fix mọi lỗi.
+- [ ] **Step 3: §4.3 E2E dual-gate** — self-check app running (BE:5000/FE:3000/Mongo/Redis); dispatch song song Gate A (`pnpm e2e unified-list`) + Gate B (Playwright MCP walk matrix trên Admin Users + Favorites, auth context riêng). Cả 2 PASS mới qua. Fail → `systematic-debugging` → `e2e-bugs.md` → fix (max 3 vòng).
 - [ ] **Step 4: CLAUDE.md drift audit (§4.6)** — chạy `claude-md-improver` trên `client/.claude/CLAUDE.md` (feature thêm pattern list shell + hook + namespace `list` + folder `components/list/`). Cập nhật Core Patterns/Custom* inventory nếu lệch. Đi kèm PR client.
 - [ ] **Step 5: README sync (§4.8)** — feature không đổi setup/config/env/deps → **skip** readme-maintainer.
 - [ ] **Step 6: Commit** — `git commit -m "chore(unified-list): cleanup dead code + claude.md sync"`

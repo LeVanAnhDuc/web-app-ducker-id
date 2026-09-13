@@ -13,7 +13,7 @@
 - Design system source of truth: `client/.claude/uiux/design-guide.md §1.1` — achromatic palette; color = semantic meaning only, never decorative fill. `frontend-reference.md §1` for token names.
 - Replacement tokens: tiles/thumbnails/avatars/icon-boxes → `bg-muted`; card-level surfaces → `bg-card` (Card default; drop gradient + keep border). Any `text-primary-foreground` on a now-light surface → `text-foreground`; secondary `/70–80` → `text-muted-foreground`.
 - Inner buttons previously styled for a dark colored bg → standard `CustomButton` (default variant); remove ad-hoc `bg-primary-foreground`/`bg-warning` overrides (design-guide §5.2 defines no warning button variant).
-- No TDD cycle: this is a styling/cleanup change with no behavior to assert (E2E skipped per design §7). Verification per task = `cd client && yarn lint` clean; full gate at the end = `yarn lint && yarn build` green.
+- No TDD cycle: this is a styling/cleanup change with no behavior to assert (E2E skipped per design §7). Verification per task = `cd client && pnpm lint` clean; full gate at the end = `pnpm lint && pnpm build` green.
 - Client conventions: component props typed inline; one default export per `index.tsx`; follow `client/.claude/CLAUDE.md`.
 
 ---
@@ -41,7 +41,7 @@ In `QuickAccessCard/index.tsx`:
 
 - [ ] **Step 3: Lint**
 
-Run: `cd client && yarn lint`
+Run: `cd client && pnpm lint`
 Expected: no errors in the two files.
 
 ---
@@ -74,7 +74,7 @@ In `RecommendedAppCard/index.tsx`:
 
 - [ ] **Step 4: Lint**
 
-Run: `cd client && yarn lint`
+Run: `cd client && pnpm lint`
 Expected: no errors.
 
 ---
@@ -98,7 +98,7 @@ The last `<Card>` (`border-warning/50 from-warning/15 to-warning/5 … bg-gradie
 
 - [ ] **Step 4: Lint**
 
-Run: `cd client && yarn lint`
+Run: `cd client && pnpm lint`
 Expected: no errors.
 
 ---
@@ -114,7 +114,7 @@ The `<AvatarFallback>` className: `from-cream to-primary text-primary-foreground
 
 - [ ] **Step 2: Lint**
 
-Run: `cd client && yarn lint`
+Run: `cd client && pnpm lint`
 Expected: no errors.
 
 ---
@@ -149,7 +149,7 @@ In `types/Team/index.ts`: remove `avatarFromColor: string;` and `avatarToColor: 
 
 - [ ] **Step 5: Lint**
 
-Run: `cd client && yarn lint`
+Run: `cd client && pnpm lint`
 Expected: no errors (no unused-var / missing-prop errors).
 
 ---
@@ -165,7 +165,7 @@ In the `App` interface, delete the `gradientClass: string;` line (declared, neve
 
 - [ ] **Step 2: Lint**
 
-Run: `cd client && yarn lint`
+Run: `cd client && pnpm lint`
 Expected: no errors.
 
 ---
@@ -176,7 +176,7 @@ Expected: no errors.
 
 - [ ] **Step 1: Full lint + build**
 
-Run: `cd client && yarn lint && yarn build`
+Run: `cd client && pnpm lint && pnpm build`
 Expected: both green; `next build` type-checks pass (catches any leftover reference to removed props/fields).
 
 - [ ] **Step 2: Grep for stragglers**

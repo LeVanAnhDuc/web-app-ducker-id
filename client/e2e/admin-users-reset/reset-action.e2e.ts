@@ -2,7 +2,7 @@ import { test, expect, request as playwrightRequest } from "@playwright/test";
 import type { Page, APIRequestContext, Route } from "@playwright/test";
 import { ADMIN_EMAIL, ADMIN_PASSWORD } from "../helpers/env";
 
-// Admin reset-password (S1) — gate A (yarn e2e). Runs under the `admin`
+// Admin reset-password (S1) — gate A (pnpm e2e). Runs under the `admin`
 // project (admin storageState, see playwright.config.ts admin-users-reset
 // testMatch).
 //

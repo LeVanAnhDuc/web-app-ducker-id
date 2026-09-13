@@ -23,7 +23,7 @@ import {
 //
 // Mutation safety / teardown: tests 9 and 10 mutate seeded read-state. There is
 // NO mark-unread API, so we do NOT attempt a programmatic revert — restoring the
-// seed requires `cd server && yarn seed --clear && yarn seed` (documented in
+// seed requires `cd server && pnpm seed --clear && pnpm seed` (documented in
 // afterAll and in docs/specs/notifications-api/e2e.md). Test 10 (mark all) uses
 // a route intercept so it does not actually wipe unread state on the real
 // backend; test 9 (mark single) deliberately exercises the REAL PATCH to
@@ -508,7 +508,7 @@ test.describe.serial("Notifications — mutations", () => {
   // --- D9: Persistence after reload (matrix row 11e) — A only (REAL) ------
   // REAL mutation: permanently flips one seeded item to read. There is NO
   // mark-unread API → afterAll cannot revert; restore the seed manually via:
-  //   cd server && yarn seed --clear && yarn seed
+  //   cd server && pnpm seed --clear && pnpm seed
   test("a marked item stays read after a full page reload", async ({
     page
   }) => {
@@ -546,7 +546,7 @@ test.describe.serial("Notifications — mutations", () => {
     // "a marked item stays read after a full page reload" (D9). There is NO
     // mark-unread API, so read-state cannot be reverted programmatically. To
     // restore the seed for the next run:
-    //   cd server && yarn seed --clear && yarn seed
+    //   cd server && pnpm seed --clear && pnpm seed
     // (Documented in docs/specs/notifications-api/e2e.md §5.)
   });
 });

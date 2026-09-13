@@ -82,5 +82,5 @@ Trong lịch sử đăng nhập (`login_histories`), người dùng thấy `coun
 
 ## Verify (§4.7)
 
-- **BE**: `cd server && yarn lint && yarn type-check && yarn test && yarn build`
-- **FE**: `cd client && yarn lint && yarn build` + E2E dual-gate (§4.3)
+- **BE**: `cd server && pnpm lint && pnpm type-check && pnpm test && pnpm build`
+- **FE**: `cd client && pnpm lint && pnpm build` + E2E dual-gate (§4.3)

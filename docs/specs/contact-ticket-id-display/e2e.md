@@ -24,7 +24,7 @@ Gate: **A+B** for all covered scenarios below (per `design.md` matrix, none of t
 
 ## Gate assignment
 
-All 6 automated tests in `contact-display.e2e.ts` run under **Gate A** (`yarn e2e contact/`) and are also walkable under **Gate B** (MCP browser walk) since none mutate data — matches the matrix's `A+B` designation for rows 1, 4, 5, 7, 8, 9, 12. Row 11 is excluded from both automated gates per the deferral above; Gate B may still render-only visually spot-check the success screen without submitting.
+All 6 automated tests in `contact-display.e2e.ts` run under **Gate A** (`pnpm e2e contact/`) and are also walkable under **Gate B** (MCP browser walk) since none mutate data — matches the matrix's `A+B` designation for rows 1, 4, 5, 7, 8, 9, 12. Row 11 is excluded from both automated gates per the deferral above; Gate B may still render-only visually spot-check the success screen without submitting.
 
 ## A11y follow-ups flagged (not fixed — no app code changed)
 
@@ -40,4 +40,4 @@ Follow-up branch to this feature. Full design/rationale: `specs/contact-detail-f
 - **Admin list table no longer has a "Files"/"Tệp" (attachments) column** — `AdminContactTable`'s `<TableHeader>` row is Ticket / Email / Subject / Status / Date / Actions only. New test `list has no Files/attachments column header` asserts `getByRole("columnheader", { name: /files|tệp/i })` has count 0; also added to both the en and vi locale loop tests.
 - **Unchanged / still passing**: list ticket cell still renders the shortened `ShortId` (`/^[0-9a-f]{6}\.\.\.$/`), category column/filter still absent, no leaked i18n key.
 - Both locales (en `/admin/contact(/:id)` and vi `/vi/admin/contact(/:id)`) verify the breadcrumb full id and Files-column absence, consistent with the existing en/vi loop structure in this suite.
-- Gate A (`yarn e2e contact/`): 8/8 passed after reconciliation.
+- Gate A (`pnpm e2e contact/`): 8/8 passed after reconciliation.

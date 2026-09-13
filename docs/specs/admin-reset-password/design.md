@@ -215,7 +215,7 @@ Feature có **2 bề mặt hành vi**: (S1) admin reset action ở `/admin/users
 
 ### Dual-gate (§4.3)
 
-- **Gate A** — `cd client && yarn e2e --project=admin -g "Admin Reset Password"` (+ suite S2 force-change) trên app thật.
+- **Gate A** — `cd client && pnpm e2e --project=admin -g "Admin Reset Password"` (+ suite S2 force-change) trên app thật.
 - **Gate B** — MCP browser walk cùng matrix (auth context riêng); walk mọi row `A+B`, SKIP mutation của row `A only` (reset thật + đổi pw) — chỉ verify read/render/i18n/a11y.
 - Fail → `systematic-debugging` → `e2e-bugs.md` → fix → re-run (max 3 vòng).
 

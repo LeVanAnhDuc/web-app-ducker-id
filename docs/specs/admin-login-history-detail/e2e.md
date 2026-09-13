@@ -11,7 +11,7 @@ maps `admin-login-history/*.e2e.ts` → the `admin` project with storageState
 
 ```bash
 # from client/ (or the client worktree), app + Mongo/Redis up and seeded:
-yarn e2e admin-login-history
+pnpm e2e admin-login-history
 ```
 
 `admin.setup.ts` performs an admin login via the API, which records ≥1
@@ -34,7 +34,7 @@ clickable.
   regular user via `e2e/.auth/user.json` (produced by `auth.setup.ts` / the
   `setup` project). This suite runs under the `admin` project (dependency
   `admin-setup`), so `user.json` must exist on disk — guaranteed when running the
-  full `yarn e2e` (the `setup` project runs) or after `admin-authz` has run.
+  full `pnpm e2e` (the `setup` project runs) or after `admin-authz` has run.
 
 ### Selectors / assertion facts (read from code, not guessed)
 

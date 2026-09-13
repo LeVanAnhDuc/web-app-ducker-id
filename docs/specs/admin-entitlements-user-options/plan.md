@@ -19,5 +19,5 @@
 - `design.md`, `plan.md`, `e2e.md` + mock đã duyệt `ui-designs/admin-entitlements-user-options/picker-bulk-matrix.html`.
 
 ## Verify
-- FE: `yarn lint && yarn build` xanh. i18n en+vi đủ. Không hardcode string/route/endpoint.
+- FE: `pnpm lint && pnpm build` xanh. i18n en+vi đủ. Không hardcode string/route/endpoint.
 - Security: skip (không bề mặt BE mới — DR §6). E2E: hoãn slice sau (`e2e.md`).

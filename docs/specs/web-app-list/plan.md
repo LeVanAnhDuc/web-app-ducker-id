@@ -70,7 +70,7 @@ export interface AdminAppsQueryRequest extends Omit<Request, "query"> {
 
 - [ ] **Step 3: Type-check**
 
-Run: `cd server && yarn tsc`
+Run: `cd server && pnpm exec tsc`
 Expected: no errors.
 
 - [ ] **Step 4: Commit**
@@ -153,7 +153,7 @@ describe("toAdminAppDto", () => {
 
 - [ ] **Step 2: Run the test to verify it fails**
 
-Run: `cd server && yarn test src/modules/web-app/dtos/admin-app.dto.spec.ts`
+Run: `cd server && pnpm test src/modules/web-app/dtos/admin-app.dto.spec.ts`
 Expected: FAIL — cannot find module `./admin-app.dto`.
 
 - [ ] **Step 3: Create `admin-app.dto.ts`**
@@ -231,7 +231,7 @@ export { toAdminCategoryDto } from "./admin-category.dto";
 
 - [ ] **Step 6: Run the test to verify it passes**
 
-Run: `cd server && yarn test src/modules/web-app/dtos/admin-app.dto.spec.ts`
+Run: `cd server && pnpm test src/modules/web-app/dtos/admin-app.dto.spec.ts`
 Expected: PASS (3 passing).
 
 - [ ] **Step 7: Commit**
@@ -289,7 +289,7 @@ describe("buildWebAppFilter", () => {
 
 - [ ] **Step 2: Run the test to verify it fails**
 
-Run: `cd server && yarn test src/modules/web-app/helpers/index.spec.ts`
+Run: `cd server && pnpm test src/modules/web-app/helpers/index.spec.ts`
 Expected: FAIL — cannot find module `./index`.
 
 - [ ] **Step 3: Create `helpers/index.ts`**
@@ -329,7 +329,7 @@ export const buildWebAppFilter = (
 
 - [ ] **Step 4: Run the test to verify it passes**
 
-Run: `cd server && yarn test src/modules/web-app/helpers/index.spec.ts`
+Run: `cd server && pnpm test src/modules/web-app/helpers/index.spec.ts`
 Expected: PASS (4 passing).
 
 - [ ] **Step 5: Commit**
@@ -418,7 +418,7 @@ export { MongoWebAppCategoryRepository } from "./web-app-category.repository";
 
 - [ ] **Step 4: Type-check**
 
-Run: `cd server && yarn tsc`
+Run: `cd server && pnpm exec tsc`
 Expected: no errors.
 
 - [ ] **Step 5: Commit**
@@ -466,7 +466,7 @@ export const adminListAppsQuerySchema: Joi.ObjectSchema<AdminAppsQuery> =
 
 - [ ] **Step 2: Type-check**
 
-Run: `cd server && yarn tsc`
+Run: `cd server && pnpm exec tsc`
 Expected: no errors.
 
 - [ ] **Step 3: Commit**
@@ -520,7 +520,7 @@ export class WebAppService {
 
 - [ ] **Step 2: Type-check**
 
-Run: `cd server && yarn tsc`
+Run: `cd server && pnpm exec tsc`
 Expected: no errors.
 
 - [ ] **Step 3: Commit**
@@ -574,7 +574,7 @@ export class WebAppController {
 
 - [ ] **Step 2: Type-check**
 
-Run: `cd server && yarn tsc`
+Run: `cd server && pnpm exec tsc`
 Expected: no errors.
 
 - [ ] **Step 3: Commit**
@@ -628,7 +628,7 @@ export const createAdminWebAppRoutes = (
 
 - [ ] **Step 2: Type-check**
 
-Run: `cd server && yarn tsc`
+Run: `cd server && pnpm exec tsc`
 Expected: no errors.
 
 - [ ] **Step 3: Commit**
@@ -712,7 +712,7 @@ Then in the `mountRoutes(app, { ... })` object, add after `contactAdmin: contact
 
 - [ ] **Step 6: Type-check**
 
-Run: `cd server && yarn tsc`
+Run: `cd server && pnpm exec tsc`
 Expected: no errors.
 
 - [ ] **Step 7: Commit**
@@ -781,7 +781,7 @@ In `server/src/i18n/locales/vi/validation.json`:
 
 - [ ] **Step 5: Type-check**
 
-Run: `cd server && yarn tsc`
+Run: `cd server && pnpm exec tsc`
 Expected: no errors.
 
 - [ ] **Step 6: Commit**
@@ -1108,17 +1108,17 @@ In the run section, after `await seedContacts();` add:
 
 - [ ] **Step 3: Type-check**
 
-Run: `cd server && yarn tsc`
+Run: `cd server && pnpm exec tsc`
 Expected: no errors.
 
 - [ ] **Step 4: Run the seeder against the dev DB**
 
-Run: `cd server && yarn seed`
+Run: `cd server && pnpm seed`
 Expected log lines: `Created category: content` … `Created web app: blog` … `Web-app seeding completed. Created: 6, Skipped: 0`.
 
 - [ ] **Step 5: Re-run to confirm idempotency**
 
-Run: `cd server && yarn seed`
+Run: `cd server && pnpm seed`
 Expected: `Web app already exists: blog, skipping...` … `Created: 0, Skipped: 6`.
 
 - [ ] **Step 6: Commit**
@@ -1135,9 +1135,9 @@ git commit -m "feat(web-app): add web app seeder and register in orchestrator"
 
 - [ ] **Step 1: Run all three checks**
 
-Run: `cd server && yarn format && yarn lint && yarn tsc && yarn test`
+Run: `cd server && pnpm format && pnpm lint && pnpm exec tsc && pnpm test`
 Expected: format/lint clean, tsc no errors, all web-app specs pass.
-(If `yarn format`/`yarn lint` auto-fix any web-app files, re-read them and amend the relevant commit.)
+(If `pnpm format`/`pnpm lint` auto-fix any web-app files, re-read them and amend the relevant commit.)
 
 ---
 
@@ -1209,7 +1209,7 @@ export const getAdminAppCategories = async (): Promise<WebAppCategory[]> => {
 
 - [ ] **Step 2: Type-check**
 
-Run: `cd client && yarn tsc`
+Run: `cd client && pnpm exec tsc`
 Expected: no errors.
 
 - [ ] **Step 3: Commit**
@@ -1290,7 +1290,7 @@ import { createAdminApp, updateAdminApp } from "@/mocks/AdminApps";
 
 - [ ] **Step 4: Type-check**
 
-Run: `cd client && yarn tsc`
+Run: `cd client && pnpm exec tsc`
 Expected: no errors.
 
 - [ ] **Step 5: Commit**
@@ -1307,7 +1307,7 @@ git commit -m "feat(admin-apps): wire admin apps reads to real API"
 
 - [ ] **Step 1: Run all three checks**
 
-Run: `cd client && yarn format && yarn lint && yarn tsc`
+Run: `cd client && pnpm format && pnpm lint && pnpm exec tsc`
 Expected: format/lint clean, tsc no errors.
 (If auto-fix touches files, re-read and amend the relevant commit.)
 
@@ -1319,12 +1319,12 @@ Expected: format/lint clean, tsc no errors.
 
 - [ ] **Step 1: Ensure DB is seeded**
 
-Run: `cd server && yarn seed` (idempotent — safe to re-run).
+Run: `cd server && pnpm seed` (idempotent — safe to re-run).
 Expected: 6 apps + 4 categories present.
 
 - [ ] **Step 2: Start the backend**
 
-Run: `cd server && yarn dev`
+Run: `cd server && pnpm dev`
 Expected: `Modules loaded and routes mounted successfully`.
 
 - [ ] **Step 3: Hit the API with an admin token**
@@ -1342,7 +1342,7 @@ Expected: exactly 1 app (`team-calendar`).
 
 - [ ] **Step 4: Verify the FE page**
 
-Run: `cd client && yarn dev`, log in as admin, open `/admin/apps`.
+Run: `cd client && pnpm dev`, log in as admin, open `/admin/apps`.
 Expected: table renders the 6 seeded apps from the real API; the category filter lists the 4 seeded categories; search and status/category filters update the table (each change re-queries the API).
 
 - [ ] **Step 5: Confirm write path still works on mock**

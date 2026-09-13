@@ -67,7 +67,7 @@
 
 # PART A — Backend
 
-> Convention: đọc `server/.claude/CLAUDE.md` + skills `standard-typescript`, `module-struct`, `standard-restful-api`, `standard-jwt`, `standard-mongodb` trước khi code. Chỉ chạm `server/src/**`. Test runner: `yarn test` (jest) trong `server/`.
+> Convention: đọc `server/.claude/CLAUDE.md` + skills `standard-typescript`, `module-struct`, `standard-restful-api`, `standard-jwt`, `standard-mongodb` trước khi code. Chỉ chạm `server/src/**`. Test runner: `pnpm test` (jest) trong `server/`.
 
 ### Task BE-1: Error codes
 
@@ -81,7 +81,7 @@
   CHANGE_PASSWORD_SAME_AS_CURRENT: "CHANGE_PASSWORD_SAME_AS_CURRENT",
 ```
 
-- [ ] **Step 2:** Verify build: `cd server && yarn tsc` → Expected: no new errors.
+- [ ] **Step 2:** Verify build: `cd server && pnpm exec tsc` → Expected: no new errors.
 - [ ] **Step 3:** Commit: `git add server/src/constants/error-code.ts && git commit -m "feat(change-password): BE add error codes"`
 
 ---
@@ -134,7 +134,7 @@ import { RequestContext } from "@/utils/request-context";
     });
 ```
 
-- [ ] **Step 5:** `cd server && yarn tsc`. Expected: pass (i18n key `changePassword:errors.rateLimitExceeded` sẽ thêm ở Task BE-3).
+- [ ] **Step 5:** `cd server && pnpm exec tsc`. Expected: pass (i18n key `changePassword:errors.rateLimitExceeded` sẽ thêm ở Task BE-3).
 - [ ] **Step 6:** Commit: `git add server/src/constants/redis/rate-limit/index.ts server/src/middlewares/common/rate-limiter.middleware.ts && git commit -m "feat(change-password): BE rate-limit per IP+user"`
 
 ---
@@ -170,7 +170,7 @@ import { RequestContext } from "@/utils/request-context";
 ```
 
 - [ ] **Step 3:** Register `changePassword` namespace vào `src/i18n/locales/en/index.ts` và `vi/index.ts` (mirror cách `forgotPassword` được import + thêm vào resources object).
-- [ ] **Step 4:** `cd server && yarn tsc`. Expected: pass (type `I18n.Key` regenerate nếu cần — chạy script gen nếu dự án có; nếu không, key string vẫn hợp lệ).
+- [ ] **Step 4:** `cd server && pnpm exec tsc`. Expected: pass (type `I18n.Key` regenerate nếu cần — chạy script gen nếu dự án có; nếu không, key string vẫn hợp lệ).
 - [ ] **Step 5:** Commit: `git add server/src/i18n && git commit -m "feat(change-password): BE i18n messages"`
 
 ---
@@ -205,7 +205,7 @@ export const changePasswordSchema = Joi.object({
 ```
 
 - [ ] **Step 2:** Thêm các key `validation.*` vào i18n `changePassword` (cả en + vi) — `currentPasswordRequired`, `confirmMismatch`, `confirmRequired`. (en ví dụ: "Current password is required" / "Passwords do not match" / "Please confirm your password".)
-- [ ] **Step 3:** `cd server && yarn tsc`. Expected: pass.
+- [ ] **Step 3:** `cd server && pnpm exec tsc`. Expected: pass.
 - [ ] **Step 4:** Commit: `git add server/src/validators/schemas/change-password.ts server/src/i18n && git commit -m "feat(change-password): BE validator schema"`
 
 ---
@@ -233,7 +233,7 @@ export type ChangePasswordRequest = Request<
 >;
 ```
 
-- [ ] **Step 2:** `cd server && yarn tsc`. Expected: pass.
+- [ ] **Step 2:** `cd server && pnpm exec tsc`. Expected: pass.
 - [ ] **Step 3:** Commit: `git add server/src/modules/change-password/types && git commit -m "feat(change-password): BE request type"`
 
 ---
@@ -320,7 +320,7 @@ import { PasswordChangedEmail } from "./templates/password-changed";
         return strings.passwordChanged.title;
 ```
 
-- [ ] **Step 5:** `cd server && yarn tsc`. Expected: pass (exhaustive switch + EmailDataMap khớp).
+- [ ] **Step 5:** `cd server && pnpm exec tsc`. Expected: pass (exhaustive switch + EmailDataMap khớp).
 - [ ] **Step 6:** Commit: `git add server/src/types/services/email.ts server/src/services/email && git commit -m "feat(change-password): BE password-changed email type + template"`
 
 ---
@@ -357,7 +357,7 @@ describe("WrongCurrentPasswordGuard", () => {
 });
 ```
 
-- [ ] **Step 2:** Run → `cd server && yarn test wrong-current-password` → Expected: FAIL (module not found).
+- [ ] **Step 2:** Run → `cd server && pnpm test wrong-current-password` → Expected: FAIL (module not found).
 - [ ] **Step 3: Implement** `guards/wrong-current-password.guard.ts`:
 
 ```ts
@@ -400,7 +400,7 @@ describe("SamePasswordGuard", () => {
 });
 ```
 
-- [ ] **Step 6:** Run → `yarn test same-password` → Expected: FAIL.
+- [ ] **Step 6:** Run → `pnpm test same-password` → Expected: FAIL.
 - [ ] **Step 7: Implement** `guards/same-password.guard.ts`:
 
 ```ts
@@ -573,7 +573,7 @@ describe("ChangePasswordService", () => {
 });
 ```
 
-- [ ] **Step 2:** Run → `cd server && yarn test change-password.service` → Expected: FAIL (module not found).
+- [ ] **Step 2:** Run → `cd server && pnpm test change-password.service` → Expected: FAIL (module not found).
 - [ ] **Step 3: Implement** `change-password.service.ts`:
 
 ```ts
@@ -706,7 +706,7 @@ export class ChangePasswordController {
 
 > `responseData = { accessToken, idToken, expiresIn }` — khớp FE `LoginTokenResponse`.
 
-- [ ] **Step 2:** `cd server && yarn tsc`. Expected: pass.
+- [ ] **Step 2:** `cd server && pnpm exec tsc`. Expected: pass.
 - [ ] **Step 3:** Commit: `git add server/src/modules/change-password/change-password.controller.ts && git commit -m "feat(change-password): BE controller"`
 
 ---
@@ -749,7 +749,7 @@ export const createChangePasswordRoutes = (
 
 > Thứ tự: `authGuard` set RequestContext.user TRƯỚC `rl.changePasswordByIpAndUser` (keyGenerator đọc userId) và TRƯỚC controller (đọc authId).
 
-- [ ] **Step 2:** `cd server && yarn tsc`. Expected: pass (`authGuard` export từ `@/middlewares` — đã confirm).
+- [ ] **Step 2:** `cd server && pnpm exec tsc`. Expected: pass (`authGuard` export từ `@/middlewares` — đã confirm).
 - [ ] **Step 3:** Commit: `git add server/src/modules/change-password/change-password.routes.ts && git commit -m "feat(change-password): BE routes"`
 
 ---
@@ -802,7 +802,7 @@ export const createChangePasswordModule = (
 };
 ```
 
-- [ ] **Step 2:** `cd server && yarn tsc`. Expected: pass.
+- [ ] **Step 2:** `cd server && pnpm exec tsc`. Expected: pass.
 - [ ] **Step 3:** Commit: `git add server/src/modules/change-password/change-password.module.ts && git commit -m "feat(change-password): BE module factory"`
 
 ---
@@ -846,7 +846,7 @@ import { createChangePasswordModule } from "@/modules/change-password/change-pas
     changePassword: changePasswordRouter,
 ```
 
-- [ ] **Step 6:** `cd server && yarn tsc && yarn test`. Expected: build pass, all tests green.
+- [ ] **Step 6:** `cd server && pnpm exec tsc && pnpm test`. Expected: build pass, all tests green.
 - [ ] **Step 7:** Commit: `git add server/src/loaders/modules.loader.ts && git commit -m "feat(change-password): BE register module in loader"`
 
 ---
@@ -891,14 +891,14 @@ export { changePasswordSwaggerSchemas } from "./schemas";
 ```
 
 - [ ] **Step 4:** Trong `libs/swagger/openapi.ts`: import + merge `changePasswordPaths` vào `paths` và `changePasswordSwaggerSchemas` vào `components.schemas` (mirror cách forgot-password được merge — grep `forgotPasswordPaths` trong file để thấy 2 điểm chèn).
-- [ ] **Step 5:** `cd server && yarn tsc`. Expected: pass. (Optional: chạy server, mở `/api-docs`, xác nhận endpoint hiển thị.)
+- [ ] **Step 5:** `cd server && pnpm exec tsc`. Expected: pass. (Optional: chạy server, mở `/api-docs`, xác nhận endpoint hiển thị.)
 - [ ] **Step 6:** Commit: `git add server/src/modules/change-password/swagger server/src/libs/swagger/openapi.ts && git commit -m "feat(change-password): BE swagger docs"`
 
 ---
 
 # PART B — Frontend
 
-> Convention: đọc `client/.claude/CLAUDE.md` + skills `standard-react`, `standard-nextjs`, `standard-tailwind`, `standard-shadcn`, `standard-accessibility` trước khi code. Chỉ chạm `client/src/**`. Type check: `cd client && yarn tsc`.
+> Convention: đọc `client/.claude/CLAUDE.md` + skills `standard-react`, `standard-nextjs`, `standard-tailwind`, `standard-shadcn`, `standard-accessibility` trước khi code. Chỉ chạm `client/src/**`. Type check: `cd client && pnpm exec tsc`.
 
 ### Task FE-1: Endpoint + field names
 
@@ -931,7 +931,7 @@ import CHANGE_PASSWORD_FIELD_NAMES from "./ChangePassword";
   CHANGE_PASSWORD_FIELD_NAMES,
 ```
 
-- [ ] **Step 4:** `cd client && yarn tsc`. Expected: pass.
+- [ ] **Step 4:** `cd client && pnpm exec tsc`. Expected: pass.
 - [ ] **Step 5:** Commit: `git add client/src/constants && git commit -m "feat(change-password): FE endpoint + field names"`
 
 ---
@@ -1018,7 +1018,7 @@ export const changePasswordFormProps: UseFormProps<ChangePasswordFormValues> = {
 };
 ```
 
-- [ ] **Step 5:** `cd client && yarn tsc`. Expected: pass.
+- [ ] **Step 5:** `cd client && pnpm exec tsc`. Expected: pass.
 - [ ] **Step 6:** Commit: `git add client/src/forms/ChangePassword client/src/types/ChangePassword.ts && git commit -m "feat(change-password): FE form schema + types"`
 
 ---
@@ -1049,7 +1049,7 @@ export const changePassword = async (
 };
 ```
 
-- [ ] **Step 2:** `cd client && yarn tsc`. Expected: pass.
+- [ ] **Step 2:** `cd client && pnpm exec tsc`. Expected: pass.
 - [ ] **Step 3:** Commit: `git add client/src/requests/changePassword.ts && git commit -m "feat(change-password): FE request"`
 
 ---
@@ -1107,7 +1107,7 @@ export const useChangePassword = ({ onDone }: { onDone: () => void }) => {
 
 > `axiosInstance` interceptor (error filter) thường đã toast lỗi từ BE; nếu vậy, bỏ `toast.error` ở `onError` để tránh double-toast — kiểm tra `client/src/libs/axios` trước.
 
-- [ ] **Step 4:** Run test (nếu có) → Expected: PASS. Else `cd client && yarn tsc`.
+- [ ] **Step 4:** Run test (nếu có) → Expected: PASS. Else `cd client && pnpm exec tsc`.
 - [ ] **Step 5:** Commit: `git add client/src/views/Security/mains/ChangePasswordCard/hooks && git commit -m "feat(change-password): FE useChangePassword hook"`
 
 ---
@@ -1216,7 +1216,7 @@ export default ChangePasswordCard;
 
 > Confirm prop API của `PasswordInput` (`name/label/placeholder/disabled`) và `CustomButton` (`loading`) — đã thấy ở `ForgotPasswordResetForm`/`ApiKeysCard`. Nếu khác, adapt.
 
-- [ ] **Step 2:** `cd client && yarn tsc`. Expected: pass.
+- [ ] **Step 2:** `cd client && pnpm exec tsc`. Expected: pass.
 - [ ] **Step 3:** Commit: `git add client/src/views/Security/mains/ChangePasswordCard/index.tsx && git commit -m "feat(change-password): FE ChangePasswordCard"`
 
 ---
@@ -1260,7 +1260,7 @@ import ChangePasswordCard from "./mains/ChangePasswordCard";
 ```
 
 - [ ] **Step 3:** Thêm group `changePassword` tương ứng vào `locales/vi/security.json` (bản dịch tiếng Việt của các key trên).
-- [ ] **Step 4:** `cd client && yarn tsc && yarn lint`. Expected: pass.
+- [ ] **Step 4:** `cd client && pnpm exec tsc && pnpm lint`. Expected: pass.
 - [ ] **Step 5:** Commit: `git add client/src/views/Security/index.tsx client/src/locales && git commit -m "feat(change-password): FE mount card + i18n"`
 
 ---
@@ -1268,8 +1268,8 @@ import ChangePasswordCard from "./mains/ChangePasswordCard";
 # PART C — Verification
 
 ### Task V-1: End-to-end manual verify
-- [ ] BE: `cd server && yarn test && yarn tsc` — all green.
-- [ ] FE: `cd client && yarn tsc && yarn lint` — pass.
+- [ ] BE: `cd server && pnpm test && pnpm exec tsc` — all green.
+- [ ] FE: `cd client && pnpm exec tsc && pnpm lint` — pass.
 - [ ] Chạy app (BE + FE), login, vào Security → đổi mật khẩu:
   - [ ] Sai current password → toast lỗi, không đổi.
   - [ ] new === current → lỗi same-password.

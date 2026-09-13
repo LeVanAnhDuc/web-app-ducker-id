@@ -132,7 +132,7 @@ Sau khi viết xong code fixes + test + docs:
 1. Agent tự check port (BE :5000, FE :3000, Mongo, Redis). Chưa chạy → agent tự dựng background
    (Mongo/Redis → BE từ main `server/` (không đổi) → FE worktree dev port riêng qua
    `node .claude/scripts/worktree.mjs up e2e-coverage-backfill`) + seed.
-2. Dispatch **2 gate song song** (1 message, 2 Agent): Gate A `yarn e2e` (scope 6 feature);
+2. Dispatch **2 gate song song** (1 message, 2 Agent): Gate A `pnpm e2e` (scope 6 feature);
    Gate B MCP browser walk (auth context riêng) theo từng `e2e.md`.
 3. Fail (≥1 gate) → `systematic-debugging` root cause → `e2e-bugs.md` (append/round) → fix → re-run
    cả 2. Max 3 vòng; quá → dừng + báo user.

@@ -16,7 +16,7 @@
 - Navigation qua `@/i18n/navigation`. Paths/keys qua `CONSTANTS`. Icon tra `icon-map` (`Search`, `ArrowUpRight`, `Sparkles`).
 - Mọi string qua i18n `dashboard.header` (en + vi), không hardcode. Announce qua `useAnnounce` (key i18n).
 - Vertical rhythm `flex flex-col gap-*`. Token màu (`bg-primary/10`, `text-muted-foreground`, `border-border`, `bg-popover`), radius `rounded-md` rows / `rounded-lg` popover / `rounded-xl` tile, `shadow-md` popover.
-- Sau mỗi task: `cd client && yarn lint && npx tsc --noEmit` phải xanh.
+- Sau mỗi task: `cd client && pnpm lint && pnpm exec tsc --noEmit` phải xanh.
 
 ---
 
@@ -32,7 +32,7 @@
 - [ ] **Step 1:** Đọc `en/dashboard.json` + `vi/dashboard.json`, xác định `header` object hiện có (`appName`, `searchPlaceholder`, `searchLabel`, `notificationsLabel`, `menuToggleLabel`, …).
 - [ ] **Step 2:** Thêm keys mới vào `header` (giữ nguyên keys cũ). EN: `suggestedLabel:"Suggested apps"`, `resultsLabel:"Apps"`, `noResults:"No apps found"`, `noResultsHint:"Try a different keyword"`, `viewAll:"View All"`, `openLabel:"Open"`, `announce:{ results:"{count} apps found", noResults:"No apps found", opened:"Opening {name}" }`. VI tương ứng: `"Ứng dụng gợi ý"`, `"Ứng dụng"`, `"Không tìm thấy ứng dụng"`, `"Thử từ khoá khác"`, `"Xem tất cả"`, `"Mở"`, announce `"{count} ứng dụng"`, `"Không tìm thấy ứng dụng"`, `"Đang mở {name}"`.
 - [ ] **Step 3:** Thêm constant `HEADER_SEARCH_RESULT_LIMIT = 5` vào nhóm constants phù hợp + export qua `CONSTANTS`.
-- [ ] **Step 4:** `cd client && yarn lint && npx tsc --noEmit` → xanh.
+- [ ] **Step 4:** `cd client && pnpm lint && pnpm exec tsc --noEmit` → xanh.
 - [ ] **Step 5:** Commit `feat(header-search): i18n keys + result limit constant`.
 
 ---
@@ -100,7 +100,7 @@ const ResultRow = ({
 export default ResultRow;
 ```
 > Row là `div role=option` (không `<a>`/`<button>`) vì hành vi mở external qua `window.open` do orchestrator lo; giữ ARIA combobox pattern.
-- [ ] **Step 2:** `yarn lint && npx tsc --noEmit` → xanh.
+- [ ] **Step 2:** `pnpm lint && pnpm exec tsc --noEmit` → xanh.
 - [ ] **Step 3:** Commit `feat(header-search): ResultRow`.
 
 ---
@@ -122,7 +122,7 @@ Render (wrapper `role="listbox" id={listId}` `flex flex-col gap-0.5`):
 - `isLoading` → 3 skeleton row (`<div className="flex items-center gap-3 p-2.5"><Skeleton className="size-10 rounded-xl" /><div className="flex flex-1 flex-col gap-1.5"><Skeleton className="h-3.5 w-1/2" /><Skeleton className="h-3 w-1/3" /></div></div>`).
 - `!isLoading && items.length === 0` (isError coi như empty) → empty state: `flex flex-col items-center gap-1.5 px-3 py-8 text-center` + `Search` icon `size-6 text-muted-foreground` + `labels.noResults` (`text-sm font-medium text-foreground`) + `labels.noResultsHint` (`text-xs text-muted-foreground`).
 - có items → section label row (`px-3 py-2 text-xs font-medium text-muted-foreground`) = `hasQuery ? labels.results : labels.suggested`, rồi map `ResultRow` (`isActive={i === activeIndex}`).
-- [ ] **Step 2:** `yarn lint && npx tsc --noEmit` → xanh.
+- [ ] **Step 2:** `pnpm lint && pnpm exec tsc --noEmit` → xanh.
 - [ ] **Step 3:** Commit `feat(header-search): ResultList states`.
 
 ---
@@ -148,7 +148,7 @@ Render (wrapper `role="listbox" id={listId}` `flex flex-col gap-0.5`):
   - render `SearchInput` bọc `PopoverTrigger asChild` (hoặc anchor) + `PopoverContent align="start" className="w-[--radix-popover-trigger-width] p-2"` chứa `ResultList` + footer "View All" (`CustomButton variant="ghost" size="sm" fullWidth`) chỉ khi `hasQuery && total > items.length`.
   - input aria: `role="combobox"` `aria-expanded={open}` `aria-controls={listId}` (truyền qua props SearchInput nếu hỗ trợ; nếu SearchInput chưa forward → dùng wrapper `div` mang aria hoặc mở rộng SearchInput props tối thiểu — KHÔNG sửa `ui/input.tsx`).
 - [ ] **Step 2:** Nếu `SearchInput` không nhận `onFocus`/`onKeyDown`/aria → mở rộng props của `SearchInput` (component `src/components/SearchInput`, KHÔNG phải `ui/`) để forward các prop này. Giữ backward-compat (optional props).
-- [ ] **Step 3:** `yarn lint && npx tsc --noEmit` → xanh.
+- [ ] **Step 3:** `pnpm lint && pnpm exec tsc --noEmit` → xanh.
 - [ ] **Step 4:** Commit `feat(header-search): orchestrator (search + popover + keyboard)`.
 
 ---
@@ -159,7 +159,7 @@ Render (wrapper `role="listbox" id={listId}` `flex flex-col gap-0.5`):
 - Modify: `client/src/layouts/AppHeader/index.tsx`
 
 - [ ] **Step 1:** Thay block `<SearchInput ... className="mx-4 hidden max-w-md flex-1 md:block" />` bằng `<HeaderSearch />` (component tự bọc responsive class `mx-4 hidden max-w-md flex-1 md:block`). Xoá `searchValue`/`setSearchValue` state không còn dùng. Giữ nguyên mobile search button (no-op như cũ) + notification popover + UserMenu.
-- [ ] **Step 2:** `yarn lint && npx tsc --noEmit` → xanh.
+- [ ] **Step 2:** `pnpm lint && pnpm exec tsc --noEmit` → xanh.
 - [ ] **Step 3:** Commit `feat(header-search): wire HeaderSearch into AppHeader`.
 
 ---
@@ -184,7 +184,7 @@ Render (wrapper `role="listbox" id={listId}` `flex flex-col gap-0.5`):
   - Mutation-heavy: N/A.
 - [ ] **Step 3:** Commit `test(header-search): e2e scenarios + e2e.md`.
 
-> Chạy thật (dual-gate §4.3) do main loop điều phối sau khi các task code xong: gate A `yarn e2e` (scope header-search) + gate B Playwright MCP walk. App phải chạy (BE:5000/FE:3000/Mongo/Redis) — main loop tự check trước.
+> Chạy thật (dual-gate §4.3) do main loop điều phối sau khi các task code xong: gate A `pnpm e2e` (scope header-search) + gate B Playwright MCP walk. App phải chạy (BE:5000/FE:3000/Mongo/Redis) — main loop tự check trước.
 
 ## Self-Review
 

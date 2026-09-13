@@ -2,7 +2,7 @@
 
 Append-only. 1 entry per fail round.
 
-## Round 1 — 2026-06-14 — Gate A (`yarn e2e` against worktree FE :3100)
+## Round 1 — 2026-06-14 — Gate A (`pnpm e2e` against worktree FE :3100)
 
 **Gate fail:** A (Gate B chưa chạy — chạy tuần tự sau A để tránh contamination shared account).
 **Context:** Tests Phase 1 viết tĩnh (app chưa chạy lúc viết) → round này là lần execute thật đầu tiên. ~33 fail, gom thành 6 cluster + 1 sự cố seed.
@@ -68,7 +68,7 @@ Append-only. 1 entry per fail round.
 - **Gate A round 2 = PASS:** admin-users-list 24, edit-apps 20 (+2 skip: null-prefill, double-submit fixme), admin-login-history 18, admin-authz 4, web-app-user-list 23, notifications 29, change-password 28 (+1 skip rate-limit). Chạy theo thứ tự contamination-safe (admin → user-read → change-password cuối), clear Redis bucket. Password `User@123` verify 200.
 - **Gate B (MCP walk) = PASS:** 6 feature render đúng en+vi, không console error, không failed network. CF-2/CF-4 (Category prefill human label) confirmed. Minor follow-up: vài label vi chưa dịch (Role header/filter, Category enum, vài label detail) — không block.
 
-**Side effect (dev DB):** notifications mutation test (D9 persistence, mark-single) đánh dấu read vĩnh viễn vài notification unread (không có mark-unread API). Minor; reseed nếu cần: `cd server && yarn seed --clear && yarn seed`.
+**Side effect (dev DB):** notifications mutation test (D9 persistence, mark-single) đánh dấu read vĩnh viễn vài notification unread (không có mark-unread API). Minor; reseed nếu cần: `cd server && pnpm seed --clear && pnpm seed`.
 
 **Kết luận:** Dual-gate §4.3 PASS sau round 2 (≤3 vòng). Teardown: worktree FE :3100 đã tắt, BE :5000/FE :3000 của user giữ nguyên.
 
@@ -79,7 +79,7 @@ Xử lý các app finding theo thứ tự, mỗi issue 1 commit để review d�
 - **Issue #1 — double-submit guard (FE) [DONE]**: hook dùng chung `src/hooks/useSubmitGuard.ts` (`run`/`release` + in-flight `useRef`, chặn đồng bộ trước re-render); áp 7 form mutate-BE-thật (AdminAppsFormSheet, ChangePasswordCard, Profile PersonalInfoForm, ForgotPasswordReset, LoginPassword, Signup InfoStep, Login EmailStep) — `onSubmit` bọc `run(...)` + `onSettled: release`. Un-fixme test double-submit edit-apps (pass, 1 PATCH, self-revert). Refactor onError ChangePasswordCard → object-mapping `FIELD_ERROR_MAP`.
 - **Issue #2 — vi label + Category localize (FE+BE) [DONE]**: vi Role header/filter → "Vai trò". Category localize theo **Approach A** (FE i18n by slug, explicit map): BE `UserCategoryDto` +`slug`, `UserAppDto` +`categorySlug`, repo populate `select: "displayName name"`; FE `common.categories` (en+vi) + `dataSources/Categories` map `CATEGORY_LABEL_KEY` + `resolveCategoryLabel(t,slug,fallback)`; localize 4 render site (CategoryFilter pill, app card + announce ở AppsBoard, CategorySelect, AdminAppsTable). E2E thêm assertion vi "Năng suất". en giữ "Content" (không regression). KHÔNG đổi schema (slug = field `name` sẵn có).
 - **Issue #3 — password-not-changed.guard iat resolution (BE) [DONE]**: fix bằng **tokenVersion discriminator** (không sửa toán tử — `<=` sẽ revoke nhầm phiên hiện tại; iat giây không tách được same-second). Auth `+tokenVersion`; refresh payload mang version; `updatePassword` `$inc tokenVersion` (atomic, return version mới) → change-password issue token với version mới; guard reject `(payload.tokenVersion ?? 0) < auth.tokenVersion` (`?? 0` migration mượt). forgot-password cũng bump. Bỏ `1.1s wait` trong e2e. Verify: curl chứng minh OLD token reuse **cùng giây** → 403, NEW token → 200; change-password e2e 28 pass/1 skip.
-  - **Env note**: phát hiện server+client `node_modules` bị prune devDeps (ts-node/eslint/playwright) → `yarn install` khôi phục (tắt BE :5000 + FE :3000 tạm để gỡ EPERM bcrypt, đã bật lại). Xem [[reference_e2e_auth_ratelimit_gotchas]].
+  - **Env note**: phát hiện server+client `node_modules` bị prune devDeps (ts-node/eslint/playwright) → `pnpm install` khôi phục (tắt BE :5000 + FE :3000 tạm để gỡ EPERM bcrypt, đã bật lại). Xem [[reference_e2e_auth_ratelimit_gotchas]].
 
 ### Finding mới — double error-notification (global toast trùng form onError) [FOLLOW-UP, làm sau]
 

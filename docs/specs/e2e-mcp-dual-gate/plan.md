@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Nâng bước verification E2E (§4.3) thành dual-gate — `yarn e2e` (gate A) + subagent lái browser qua Playwright MCP (gate B) chạy song song, pass cả hai mới qua §4.3; fail → systematic-debugging → ghi `e2e-bugs.md` → fix → re-verify (max 3 vòng).
+**Goal:** Nâng bước verification E2E (§4.3) thành dual-gate — `pnpm e2e` (gate A) + subagent lái browser qua Playwright MCP (gate B) chạy song song, pass cả hai mới qua §4.3; fail → systematic-debugging → ghi `e2e-bugs.md` → fix → re-verify (max 3 vòng).
 
 **Architecture:** Thay đổi thuần **prose/convention** trên 3 file: `.claude/CLAUDE.md` (§4.3 viết lại + §6.2 thêm artifact), `.claude/skills/e2e-scenario-coverage/SKILL.md` (hướng dẫn gate B + tag mutation-heavy + output `e2e-bugs.md`). Không có code/test runtime; "verify" mỗi task = đọc lại + grep kiểm anchor & tính nhất quán.
 
@@ -38,13 +38,13 @@ Expected: tìm thấy đúng 1 dòng bullet "Vị trí" trong §4.3.
 
 Edit — old_string (nguyên bullet hiện tại):
 ```
-- **Vị trí**: sau `superpowers:subagent-driven-development` + TDD, **trước** `superpowers:requesting-code-review`. Chạy `cd client && yarn e2e` trên app thật (BE :5000 + FE :3000 + Mongo/Redis đã chạy, DB đã seed) → phải xanh trước khi sang code-review.
+- **Vị trí**: sau `superpowers:subagent-driven-development` + TDD, **trước** `superpowers:requesting-code-review`. Chạy `cd client && pnpm e2e` trên app thật (BE :5000 + FE :3000 + Mongo/Redis đã chạy, DB đã seed) → phải xanh trước khi sang code-review.
 ```
 new_string:
 ```
 - **Vị trí**: sau `superpowers:subagent-driven-development` + TDD, **trước** `superpowers:requesting-code-review`.
 - **Dual-gate (BẮT BUỘC) — pass CẢ 2 mới qua §4.3**: dispatch song song 2 subagent (1 message, 2 Agent call), cả hai cùng cover toàn bộ Scenario Matrix:
-  - **Gate A — `yarn e2e`**: subagent chạy `cd client && yarn e2e` (scope feature) trên app thật → PASS/FAIL + output. Deterministic, là suite committed.
+  - **Gate A — `pnpm e2e`**: subagent chạy `cd client && pnpm e2e` (scope feature) trên app thật → PASS/FAIL + output. Deterministic, là suite committed.
   - **Gate B — MCP walk**: subagent (general-purpose + Playwright MCP tools `browser_*`) nhận Scenario Matrix từ `docs/specs/<feature>/e2e.md`, lái browser thật walk từng case → PASS/FAIL per-scenario + bằng chứng (`browser_snapshot` / `browser_console_messages` / `browser_network_requests`). Bắt lỗi visual/UX/console/network mà assertion gate A sót.
   - **Contamination**: gate B login bằng **auth context riêng** (KHÔNG share storageState với A). Scenario **mutation-heavy** (cột `Gate` = `A only` trong matrix) → gate B chỉ verify read/render, KHÔNG mutate song song. Xem [[reference_e2e_suite_session_contamination]].
 - **Khi fail (≥1 gate) — vòng lặp max 3**: `superpowers:systematic-debugging` chẩn đoán root cause TRƯỚC → ghi đầy đủ vào `docs/specs/<feature>/e2e-bugs.md` → quay về implement (`superpowers:subagent-driven-development`/TDD) fix → chạy lại CẢ 2 gate. Quá 3 vòng vẫn fail → DỪNG, trình `e2e-bugs.md` + trạng thái cho user. Cả 2 PASS → sang `requesting-code-review`.
@@ -53,7 +53,7 @@ new_string:
 - [ ] **Step 3: Verify anchor & nội dung**
 
 Run (Grep): pattern `Dual-gate \(BẮT BUỘC\)` và `Gate B — MCP walk` trong `.claude/CLAUDE.md`
-Expected: mỗi pattern khớp đúng 1 lần; bullet "Vị trí" cũ (có `Chạy .cd client && yarn e2e. trên app thật`) không còn.
+Expected: mỗi pattern khớp đúng 1 lần; bullet "Vị trí" cũ (có `Chạy .cd client && pnpm e2e. trên app thật`) không còn.
 
 ---
 
@@ -190,7 +190,7 @@ new_string:
 ```
 ## Gate B — driving the browser via Playwright MCP
 
-Gate B is the **second** §4.3 gate (runs in parallel with gate A `yarn e2e`; both must pass). A subagent drives a real browser via Playwright MCP tools to walk the SAME matrix, catching what test-file assertions miss (visual/UX/console/network).
+Gate B is the **second** §4.3 gate (runs in parallel with gate A `pnpm e2e`; both must pass). A subagent drives a real browser via Playwright MCP tools to walk the SAME matrix, catching what test-file assertions miss (visual/UX/console/network).
 
 - **Input**: the Scenario Matrix in `e2e.md`. Walk every `A+B` scenario; SKIP the mutation of `A only` rows (verify read/render only — gate A owns the mutation).
 - **Auth**: log in with gate B's OWN context (`browser_navigate` to login + `browser_fill_form`), do NOT reuse gate A's storageState — prevents one gate's token revoke from killing the other's session.
@@ -227,7 +227,7 @@ Edit — old_string:
 new_string:
 ```
 - Changed an existing feature's behavior but didn't update its existing matrix + `e2e.md` + test file to match.
-- Claimed §4.3 PASS with only gate A (`yarn e2e`) green — dual-gate requires gate B (MCP walk) green too.
+- Claimed §4.3 PASS with only gate A (`pnpm e2e`) green — dual-gate requires gate B (MCP walk) green too.
 - Ran gate B against a mutation-heavy scenario without the `A only` tag → parallel session contamination → false fail.
 ```
 

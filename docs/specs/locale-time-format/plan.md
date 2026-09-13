@@ -10,7 +10,7 @@
 
 ## Global Constraints
 
-- **KHÔNG có unit-test runner ở FE** (chỉ ESLint/Prettier/`tsc`/Playwright). KHÔNG thêm jest/vitest (tránh scope creep + drift techstack). Tầng test hành vi = **E2E (Task 7)**; verify per-task = `npx tsc --noEmit` + `yarn lint` (chạy trong worktree client).
+- **KHÔNG có unit-test runner ở FE** (chỉ ESLint/Prettier/`tsc`/Playwright). KHÔNG thêm jest/vitest (tránh scope creep + drift techstack). Tầng test hành vi = **E2E (Task 7)**; verify per-task = `pnpm exec tsc --noEmit` + `pnpm lint` (chạy trong worktree client).
 - Pure function → `src/utils/index.ts` (named export). Hook → `src/hooks/<name>.ts` (file phẳng) + barrel `src/hooks/index.ts`. Shared type → `src/types/<Feature>/index.ts`. Component → `src/components/<Name>/index.tsx`. Props type **inline** tại destructuring, KHÔNG `type Props`.
 - Import groups theo `rules/imports.md`: `// libs` → `// types` → `// hooks` → `// others`. Chỉ thêm section comment cho group có import.
 - `<time>` là tag layout-thuần (non-interactive) → dùng raw được, KHÔNG cần `Custom*`.
@@ -98,7 +98,7 @@ export const formatDateTime = (
 
 - [ ] **Step 4: Verify**
 
-Run (trong worktree client): `npx tsc --noEmit && yarn lint`
+Run (trong worktree client): `pnpm exec tsc --noEmit && pnpm lint`
 Expected: PASS, không lỗi. (Không có call-site mới nào nên hàm cũ vẫn còn — OK.)
 
 - [ ] **Step 5: Commit**
@@ -152,7 +152,7 @@ export { default as useHasMounted } from "./useHasMounted";
 
 - [ ] **Step 3: Verify**
 
-Run: `npx tsc --noEmit && yarn lint`
+Run: `pnpm exec tsc --noEmit && pnpm lint`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
@@ -218,7 +218,7 @@ export { default as useFormatTime } from "./useFormatTime";
 
 - [ ] **Step 3: Verify**
 
-Run: `npx tsc --noEmit && yarn lint`
+Run: `pnpm exec tsc --noEmit && pnpm lint`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
@@ -298,7 +298,7 @@ export default FormatTime;
 
 - [ ] **Step 3: Verify**
 
-Run: `npx tsc --noEmit && yarn lint`
+Run: `pnpm exec tsc --noEmit && pnpm lint`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
@@ -348,7 +348,7 @@ Ví dụ AdminAppsTable:
 
 - [ ] **Step 3: Verify**
 
-Run: `npx tsc --noEmit && yarn lint`
+Run: `pnpm exec tsc --noEmit && pnpm lint`
 Expected: PASS, không còn import `formatDateShort`/`formatDateTimeShort`/`formatDateTimeMedium` ở các file này.
 
 - [ ] **Step 4: Commit**
@@ -414,7 +414,7 @@ Xoá `formatDateShort`, `formatDateTimeShort`, `formatDateTimeMedium`, `formatDa
 Run:
 ```bash
 grep -rn "formatDateShort\|formatDateTimeShort\|formatDateTimeMedium\|formatDateLong\|formatLastUsed\|relativeTime" client/src
-npx tsc --noEmit && yarn lint
+pnpm exec tsc --noEmit && pnpm lint
 ```
 Expected: grep KHÔNG ra kết quả (đã xoá hết); tsc + lint PASS.
 
@@ -485,7 +485,7 @@ test("null timestamp renders em-dash, not Invalid Date", async ({ page }) => {
 
 - [ ] **Step 3: Verify (defer chạy thật sang bước §4.3)**
 
-`npx tsc --noEmit && yarn lint` trên file test. Việc chạy `yarn e2e` + gate B MCP walk thực hiện ở **bước §4.3 dual-gate** (cần app running) — KHÔNG chạy trong task này.
+`pnpm exec tsc --noEmit && pnpm lint` trên file test. Việc chạy `pnpm e2e` + gate B MCP walk thực hiện ở **bước §4.3 dual-gate** (cần app running) — KHÔNG chạy trong task này.
 
 - [ ] **Step 4: Commit**
 
@@ -500,10 +500,10 @@ git commit -m "test(locale-time-format): e2e scenarios for locale-aware time ren
 
 ## Sau khi hết task (do main loop điều phối theo §4.3–§5)
 
-1. **§4.3 E2E dual-gate**: check app running → dispatch gate A (`yarn e2e` scope feature) + gate B (MCP walk theo `e2e.md`) song song. Fail → `systematic-debugging` → `e2e-bugs.md` → fix (max 3 vòng).
+1. **§4.3 E2E dual-gate**: check app running → dispatch gate A (`pnpm e2e` scope feature) + gate B (MCP walk theo `e2e.md`) song song. Fail → `systematic-debugging` → `e2e-bugs.md` → fix (max 3 vòng).
 2. **§4.5 Security review**: feature **chỉ hiển thị**, không đụng auth/input/data nhạy cảm → **SKIP** (ghi lý do trong report/summary). 
 3. **§4.6 CLAUDE.md drift audit**: không đổi command/struct/deps/ERD → **SKIP** (chỉ thêm util/hook/component theo convention sẵn có).
-4. **§4.7 Green checks**: `cd client && yarn lint && yarn build`.
+4. **§4.7 Green checks**: `cd client && pnpm lint && pnpm build`.
 5. **§4.8 finish branch + README**: không đổi setup/config/env/deps → README **SKIP**.
 6. **§5 step 5 PR**: tạo PR per-repo (docs + client). **DỪNG trước merge** (autonomous mode vẫn dừng trước merge PR — hỏi user).
 

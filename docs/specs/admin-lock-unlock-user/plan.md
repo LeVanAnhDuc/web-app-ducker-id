@@ -17,7 +17,7 @@
 - Return contract: `{ _id: string; isActive: boolean }`.
 - Admin CANNOT lock self (403 `ADMIN_CANNOT_LOCK_SELF`); locking other admins allowed.
 - Commit after each task (worktree branch `feat/admin-lock-unlock-user`, per-repo).
-- Jest-in-worktree: run with `npx jest --testMatch "**/?(*.)+(spec).ts" <path>` (rootDir glob breaks in `.worktrees/` — see project memory).
+- Jest-in-worktree: run with `pnpm exec jest --testMatch "**/?(*.)+(spec).ts" <path>` (rootDir glob breaks in `.worktrees/` — see project memory).
 
 ## File Structure
 
@@ -115,7 +115,7 @@ async findAuthIdById(userId: string): Promise<{ authId: string } | null> {
 }
 ```
 - [ ] **Step 4:** Write test `authentication.service.spec.ts` for `setActive`: mock repo, assert `validateObjectId` rejects bad id, assert repo called with `(authId, false)`.
-- [ ] **Step 5:** Run: `npx jest --testMatch "**/?(*.)+(spec).ts" src/modules/authentication` → PASS.
+- [ ] **Step 5:** Run: `pnpm exec jest --testMatch "**/?(*.)+(spec).ts" src/modules/authentication` → PASS.
 - [ ] **Step 6:** Commit: `git add -A && git commit -m "feat(user,auth): add setActive + findAuthIdById repository methods"`.
 
 ---
@@ -191,7 +191,7 @@ export const createUserModule = (
 };
 ```
 - [ ] **Step 6:** In `modules.loader.ts` change the call to `createUserModule(rateLimiter, authService)` (authService already created above userModule).
-- [ ] **Step 7:** Run: `npx jest --testMatch "**/?(*.)+(spec).ts" src/modules/user` → PASS.
+- [ ] **Step 7:** Run: `pnpm exec jest --testMatch "**/?(*.)+(spec).ts" src/modules/user` → PASS.
 - [ ] **Step 8:** Commit: `git add -A && git commit -m "feat(user): add setUserActive service with self-lock guard"`.
 
 ---
@@ -254,7 +254,7 @@ adminUsers.patch(
 );
 ```
   (`authGuard + adminGuard` already applied via `adminUsers.use(...)`.)
-- [ ] **Step 5:** Type-check: `cd server/.worktrees/admin-lock-unlock-user && yarn type-check`.
+- [ ] **Step 5:** Type-check: `cd server/.worktrees/admin-lock-unlock-user && pnpm type-check`.
 - [ ] **Step 6:** Manual/route smoke (optional, if app running): `curl -X PATCH .../api/v1/admin/users/<id>/lock` with admin bearer → 200 `{ _id, isActive:false }`.
 - [ ] **Step 7:** Commit: `git add -A && git commit -m "feat(user): add lock/unlock admin routes + controller"`.
 
@@ -270,7 +270,7 @@ adminUsers.patch(
 - [ ] **Step 1:** Add OpenAPI path entries for `PATCH /admin/users/{id}/lock` and `/unlock` (admin bearer; responses 200 `{ _id, isActive }`, 400 invalid id, 403 self-lock/not-admin, 404 not found). Follow the existing style in `paths.ts`.
 - [ ] **Step 2:** Add a response schema `SetUserActiveResult` to `schemas.ts` (`{ _id: string, isActive: boolean }`).
 - [ ] **Step 3:** Add two requests to the Postman collection mirroring existing admin-users entries.
-- [ ] **Step 4:** Build to confirm swagger wiring compiles: `yarn build`.
+- [ ] **Step 4:** Build to confirm swagger wiring compiles: `pnpm build`.
 - [ ] **Step 5:** Commit: `git add -A && git commit -m "docs(user): swagger + postman for lock/unlock endpoints"`.
 
 ---
@@ -317,7 +317,7 @@ export const unlockAdminUser = async (
   return response.data.data;
 };
 ```
-- [ ] **Step 4:** Lint touched files: `cd client/.worktrees/admin-lock-unlock-user && npx eslint src/requests/adminUsers.ts src/constants/endpoints.ts src/types/AdminUsers/index.ts`.
+- [ ] **Step 4:** Lint touched files: `cd client/.worktrees/admin-lock-unlock-user && pnpm exec eslint src/requests/adminUsers.ts src/constants/endpoints.ts src/types/AdminUsers/index.ts`.
 - [ ] **Step 5:** Commit: `git add -A && git commit -m "feat(admin-users): add lock/unlock request functions + endpoints"`.
 
 ---
@@ -336,7 +336,7 @@ export const unlockAdminUser = async (
 - [ ] **Step 2:** Same swap in `useUnlockAdminUser.ts` (`unlockAdminUser`).
 - [ ] **Step 3:** In `mocks/AdminUsers.ts` delete the `lockAdminUser` and `unlockAdminUser` exports (keep `getAdminUsers`, `getAdminUserById`, `resetAdminUserPassword`, `forceLogoutAdminUser`, `MOCK_ADMIN_USERS`, `updateUser` helper if still used by remaining fns — keep `updateUser` only if referenced; otherwise remove to avoid unused-var lint).
 - [ ] **Step 4:** Verify no other importer of the removed mocks: `grep -rn "lockAdminUser\|unlockAdminUser" src | grep mocks` → only the request file / hooks now.
-- [ ] **Step 5:** Lint + build: `npx eslint src/views/AdminUsers/hooks src/mocks/AdminUsers.ts && yarn build` (build type-checks).
+- [ ] **Step 5:** Lint + build: `pnpm exec eslint src/views/AdminUsers/hooks src/mocks/AdminUsers.ts && pnpm build` (build type-checks).
 - [ ] **Step 6:** Commit: `git add -A && git commit -m "feat(admin-users): wire lock/unlock hooks to real API"`.
 
 ---
@@ -366,7 +366,7 @@ export const unlockAdminUser = async (
   - **Validation via API (row 4, admin session)**: with admin bearer via `page.request`: PATCH `/admin/users/zzz/lock` → 400; `/admin/users/<valid-but-missing-24hex>/lock` → 404; PATCH lock on the admin's OWN id → 403 `ADMIN_CANNOT_LOCK_SELF` (fetch own id from `/api/v1/users/me` then map to admin-users list `_id`).
   - `test.afterAll`: ensure `user2@test.com` unlocked and `inactive@test.com` locked (idempotent PATCH via admin request context) to restore seed state.
 - [ ] **Step 3:** Note in `docs/specs/admin-lock-unlock-user/e2e.md`: rate-limit awareness — keep real logins minimal (login guard 30/15min); the login-after-lock case does ≤3 logins.
-- [ ] **Step 4:** (App must be running — see §4.3 preflight.) Run the suite: `cd client && yarn playwright test admin-users-lock` → PASS.
+- [ ] **Step 4:** (App must be running — see §4.3 preflight.) Run the suite: `cd client && pnpm exec playwright test admin-users-lock` → PASS.
 - [ ] **Step 5:** Commit: `git add -A && git commit -m "test(admin-users-lock): e2e for lock/unlock (gate A)"`.
 
 ---
@@ -380,7 +380,7 @@ export const unlockAdminUser = async (
 
 - [ ] **Step 1:** Add a non-admin denial check for the lock endpoint: reuse the `apiContext` + `nonAdminToken` pattern already in the file. Add a test asserting `PATCH /api/v1/admin/users/<anyId>/lock` with the non-admin bearer → 403 `AUTH_ADMIN_ONLY` (guard order: adminGuard rejects before self-check). Do the same for `/unlock`.
 - [ ] **Step 2:** Add an AuthN check: a fresh token-less `playwrightRequest.newContext()` → `PATCH /api/v1/admin/users/<anyId>/lock` → 401 `AUTH_MISSING_TOKEN`.
-- [ ] **Step 3:** Run: `cd client && yarn playwright test admin-authz` → PASS.
+- [ ] **Step 3:** Run: `cd client && pnpm exec playwright test admin-authz` → PASS.
 - [ ] **Step 4:** Commit: `git add -A && git commit -m "test(admin-authz): lock/unlock authN + authZ denial"`.
 
 ---
