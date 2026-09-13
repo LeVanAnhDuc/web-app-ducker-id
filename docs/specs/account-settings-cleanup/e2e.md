@@ -22,7 +22,7 @@
 | 12  | Accessibility         | ✅      | account-settings/profile dùng role/label selector; link "Security" không còn trong tab order sidebar.                                                                       | A+B  |
 | F1  | Route removal `[ST]`  | ✅      | Vào `/security` và `/vi/security` → `not-found`/404 (invalid transition: route từng hợp lệ nay không còn).                                                                  | A+B  |
 | F2  | Nav integrity         | ✅      | Sidebar nhóm Settings liệt kê profile, account-settings, billing — **không** có security (lẫn team, đã gỡ ở feature remove-team-feature); các link còn lại điều hướng đúng. | A+B  |
-| F3  | Dead-reference guard  | ✅      | Không còn import/string tham chiếu `ROUTES.SECURITY`/`views/Security`/`mocks/Security`/locale `security`/các card đã xoá — chốt bằng `yarn build` (type-check) + grep, không cần E2E. | —    |
+| F3  | Dead-reference guard  | ✅      | Không còn import/string tham chiếu `ROUTES.SECURITY`/`views/Security`/`mocks/Security`/locale `security`/các card đã xoá — chốt bằng `pnpm build` (type-check) + grep, không cần E2E. | —    |
 
 **Test-design techniques**: EP/BVA/DT không kích hoạt (không có input domain / boundary / điều kiện kết hợp mới). Chỉ ST cho F1 (route removal = invalid transition). Completeness-critic: chưa yêu cầu "thorough/≥90%" → không chạy.
 
@@ -44,7 +44,7 @@ All tests in `client/e2e/account-settings-cleanup/cleanup.e2e.ts`. They run unde
 | #2       | unauthenticated → /login                                             | `#2 AuthN › unauthenticated user is redirected away from account settings`                                                                 |
 | #12      | a11y: role/label selectors; no Security in sidebar tab order         | Covered transitively — F2 asserts links via `getByRole("link")` scoped to the `aria-label="Settings"` nav, and asserts the Security link has count 0 (removed from tab order). No dedicated test. |
 | #3,4,5,6,7,8,10,11 | N/A (see matrix)                                           | No tests (justified N/A).                                                                                                                   |
-| F3       | dead-reference guard                                                 | N/A for E2E — verified by `yarn build` + grep per design §6.                                                                                |
+| F3       | dead-reference guard                                                 | N/A for E2E — verified by `pnpm build` + grep per design §6.                                                                                |
 
 ## 3. Assumptions / follow-up gaps (for the orchestrator running the dual-gate)
 

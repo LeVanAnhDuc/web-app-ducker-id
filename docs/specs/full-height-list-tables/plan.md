@@ -17,7 +17,7 @@
 - **JSX:** không comment `{/* */}`, không blank line giữa JSX element (`jsx.md`).
 - **Responsive:** mọi ràng buộc full-height gắn prefix `md:` (≥768px). Dưới md không kích hoạt.
 - **Token:** nền sticky header dùng `bg-card` (design system), không hard-code màu.
-- **Không có unit test FE** — verification per task = `cd client && yarn format && yarn lint && npx tsc --noEmit`. Final gate = `yarn build`. E2E matrix đã SKIP (xem design §7).
+- **Không có unit test FE** — verification per task = `cd client && pnpm format && pnpm lint && pnpm exec tsc --noEmit`. Final gate = `pnpm build`. E2E matrix đã SKIP (xem design §7).
 - **Commit review gate §7:** subagent stage nhưng KHÔNG commit per-task; main loop trình diff tổng thể để user duyệt rồi mới commit.
 
 ---
@@ -73,13 +73,13 @@ Thêm optional prop `containerClassName` forward vào div container, merge qua `
 
 ## Consequences
 
-- Divergence khỏi shadcn upstream (upstream chưa expose prop này) → khi `npx shadcn@latest add --diff table` cần re-apply patch thủ công. Comment `// PROJECT-PATCH` đánh dấu điểm này.
+- Divergence khỏi shadcn upstream (upstream chưa expose prop này) → khi `pnpm dlx shadcn@latest add --diff table` cần re-apply patch thủ công. Comment `// PROJECT-PATCH` đánh dấu điểm này.
 - Cho phép `ListTableCard` + full-height tables hoạt động mà không phải fork toàn bộ Table primitive.
 ```
 
 - [ ] **Step 3: Verify**
 
-Run: `cd client && yarn format && yarn lint && npx tsc --noEmit`
+Run: `cd client && pnpm format && pnpm lint && pnpm exec tsc --noEmit`
 Expected: 0 error. (`containerClassName` optional → không file nào hiện dùng bị ảnh hưởng.)
 
 - [ ] **Step 4: Stage (KHÔNG commit — commit gate §7)**
@@ -122,7 +122,7 @@ git -C docs add adr/0001-table-container-classname.md
 
 - [ ] **Step 3: Verify + no-regression check**
 
-Run: `cd client && yarn format && yarn lint && npx tsc --noEmit`
+Run: `cd client && pnpm format && pnpm lint && pnpm exec tsc --noEmit`
 Expected: 0 error.
 
 Manual (bước implement ghi nhận, verify ở Task 7): các trang thường (Profile, Billing, Notifications, AdminDashboard, Home) + 2 grid (Apps, Favorites) vẫn cuộn document bình thường — `#main-content` flex-fill chỉ stretch, content tràn thì `SidebarInset` (`overflow-y-auto`) cuộn như cũ.
@@ -174,7 +174,7 @@ export default ListPageShell;
 
 - [ ] **Step 2: Verify**
 
-Run: `cd client && yarn format && yarn lint && npx tsc --noEmit`
+Run: `cd client && pnpm format && pnpm lint && pnpm exec tsc --noEmit`
 Expected: 0 error. (Các trang chưa truyền `fullHeight` → default false → class không đổi.)
 
 - [ ] **Step 3: Stage**
@@ -254,7 +254,7 @@ export default ListContent;
 
 - [ ] **Step 2: Verify**
 
-Run: `cd client && yarn format && yarn lint && npx tsc --noEmit`
+Run: `cd client && pnpm format && pnpm lint && pnpm exec tsc --noEmit`
 Expected: 0 error. (Callers hiện tại không truyền `fullHeight` → `<>{content}</>` giữ hành vi cũ.)
 
 - [ ] **Step 3: Stage**
@@ -293,7 +293,7 @@ Ghi chú kỹ thuật: sticky đặt trên `th` (không `thead`) để tương t
 
 - [ ] **Step 2: Verify**
 
-Run: `cd client && yarn format && yarn lint && npx tsc --noEmit`
+Run: `cd client && pnpm format && pnpm lint && pnpm exec tsc --noEmit`
 Expected: 0 error.
 
 - [ ] **Step 3: Stage**
@@ -372,7 +372,7 @@ File `client/src/views/AdminContact/mains/AdminContactTable/index.tsx`: thêm im
 
 - [ ] **Step 7: Verify**
 
-Run: `cd client && yarn format && yarn lint && npx tsc --noEmit`
+Run: `cd client && pnpm format && pnpm lint && pnpm exec tsc --noEmit`
 Expected: 0 error. Kiểm tra không còn `bg-card rounded-xl border` trong 6 file (đã thay bằng ListTableCard):
 Run: `cd client && grep -rn "bg-card rounded-xl border" src/views/{AdminContact,AdminUsers,AdminLoginHistory,AdminEntitlements,AdminApps,LoginHistory}`
 Expected: no match.
@@ -391,7 +391,7 @@ git -C client add src/views/AdminContact src/views/AdminUsers src/views/AdminLog
 
 - [ ] **Step 1: Green-checks gate FE**
 
-Run: `cd client && yarn lint && yarn build`
+Run: `cd client && pnpm lint && pnpm build`
 Expected: build success, 0 lint error.
 
 - [ ] **Step 2: Manual visual verification (app chạy — main loop điều phối)**

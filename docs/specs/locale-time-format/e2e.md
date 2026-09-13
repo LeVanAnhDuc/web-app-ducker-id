@@ -109,7 +109,7 @@ The following scenarios are **not in the committed user-auth suite** and are ver
 
 ## Gate B run results (dual-gate §4.3)
 
-Gate A (`yarn e2e e2e/locale-time-format`): **PASS 9/9**. Gate B (Playwright MCP walk, en + vi, user + admin auth): **PASS** — hydration console **clean** (zero mismatch warnings on all pages, `suppressHydrationWarning` working), all datetime/relative scenarios render localized non-ISO text, admin tables render `<time datetime>` correctly, null lastLoginAt → "Never"/"Chưa từng".
+Gate A (`pnpm e2e e2e/locale-time-format`): **PASS 9/9**. Gate B (Playwright MCP walk, en + vi, user + admin auth): **PASS** — hydration console **clean** (zero mismatch warnings on all pages, `suppressHydrationWarning` working), all datetime/relative scenarios render localized non-ISO text, admin tables render `<time datetime>` correctly, null lastLoginAt → "Never"/"Chưa từng".
 
 **Follow-ups flagged during gate B (unrelated to this feature — pre-existing, NOT caused by the time-format migration):**
 - **`AdminContactTable` i18n bug**: `/admin/contact` logs ~22 `IntlError: MISSING_MESSAGE: Cannot read properties of undefined (reading 'split')` (one per row, in the category/status label path — NOT the `FormatTime` date cell on line 161). Page renders and timestamps are correct, but the missing translation key should be fixed in a separate task (en + vi).

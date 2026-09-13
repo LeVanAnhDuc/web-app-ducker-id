@@ -15,8 +15,8 @@
 - Giữ invariant feature 1: async/sync, guard never-throw, rethrow error nguyên vẹn.
 - Business log thêm vào = ONE `Logger.info` domain-event/action tại success (theo bảng §4 design). KHÔNG log password/otp/token/resetToken — chỉ `email` + meta config.
 - KHÔNG đụng `requestLogger`, `RequestContext`, `test/setup.ts`.
-- Sau mỗi task chạm `server/src/**`: `cd <worktree> && yarn format && yarn lint && yarn type-check` phải sạch.
-- Test trong worktree: `npx jest --testMatch "**/?(*.)+(spec).ts" <path>`. node_modules là junction → KHÔNG `yarn install`.
+- Sau mỗi task chạm `server/src/**`: `cd <worktree> && pnpm format && pnpm lint && pnpm type-check` phải sạch.
+- Test trong worktree: `pnpm exec jest --testMatch "**/?(*.)+(spec).ts" <path>`. node_modules là junction → KHÔNG `pnpm install`.
 - Worktree: `server/.worktrees/logmethod-context-correlation`.
 
 ---
@@ -228,7 +228,7 @@ describe("LogMethod", () => {
 });
 ```
 
-- [ ] **Step 3:** `npx jest ... src/libs/logger/log-method.decorator.spec.ts` → PASS. Green checks.
+- [ ] **Step 3:** `pnpm exec jest ... src/libs/logger/log-method.decorator.spec.ts` → PASS. Green checks.
 
 ---
 
@@ -279,7 +279,7 @@ describe("LogMethod", () => {
 
 ### Task 5: Verification + rule sync
 
-- [ ] `cd <worktree> && yarn lint && yarn type-check && npx jest --testMatch "**/?(*.)+(spec).ts" && yarn build` — tất cả xanh.
+- [ ] `cd <worktree> && pnpm lint && pnpm type-check && pnpm exec jest --testMatch "**/?(*.)+(spec).ts" && pnpm build` — tất cả xanh.
 - [ ] Xác nhận không còn `fields:` trong decorator: `grep -rn "LogMethod({" src | grep -i fields` → rỗng.
 - [ ] Cập nhật `server/.claude/rules/libs.md` (main repo): ghi `@LogMethod` không nhận `fields`, correlation từ RequestContext (requestId + userId).
 

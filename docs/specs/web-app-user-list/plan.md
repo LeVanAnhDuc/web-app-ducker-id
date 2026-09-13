@@ -58,7 +58,7 @@ export interface PaginatedResult<T> {
 
 - [ ] **Step 2: Type-check**
 
-Run: `yarn tsc`
+Run: `pnpm exec tsc`
 Expected: PASS (no new errors).
 
 - [ ] **Step 3: Commit**
@@ -111,7 +111,7 @@ Note: the two type imports from `@/modules/web-app/types` on separate lines in t
 
 - [ ] **Step 2: Type-check**
 
-Run: `yarn tsc`
+Run: `pnpm exec tsc`
 Expected: PASS.
 
 - [ ] **Step 3: Commit**
@@ -197,7 +197,7 @@ describe("toUserAppDto", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `npx jest --testMatch "**/user-app.dto.spec.ts" -i`
+Run: `pnpm exec jest --testMatch "**/user-app.dto.spec.ts" -i`
 Expected: FAIL — cannot find module `./user-app.dto`.
 
 - [ ] **Step 3: Create the DTO**
@@ -239,7 +239,7 @@ export * from "./user-app.dto";
 
 - [ ] **Step 5: Run test to verify it passes**
 
-Run: `npx jest --testMatch "**/user-app.dto.spec.ts" -i`
+Run: `pnpm exec jest --testMatch "**/user-app.dto.spec.ts" -i`
 Expected: PASS (3 tests).
 
 - [ ] **Step 6: Commit**
@@ -317,7 +317,7 @@ Add the implementations inside `MongoWebAppRepository` (after `findAll`):
 
 - [ ] **Step 2: Type-check**
 
-Run: `yarn tsc`
+Run: `pnpm exec tsc`
 Expected: PASS.
 
 - [ ] **Step 3: Commit**
@@ -425,7 +425,7 @@ describe("WebAppService.listUserApps", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `npx jest --testMatch "**/web-app.service.spec.ts" -i`
+Run: `pnpm exec jest --testMatch "**/web-app.service.spec.ts" -i`
 Expected: FAIL — `service.listUserApps is not a function`.
 
 - [ ] **Step 3: Implement `listUserApps`**
@@ -497,7 +497,7 @@ Add the method to the `WebAppService` class (after `listApps`):
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `npx jest --testMatch "**/web-app.service.spec.ts" -i`
+Run: `pnpm exec jest --testMatch "**/web-app.service.spec.ts" -i`
 Expected: PASS (all describe blocks).
 
 - [ ] **Step 5: Commit**
@@ -626,14 +626,14 @@ Mount it in `mountRoutes` (next to `v1Router.use(routes.webAppAdmin);`):
 
 - [ ] **Step 5: Type-check + run the whole module's tests**
 
-Run: `yarn tsc`
+Run: `pnpm exec tsc`
 Expected: PASS.
-Run: `npx jest --testMatch "**/web-app/**/*.spec.ts" -i`
+Run: `pnpm exec jest --testMatch "**/web-app/**/*.spec.ts" -i`
 Expected: PASS.
 
 - [ ] **Step 6: Manual smoke (optional but recommended)**
 
-Start the server (`yarn dev`) with Mongo seeded, then with a valid user Bearer token:
+Start the server (`pnpm dev`) with Mongo seeded, then with a valid user Bearer token:
 Run: `curl -s -H "Authorization: Bearer <token>" "http://localhost:5000/api/v1/apps?page=1&limit=12"`
 Expected: `200` with `data.items` (active apps only) + `data.meta`.
 
@@ -742,7 +742,7 @@ In `src/modules/web-app/swagger/schemas.ts`, add two entries inside `webAppSwagg
 
 - [ ] **Step 3: Type-check**
 
-Run: `yarn tsc`
+Run: `pnpm exec tsc`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
@@ -758,12 +758,12 @@ git commit -m "docs(web-app): add OpenAPI spec for user GET /apps"
 
 - [ ] **Step 1: Run all three checks**
 
-Run: `yarn format && yarn lint && yarn tsc`
+Run: `pnpm format && pnpm lint && pnpm exec tsc`
 Expected: all pass, zero errors. Re-read any files auto-fixed by format/lint and fix remaining issues.
 
 - [ ] **Step 2: Run the full web-app test suite**
 
-Run: `npx jest --testMatch "**/web-app/**/*.spec.ts" -i`
+Run: `pnpm exec jest --testMatch "**/web-app/**/*.spec.ts" -i`
 Expected: PASS.
 
 - [ ] **Step 3: Commit any format/lint fixes**
@@ -814,7 +814,7 @@ export { default as useDebouncedValue } from "./useDebouncedValue";
 
 - [ ] **Step 3: Type-check**
 
-Run: `yarn tsc`
+Run: `pnpm exec tsc`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
@@ -877,7 +877,7 @@ export interface UserAppsQueryParams {
 
 - [ ] **Step 3: Type-check**
 
-Run: `yarn tsc`
+Run: `pnpm exec tsc`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
@@ -922,7 +922,7 @@ export const getApps = async (
 
 - [ ] **Step 2: Type-check**
 
-Run: `yarn tsc`
+Run: `pnpm exec tsc`
 Expected: PASS.
 
 - [ ] **Step 3: Commit**
@@ -962,7 +962,7 @@ export default useApps;
 
 - [ ] **Step 2: Type-check**
 
-Run: `yarn tsc`
+Run: `pnpm exec tsc`
 Expected: PASS.
 
 - [ ] **Step 3: Commit**
@@ -1072,7 +1072,7 @@ const AppCard = ({
 export default AppCard;
 ```
 
-Note on `<img>`: if `yarn lint` flags `@next/next/no-img-element`, swap to `next/image` with `unoptimized` or add an eslint-disable consistent with how other cards in the codebase render remote icons — check `views/Dashboard/components/AppCard` for the established pattern and match it.
+Note on `<img>`: if `pnpm lint` flags `@next/next/no-img-element`, swap to `next/image` with `unoptimized` or add an eslint-disable consistent with how other cards in the codebase render remote icons — check `views/Dashboard/components/AppCard` for the established pattern and match it.
 
 - [ ] **Step 2: Create the skeleton**
 
@@ -1113,7 +1113,7 @@ git rm src/views/Apps/components/AppManagedCard/index.tsx
 
 - [ ] **Step 4: Type-check**
 
-Run: `yarn tsc`
+Run: `pnpm exec tsc`
 Expected: PASS (AppsBoard still imports `AppManagedCard` — this is fixed in B6; if running standalone, expect that one import error and resolve it in B6).
 
 - [ ] **Step 5: Commit**
@@ -1298,7 +1298,7 @@ export default AppsBoard;
 
 - [ ] **Step 2: Type-check**
 
-Run: `yarn tsc`
+Run: `pnpm exec tsc`
 Expected: PASS.
 
 - [ ] **Step 3: Commit**
@@ -1386,7 +1386,7 @@ Replace `src/locales/vi/apps.json` with:
 
 - [ ] **Step 3: Type-check (next-intl message typing)**
 
-Run: `yarn tsc`
+Run: `pnpm exec tsc`
 Expected: PASS. If the project has a generated messages type that flags removed `status`/`card.menu` keys, ensure no other file references `apps.status.*` or `apps.card.menu` (B5/B6 already removed them).
 
 - [ ] **Step 4: Commit**
@@ -1416,7 +1416,7 @@ git rm src/mocks/Apps/index.ts
 
 - [ ] **Step 3: Type-check**
 
-Run: `yarn tsc`
+Run: `pnpm exec tsc`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
@@ -1432,7 +1432,7 @@ git commit -m "chore(apps): remove template MANAGED_APPS_MOCK"
 
 - [ ] **Step 1: Run all three checks**
 
-Run: `yarn format && yarn lint && yarn tsc`
+Run: `pnpm format && pnpm lint && pnpm exec tsc`
 Expected: all pass, zero errors. Re-read auto-fixed files and resolve remaining issues (esp. the `<img>` lint note from B5).
 
 - [ ] **Step 2: Commit any fixes**
@@ -1501,7 +1501,7 @@ git commit -m "docs(goals): /apps lists active catalog; entitlement gates launch
 
 - [ ] **Step 3: Run E2E green**
 
-Run (client worktree, app running + seeded): `yarn e2e`
+Run (client worktree, app running + seeded): `pnpm e2e`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
@@ -1528,7 +1528,7 @@ git add e2e/web-app-user-list && git commit -m "test(apps): add /apps list E2E"
 
 > **Mục đích**: backfill suite E2E `web-app-user-list` cho khớp **toàn bộ** `## E2E Scenario Matrix` ở `design.md §6` (12 nhóm rubric đã hợp nhất cả category-filter + EN-locale từ `apps-api-integration`). Suite hiện tại (`client/e2e/web-app-user-list/apps-list.e2e.ts`) đã cover rows 1, 3, 8 (happy / authZ / data-render), một phần 7 (category pill) + một phần 9 (EN render mỏng). Phần backfill: rows **2 (AuthN), 4 (Validation API), 5 (Empty/null), 6 (Boundary — seed-gated), 7 (search+category DT + reset-on-reload), 9 (EN depth), 10 (Error/loading), 12 (a11y keyboard + announcer)**.
 >
-> **Phương pháp**: TDD, bite-sized — mỗi scenario áp dụng = **một `test()` mới** (one test per applicable scenario). EXTEND file có sẵn, KHÔNG rebuild. Row 11 (mutation safety) = N/A (read-only, không có write). Vị trí trong flow: sau implement + BE/FE quality gates, **trước** `requesting-code-review`; dual-gate §4.3 (gate A `yarn e2e` + gate B MCP walk).
+> **Phương pháp**: TDD, bite-sized — mỗi scenario áp dụng = **một `test()` mới** (one test per applicable scenario). EXTEND file có sẵn, KHÔNG rebuild. Row 11 (mutation safety) = N/A (read-only, không có write). Vị trí trong flow: sau implement + BE/FE quality gates, **trước** `requesting-code-review`; dual-gate §4.3 (gate A `pnpm e2e` + gate B MCP walk).
 >
 > **Tiền đề (app-running, agent tự check 1 lần trước khi dispatch)**: BE :5000 + FE :3000 + Mongo + Redis chạy & seeded (web-app seeder → 5 active app: Blog, Analytics Dashboard, IDMS Portal, Notes, Operations Console; `team-calendar` inactive). Role-scoped: account `user@test.com` (role `user`) thấy **3** app: Blog, IDMS Portal, Notes. Auth qua global `auth.setup.ts` storageState. Worktree → chạy BE/FE alternate port + `E2E_BASE_URL` (xem `e2e.md` Preconditions).
 >
@@ -1975,7 +1975,7 @@ test("announces the category change in the live region [a11y]", async ({
 });
 ```
 
-- [ ] **E1 Step — Run E2E green (gate A)**: client worktree, app running + seeded → `cd client && yarn e2e e2e/web-app-user-list`. Expected: PASS toàn bộ. Nếu fail → `superpowers:systematic-debugging` root-cause → ghi `docs/specs/web-app-user-list/e2e-bugs.md` → fix → chạy lại (max 3 vòng §4.3).
+- [ ] **E1 Step — Run E2E green (gate A)**: client worktree, app running + seeded → `cd client && pnpm e2e e2e/web-app-user-list`. Expected: PASS toàn bộ. Nếu fail → `superpowers:systematic-debugging` root-cause → ghi `docs/specs/web-app-user-list/e2e-bugs.md` → fix → chạy lại (max 3 vòng §4.3).
 
 ### Task E2: Reconcile `e2e.md` (currently stale)
 

@@ -138,11 +138,11 @@ Cỡ chữ **đi kèm size, không set rời**: `sm`=12px, `default`=14px, `lg`=
 - **Pencil mock (step 1.5): SKIP** — không có layout/flow MỚI; chỉ resize control toàn cục. Thay vào đó: trong/sau refactor sẽ **chụp screenshot trang thật trước/sau** để user duyệt thị giác (auth, một admin table, một dialog).
 - **Security review (4.5): SKIP** — không đụng auth logic / input-handling / data nhạy cảm / attack surface; thuần styling.
 - **CLAUDE.md drift audit (4.6)**: chạm `client/.claude/rules` + `.claude/uiux` → audit `client/.claude/CLAUDE.md` (nhẹ; chủ yếu là cập nhật rule, không đổi command/struct/deps). Root `.claude/CLAUDE.md` không đổi methodology → không audit.
-- **Green checks (4.7)**: FE → `cd client && yarn lint && yarn build` phải xanh.
+- **Green checks (4.7)**: FE → `cd client && pnpm lint && pnpm build` phải xanh.
 - **README (4.8): SKIP** — không đổi setup/config/env/deps/cách chạy.
 - **Worktree**: đã tạo `refactor/control-sizing-system` ở `client/`, `docs/`, `.claude/` (tách từ `origin/main`).
 - **PR (step 5)**: per-repo — `client/` (code + rules), `.claude/` (uiux), `docs/` (spec). 3 PR riêng.
-- **Lint trong worktree**: lưu ý `.worktrees/` gây nhiễu `yarn lint`/`tsc` repo-wide nếu chưa ignore; lint scope file đụng tới hoặc xử lý theo [[reference_worktrees_lint_noise]].
+- **Lint trong worktree**: lưu ý `.worktrees/` gây nhiễu `pnpm lint`/`tsc` repo-wide nếu chưa ignore; lint scope file đụng tới hoặc xử lý theo [[reference_worktrees_lint_noise]].
 
 ## 9. Tiêu chí hoàn thành
 
@@ -151,4 +151,4 @@ Cỡ chữ **đi kèm size, không set rời**: `sm`=12px, `default`=14px, `lg`=
 - Input form = 40px (CustomInput, CustomSelectTrigger), OTP = 48px.
 - Mọi button hiện có gán size đúng theo cây quyết định §3.4; icon button có `aria-label`.
 - Design system (`frontend-reference.md` §5/§6/§8, `design-guide.md` §5.5) + `components.md` cập nhật khớp.
-- `cd client && yarn lint && yarn build` xanh; screenshot trước/sau được user duyệt.
+- `cd client && pnpm lint && pnpm build` xanh; screenshot trước/sau được user duyệt.

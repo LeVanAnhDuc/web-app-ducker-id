@@ -158,12 +158,12 @@ export interface CustomTableColumn<T> {
 
 - **Isolation**: worktree per-repo `client/` + `docs/` từ `origin/main` (đã tạo, branch `refactor/page-container`).
 - **Skip**: E2E dual-gate (§4.3 — refactor, no behavior change), SuperDesign (§5 step 1.5 — không UI mới), security review (§4.5 — không đụng attack surface).
-- **Green checks (§4.7 — BẮT BUỘC)**: `cd client && yarn lint && yarn build` phải xanh (webpack `next build` type-check luôn).
+- **Green checks (§4.7 — BẮT BUỘC)**: `cd client && pnpm lint && pnpm build` phải xanh (webpack `next build` type-check luôn).
 - **CLAUDE.md drift (§4.6)**: cập nhật `client/.claude/CLAUDE.md` (gitignored — flag).
 - **PR (§5 step 5)**: per-repo — `client/` (code) + `docs/` (spec). `client/.claude` không vào PR do gitignore.
 
 ## 6. Rủi ro
 
-- **Blast radius rộng** (8 view + 5 dataSource + types + utils + i18n): chủ yếu cơ học (rename import/JSX). Mitigate: `yarn lint`/`yarn build` bắt hết reference gãy.
+- **Blast radius rộng** (8 view + 5 dataSource + types + utils + i18n): chủ yếu cơ học (rename import/JSX). Mitigate: `pnpm lint`/`pnpm build` bắt hết reference gãy.
 - **Coupling `SortOrder`**: CustomTable import `SortOrder` từ `@/types/List` — chấp nhận (constant nguồn ở `@/constants/list`).
 - **`common.table` mới**: đảm bảo thêm CẢ en + vi để `next build` không lỗi missing message.

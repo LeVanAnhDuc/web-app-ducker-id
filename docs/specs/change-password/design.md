@@ -172,7 +172,7 @@ Mirror đúng login: refresh token vào cookie `REFRESH_TOKEN`, access token + u
 
 > **Backfill [2026-06-14]** — matrix soạn theo skill `e2e-scenario-coverage` (rubric 12 nhóm — mỗi nhóm ✅ ≥1 scenario hoặc N/A có lý do; depth dùng test-design `[EP]`/`[BVA]`/`[DT]`/`[ST]`/error-guessing với giá trị cụ thể). Feature **đã có suite** ở `client/e2e/change-password/change-password.e2e.ts` (4 case) → đây là backfill mở rộng coverage, KHÔNG rebuild. `e2e.md` (tài liệu kịch bản chi tiết per-scenario) sẽ được tạo ở bước §4.3 implementation; matrix này là source breadth/depth cho `writing-plans` expand.
 >
-> **Cột `Gate`**: `A+B` = chạy cả gate A (`yarn e2e`) lẫn gate B (MCP walk). `A only` = mutation-heavy / network-level / rate-limit → chỉ gate A (gate B chỉ verify read/render, không mutate song song — tránh session contamination, xem [[reference_e2e_suite_session_contamination]]). `B` = visual/UX/keyboard → lean gate B.
+> **Cột `Gate`**: `A+B` = chạy cả gate A (`pnpm e2e`) lẫn gate B (MCP walk). `A only` = mutation-heavy / network-level / rate-limit → chỉ gate A (gate B chỉ verify read/render, không mutate song song — tránh session contamination, xem [[reference_e2e_suite_session_contamination]]). `B` = visual/UX/keyboard → lean gate B.
 > **Nhãn `[EXISTS]`** = đã có trong suite hiện tại; **`[NEW]`** = cần thêm khi implement §4.3.
 > **Selector thực tế** (từ card): label `Current Password` / `New Password` / `Confirm New Password`; button `Update Password` (Save) + `Cancel`; toast success `Password updated successfully`; inline error qua `aria-invalid="true"`; Save disabled khi `!isDirty` + tooltip `noChanges`; a11y qua `#announcer` (`aria-live=polite`).
 

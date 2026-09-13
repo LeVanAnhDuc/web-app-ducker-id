@@ -76,7 +76,7 @@ Thêm 2 path vào `user/swagger/paths.ts` + response schema `{ _id, isActive }`;
 ### Schema & Seed
 
 - **Không đổi schema** (`isActive` đã có, default `true`) → không cần migration.
-- Seeder (`database/seeders/data/users.ts`): đảm bảo tồn tại ≥1 user `isActive:false` (locked) + user `isActive:true` (active) để E2E có sẵn dữ liệu 2 trạng thái. Idempotent (`yarn seed` chạy lại không nhân đôi).
+- Seeder (`database/seeders/data/users.ts`): đảm bảo tồn tại ≥1 user `isActive:false` (locked) + user `isActive:true` (active) để E2E có sẵn dữ liệu 2 trạng thái. Idempotent (`pnpm seed` chạy lại không nhân đôi).
 
 ## 4. Frontend (`client/src`)
 

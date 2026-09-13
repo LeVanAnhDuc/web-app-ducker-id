@@ -8,11 +8,11 @@
 
 ### Triệu chứng & root cause
 
-**Gate A (yarn e2e) — bug TEST (selector), không phải app**
+**Gate A (pnpm e2e) — bug TEST (selector), không phải app**
 - Triệu chứng: 5/10 fail với `strict mode violation: getByRole('heading', { name: 'Account' }) resolved to 2 elements` — khớp cả `<h1 id="profile-page-title">Account</h1>` lẫn `<h3 id="connected-accounts-title">Connected Accounts</h3>` (và vi: "Tài khoản" ⊂ "Tài khoản liên kết").
 - Root cause (systematic-debugging): Playwright `getByRole(name)` mặc định **substring match**. Title mới "Account" là substring của heading "Connected Accounts" → 2 match → strict mode throw. Đây là lỗi selector trong test mới viết, KHÔNG phải lỗi gom code.
 - Fix: thêm `{ exact: true }` cho 5 chỗ check heading page-title (EN.title/VI.title). Commit `83ceddc`.
-- Re-verify: `yarn e2e e2e/profile-account-merge` → **10/10 PASS** (12.3s).
+- Re-verify: `pnpm e2e e2e/profile-account-merge` → **10/10 PASS** (12.3s).
 
 **Gate A — lần re-run đầu bị nhiễu môi trường (đã xử lý)**
 - Sau khi sửa selector, re-run lần 1 ra 9 fail với `net::ERR_CONNECTION_REFUSED at :3100`. Root cause: dev server FE (webpack-over-junction) **crash** dưới tải chạy song song với Gate B (memory: turbopack/webpack-over-junction bất ổn). Không liên quan code.

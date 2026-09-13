@@ -155,6 +155,6 @@ Test file: `client/e2e/admin-entitlements/matrix.e2e.ts` (project `admin`, stora
 
 ### Dual-gate (§4.3)
 
-- **Gate A** — `cd client && yarn e2e --project=admin -g "Admin Entitlements Matrix"` trên app thật.
+- **Gate A** — `cd client && pnpm e2e --project=admin -g "Admin Entitlements Matrix"` trên app thật.
 - **Gate B** — MCP browser walk cùng matrix (auth context riêng); walk mọi row `A+B`, SKIP mutation của row `A only` (#11) — chỉ verify read/render.
 - Fail → `systematic-debugging` → `e2e-bugs.md` → fix → re-run (max 3 vòng).

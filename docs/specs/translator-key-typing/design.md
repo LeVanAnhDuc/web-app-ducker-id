@@ -102,7 +102,7 @@ formatLoginLocation(tLocation);
 
 ## Verification
 
-- **Green checks (§4.7)**: `cd client && yarn lint && yarn build` (+ `npx tsc --noEmit`) phải xanh. TS là hàng rào chính — mọi key sai/param sai sẽ fail compile.
+- **Green checks (§4.7)**: `cd client && pnpm lint && pnpm build` (+ `pnpm exec tsc --noEmit`) phải xanh. TS là hàng rào chính — mọi key sai/param sai sẽ fail compile.
 - **Không E2E** (pure refactor, không behavior mới) — §4.3 SKIP.
 - Grep audit sau khi sửa: không còn `as Parameters<typeof t>` (trừ FormFieldMessage exception), không còn `(k: string) => string` / `(key: string) => string` cho translator param.
 

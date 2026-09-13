@@ -9,7 +9,7 @@
     "dev:check": "tsc --noEmit --watch",
     "type-check": "tsc --noEmit",
     "build": "rimraf ./dist && tsc",
-    "start": "yarn build && node dist/app.js",
+    "start": "pnpm build && node dist/app.js",
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "format": "prettier --write .",

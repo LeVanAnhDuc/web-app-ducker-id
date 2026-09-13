@@ -123,7 +123,7 @@ describe("maskIp", () => {
 - [ ] **Step 3: Chạy test — xác nhận FAIL**
 
 Run (dùng testMatch override vì worktree, xem [[reference_jest_worktree_testmatch]]):
-`cd server/.worktrees/login-history-ip-country && npx jest --testMatch "**/helpers/index.spec.ts" -t "normalizeIp"`
+`cd server/.worktrees/login-history-ip-country && pnpm exec jest --testMatch "**/helpers/index.spec.ts" -t "normalizeIp"`
 Expected: FAIL — `normalizeIp` chưa export.
 
 - [ ] **Step 4: Sửa helpers/index.ts**
@@ -206,7 +206,7 @@ Cập nhật import: bỏ dùng `HTTP_HEADERS.X_FORWARDED_FOR` trong `extractIp`
 
 - [ ] **Step 5: Chạy toàn bộ helper spec — xác nhận PASS**
 
-Run: `cd server/.worktrees/login-history-ip-country && npx jest --testMatch "**/helpers/index.spec.ts"`
+Run: `cd server/.worktrees/login-history-ip-country && pnpm exec jest --testMatch "**/helpers/index.spec.ts"`
 Expected: PASS toàn bộ describe.
 
 - [ ] **Step 6: Stage (KHÔNG commit — Review ON)**
@@ -271,7 +271,7 @@ Nếu đã tồn tại → chỉ thêm dòng `TRUST_PROXY=loopback`.
 
 - [ ] **Step 4: Verify type-check + build**
 
-Run: `cd server/.worktrees/login-history-ip-country && yarn type-check`
+Run: `cd server/.worktrees/login-history-ip-country && pnpm type-check`
 Expected: no errors.
 
 - [ ] **Step 5: Stage (KHÔNG commit)**
@@ -339,7 +339,7 @@ Trong `locales/vi/loginHistory.json`, thêm block tương ứng (cùng vị trí
 
 - [ ] **Step 4: Verify lint + build FE**
 
-Run: `cd client/.worktrees/login-history-ip-country && yarn lint`
+Run: `cd client/.worktrees/login-history-ip-country && pnpm lint`
 Expected: no errors trên file đã sửa.
 
 - [ ] **Step 5: Stage (KHÔNG commit)**
@@ -392,7 +392,7 @@ Thay biến `location` (hiện `data.city !== "UNKNOWN" ? ... : data.country`):
 
 - [ ] **Step 4: Verify lint + build FE**
 
-Run: `cd client/.worktrees/login-history-ip-country && yarn lint && yarn build`
+Run: `cd client/.worktrees/login-history-ip-country && pnpm lint && pnpm build`
 Expected: no errors (next build type-check pass).
 
 - [ ] **Step 5: Stage (KHÔNG commit)**
@@ -427,7 +427,7 @@ Tạo `docs/specs/login-history-ip-country/e2e.md` — liệt kê scenario từ 
 
 `git add client:e2e...` (stage trong repo client + docs tương ứng).
 
-Note: E2E dual-gate (§4.3) chạy ở bước riêng sau khi code xong (gate A `yarn e2e` + gate B MCP walk), không phải trong task này.
+Note: E2E dual-gate (§4.3) chạy ở bước riêng sau khi code xong (gate A `pnpm e2e` + gate B MCP walk), không phải trong task này.
 
 ---
 

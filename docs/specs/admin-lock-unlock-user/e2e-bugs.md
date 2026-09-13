@@ -4,7 +4,7 @@ Append-only. One entry per dual-gate fail round (§4.3, max 3 rounds).
 
 ## Round 1 — 2026-07-09
 
-**Gate fail:** A (`yarn e2e`) — 19 passed / 8 failed (consistent across 2 runs). Gate B (MCP browser walk) **PASSED 4/4** — real-browser confirms product UI/behavior is correct (labels, i18n en+vi, dialog, a11y dismiss, zero console errors). ⇒ Failures are **test-code defects + pre-existing base drift + cascades**, NOT product bugs.
+**Gate fail:** A (`pnpm e2e`) — 19 passed / 8 failed (consistent across 2 runs). Gate B (MCP browser walk) **PASSED 4/4** — real-browser confirms product UI/behavior is correct (labels, i18n en+vi, dialog, a11y dismiss, zero console errors). ⇒ Failures are **test-code defects + pre-existing base drift + cascades**, NOT product bugs.
 
 **Root causes (systematic-debugging):**
 

@@ -17,7 +17,7 @@
 - **Mọi string mới qua i18n** (en+vi), namespace `list.announce`.
 - **`useAnnounce`** cho sort change (accessibility rule: Table/Grid → Sort column).
 - **Import groups** theo `imports.md`; component 1 folder `index.tsx` 1 default export (`component-folder.md`).
-- **FE verify**: không có unit jest — gate là `cd client && yarn lint && yarn build` (next build type-check) + E2E dual-gate (§4.3).
+- **FE verify**: không có unit jest — gate là `cd client && pnpm lint && pnpm build` (next build type-check) + E2E dual-gate (§4.3).
 
 ---
 
@@ -59,7 +59,7 @@ export interface ListColumn<T> {
 }
 ```
 
-- [ ] **Step 3: Verify** `cd client && npx tsc --noEmit` → PASS (chưa consumer nào dùng → không lỗi).
+- [ ] **Step 3: Verify** `cd client && pnpm exec tsc --noEmit` → PASS (chưa consumer nào dùng → không lỗi).
 
 ---
 
@@ -91,7 +91,7 @@ export const hideBelowClass = (breakpoint?: ColumnBreakpoint): string => {
 };
 ```
 
-- [ ] **Step 3: Verify** `npx tsc --noEmit` → PASS.
+- [ ] **Step 3: Verify** `pnpm exec tsc --noEmit` → PASS.
 
 ---
 
@@ -146,7 +146,7 @@ export default useClientSortedRows;
 export { default as useClientSortedRows } from "./useClientSortedRows";
 ```
 
-- [ ] **Step 3: Verify** `npx tsc --noEmit` → PASS.
+- [ ] **Step 3: Verify** `pnpm exec tsc --noEmit` → PASS.
 
 ---
 
@@ -231,7 +231,7 @@ const ListSortHeader = ({
 export default ListSortHeader;
 ```
 
-- [ ] **Step 4: Verify** `npx tsc --noEmit` → PASS.
+- [ ] **Step 4: Verify** `pnpm exec tsc --noEmit` → PASS.
 
 ---
 
@@ -388,7 +388,7 @@ const ListTable = <T,>({
 
 **Lưu ý:** đổi từ arrow-implicit-return (`=> (`) sang block body (`=> { ... return ( ... ) }`) vì cần hooks. Giữ `export default ListTable;`.
 
-- [ ] **Step 2: Verify** `npx tsc --noEmit && yarn lint` → PASS.
+- [ ] **Step 2: Verify** `pnpm exec tsc --noEmit && pnpm lint` → PASS.
 
 ---
 
@@ -450,7 +450,7 @@ Và truyền sort props cho `<ListTable>`:
 />
 ```
 
-- [ ] **Step 3: Verify** `cd client && yarn lint && yarn build` → PASS (build = type-check).
+- [ ] **Step 3: Verify** `cd client && pnpm lint && pnpm build` → PASS (build = type-check).
 
 ---
 
@@ -477,7 +477,7 @@ Và truyền sort props cho `<ListTable>`:
 
   (deferred nếu seed apps < 2: ghi lý do trong e2e.md — cần ≥2 app để assert thứ tự.)
 
-- [ ] **Step 3: Dual-gate §4.3** — self-check app running; dispatch gate A (`yarn e2e` scope admin-apps-sort) + gate B (MCP walk matrix, auth context riêng). Cả 2 PASS mới qua.
+- [ ] **Step 3: Dual-gate §4.3** — self-check app running; dispatch gate A (`pnpm e2e` scope admin-apps-sort) + gate B (MCP walk matrix, auth context riêng). Cả 2 PASS mới qua.
 
 ---
 

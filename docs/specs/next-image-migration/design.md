@@ -85,7 +85,7 @@ Mỗi chỗ: `import CustomImage from "@/components/CustomImage"` (group `// com
 ## 5. Testing / Verification
 
 - Không có logic mới → không áp TDD (swap component thuần, không behavior testable mới).
-- Gate (chạy trong worktree `client/`): `yarn format` → `yarn lint` (3 cảnh báo `@next/next/no-img-element` phải biến mất, không còn `eslint-disable` thừa) → `yarn tsc` → `yarn build` (xác nhận không lỗi build do thiếu `images` config).
+- Gate (chạy trong worktree `client/`): `pnpm format` → `pnpm lint` (3 cảnh báo `@next/next/no-img-element` phải biến mất, không còn `eslint-disable` thừa) → `pnpm exec tsc` → `pnpm build` (xác nhận không lỗi build do thiếu `images` config).
 - E2E (§4.3): thay đổi không thêm/đổi behavior người dùng quan sát được (cosmetic/refactor) → **skip** E2E. Sẽ xác nhận lại ở bước writing-plans.
 
 ## 6. Rủi ro

@@ -13,7 +13,7 @@
 - Convention client bắt buộc (đọc `client/.claude/CLAUDE.md` + rules): file `src/views/**` ≤200 dòng; mỗi component = folder `index.tsx` (1 default export); type props **inline**; type dùng chung ở `src/types/AdminEntitlements/`; mọi `useEffect`/`useUpdateEffect` → `ghosts/`; mọi `useQuery`/`useMutation` → `views/<Page>/hooks/`; 1 markup-block/component (tách loading/empty ra component); dùng `CustomButton`/`CustomTooltip` (không raw `<button>`); string qua i18n (en+vi), không hardcode; icon tra `.claude/uiux/icon-map.md`; import groups theo `rules/imports.md`; navigation từ `@/i18n/navigation`.
 - Icon: granted=`Check` (`text-success`), not-granted=`X` (`text-muted-foreground`), insufficient=`Minus` (`text-muted-foreground`), Edit=`Pencil`, Save=`Save`, Cancel=`X`, check-all=`CheckCheck`.
 - Mock in-memory (giống picker) — không persist server, E2E không cần revert.
-- Sau MỖI task đụng code: `cd client && yarn lint` (touched files) + `npx tsc --noEmit`. Green-checks toàn bộ ở gate cuối.
+- Sau MỖI task đụng code: `cd client && pnpm lint` (touched files) + `pnpm exec tsc --noEmit`. Green-checks toàn bộ ở gate cuối.
 
 ---
 
@@ -33,7 +33,7 @@ export interface EntitlementChange { userId: string; appId: string; granted: boo
 
 - [ ] **Step 1:** Trong `types/AdminEntitlements/index.ts`: giữ `Entitlement`; **xóa** `EntitlementStatus`, `BulkEntitlementRow`, `BulkEntitlementInput` (và import `WebApp`, `ENTITLEMENT_STATUS` nếu không còn dùng); thêm `EntitlementMatrixFormValues` + `EntitlementChange`.
 - [ ] **Step 2:** `grep -rn "BulkEntitlementRow\|BulkEntitlementInput\|EntitlementStatus\|entitlementStatus\|ENTITLEMENT_STATUS" client/src` → xác định consumer. Nếu `constants/entitlementStatus.ts` chỉ dùng bởi mô hình cũ (status badge app-rows) → xóa file + entry `CONSTANTS.ENTITLEMENT_STATUS` trong `constants/index.ts`. Nếu còn consumer ngoài feature → giữ.
-- [ ] **Step 3:** `cd client && npx tsc --noEmit` (sẽ báo lỗi ở file cũ chưa sửa — chấp nhận, sẽ dọn ở Task 9; nếu muốn xanh ngay, làm Task 9 xóa file cũ trước khi tsc). Commit: `refactor(entitlements): matrix form types, drop bulk types`.
+- [ ] **Step 3:** `cd client && pnpm exec tsc --noEmit` (sẽ báo lỗi ở file cũ chưa sửa — chấp nhận, sẽ dọn ở Task 9; nếu muốn xanh ngay, làm Task 9 xóa file cũ trước khi tsc). Commit: `refactor(entitlements): matrix form types, drop bulk types`.
 
 ---
 
@@ -81,7 +81,7 @@ export const updateUserGrants: (changes: EntitlementChange[]) => Promise<void>; 
 - [ ] **Step 1:** Giữ `MOCK_ENTITLEMENTS`, `seed`, `delay`, `generateId`, `ADMIN_ACTOR_ID`. **Xóa** `getBulkEntitlements`, `grantEntitlementBulk`, `revokeEntitlementBulk`, `deriveStatus`, và helper chỉ phục vụ chúng (`isInsufficientRole` nếu không dùng nữa — eligibility tính ở FE).
 - [ ] **Step 2:** Viết `getUserGrants`: với mỗi userId → list `webAppId` có `revokedAt===null`. Trả `delay(record)`.
 - [ ] **Step 3:** Viết `updateUserGrants(changes)`: mỗi change `granted===true` → tìm entitlement (userId,appId): có thì set `revokedAt=null` + refresh `grantedAt`, chưa có thì push mới; `granted===false` → set `revokedAt=now` nếu đang active. `delay(undefined)`.
-- [ ] **Step 4:** `npx tsc --noEmit` (mock). Commit: `refactor(entitlements): mock getUserGrants + updateUserGrants`.
+- [ ] **Step 4:** `pnpm exec tsc --noEmit` (mock). Commit: `refactor(entitlements): mock getUserGrants + updateUserGrants`.
 
 ---
 
@@ -108,7 +108,7 @@ const useUpdateUserGrants: () => UseMutationResult<void, unknown, EntitlementCha
 - [ ] **Step 1:** `useAppCatalog`: `useQuery({ queryKey:[APP_CATALOG_QUERY_KEY], queryFn: async()=> (await getAdminApps()).items })`. Không phụ thuộc user.
 - [ ] **Step 2:** `useUserGrants(userIds)`: `queryKey:[USER_GRANTS_QUERY_KEY, userIds]`, `queryFn:()=>getUserGrants(userIds)`, `enabled: userIds.length>0`.
 - [ ] **Step 3:** `useUpdateUserGrants`: `mutationFn: updateUserGrants`, `onSuccess: invalidate [USER_GRANTS_QUERY_KEY] + toast.success(tToast("saveSuccess"))`, `onError: toast.error(tToast("error"))` (namespace `adminEntitlements.toast`). Consumer làm announce/exit-edit qua per-call `onSuccess`.
-- [ ] **Step 4:** Xóa 3 hook cũ. `npx tsc --noEmit`. Commit: `feat(entitlements): matrix query/mutation hooks`.
+- [ ] **Step 4:** Xóa 3 hook cũ. `pnpm exec tsc --noEmit`. Commit: `feat(entitlements): matrix query/mutation hooks`.
 
 ---
 
@@ -133,7 +133,7 @@ const EntitlementAppHeader = ({ app }: { app: WebApp }) => ReactNode;
   - `isEditing`: `<Controller name={fieldName}>` render `ui/checkbox` `<Checkbox checked disabled={!eligible} onCheckedChange />`; `aria-label` = grantAria(app,user). `!eligible` → checkbox disabled + `CustomTooltip` lý do. (Field name `grants.${userId}.${appId}`.)
   - Dùng `useTranslations("adminEntitlements.cell")` + `.matrix`.
 - [ ] **Step 2:** `EntitlementAppHeader`: icon app (fallback nếu `iconUrl` null — dùng pattern `AppAccessIcon` cũ hoặc `CustomImage`) + `displayName` + `requiredRoles.map(RoleChip)` (reuse `@/views/AdminApps/components/RoleChip`). Vertical, compact cho header cột.
-- [ ] **Step 3:** `npx tsc --noEmit` + lint. Commit: `feat(entitlements): matrix cell + app header`.
+- [ ] **Step 3:** `pnpm exec tsc --noEmit` + lint. Commit: `feat(entitlements): matrix cell + app header`.
 
 ---
 
@@ -154,7 +154,7 @@ Helper eligibility (đặt `src/utils` hoặc inline): `isEligible(user, app) = 
 - [ ] **Step 1:** Render `<TableRow>`: cell đầu = user (avatar + fullName + email) với class sticky `sticky left-0 z-10 bg-card` (+ shadow phải để tách khi scroll). Nếu `isEditing` → thêm nút check-all (`CustomButton size="sm" variant="ghost"` icon `CheckCheck`, `aria-label` checkAll/uncheckAll). Row có 0 app eligible → nút disabled.
 - [ ] **Step 2:** check-all: tính `eligibleAppIds = apps.filter(a=>isEligible(user,a)).map(_id)`; đọc form value hiện tại của row (qua `useWatch`/`getValues`) để biết đã full chưa → `nextGranted = !allEligibleChecked`; gọi `onCheckAllToggle(user, eligibleAppIds, nextGranted)`.
 - [ ] **Step 3:** Map `apps` → `<EntitlementCell>` mỗi cột, truyền `fieldName={`grants.${user._id}.${app._id}`}`, `granted = grantedAppIds.includes(app._id)`, `eligible = isEligible(user,app)`.
-- [ ] **Step 4:** `npx tsc --noEmit` + lint. Commit: `feat(entitlements): matrix user row + check-all toggle`.
+- [ ] **Step 4:** `pnpm exec tsc --noEmit` + lint. Commit: `feat(entitlements): matrix user row + check-all toggle`.
 
 ---
 
@@ -176,7 +176,7 @@ const EntitlementMatrixTable = ({ users, apps, isEditing, grantsByUser, onCheckA
 - [ ] **Step 1:** `EntitlementMatrixTable`: `<div className="overflow-x-auto ...">` bọc `<Table>` (`ui/table`). `<caption class="sr-only">`. `<TableHeader>`: ô góc `scope=col` sticky `left-0 top-0 z-20 bg-card` = label `matrix.userColumn`; mỗi app → `<TableHead scope="col">` render `EntitlementAppHeader`. `<TableBody>`: mỗi user → `EntitlementUserRow`. User cell đã sticky trong row (Task 6).
 - [ ] **Step 2:** `EntitlementMatrixSkeleton`: vài dòng `ui/skeleton` mô phỏng bảng.
 - [ ] **Step 3:** `EntitlementMatrixEmpty`: empty state `matrix.empty.title/description` (icon `LayoutGrid` hoặc `Package`), pattern giống `UserNotSelectedEmpty`.
-- [ ] **Step 4:** `npx tsc --noEmit` + lint. Commit: `feat(entitlements): matrix table + skeleton + empty`.
+- [ ] **Step 4:** `pnpm exec tsc --noEmit` + lint. Commit: `feat(entitlements): matrix table + skeleton + empty`.
 
 ---
 
@@ -194,7 +194,7 @@ const EntitlementMatrixToolbar = ({ isEditing, isDirty, isSaving, onEdit, onCanc
 
 - [ ] **Step 1:** `!isEditing` → 1 `CustomButton` (icon `Pencil`) "Edit" gọi `onEdit`.
 - [ ] **Step 2:** `isEditing` → `CustomButton variant=outline` "Cancel" (`onCancel`) + Save `CustomButton type="submit"` (icon `Save`, `loading={isSaving}`, `disabled={!isDirty || isSaving}`). Khi `!isDirty` bọc Save trong `CustomTooltip content={saveDisabledTooltip}` (tooltip vẫn hiện dù disabled — wrap span). 
-- [ ] **Step 3:** `npx tsc --noEmit` + lint. Commit: `feat(entitlements): matrix toolbar with dirty-gated save`.
+- [ ] **Step 3:** `pnpm exec tsc --noEmit` + lint. Commit: `feat(entitlements): matrix toolbar with dirty-gated save`.
 
 ---
 
@@ -215,7 +215,7 @@ const EntitlementMatrixToolbar = ({ isEditing, isDirty, isSaving, onEdit, onCanc
   - Diff helper: so sánh `values.grants[u][a]` với default; chỉ push ô khác.
 - [ ] **Step 3:** `MatrixFormSyncEffect` ghost: `useEffect` reset form theo `buildDefaults` khi `[userGrants, selectedUsers, apps]` đổi **và** `!isEditing` (tránh ghi đè khi đang sửa). Nhận props cần thiết + `reset` từ `useFormContext`.
 - [ ] **Step 4:** `MatrixAnnouncer` ghost: `useUpdateEffect` announce khi `isEditing` đổi (editStart khi true). (Save/cancel/checkAll announce ở handler per-call — hoặc gom vào ghost nếu gọn hơn; giữ nhất quán rule "useEffect trong ghost".)
-- [ ] **Step 5:** Xóa các folder cũ (RevokeDialog, AppAccess*). `grep` đảm bảo không còn import. `npx tsc --noEmit` + lint. Commit: `feat(entitlements): matrix orchestrator + form sync, remove app-rows model`.
+- [ ] **Step 5:** Xóa các folder cũ (RevokeDialog, AppAccess*). `grep` đảm bảo không còn import. `pnpm exec tsc --noEmit` + lint. Commit: `feat(entitlements): matrix orchestrator + form sync, remove app-rows model`.
 
 ---
 
@@ -229,7 +229,7 @@ const EntitlementMatrixToolbar = ({ isEditing, isDirty, isSaving, onEdit, onCanc
 
 - [ ] **Step 1:** Board thêm `const [isEditing, setIsEditing] = useState(false)`. Truyền `disabled={isEditing}` vào `UserMultiSelect` (chặn mở popover/search) + `SelectedUserChips` (ẩn/disable nút remove `×` khi editing). Thêm prop `disabled?: boolean` vào 2 component đó (inline type), no-op khi undefined.
 - [ ] **Step 2:** Bỏ state `revokeTarget` + `AdminEntitlementsRevokeDialog` (đã xóa). Render `<AdminEntitlementsMatrix selectedUsers={selectedUsers} isEditing={isEditing} onEditingChange={setIsEditing} />` khi `selectedUsers.length>0`, else `<UserNotSelectedEmpty/>`.
-- [ ] **Step 3:** `npx tsc --noEmit` + lint. Commit: `feat(entitlements): lock picker during edit + wire matrix`.
+- [ ] **Step 3:** `pnpm exec tsc --noEmit` + lint. Commit: `feat(entitlements): lock picker during edit + wire matrix`.
 
 ---
 

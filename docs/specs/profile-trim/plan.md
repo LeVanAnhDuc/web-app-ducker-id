@@ -13,7 +13,7 @@
 - Convention source of truth: `client/.claude/CLAUDE.md` + `client/.claude/rules/*`.
 - No hard-coded strings; i18n via `next-intl` namespaces (`en` + `vi` in lockstep).
 - View files ≤ 200 lines; component = one folder with `index.tsx`, single default export.
-- Green-checks gate before PR: `cd client && yarn lint && yarn build`.
+- Green-checks gate before PR: `cd client && pnpm lint && pnpm build`.
 - Work happens in worktree `client/.worktrees/profile-trim` (branch `chore/profile-trim`).
 - Commit review is opted-out this session → commit per-task without pausing.
 
@@ -220,7 +220,7 @@ Docs `e2e.md` change is committed in the docs worktree alongside the profile-tri
 ## E2E Dual-Gate (§4.3) — after Task 3
 
 Run the reconciled suite scoped to the feature on the live app (self-check app running first):
-- **Gate A:** `cd client && yarn e2e profile-account-merge`
+- **Gate A:** `cd client && pnpm e2e profile-account-merge`
 - **Gate B:** MCP walk of the reconciled Row 1 + i18n scenarios (read/render only — no mutation).
 
 Both PASS → proceed to green-checks gate + PR.
@@ -228,7 +228,7 @@ Both PASS → proceed to green-checks gate + PR.
 ## Green-Checks Gate (§4.7)
 
 ```bash
-cd client && yarn lint && yarn build
+cd client && pnpm lint && pnpm build
 ```
 
 Must be green before `creating-github-pr`.

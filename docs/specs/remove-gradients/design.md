@@ -71,5 +71,5 @@ the result consistent with the rest of the app (e.g. StatCard icon tiles, Skelet
 - **Pencil mock (§1.5): SKIP** — no new layout/flow; styling-only change to existing UI.
 - **Security review (§4.5): SKIP** — no auth/input/sensitive-data/attack surface touched.
 - **CLAUDE.md drift audit (§4.6):** none of the facts CLAUDE.md records change. Optional: add a one-line note to `uiux/design-guide.md`/`frontend-reference.md` that gradient *fills* are disallowed — this only restates §1.1, not a new design decision.
-- **Green checks (§4.7): REQUIRED** — `cd client && yarn lint && yarn build` must pass (FE `next build` type-checks).
+- **Green checks (§4.7): REQUIRED** — `cd client && pnpm lint && pnpm build` must pass (FE `next build` type-checks).
 - **Isolation (§6):** worktrees created on `client/` + `docs/` from latest `origin/main`, branch `chore/remove-gradients`.

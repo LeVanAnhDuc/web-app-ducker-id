@@ -74,7 +74,7 @@ Nothing. No Team backend, model, route, or entitlement exists.
 - **Risk**: stale deep link / bookmark to `/team` now 404s. Acceptable — the page never did
   anything; Next.js shows the standard not-found. No redirect needed (it was never a real route
   users were told to rely on).
-- **Green checks (§4.7)**: `cd client && yarn lint && yarn build` must pass.
+- **Green checks (§4.7)**: `cd client && pnpm lint && pnpm build` must pass.
 - **Security (§4.5)**: SKIP-eligible (pure deletion, no auth/input/data surface) — but per the
   chosen full flow it will still run and be recorded as a no-finding PASS.
 
@@ -113,7 +113,7 @@ references the removed route, locale-switcher landing on `/team`).
 2. Spec review (this doc) → commit `design.md` (commit gate §7).
 3. `writing-plans` → `plan.md` (tasks split by side: FE removal task + docs task + E2E task).
 4. Implement (subagent-driven) — stage, no per-task commit; overall review gate §7.
-5. §4.3 E2E dual-gate (gate A `yarn e2e` + gate B MCP walk) on the negative-assertion matrix.
+5. §4.3 E2E dual-gate (gate A `pnpm e2e` + gate B MCP walk) on the negative-assertion matrix.
 6. `requesting-code-review` → §4.5 security review (expected PASS, recorded) → §4.6 CLAUDE.md
    drift audit (FE convention/struct unchanged; docs goals updated) → §4.7 green checks.
 7. `finishing-a-development-branch` + README sync (no setup/env change → likely skip) →

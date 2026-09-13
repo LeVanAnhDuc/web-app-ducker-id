@@ -121,9 +121,9 @@ Per app:
 ## 5. Error Handling & Testing
 
 - Throw domain errors via `@/common/exceptions` + `ERROR_CODES` (reuse generic codes; no new codes expected for the read path).
-- **BE quality gate**: `yarn format && yarn lint && yarn tsc`.
-- **FE quality gate**: `yarn format && yarn lint && yarn tsc`.
-- Manual verify: run `yarn seed` → hit `GET /admin/apps` (admin token) → confirm `/admin/apps` page renders real data with search / status / category filters working.
+- **BE quality gate**: `pnpm format && pnpm lint && pnpm exec tsc`.
+- **FE quality gate**: `pnpm format && pnpm lint && pnpm exec tsc`.
+- Manual verify: run `pnpm seed` → hit `GET /admin/apps` (admin token) → confirm `/admin/apps` page renders real data with search / status / category filters working.
 
 ---
 

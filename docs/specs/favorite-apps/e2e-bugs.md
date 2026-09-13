@@ -4,7 +4,7 @@
 
 ## Round 1 — 2026-06-15
 
-- **Gate fail:** A (`yarn e2e e2e/favorite-apps`).
+- **Gate fail:** A (`pnpm e2e e2e/favorite-apps`).
 - **Scenario:** all setup hooks — `getFavoriteIds` / `setFavorites` → `GET /api/v1/users/me/favorites` returned **404**.
 - **Triệu chứng:** favorites endpoint 404 on :5100; observed vs expected 200/401.
 - **Root cause (systematic-debugging):** a **stale `e2e-followups` stack from a prior session was squatting ports :5100/:3100**. The probes/tests hit that old server (no favorite code) → 404. Confirmed: `/users/me` and `/apps` were 401 (mounted) but `/users/me/favorites` 404 on the squatting server; the favorite route IS wired in the worktree loader.

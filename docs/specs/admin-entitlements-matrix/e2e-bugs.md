@@ -4,7 +4,7 @@ Append-only. 1 entry per dual-gate fail round (§4.3, max 3 rounds).
 
 ## Round 1 — 2026-07-16
 
-- **Gate fail:** A (`yarn e2e`). Gate B (MCP walk) PASS.
+- **Gate fail:** A (`pnpm e2e`). Gate B (MCP walk) PASS.
 - **Kết quả:** 18 passed, **13 failed**, 2 skipped.
 - **Scenario fail:** toàn bộ matrix test cần click vào control matrix sau khi chọn user (edit-mode/dirty, save, check-all, picker-lock, sticky, i18n en+vi, a11y, live-region enter-edit/save/cancel). Test "happy render" + "data rendering" + AuthN + picker suite (reconciled) PASS.
 - **Triệu chứng:** click `editButton` (và control matrix đầu tiên) fail — Playwright: `<button role="option" ... from <div data-radix-popper-content-wrapper> subtree intercepts pointer events`, retry tới timeout.

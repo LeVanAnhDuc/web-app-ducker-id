@@ -13,5 +13,5 @@ Thêm optional prop `containerClassName` forward vào div container, merge qua `
 
 ## Consequences
 
-- Divergence khỏi shadcn upstream (upstream chưa expose prop này) → khi `npx shadcn@latest add --diff table` cần re-apply patch thủ công. Comment `// PROJECT-PATCH` đánh dấu điểm này.
+- Divergence khỏi shadcn upstream (upstream chưa expose prop này) → khi `pnpm dlx shadcn@latest add --diff table` cần re-apply patch thủ công. Comment `// PROJECT-PATCH` đánh dấu điểm này.
 - Cho phép `ListTableCard` + full-height tables hoạt động mà không phải fork toàn bộ Table primitive.

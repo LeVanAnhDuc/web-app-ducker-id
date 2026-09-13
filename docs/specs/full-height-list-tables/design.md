@@ -138,7 +138,7 @@ Không đổi. Query/pagination/filter (`useListQuery`, React Query) giữ nguy�
   3. <md (mobile): cuộn trang tự nhiên, không khóa.
   4. Trang thường (Profile, Billing, Notifications, AdminDashboard) + 2 grid (Apps, Favorites): **không regression** — cuộn như cũ.
   5. Sidebar collapse/expand + light/dark: layout không vỡ.
-- **Green-checks gate §4.7 (FE):** `cd client && yarn lint && yarn build`.
+- **Green-checks gate §4.7 (FE):** `cd client && pnpm lint && pnpm build`.
 
 ## 8. Convention & skills liên quan
 

@@ -63,7 +63,7 @@ export const generatePath = (
 - **Không đổi URL gửi lên BE** — path sinh ra byte-identical với hiện tại → refactor thuần, không đổi behavior người dùng.
 - **E2E (§4.3)**: SKIP — không có outcome người dùng mới để assert.
 - **Pencil (§1.5)**: SKIP — không đụng UI.
-- **Green-checks gate (§4.7)**: `cd client && yarn lint && yarn build` phải xanh.
+- **Green-checks gate (§4.7)**: `cd client && pnpm lint && pnpm build` phải xanh.
 - **Security review (§4.5)**: SKIP — không mở rộng bề mặt tấn công (encodeURIComponent giữ nguyên/tăng độ an toàn).
 - **CLAUDE.md drift (§4.6)**: không đổi command/struct/deps → không cần audit.
 

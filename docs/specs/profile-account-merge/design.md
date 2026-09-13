@@ -115,7 +115,7 @@ Form đổi mật khẩu giờ sống ở `/profile`. **Update** (không re-deri
 - **Đổi tên route `/profile`→`/account` + folder `Profile`→`Account`**: không làm (xem §2.6).
 
 ## 6. Rủi ro & lưu ý
-- **i18n missing-message (rủi ro cao nhất)**: đổi namespace `profile`→`account` + move `changePassword` chạm 15 chỗ. Sót 1 reference → next-intl `MISSING_MESSAGE`. Chốt bằng `yarn build` (type-check IntlMessages) + grep `"profile\.`/`accountSettings` + E2E i18n console scan (en + vi).
+- **i18n missing-message (rủi ro cao nhất)**: đổi namespace `profile`→`account` + move `changePassword` chạm 15 chỗ. Sót 1 reference → next-intl `MISSING_MESSAGE`. Chốt bằng `pnpm build` (type-check IntlMessages) + grep `"profile\.`/`accountSettings` + E2E i18n console scan (en + vi).
 - **Orphan import**: `Settings` icon trong `dataSources/Dashboard` có thể thành orphan sau khi gỡ nav item → lint bắt.
 - **Bookmark cũ** `/account-settings` → not-found (chấp nhận, §2.2).
 - **E2E reconcile chưa làm = thay đổi chưa hoàn chỉnh**: code đổi nhưng suite cũ còn goto `/account-settings` sẽ fail — phải sync trong cùng PR.
@@ -140,7 +140,7 @@ Thay đổi observable (gộp card, mất nav item + route, đổi title/nhãn, 
 | 12 | Accessibility | ✅ | `/profile` dùng role/label selector; mỗi card có heading (`aria-labelledby`); 1 page title (h1) duy nhất; ChangePasswordCard (đã move) giữ label-association + tab order (form internals do suite `change-password` cover). | A+B |
 | F1 | Route removal `[ST]` | ✅ | `/account-settings` và `/vi/account-settings` → `not-found`/404 (invalid transition: route từng hợp lệ nay không còn). Heading "Change Password" KHÔNG xuất hiện ở URL đó. | A+B |
 | F2 | Nav integrity | ✅ | Sidebar nhóm Settings liệt kê **Account**, Billing, Team — **KHÔNG** còn "Account Settings", **KHÔNG** còn nhãn "Profile" cũ. Bấm "Account" → `/profile` (chứng minh render trang thật, không phải not-found). | A+B |
-| F3 | Dead-reference / build guard | ✅ | Không còn import/string tham chiếu `ROUTES.ACCOUNT_SETTINGS` / `views/AccountSettings` / namespace `profile.*` / `accountSettings.*` / file `profile.json`/`accountSettings.json` — chốt bằng `yarn build` (type-check IntlMessages bắt key sai) + grep. Không cần E2E. | — |
+| F3 | Dead-reference / build guard | ✅ | Không còn import/string tham chiếu `ROUTES.ACCOUNT_SETTINGS` / `views/AccountSettings` / namespace `profile.*` / `accountSettings.*` / file `profile.json`/`accountSettings.json` — chốt bằng `pnpm build` (type-check IntlMessages bắt key sai) + grep. Không cần E2E. | — |
 
 **Test-design techniques áp dụng**:
 - **[ST]** — F1 route removal (invalid transition) + row 11 valid transition (nav). Đây là kỹ thuật chính cho feature điều hướng/composition này.

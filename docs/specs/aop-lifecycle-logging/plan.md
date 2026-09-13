@@ -16,9 +16,9 @@
 - Aspect KHÔNG được đổi behavior method: passthrough return value, rethrow error nguyên vẹn (để `asyncHandler` → global error handler chạy đúng).
 - Phạm vi: chỉ public method của **service + strategy** (KHÔNG guard/repo/controller/audit-collaborator).
 - Import group theo `.claude/rules/imports.md`: `LogMethod` cùng group `// others` với `Logger` (`@/libs/logger`).
-- Sau mỗi task đụng `server/src/**`: `cd server && yarn format && yarn lint && yarn type-check` phải sạch (server CLAUDE.md).
-- Test trong worktree: jest `<rootDir>` glob hỏng trong `.worktrees/` → chạy `cd server && npx jest --testMatch "**/?(*.)+(spec).ts" <path>` (xem lý do ở memory `reference_jest_worktree_testmatch`).
-- Worktree chưa có `node_modules` → cần `yarn install` (hoặc junction tới main) trước khi chạy lint/type-check/test.
+- Sau mỗi task đụng `server/src/**`: `cd server && pnpm format && pnpm lint && pnpm type-check` phải sạch (server CLAUDE.md).
+- Test trong worktree: jest `<rootDir>` glob hỏng trong `.worktrees/` → chạy `cd server && pnpm exec jest --testMatch "**/?(*.)+(spec).ts" <path>` (xem lý do ở memory `reference_jest_worktree_testmatch`).
+- Worktree chưa có `node_modules` → cần `pnpm install` (hoặc junction tới main) trước khi chạy lint/type-check/test.
 
 ---
 
@@ -68,7 +68,7 @@ describe("RequestContext requestId", () => {
 
 - [ ] **Step 2: Chạy test — xác nhận FAIL**
 
-Run: `cd server && npx jest --testMatch "**/?(*.)+(spec).ts" src/utils/request-context.spec.ts`
+Run: `cd server && pnpm exec jest --testMatch "**/?(*.)+(spec).ts" src/utils/request-context.spec.ts`
 Expected: FAIL (`getRequestId is not a function`).
 
 - [ ] **Step 3: Sửa `request-context.ts`**
@@ -113,12 +113,12 @@ export const RequestContext = {
 
 - [ ] **Step 4: Chạy test — xác nhận PASS**
 
-Run: `cd server && npx jest --testMatch "**/?(*.)+(spec).ts" src/utils/request-context.spec.ts`
+Run: `cd server && pnpm exec jest --testMatch "**/?(*.)+(spec).ts" src/utils/request-context.spec.ts`
 Expected: PASS (3 tests).
 
 - [ ] **Step 5: Green checks**
 
-Run: `cd server && yarn format && yarn lint && yarn type-check`
+Run: `cd server && pnpm format && pnpm lint && pnpm type-check`
 Expected: sạch. (Không commit — Review ON, commit gom cuối.)
 
 ---
@@ -231,7 +231,7 @@ describe("LogMethod", () => {
 
 - [ ] **Step 2: Chạy test — xác nhận FAIL**
 
-Run: `cd server && npx jest --testMatch "**/?(*.)+(spec).ts" src/libs/logger/log-method.decorator.spec.ts`
+Run: `cd server && pnpm exec jest --testMatch "**/?(*.)+(spec).ts" src/libs/logger/log-method.decorator.spec.ts`
 Expected: FAIL (`Cannot find module './log-method.decorator'`).
 
 - [ ] **Step 3: Tạo decorator**
@@ -374,7 +374,7 @@ export type { LogMethodOptions } from "./log-method.decorator";
 
 - [ ] **Step 5: Chạy test — xác nhận PASS**
 
-Run: `cd server && npx jest --testMatch "**/?(*.)+(spec).ts" src/libs/logger/log-method.decorator.spec.ts`
+Run: `cd server && pnpm exec jest --testMatch "**/?(*.)+(spec).ts" src/libs/logger/log-method.decorator.spec.ts`
 Expected: PASS (5 tests).
 
 - [ ] **Step 6: Rule sync `libs.md`**
@@ -392,7 +392,7 @@ Và 1 câu ở phần "Logger": `@LogMethod` (từ barrel) là aspect log lifecy
 
 - [ ] **Step 7: Green checks**
 
-Run: `cd server && yarn format && yarn lint && yarn type-check`
+Run: `cd server && pnpm format && pnpm lint && pnpm type-check`
 Expected: sạch.
 
 ---
@@ -462,7 +462,7 @@ Logger.info("New user registered", {
 
 Run:
 ```
-cd server && yarn format && yarn lint && yarn type-check
+cd server && pnpm format && pnpm lint && pnpm type-check
 ```
 Expected: sạch. Sau đó xác nhận không còn `initiated`/`completed` boilerplate trong file:
 ```
@@ -516,7 +516,7 @@ async authenticate(body: PasswordLoginBody, req: Request): Promise<LoginResponse
 
 Run:
 ```
-cd server && yarn format && yarn lint && yarn type-check
+cd server && pnpm format && pnpm lint && pnpm type-check
 cd server && grep -rnE "\"[^\"]*(initiated|completed)" src/modules/login/strategies
 ```
 Expected: lint/type-check sạch; grep không còn dòng log initiated/completed.
@@ -573,7 +573,7 @@ async resetPassword(req: FPResetPasswordRequest): Promise<ResetPasswordResponseD
 
 Run:
 ```
-cd server && yarn format && yarn lint && yarn type-check
+cd server && pnpm format && pnpm lint && pnpm type-check
 cd server && grep -rnE "\"[^\"]*(initiated|completed)" src/modules/forgot-password
 ```
 Expected: lint/type-check sạch; grep chỉ còn `"Forgot password reset completed successfully"` trong `forgot-password-audit.service.ts` (đây là domain-event audit, GIỮ chủ đích) — không còn dòng nào khác.
@@ -587,7 +587,7 @@ Expected: lint/type-check sạch; grep chỉ còn `"Forgot password reset comple
 - [ ] **Step 1: Chạy full suite trong worktree**
 
 ```
-cd server && yarn lint && yarn type-check && npx jest --testMatch "**/?(*.)+(spec).ts" && yarn build
+cd server && pnpm lint && pnpm type-check && pnpm exec jest --testMatch "**/?(*.)+(spec).ts" && pnpm build
 ```
 Expected: tất cả xanh (lint 0 error, type-check 0 error, jest all pass gồm 2 spec mới, build thành công).
 

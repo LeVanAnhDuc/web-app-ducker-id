@@ -10,7 +10,7 @@
 
 **Conventions:** Read before touching code — `server/.claude/CLAUDE.md` + `.claude/rules/{modules,types,validators,imports,i18n}.md` for BE; `client/.claude/CLAUDE.md` + `.claude/rules/{views,ghosts,imports,constants,components,mocks}.md` for FE. Spec: `docs/specs/edit-apps/design.md`.
 
-**Worktrees (already created, branch `feat/edit-apps`):** `server/.worktrees/edit-apps`, `client/.worktrees/edit-apps`, `docs/.worktrees/edit-apps`. Run `yarn install` in the server + client worktrees before starting their tasks (deps are not shared across worktrees).
+**Worktrees (already created, branch `feat/edit-apps`):** `server/.worktrees/edit-apps`, `client/.worktrees/edit-apps`, `docs/.worktrees/edit-apps`. Run `pnpm install` in the server + client worktrees before starting their tasks (deps are not shared across worktrees).
 
 ---
 
@@ -101,7 +101,7 @@ export interface WebAppUpdateInput {
 
 - [ ] **Step 3: Type-check**
 
-Run: `cd server/.worktrees/edit-apps && yarn tsc`
+Run: `cd server/.worktrees/edit-apps && pnpm exec tsc`
 Expected: PASS (no emit, 0 errors).
 
 - [ ] **Step 4: Commit**
@@ -163,7 +163,7 @@ export const adminUpdateAppBodySchema = adminCreateAppBodySchema
 
 - [ ] **Step 3: Type-check**
 
-Run: `cd server/.worktrees/edit-apps && yarn tsc`
+Run: `cd server/.worktrees/edit-apps && pnpm exec tsc`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
@@ -252,7 +252,7 @@ export type WebAppRepository = {
 
 - [ ] **Step 4: Type-check**
 
-Run: `cd server/.worktrees/edit-apps && yarn tsc`
+Run: `cd server/.worktrees/edit-apps && pnpm exec tsc`
 Expected: PASS.
 
 - [ ] **Step 5: Commit**
@@ -389,7 +389,7 @@ describe("WebAppService.updateApp", () => {
 
 - [ ] **Step 2: Run tests to verify they fail**
 
-Run: `cd server/.worktrees/edit-apps && npx jest --testMatch "**/web-app.service.spec.ts"`
+Run: `cd server/.worktrees/edit-apps && pnpm exec jest --testMatch "**/web-app.service.spec.ts"`
 Expected: FAIL — `service.updateApp is not a function`.
 
 (Note: this project's jest `<rootDir>` glob misbehaves inside `.worktrees/`; use the explicit `--testMatch` form above.)
@@ -506,7 +506,7 @@ In `vi/webApp.json` mirror with: `success.updateApp` = `"Cập nhật ứng dụ
 
 - [ ] **Step 5: Run tests to verify they pass**
 
-Run: `cd server/.worktrees/edit-apps && npx jest --testMatch "**/web-app.service.spec.ts"`
+Run: `cd server/.worktrees/edit-apps && pnpm exec jest --testMatch "**/web-app.service.spec.ts"`
 Expected: PASS (all create + update tests green).
 
 - [ ] **Step 6: Commit**
@@ -572,7 +572,7 @@ import {
 
 - [ ] **Step 3: Type-check + tests**
 
-Run: `cd server/.worktrees/edit-apps && yarn tsc && npx jest --testMatch "**/web-app.service.spec.ts"`
+Run: `cd server/.worktrees/edit-apps && pnpm exec tsc && pnpm exec jest --testMatch "**/web-app.service.spec.ts"`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
@@ -596,7 +596,7 @@ git commit -m "feat(web-app): BE wire PATCH /admin/apps/:id"
 
 - [ ] **Step 3: Quality gate** (mandatory per `server/.claude/CLAUDE.md`):
 
-Run: `cd server/.worktrees/edit-apps && yarn format && yarn lint && yarn tsc && npx jest --testMatch "**/web-app.service.spec.ts"`
+Run: `cd server/.worktrees/edit-apps && pnpm format && pnpm lint && pnpm exec tsc && pnpm exec jest --testMatch "**/web-app.service.spec.ts"`
 Expected: all pass, 0 errors. Re-read any files auto-fixed by format/lint.
 
 - [ ] **Step 4: Commit**
@@ -666,7 +666,7 @@ export const setAdminAppStatus = async (
 
 - [ ] **Step 3: Type-check**
 
-Run: `cd client/.worktrees/edit-apps && yarn tsc`
+Run: `cd client/.worktrees/edit-apps && pnpm exec tsc`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
@@ -753,7 +753,7 @@ export default useSetAdminAppStatus;
 
 - [ ] **Step 3: Type-check**
 
-Run: `cd client/.worktrees/edit-apps && yarn tsc`
+Run: `cd client/.worktrees/edit-apps && pnpm exec tsc`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
@@ -863,7 +863,7 @@ import CONSTANTS from "@/constants";
 
 - [ ] **Step 3: Type-check + lint**
 
-Run: `cd client/.worktrees/edit-apps && yarn tsc && yarn lint`
+Run: `cd client/.worktrees/edit-apps && pnpm exec tsc && pnpm lint`
 Expected: PASS, 0 errors. Re-read the file if lint auto-fixed it.
 
 - [ ] **Step 4: Commit**
@@ -1163,7 +1163,7 @@ export default AdminApps;
 
 - [ ] **Step 5: Type-check + lint**
 
-Run: `cd client/.worktrees/edit-apps && yarn tsc && yarn lint`
+Run: `cd client/.worktrees/edit-apps && pnpm exec tsc && pnpm lint`
 Expected: PASS, 0 errors.
 
 - [ ] **Step 6: Commit**
@@ -1262,7 +1262,7 @@ Expected: `NO IMPORTERS`.
 
 - [ ] **Step 4: Quality gate**
 
-Run: `cd client/.worktrees/edit-apps && yarn format && yarn lint && yarn tsc`
+Run: `cd client/.worktrees/edit-apps && pnpm format && pnpm lint && pnpm exec tsc`
 Expected: all pass, 0 errors. Re-read auto-fixed files.
 
 - [ ] **Step 5: Commit**
@@ -1276,7 +1276,7 @@ git commit -m "feat(admin-apps): FE i18n paused/hide labels + drop AdminApps moc
 
 ## Task 12: E2E — edit + hide/unhide (FE verification gate)
 
-> Precondition (CLAUDE.md §4.3): BE on :5000, FE on :3000 (worktree dev server, see [[reference_e2e_worktree_devserver]]), Mongo + Redis up, DB seeded with **an admin account** and the seed apps. The admin-apps page requires `ADMIN` role, so this suite needs an admin storageState distinct from the existing user one. Self-check app-running before `yarn e2e`; if not running, ask the user (run themselves vs. agent starts it), and tear down only what the agent started.
+> Precondition (CLAUDE.md §4.3): BE on :5000, FE on :3000 (worktree dev server, see [[reference_e2e_worktree_devserver]]), Mongo + Redis up, DB seeded with **an admin account** and the seed apps. The admin-apps page requires `ADMIN` role, so this suite needs an admin storageState distinct from the existing user one. Self-check app-running before `pnpm e2e`; if not running, ask the user (run themselves vs. agent starts it), and tear down only what the agent started.
 
 **Files:**
 - Create: `client/.worktrees/edit-apps/e2e/admin.setup.ts`
@@ -1446,7 +1446,7 @@ test.describe("Admin Apps — edit + hide/unhide", () => {
 
 - [ ] **Step 6: Run the E2E suite** (after the app-running self-check / user coordination):
 
-Run: `cd client/.worktrees/edit-apps && yarn e2e --project=admin-setup --project=admin`
+Run: `cd client/.worktrees/edit-apps && pnpm e2e --project=admin-setup --project=admin`
 Expected: PASS (edit + hide/unhide green), DB left as seeded after revert.
 
 - [ ] **Step 7: Commit** (two repos — client + docs):
@@ -1479,7 +1479,7 @@ git commit -m "docs(edit-apps): E2E scenario doc"
 
 > **Mục đích**: backfill coverage E2E cho **edit-apps** — expand toàn bộ `## E2E Scenario Matrix` (design.md §matrix, 12 nhóm) thành từng Playwright test cụ thể. Đây là backfill cho feature **đã có** suite (T1 edit display name + T2 hide/unhide đã ở `client/e2e/admin-apps/edit-apps.e2e.ts`); theo CLAUDE.md §4.3 "sửa/fix feature đã có" → **reconcile** (ADD case mới, giữ T1/T2 có sẵn, UPDATE T1 mở rộng full-prefill), KHÔNG rebuild suite.
 >
-> **Quy ước thực thi (TDD)**: mỗi task = 1 test (hoặc 1 nhóm `[BVA]`/`[EP]` chung field). Theo `superpowers:test-driven-development`: viết test → chạy `cd client && yarn e2e --project=admin -g "<test title>"` → đỏ vì assertion sai/feature chưa đúng → khi feature đã implement (Tasks 1–12 ở trên) → xanh. Backfill chạy **sau** khi feature code đã merge nên hầu hết phải xanh ngay; test nào đỏ → `superpowers:systematic-debugging` (ghi `e2e-bugs.md`), KHÔNG sửa app code trong test.
+> **Quy ước thực thi (TDD)**: mỗi task = 1 test (hoặc 1 nhóm `[BVA]`/`[EP]` chung field). Theo `superpowers:test-driven-development`: viết test → chạy `cd client && pnpm e2e --project=admin -g "<test title>"` → đỏ vì assertion sai/feature chưa đúng → khi feature đã implement (Tasks 1–12 ở trên) → xanh. Backfill chạy **sau** khi feature code đã merge nên hầu hết phải xanh ngay; test nào đỏ → `superpowers:systematic-debugging` (ghi `e2e-bugs.md`), KHÔNG sửa app code trong test.
 >
 > **File đích duy nhất**: `client/e2e/admin-apps/edit-apps.e2e.ts` (EXTEND — không tạo file mới). Chạy dưới project `admin` (playwright.config.ts `testMatch: /admin-apps\/.*\.e2e\.ts/`, storageState `e2e/.auth/admin.json`).
 >
@@ -1497,7 +1497,7 @@ git commit -m "docs(edit-apps): E2E scenario doc"
 >
 > **Mutation revert**: mọi test mutate phải idempotent revert qua `restoreApp(name, displayName, status)` (helper có sẵn) ở `afterAll` (mode `serial` đã set). Test mutate ngoài `blog` → thêm restore tương ứng.
 >
-> **Gate**: `A+B` = gate A (`yarn e2e`) + gate B (MCP walk read/render). `A only` = mutation-heavy hoặc không verify được bằng MCP read-only (double-submit, trailing-space, 409 conflict, redirectUris boundary) — gate B chỉ render-verify, KHÔNG mutate song song (chống session contamination, [[reference_e2e_suite_session_contamination]]).
+> **Gate**: `A+B` = gate A (`pnpm e2e`) + gate B (MCP walk read/render). `A only` = mutation-heavy hoặc không verify được bằng MCP read-only (double-submit, trailing-space, 409 conflict, redirectUris boundary) — gate B chỉ render-verify, KHÔNG mutate song song (chống session contamination, [[reference_e2e_suite_session_contamination]]).
 
 ### Tasks (1 test / scenario áp dụng được)
 

@@ -8,7 +8,7 @@
 
 **Tech Stack:** Next.js 15 (`next/image`), React 19, TypeScript 5, Tailwind 4.
 
-**Testing note:** Client KHÔNG có unit-test runner (chỉ Playwright cho E2E). Đây là refactor cosmetic (không thêm/đổi behavior người dùng quan sát được) → không áp TDD-unit (YAGNI, không có harness) và **skip E2E** (§4.3). Verification gate = `yarn format` → `yarn lint` → `yarn tsc` → `yarn build`, chạy trong worktree `client/`.
+**Testing note:** Client KHÔNG có unit-test runner (chỉ Playwright cho E2E). Đây là refactor cosmetic (không thêm/đổi behavior người dùng quan sát được) → không áp TDD-unit (YAGNI, không có harness) và **skip E2E** (§4.3). Verification gate = `pnpm format` → `pnpm lint` → `pnpm exec tsc` → `pnpm build`, chạy trong worktree `client/`.
 
 **Commit gate (§7, Review ON — mặc định):** Các task implement + **stage** thay đổi, KHÔNG commit per-task. Sau khi xong toàn bộ (Task 5 pass) → trình diff tổng thể → user duyệt → commit 1 lần (Task 6). Worktree code: `client/.worktrees/next-image-migration`. Worktree docs (chứa plan/design): `docs/.worktrees/next-image-migration`.
 
@@ -47,7 +47,7 @@ Ghi chú tuân convention:
 
 - [ ] **Step 2: Type-check component mới**
 
-Run (trong `client/.worktrees/next-image-migration`): `yarn tsc`
+Run (trong `client/.worktrees/next-image-migration`): `pnpm exec tsc`
 Expected: PASS, không lỗi mới ở `src/components/CustomImage/index.tsx`.
 
 ---
@@ -229,22 +229,22 @@ Trong section "### Rule 2: Khi `Custom*` wrapper đã tồn tại → BẮT BU�
 
 - [ ] **Step 1: Format**
 
-Run: `yarn format`
+Run: `pnpm format`
 Expected: Prettier ghi lại file, exit 0. Re-read các file đã sửa nếu format đổi nội dung.
 
 - [ ] **Step 2: Lint**
 
-Run: `yarn lint`
+Run: `pnpm lint`
 Expected: PASS, exit 0. Không còn cảnh báo `@next/next/no-img-element`; không còn directive `eslint-disable` thừa (nếu có "Unused eslint-disable" thì nghĩa là sót comment chưa xóa → xóa).
 
 - [ ] **Step 3: Type-check**
 
-Run: `yarn tsc`
+Run: `pnpm exec tsc`
 Expected: PASS, không lỗi. (Nếu lỗi `src` type `string | StaticImport` → xác nhận giá trị tại call site là `string` non-null; cả 3 chỗ đã được guard `iconUrl ?` / `att.previewUrl ?` / `previewUrl &&`.)
 
 - [ ] **Step 4: Build**
 
-Run: `yarn build`
+Run: `pnpm build`
 Expected: Build thành công. Đặc biệt xác nhận KHÔNG có lỗi runtime/SSG kiểu `hostname ... not configured under images` (đã né nhờ `unoptimized`). Nếu gặp lỗi này → kiểm tra `CustomImage` còn default `unoptimized=true` không.
 
 ---

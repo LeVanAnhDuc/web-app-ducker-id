@@ -30,9 +30,9 @@ All BE paths are under `server/.worktrees/admin-users-list/`. Test command in wo
 
 ```bash
 cd server/.worktrees/admin-users-list
-npx jest --testMatch "**/?(*.)+(spec).ts" <path-substring> -- --runTestsByPath
+pnpm exec jest --testMatch "**/?(*.)+(spec).ts" <path-substring> -- --runTestsByPath
 ```
-(Simplest reliable form: `npx jest --testMatch "**/?(*.)+(spec).ts" -t "<describe-name>"`.)
+(Simplest reliable form: `pnpm exec jest --testMatch "**/?(*.)+(spec).ts" -t "<describe-name>"`.)
 
 ### Task 1: BE types for admin users list
 
@@ -98,7 +98,7 @@ export interface GetAdminUsersRequest extends Omit<Request, "query"> {
 
 - [ ] **Step 2: Type-check**
 
-Run: `cd server/.worktrees/admin-users-list && yarn tsc`
+Run: `cd server/.worktrees/admin-users-list && pnpm exec tsc`
 Expected: PASS (no new errors). `Request` and `Schema` are already imported at top of the file.
 
 - [ ] **Step 3: Commit** (staged only — see commit gate note at end)
@@ -200,7 +200,7 @@ Expected: a `export const SEARCH_MAX_LENGTH = ...` line (login-history already i
 
 - [ ] **Step 4: Type-check**
 
-Run: `cd server/.worktrees/admin-users-list && yarn tsc`
+Run: `cd server/.worktrees/admin-users-list && pnpm exec tsc`
 Expected: PASS.
 
 - [ ] **Step 5: Stage**
@@ -267,7 +267,7 @@ describe("toAdminUserDto", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd server/.worktrees/admin-users-list && npx jest --testMatch "**/?(*.)+(spec).ts" -t "toAdminUserDto"`
+Run: `cd server/.worktrees/admin-users-list && pnpm exec jest --testMatch "**/?(*.)+(spec).ts" -t "toAdminUserDto"`
 Expected: FAIL — cannot find `./admin-user-item.dto`.
 
 - [ ] **Step 3: Write the DTO**
@@ -315,7 +315,7 @@ export * from "./admin-user-item.dto";
 
 - [ ] **Step 5: Run test to verify it passes**
 
-Run: `cd server/.worktrees/admin-users-list && npx jest --testMatch "**/?(*.)+(spec).ts" -t "toAdminUserDto"`
+Run: `cd server/.worktrees/admin-users-list && pnpm exec jest --testMatch "**/?(*.)+(spec).ts" -t "toAdminUserDto"`
 Expected: PASS (3 tests).
 
 - [ ] **Step 6: Stage**
@@ -411,7 +411,7 @@ describe("MongoUserRepository.findAdminUsers", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd server/.worktrees/admin-users-list && npx jest --testMatch "**/?(*.)+(spec).ts" -t "findAdminUsers"`
+Run: `cd server/.worktrees/admin-users-list && pnpm exec jest --testMatch "**/?(*.)+(spec).ts" -t "findAdminUsers"`
 Expected: FAIL — `repo.findAdminUsers is not a function`.
 
 - [ ] **Step 3: Implement the repository method**
@@ -527,7 +527,7 @@ Add the method to `MongoUserRepository`:
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `cd server/.worktrees/admin-users-list && npx jest --testMatch "**/?(*.)+(spec).ts" -t "findAdminUsers"`
+Run: `cd server/.worktrees/admin-users-list && pnpm exec jest --testMatch "**/?(*.)+(spec).ts" -t "findAdminUsers"`
 Expected: PASS (3 tests).
 
 - [ ] **Step 5: Stage**
@@ -618,7 +618,7 @@ describe("UserService.getAdminUsers", () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `cd server/.worktrees/admin-users-list && npx jest --testMatch "**/?(*.)+(spec).ts" -t "getAdminUsers"`
+Run: `cd server/.worktrees/admin-users-list && pnpm exec jest --testMatch "**/?(*.)+(spec).ts" -t "getAdminUsers"`
 Expected: FAIL — `service.getAdminUsers is not a function`.
 
 - [ ] **Step 3: Implement the service method**
@@ -690,7 +690,7 @@ Add the method to `UserService`:
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `cd server/.worktrees/admin-users-list && npx jest --testMatch "**/?(*.)+(spec).ts" -t "getAdminUsers"`
+Run: `cd server/.worktrees/admin-users-list && pnpm exec jest --testMatch "**/?(*.)+(spec).ts" -t "getAdminUsers"`
 Expected: PASS (2 tests).
 
 - [ ] **Step 5: Stage**
@@ -795,7 +795,7 @@ In each `server/src/i18n/locales/<lang>/user.json`, under `success`:
 
 - [ ] **Step 6: Type-check + run full BE suite**
 
-Run: `cd server/.worktrees/admin-users-list && yarn tsc && npx jest --testMatch "**/?(*.)+(spec).ts"`
+Run: `cd server/.worktrees/admin-users-list && pnpm exec tsc && pnpm exec jest --testMatch "**/?(*.)+(spec).ts"`
 Expected: tsc PASS; all jest specs pass (incl. Tasks 3–5).
 
 - [ ] **Step 7: Manual smoke (optional, if BE + Mongo running)**
@@ -828,7 +828,7 @@ This supports the `$lookup` sub-pipeline (`userId == auth._id` + `status: "succe
 
 - [ ] **Step 2: Type-check**
 
-Run: `cd server/.worktrees/admin-users-list && yarn tsc`
+Run: `cd server/.worktrees/admin-users-list && pnpm exec tsc`
 Expected: PASS.
 
 - [ ] **Step 3: Stage**
@@ -855,12 +855,12 @@ In `schemas.ts`, add an `AdminUser` schema (fields per `AdminUserDto`) and an `A
 
 - [ ] **Step 3: Type-check**
 
-Run: `cd server/.worktrees/admin-users-list && yarn tsc`
+Run: `cd server/.worktrees/admin-users-list && pnpm exec tsc`
 Expected: PASS.
 
 - [ ] **Step 4: Quality gate (BE handover)**
 
-Run: `cd server/.worktrees/admin-users-list && yarn format && yarn lint && yarn tsc`
+Run: `cd server/.worktrees/admin-users-list && pnpm format && pnpm lint && pnpm exec tsc`
 Expected: all pass, no errors. Re-read any files auto-fixed by format/lint.
 
 - [ ] **Step 5: Stage**
@@ -918,7 +918,7 @@ export interface PaginatedAdminUsersResponse {
 
 - [ ] **Step 3: Type-check**
 
-Run: `cd client/.worktrees/admin-users-list && yarn tsc`
+Run: `cd client/.worktrees/admin-users-list && pnpm exec tsc`
 Expected: PASS.
 
 - [ ] **Step 4: Stage**
@@ -962,7 +962,7 @@ export const getAdminUsers = async (
 
 - [ ] **Step 2: Type-check**
 
-Run: `cd client/.worktrees/admin-users-list && yarn tsc`
+Run: `cd client/.worktrees/admin-users-list && pnpm exec tsc`
 Expected: PASS.
 
 - [ ] **Step 3: Stage**
@@ -1013,7 +1013,7 @@ Expected: only `useAdminUsersList.ts`'s `ADMIN_USERS_LIST_QUERY_KEY`/hook name �
 
 - [ ] **Step 4: Type-check**
 
-Run: `cd client/.worktrees/admin-users-list && yarn tsc`
+Run: `cd client/.worktrees/admin-users-list && pnpm exec tsc`
 Expected: PASS.
 
 - [ ] **Step 5: Stage**
@@ -1103,7 +1103,7 @@ Read meta and render the pager right after the closing `</Table>`'s wrapping `<d
 
 - [ ] **Step 3: Type-check + quality gate (FE handover)**
 
-Run: `cd client/.worktrees/admin-users-list && yarn format && yarn lint && yarn tsc`
+Run: `cd client/.worktrees/admin-users-list && pnpm format && pnpm lint && pnpm exec tsc`
 Expected: all pass. Re-read any auto-fixed files.
 
 - [ ] **Step 4: Stage**
@@ -1134,7 +1134,7 @@ Verify BE :5000, FE :3000, Mongo, Redis are up and DB seeded (with ≥ a few use
 
 - [ ] **Step 4: Run E2E**
 
-Run: `cd client && yarn e2e` (against the running app — worktree FE on :3100 via `E2E_BASE_URL` if applicable)
+Run: `cd client && pnpm e2e` (against the running app — worktree FE on :3100 via `E2E_BASE_URL` if applicable)
 Expected: all admin-users-list specs green.
 
 - [ ] **Step 5: Teardown (only if agent started services)**
@@ -1191,7 +1191,7 @@ Per project rule, implementer subagents **stage but do NOT commit per-task** (Re
 
 > **Mục tiêu:** backfill suite `admin-users-list` E2E để cover toàn bộ `## 9. E2E Scenario Matrix` của `design.md`. File hiện có (`client/e2e/admin-users-list/admin-users-list.e2e.ts`) đã có 5 test (`[EXISTS]` rows 1, 6-partial, 7-partial); phần dưới expand các row `[NEW]` còn thiếu thành từng task TDD bite-sized.
 >
-> **Phương pháp (TDD):** với mỗi task — viết test ASSERT trước → chạy `yarn e2e` (đỏ nếu app chưa đủ behavior) → nếu đỏ do thiếu code-fix prereq (CF-*) thì task đó **BLOCKED** cho tới khi CF tương ứng landed (xem dependency tag). Test chỉ pass khi behavior thật của app khớp; KHÔNG nới lỏng assertion để ép xanh.
+> **Phương pháp (TDD):** với mỗi task — viết test ASSERT trước → chạy `pnpm e2e` (đỏ nếu app chưa đủ behavior) → nếu đỏ do thiếu code-fix prereq (CF-*) thì task đó **BLOCKED** cho tới khi CF tương ứng landed (xem dependency tag). Test chỉ pass khi behavior thật của app khớp; KHÔNG nới lỏng assertion để ép xanh.
 >
 > **Test file target (extend):** `client/e2e/admin-users-list/admin-users-list.e2e.ts` — suite này chạy dưới project `admin` (admin `storageState`) sau khi **CF-1** đổi config (xem Task E0). Tài liệu kịch bản đồng bộ ở `docs/specs/admin-users-list/e2e.md`.
 >

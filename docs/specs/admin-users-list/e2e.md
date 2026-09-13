@@ -27,7 +27,7 @@ E2E_USER_EMAIL=admin@test.com E2E_USER_PASSWORD=Admin@123 \
 
 ## Scenarios
 
-Filters/pagination are URL-driven (the table reads `search` / `role` / `status` / `page` from the query string), so tests drive them via `page.goto` query params — more robust than operating the comboboxes. `Gate` column: `A` = `yarn e2e` (deterministic, committed); `B` = MCP walk (visual/UX/console/network). Read-only feature → gate B verifies read/render only.
+Filters/pagination are URL-driven (the table reads `search` / `role` / `status` / `page` from the query string), so tests drive them via `page.goto` query params — more robust than operating the comboboxes. `Gate` column: `A` = `pnpm e2e` (deterministic, committed); `B` = MCP walk (visual/UX/console/network). Read-only feature → gate B verifies read/render only.
 
 | # | Matrix row | Scenario (test name) | Technique | Gate | Status |
 | --- | --- | --- | --- | --- | --- |

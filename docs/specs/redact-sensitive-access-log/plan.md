@@ -12,8 +12,8 @@
 - Match: case-insensitive **substring** trên tập `["password","otp","token","secret","authorization","credential","apikey","api_key","cookie"]`.
 - KHÔNG mutate input; cap độ sâu (MAX_DEPTH=6).
 - Chỉ đụng `requestLogger` (không rải util ra log site khác lúc này).
-- Test worktree: `npx jest --testMatch "**/?(*.)+(spec).ts" <path>`; node_modules là junction → KHÔNG `yarn install`.
-- Sau mỗi task: `cd <worktree> && yarn format && yarn lint && yarn type-check` sạch.
+- Test worktree: `pnpm exec jest --testMatch "**/?(*.)+(spec).ts" <path>`; node_modules là junction → KHÔNG `pnpm install`.
+- Sau mỗi task: `cd <worktree> && pnpm format && pnpm lint && pnpm type-check` sạch.
 - Worktree: `server/.worktrees/redact-sensitive-access-log`.
 
 ---
@@ -84,7 +84,7 @@ describe("redactSensitive", () => {
 });
 ```
 
-- [ ] **Step 2:** `npx jest ... src/utils/redact/index.spec.ts` → FAIL (module missing).
+- [ ] **Step 2:** `pnpm exec jest ... src/utils/redact/index.spec.ts` → FAIL (module missing).
 
 - [ ] **Step 3: Tạo util** — `src/utils/redact/index.ts`:
 
@@ -134,7 +134,7 @@ export function redactSensitive(value: unknown): unknown {
 }
 ```
 
-- [ ] **Step 4:** `npx jest ... src/utils/redact/index.spec.ts` → PASS (6 tests). Green checks.
+- [ ] **Step 4:** `pnpm exec jest ... src/utils/redact/index.spec.ts` → PASS (6 tests). Green checks.
 
 ---
 
@@ -197,7 +197,7 @@ describe("requestLogger", () => {
 
 > Lưu ý: `test/setup.ts` đã mock `@/libs/logger` (Logger.http = jest.fn) → `jest.spyOn` hoạt động; `res.on` là jest.fn nên handler `finish` không chạy.
 
-- [ ] **Step 3:** Green checks + `npx jest ... request-logger.middleware.spec.ts` PASS.
+- [ ] **Step 3:** Green checks + `pnpm exec jest ... request-logger.middleware.spec.ts` PASS.
 
 - [ ] **Step 4: Rule sync** — `server/.claude/rules/utils.md` (main repo): thêm `redact/` vào danh sách sub-folder concern (util che dữ liệu nhạy cảm trước khi log).
 
@@ -205,7 +205,7 @@ describe("requestLogger", () => {
 
 ### Task 3: Full verification
 
-- [ ] `cd <worktree> && yarn lint && yarn type-check && npx jest --testMatch "**/?(*.)+(spec).ts" && yarn build` — tất cả xanh.
+- [ ] `cd <worktree> && pnpm lint && pnpm type-check && pnpm exec jest --testMatch "**/?(*.)+(spec).ts" && pnpm build` — tất cả xanh.
 
 ## Self-Review
 

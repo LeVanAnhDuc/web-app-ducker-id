@@ -20,7 +20,7 @@ translated). Selectors prefer `getByRole` / accessible name; `article` /
 
 - **Real-backend tests** need the **worktree BE** (with the `notification`
   module + seed) on its API host **and** the **worktree FE** running, with the
-  DB seeded (`cd server && yarn seed --clear && yarn seed`). Point the suite at
+  DB seeded (`cd server && pnpm seed --clear && pnpm seed`). Point the suite at
   the worktree FE via `E2E_BASE_URL` (defaults to `http://localhost:3000`).
 - **Intercept-based tests** are backend-agnostic — they `page.route` the API and
   fulfil synthetic responses, so they pass regardless of backend/seed state
@@ -31,25 +31,25 @@ translated). Selectors prefer `getByRole` / accessible name; `article` /
 Executed against the **worktree stack**: worktree BE on `APP_PORT=5050` (real
 `notification` module) + worktree FE on `:3100` (Next webpack dev — see note —
 with `.env.local` `API_SERVER_URL=http://localhost:5050`), Mongo seeded.
-Command: `E2E_BASE_URL=http://localhost:3100 yarn e2e e2e/notifications/notifications.e2e.ts`
+Command: `E2E_BASE_URL=http://localhost:3100 pnpm e2e e2e/notifications/notifications.e2e.ts`
 → **14/14 passed**.
 
 > **Backfill expansion (2026-06-14) — re-run pending.** The suite was extended
 > with the matrix `NEW` scenarios (rows 1b, 5a, 5c, 6b, 7-content, 9-vi, 10c,
-> 11c, 11d, 11e, 12-announcer, 12-keyboard). `npx playwright test e2e/notifications --list`
+> 11c, 11d, 11e, 12-announcer, 12-keyboard). `pnpm exec playwright test e2e/notifications --list`
 > now discovers **28 chromium test blocks** (+1 `auth.setup`). These backfill
 > tests have **not yet been executed** against a running app — they were verified
-> by `npx tsc --noEmit` (0 errors) + discovery only. Re-run
-> `E2E_BASE_URL=… yarn e2e e2e/notifications/notifications.e2e.ts` and record the
+> by `pnpm exec tsc --noEmit` (0 errors) + discovery only. Re-run
+> `E2E_BASE_URL=… pnpm e2e e2e/notifications/notifications.e2e.ts` and record the
 > true pass count before relying on it; the old "14/14" figure is stale and is
 > intentionally **not** updated to an unverified number.
 
 Environment notes (worktree-specific, not feature defects):
 
 - **Turbopack fails through the `node_modules` junction** ("Next.js package not
-  found"). Run the worktree FE with **plain webpack dev** (`npx next dev -p 3100`),
+  found"). Run the worktree FE with **plain webpack dev** (`pnpm exec next dev -p 3100`),
   not `--turbopack`.
-- **Cross-suite session contamination** when running the *whole* `yarn e2e`:
+- **Cross-suite session contamination** when running the *whole* `pnpm e2e`:
   the `change-password` happy-path rotates the user password, which revokes the
   shared-storageState refresh token, so later user-auth suites (`apps-list`,
   `notifications`) land on the login screen. The notifications suite passes
@@ -141,7 +141,7 @@ and never errors. All other tests run against the real backend.
   double-click idempotency, 12 keyboard activation) use **route intercepts** and
   do **not** touch the real backend — seeded state stays intact.
 - **Test 10 (mark all)** likewise uses route intercepts and leaves the seed intact.
-- **To restore state for a clean re-run:** `cd server && yarn seed --clear && yarn seed`.
+- **To restore state for a clean re-run:** `cd server && pnpm seed --clear && pnpm seed`.
 
 ## 6. Follow-ups / known gaps
 
@@ -160,4 +160,4 @@ and never errors. All other tests run against the real backend.
   existing test 9 (no new mutating test needed).
 - **Auto-revert for the two real mark-single tests (test 9 + 11e) — DEFERRED**:
   no mark-unread API exists; `afterAll` is a documented no-op. Restore manually
-  via `cd server && yarn seed --clear && yarn seed`.
+  via `cd server && pnpm seed --clear && pnpm seed`.

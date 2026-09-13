@@ -4,7 +4,7 @@
 
 **Goal:** Một orchestrator `node .claude/scripts/worktree.mjs <up|down> <feature>` dựng/dọn một feature worktree để chạy E2E độc lập — cấp port không-đụng, copy/patch/xóa env tạm, start/stop BE+FE.
 
-**Architecture:** Zero-dep Node ESM script ở `.claude/scripts/`, tách thành các lib thuần (`ports`, `env`, `state`, `worktree`, `process`) + CLI entry wiring. Pure functions TDD bằng `node --test`; phần spawn/health/kill verify bằng manual smoke. Thêm 1 thay đổi config FE (`playwright.config.ts`) để `yarn e2e` tự target port worktree.
+**Architecture:** Zero-dep Node ESM script ở `.claude/scripts/`, tách thành các lib thuần (`ports`, `env`, `state`, `worktree`, `process`) + CLI entry wiring. Pure functions TDD bằng `node --test`; phần spawn/health/kill verify bằng manual smoke. Thêm 1 thay đổi config FE (`playwright.config.ts`) để `pnpm e2e` tự target port worktree.
 
 **Tech Stack:** Node ≥18 built-ins (`node:net`, `node:http`, `node:fs`, `node:child_process`, `node:test`); Playwright config (TS).
 
@@ -563,7 +563,7 @@ async function up(root, feature) {
     ensureNodeModules(wt.server, path.join(root, "server"));
     copyAndPatch(path.join(root, "server", ".env"), path.join(wt.server, ".env"),
       (c) => patchServerEnv(c, { serverPort, clientPort: clientPort ?? 3000 }));
-    serverPid = startProcess("yarn", ["dev"], wt.server);
+    serverPid = startProcess("pnpm", ["dev"], wt.server);
     console.log(`[server] starting on :${serverPort} (pid ${serverPid})`);
     await waitForHttp(serverPort);
     console.log(`[server] healthy on :${serverPort}`);
@@ -574,7 +574,7 @@ async function up(root, feature) {
     copyAndPatch(path.join(root, "client", ".env.local"), path.join(wt.client, ".env.local"),
       (c) => (wt.server ? patchClientEnv(c, { serverPort }) : c));
     // webpack (NOT --turbopack: crashes over node_modules junction)
-    clientPid = startProcess("npx", ["--no-install", "next", "dev", "--port", String(clientPort)], wt.client);
+    clientPid = startProcess("pnpm", ["exec", "next", "dev", "--port", String(clientPort)], wt.client);
     console.log(`[client] starting on :${clientPort} (pid ${clientPid})`);
     await waitForHttp(clientPort);
     console.log(`[client] healthy on :${clientPort}`);
@@ -582,7 +582,7 @@ async function up(root, feature) {
 
   setFeature(root, feature, { serverPort, clientPort, serverPid, clientPid });
   console.log(`\n✅ up "${feature}" — server :${serverPort ?? "-"}  client :${clientPort ?? "-"}`);
-  if (clientPort) console.log(`   E2E: cd client/.worktrees/${feature} && yarn e2e  (auto-targets :${clientPort})`);
+  if (clientPort) console.log(`   E2E: cd client/.worktrees/${feature} && pnpm e2e  (auto-targets :${clientPort})`);
 }
 
 function down(root, feature) {
@@ -690,8 +690,8 @@ Phần còn lại của file giữ nguyên (`use.baseURL = BASE_URL` đã có �
 Run (trong client worktree):
 ```bash
 cd client/.worktrees/worktree-e2e-runner
-npx tsc --noEmit -p tsconfig.json 2>&1 | grep playwright.config || echo "tsc: no errors in playwright.config"
-npx eslint playwright.config.ts
+pnpm exec tsc --noEmit -p tsconfig.json 2>&1 | grep playwright.config || echo "tsc: no errors in playwright.config"
+pnpm exec eslint playwright.config.ts
 ```
 Expected: không có lỗi ở `playwright.config.ts`. (Repo-wide lint/tsc có thể nhiễu từ `.worktrees` — chỉ quan tâm file vừa sửa, xem `reference_worktrees_lint_noise`.)
 
@@ -703,7 +703,7 @@ git -C client add .worktrees/worktree-e2e-runner/playwright.config.ts
 
 ---
 
-### Task 8: Manual smoke — `up → yarn e2e → down` trên worktree thật
+### Task 8: Manual smoke — `up → pnpm e2e → down` trên worktree thật
 
 **Files:** không sửa code; chạy verify thật (chốt phần spawn/health/kill/junction/env mà unit test không phủ).
 
@@ -720,7 +720,7 @@ Expected: in `[server] healthy on :51xx` (nếu có server wt), `[client] health
 - [ ] **Step 2: Chạy E2E target port worktree**
 
 ```bash
-cd client/.worktrees/<smoke-feature> && yarn e2e --project=chromium 2>&1 | tail -20
+cd client/.worktrees/<smoke-feature> && pnpm e2e --project=chromium 2>&1 | tail -20
 ```
 Expected: Playwright dùng `http://localhost:31xx` (không phải :3000); test chạy (pass/fail theo feature — điểm cần verify là nó nối đúng app worktree).
 

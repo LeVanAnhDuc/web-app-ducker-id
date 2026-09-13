@@ -16,12 +16,12 @@ Next.js 15 frontend for **Ducker ID (Identity Management System)** — a central
 | Auth            | JWT (access + refresh tokens)               |
 | Animations      | Framer Motion 12                            |
 | Icons           | Lucide React                                |
-| Package Manager | Yarn                                        |
+| Package Manager | pnpm                                        |
 
 ## Prerequisites
 
 - **Node.js** >= 18
-- **Yarn** (classic)
+- **pnpm** (the exact version is pinned by `packageManager` in `package.json`)
 - A running [backend server](../server/) (default: `http://localhost:5000`)
 
 ## Getting Started
@@ -29,7 +29,7 @@ Next.js 15 frontend for **Ducker ID (Identity Management System)** — a central
 ### 1. Install dependencies
 
 ```bash
-yarn install
+pnpm install
 ```
 
 ### 2. Configure environment variables
@@ -52,7 +52,7 @@ NEXT_PUBLIC_SITE_URL=http://localhost:3000
 ### 3. Start the development server
 
 ```bash
-yarn dev
+pnpm dev
 ```
 
 The app runs at **http://localhost:3000** by default (with Turbopack enabled).
@@ -61,13 +61,13 @@ The app runs at **http://localhost:3000** by default (with Turbopack enabled).
 
 | Command         | Description                  |
 | --------------- | ---------------------------- |
-| `yarn dev`      | Start dev server (Turbopack) |
-| `yarn build`    | Create production build      |
-| `yarn start`    | Run production server        |
-| `yarn lint`     | Run ESLint                   |
-| `yarn lint:fix` | Auto-fix lint errors         |
-| `yarn format`   | Format code with Prettier    |
-| `yarn tsc`      | Type-check only (no emit)    |
+| `pnpm dev`      | Start dev server (Turbopack) |
+| `pnpm build`    | Create production build      |
+| `pnpm start`    | Run production server        |
+| `pnpm lint`     | Run ESLint                   |
+| `pnpm lint:fix` | Auto-fix lint errors         |
+| `pnpm format`   | Format code with Prettier    |
+| `pnpm exec tsc` | Type-check only (no emit)    |
 
 ## Project Structure
 
@@ -173,7 +173,7 @@ Pre-commit hooks (via Husky + lint-staged) automatically:
 2. Lint with ESLint and auto-fix where possible
 3. Block commits if errors remain
 
-> **Important:** This project uses Yarn. Only commit `yarn.lock` — do not commit `package-lock.json`.
+> **Important:** This project uses pnpm. Only commit `pnpm-lock.yaml` — do not commit `package-lock.json` or `yarn.lock`.
 
 ## License
 

@@ -84,7 +84,7 @@ Keep `unoptimized: true` as the **default** (safe for remote/avatar URLs without
 - All types in `src/types`; never inline in components.
 - i18n nav imports from `@/i18n/navigation`; new strings go through i18n (en+vi), copy per `ux-copy.md`.
 - `Custom*` wrappers over raw shadcn primitives; icons via `icon-map.md`; tokens via `frontend-reference.md`.
-- After every code task: `yarn format && yarn lint && npx tsc --noEmit` must pass.
+- After every code task: `pnpm format && pnpm lint && pnpm exec tsc --noEmit` must pass.
 
 ## 6. Risks
 

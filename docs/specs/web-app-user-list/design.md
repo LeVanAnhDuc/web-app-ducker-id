@@ -122,10 +122,10 @@ Pagination is **embedded in `data`** (mirrors `login-history` user-facing patter
 
 - BE throws via `@/common/exceptions` + `ERROR_CODES` (reuse generic codes; the read path needs no new codes). Validation errors via `queryPipe` → global error handler.
 - **BE tests**: `web-app.service.spec.ts` (+ cases): active-only filter, search filter, pagination math (skip/limit, totalPages); `user-app.dto` spec: secret/OAuth-field exclusion.
-- **BE quality gate**: `yarn format && yarn lint && yarn tsc` (+ `yarn test`).
-- **FE quality gate**: `yarn format && yarn lint && yarn tsc`.
+- **BE quality gate**: `pnpm format && pnpm lint && pnpm exec tsc` (+ `pnpm test`).
+- **FE quality gate**: `pnpm format && pnpm lint && pnpm exec tsc`.
 - **E2E (FE)**: per CLAUDE.md §4.3 — after implement + TDD, before code-review. **Scenario coverage chuẩn ở §6 `## E2E Scenario Matrix`** (12 nhóm rubric, hợp nhất cả category-filter + EN-locale từ `apps-api-integration`). Scenario doc in `docs/specs/web-app-user-list/e2e.md` (cần reconcile — xem §6), test in `client/e2e/web-app-user-list/`. Verify `/vi/apps` renders seeded active apps, search + pagination hit the API, Open launches `homeUrl`.
-- **Manual verify**: `yarn seed` (existing web-app seeder already seeds active apps) → log in → `/vi/apps` shows seeded apps; search + paginate; Open opens `homeUrl`.
+- **Manual verify**: `pnpm seed` (existing web-app seeder already seeds active apps) → log in → `/vi/apps` shows seeded apps; search + paginate; Open opens `homeUrl`.
 
 ---
 
@@ -148,7 +148,7 @@ Pagination is **embedded in `data`** (mirrors `login-history` user-facing patter
 >
 > **Lưu ý hợp nhất (cross-feature)**: feature `apps-api-integration` (xem `docs/specs/apps-api-integration/design.md §6`) đã bổ sung 2 vùng vào CHÍNH trang `/apps` này: **category-filter** (panel pills `GET /apps/categories` + query `categoryId`) và **i18n EN-locale render**. 2 vùng đó được hợp nhất vào matrix dưới đây (rows 7, 9, 12) để `web-app-user-list` giữ 1 matrix duy nhất, đầy đủ cho catalog `/apps`. Test hiện có ở `client/e2e/web-app-user-list/apps-list.e2e.ts` đã cover: render role-scoped active apps, search server-side + clear, Open launches `homeUrl` tab mới, **category pills filter**, **EN-locale render**.
 >
-> **Legend**: ✅ = scenario bắt buộc · N/A = không áp dụng (kèm lý do). Cột `Gate`: `A+B` = chạy cả gate A (`yarn e2e`) lẫn gate B (MCP walk); `A only` = chỉ gate A (thường API/contract hoặc mutation-heavy); `B` = thiên về gate B (visual/UX/console). Technique tag inline theo skill `e2e-scenario-coverage`: `[EP]` equivalence-partition · `[BVA]` boundary-value · `[DT]` decision-table.
+> **Legend**: ✅ = scenario bắt buộc · N/A = không áp dụng (kèm lý do). Cột `Gate`: `A+B` = chạy cả gate A (`pnpm e2e`) lẫn gate B (MCP walk); `A only` = chỉ gate A (thường API/contract hoặc mutation-heavy); `B` = thiên về gate B (visual/UX/console). Technique tag inline theo skill `e2e-scenario-coverage`: `[EP]` equivalence-partition · `[BVA]` boundary-value · `[DT]` decision-table.
 
 | # | Category | Status | Scenario + Expected + [technique] + values | Gate |
 |---|----------|--------|---------------------------------------------|------|

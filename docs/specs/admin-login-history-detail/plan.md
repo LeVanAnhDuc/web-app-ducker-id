@@ -362,9 +362,9 @@ describe("LoginHistoryService.getLoginHistoryDetail", () => {
 - [ ] **Step 2: Run the test, verify it fails**
 
 Run (from `server/.worktrees/admin-login-history-detail/`):
-`npx jest --testMatch "**/login-history.service.spec.ts"`
+`pnpm exec jest --testMatch "**/login-history.service.spec.ts"`
 Expected: FAIL — `service.getLoginHistoryDetail is not a function`.
-(Worktree note: if jest reports "0 tests", use the broader matcher `npx jest --testMatch "**/?(*.)+(spec).ts"` per the known rootDir-glob quirk in worktrees.)
+(Worktree note: if jest reports "0 tests", use the broader matcher `pnpm exec jest --testMatch "**/?(*.)+(spec).ts"` per the known rootDir-glob quirk in worktrees.)
 
 - [ ] **Step 3: Implement the method** in `login-history.service.ts`. Add imports — to the `./dtos` type import block add `HistoryDetailItemDto`; to the `./dtos` value import block add `toHistoryDetailItemDto`; add `import { NotFoundError } from "@/common/exceptions";` and `import { ERROR_CODES } from "@/constants/error-code";`. Then add the method to the class:
 
@@ -385,7 +385,7 @@ Expected: FAIL — `service.getLoginHistoryDetail is not a function`.
 
 - [ ] **Step 4: Run the test, verify it passes**
 
-Run: `npx jest --testMatch "**/login-history.service.spec.ts"`
+Run: `pnpm exec jest --testMatch "**/login-history.service.spec.ts"`
 Expected: PASS (2 tests).
 
 - [ ] **Step 5: Stage**
@@ -451,7 +451,7 @@ Then, inside `createLoginHistoryAdminRoutes`, add the detail route after the exi
 
 - [ ] **Step 3: Type-check the whole server**
 
-Run (from the server worktree): `yarn tsc`
+Run (from the server worktree): `pnpm exec tsc`
 Expected: no errors.
 
 - [ ] **Step 4: Stage**
@@ -465,9 +465,9 @@ git add src/modules/login-history/login-history.controller.ts src/modules/login-
 - [ ] **Step 1: Run all three checks** (from the server worktree):
 
 ```bash
-yarn format
-yarn lint
-yarn tsc
+pnpm format
+pnpm lint
+pnpm exec tsc
 ```
 
 Expected: all pass; fix any lint/tsc errors before continuing. Re-stage any files auto-fixed by format/lint.
@@ -1043,9 +1043,9 @@ const TABLE_COLUMN_COUNT = 7;
 - [ ] **Step 5: FE quality gate** (from the client worktree):
 
 ```bash
-yarn format
-yarn lint
-yarn tsc
+pnpm format
+pnpm lint
+pnpm exec tsc
 ```
 
 Expected: all pass. Fix any lint/tsc errors. Re-read + re-stage files auto-fixed by format/lint.
@@ -1185,7 +1185,7 @@ test.describe("Admin Login History — auth", () => {
 - [ ] **Step 2: App-running self-check + run (§4.3).** Verify BE :5000, FE :3000 (or worktree dev `--port 3100` + `E2E_BASE_URL` per the worktree dev-server note), Mongo, Redis are up and seeded. If not running, ask the user: (a) they start it, or (b) you start the missing pieces in the background (teardown only what you started). Then run from the client worktree:
 
 ```bash
-E2E_USER_EMAIL=admin@test.com yarn e2e admin-login-history
+E2E_USER_EMAIL=admin@test.com pnpm e2e admin-login-history
 ```
 
 Expected: all non-deferred tests green.
@@ -1232,7 +1232,7 @@ Mục tiêu: backfill suite Playwright hiện có (`client/e2e/admin-login-histo
 
 ### Tiền đề (đọc trước khi viết test)
 
-- **Project scope — depends CF-1:** matrix ghi detail chạy dưới **`admin` project** (storageState `e2e/.auth/admin.json`, dependency `admin-setup`). Hiện `playwright.config.ts` chỉ map `admin` project cho `admin-apps/.*\.e2e\.ts` (`testMatch: /admin-apps\/.*\.e2e\.ts/`) và `chromium` project `testIgnore: /admin-apps\//` ôm phần còn lại với `user.json`. **CF-1** = mở rộng `admin` project `testMatch` để bao luôn `admin-login-history/` (và loại nó khỏi `chromium` testIgnore) → suite này chạy với admin storageState mà không cần override `E2E_USER_EMAIL`. Đây là code-fix hạ tầng test, **không** sửa app code. **Nếu CF-1 chưa close** → giữ nguyên cách chạy cũ (`E2E_USER_EMAIL=admin@test.com yarn e2e admin-login-history` dưới `chromium`).
+- **Project scope — depends CF-1:** matrix ghi detail chạy dưới **`admin` project** (storageState `e2e/.auth/admin.json`, dependency `admin-setup`). Hiện `playwright.config.ts` chỉ map `admin` project cho `admin-apps/.*\.e2e\.ts` (`testMatch: /admin-apps\/.*\.e2e\.ts/`) và `chromium` project `testIgnore: /admin-apps\//` ôm phần còn lại với `user.json`. **CF-1** = mở rộng `admin` project `testMatch` để bao luôn `admin-login-history/` (và loại nó khỏi `chromium` testIgnore) → suite này chạy với admin storageState mà không cần override `E2E_USER_EMAIL`. Đây là code-fix hạ tầng test, **không** sửa app code. **Nếu CF-1 chưa close** → giữ nguyên cách chạy cũ (`E2E_USER_EMAIL=admin@test.com pnpm e2e admin-login-history` dưới `chromium`).
 - **Selector thực tế (READ-ONLY, đã verify trong code):**
   - View action: `<CustomButton>` render `<button>` với text từ `tTable("viewDetail")` (en label ~ "View", vi "Xem") → `page.getByRole("button", { name: /view|xem/i })`.
   - Detail heading: `getByRole("heading", { name: /Login Attempt Detail/i })` (en) — `LoginHistoryDetailCard` render `<h2>{data.usernameAttempted}</h2>`, còn "Login Attempt Detail" là page title ở `AdminLoginHistoryDetailHeader`.
@@ -1520,13 +1520,13 @@ test.describe("Admin Login History — authZ (non-admin)", () => {
 ### Task E2E-BF-2: App-running self-check + dual-gate run (§4.3)
 
 - [ ] **Self-check một lần** trước khi dispatch: BE :5000, FE :3000 (hoặc worktree dev `--port 3100` + `E2E_BASE_URL` per worktree dev-server note), Mongo, Redis up + seeded. Chưa chạy → hỏi user (a) tự run / (b) agent run background (teardown chỉ cái mình bật).
-- [ ] **Gate A — `yarn e2e`** (sau CF-1 chạy dưới `admin` project, không cần override email):
+- [ ] **Gate A — `pnpm e2e`** (sau CF-1 chạy dưới `admin` project, không cần override email):
 
 ```bash
 # từ client worktree, sau CF-1:
-yarn e2e admin-login-history
+pnpm e2e admin-login-history
 # nếu CF-1 chưa close (fallback chromium + admin user):
-E2E_USER_EMAIL=admin@test.com yarn e2e admin-login-history
+E2E_USER_EMAIL=admin@test.com pnpm e2e admin-login-history
 ```
 
 Expected: mọi test non-deferred green (announce-on-load test phụ thuộc CF-4; AuthZ phụ thuộc non-admin fixture).
