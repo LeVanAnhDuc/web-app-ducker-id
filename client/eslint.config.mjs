@@ -106,6 +106,7 @@ const eslintConfig = [
   {
     ignores: [
       "node_modules",
+      ".worktrees/**",
       "dist",
       "build",
       ".next",
