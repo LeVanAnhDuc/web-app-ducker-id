@@ -3,7 +3,222 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   Token architecture — 3 tầng, theo docs/design-system/ducker-id/MASTER.md
+
+     primitive (--stone-*, --prussian-*, --brass-*, …)   giá trị thô
+        ↓
+     semantic  (--sem-*)                                  vai trò, đổi theo light/dark
+        ↓
+     component (--background, --primary, --cta, …)        hợp đồng shadcn + Tailwind
+
+   MASTER.md gọi tầng semantic là `--color-primary`, `--color-accent`… Ở đây chúng
+   mang tiền tố `--sem-` vì Tailwind v4 giữ riêng namespace `--color-*` cho `@theme`
+   — đặt trùng tên sẽ đụng utility do Tailwind sinh ra.
+
+   JSX và CSS component chỉ được tham chiếu tầng component (qua class Tailwind).
+   Viết thẳng hex, hoặc dùng primitive trong component, đều là bug.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Tầng 1: primitive ──────────────────────────────────────────────────── */
+
+:root {
+  --white: oklch(1 0 0);
+  --stone-50: oklch(0.985 0.001 106.4);
+  --stone-100: oklch(0.97 0.001 106.4);
+  --stone-200: oklch(0.923 0.003 48.7);
+  --stone-300: oklch(0.869 0.004 56.4);
+  --stone-400: oklch(0.716 0.009 56.3);
+  --stone-600: oklch(0.444 0.01 73.6);
+  --stone-700: oklch(0.374 0.009 67.6);
+  --stone-800: oklch(0.268 0.006 34.3);
+  --stone-900: oklch(0.216 0.006 56);
+
+  --prussian-700: oklch(0.339 0.071 247.3);
+  --prussian-500: oklch(0.473 0.096 248.6);
+  --prussian-300: oklch(0.72 0.084 250.1);
+  --prussian-100: oklch(0.926 0.021 248.1);
+
+  --brass-600: oklch(0.627 0.114 75.1);
+  --brass-300: oklch(0.805 0.12 80.8);
+  --brass-100: oklch(0.934 0.047 87);
+
+  --red-600: oklch(0.5 0.182 29.5);
+  --red-300: oklch(0.759 0.097 29);
+
+  --green-600: oklch(0.529 0.106 154.4);
+  --green-300: oklch(0.775 0.089 156);
+
+  --amber-600: oklch(0.666 0.157 58.3);
+  --amber-300: oklch(0.817 0.124 76.8);
+
+  --cream-100: oklch(0.949 0.025 81.1);
+  --cream-700: oklch(0.403 0.046 75);
+  --cream-900: oklch(0.268 0.02 81);
+}
+
+/* ── Tầng 2: semantic — light ───────────────────────────────────────────── */
+
+:root {
+  --sem-background: var(--stone-50);
+  --sem-foreground: var(--stone-900);
+  --sem-surface: var(--white);
+  --sem-on-surface: var(--stone-900);
+
+  --sem-primary: var(--prussian-700);
+  --sem-primary-hover: var(--prussian-500);
+  --sem-on-primary: var(--white);
+
+  /* CTA brass. Nhãn trên brass LUÔN là ink — chữ trắng chỉ đạt 3.61:1 */
+  --sem-accent: var(--brass-600);
+  --sem-on-accent: var(--stone-900);
+
+  /* bề mặt phụ: hover row, badge nền, secondary button */
+  --sem-subtle: var(--stone-100);
+  --sem-on-subtle: var(--stone-700);
+  --sem-muted-foreground: var(--stone-600);
+
+  --sem-border: var(--stone-200);
+  --sem-field: var(--white);
+  --sem-ring: var(--brass-600);
+
+  --sem-destructive: var(--red-600);
+  --sem-on-destructive: var(--white);
+  --sem-info: var(--prussian-500);
+  --sem-on-info: var(--white);
+  --sem-success: var(--green-600);
+  --sem-on-success: var(--white);
+  --sem-warning: var(--amber-600);
+  --sem-on-warning: var(--stone-900);
+  --sem-cream: var(--cream-100);
+  --sem-on-cream: var(--cream-700);
+}
+
+/* ── Tầng 2: semantic — dark ────────────────────────────────────────────── */
+/* Độ cao đến từ surface sáng hơn, không phải shadow nặng hơn. Nền không bao
+   giờ #000, chữ không bao giờ #fff. */
+
+.dark {
+  --shadow-color: oklch(0 0 0 / 0.25);
+
+  --sem-background: var(--stone-900);
+  --sem-foreground: var(--stone-50);
+  --sem-surface: var(--stone-800);
+  --sem-on-surface: var(--stone-50);
+
+  --sem-primary: var(--prussian-300);
+  --sem-primary-hover: var(--prussian-500);
+  --sem-on-primary: var(--stone-900);
+
+  --sem-accent: var(--brass-300);
+  --sem-on-accent: var(--stone-900);
+
+  --sem-subtle: var(--stone-700);
+  --sem-on-subtle: var(--stone-50);
+  --sem-muted-foreground: var(--stone-400);
+
+  --sem-border: var(--stone-700);
+  --sem-field: var(--stone-800);
+  --sem-ring: var(--brass-300);
+
+  /* Destructive giữ nguyên hai mode theo MASTER.md — shadcn `ui/badge` và
+     `ui/button` hardcode `text-white` trên nền destructive, nên fill phải đủ
+     tối ở cả dark (red-600/white = 6.57:1). red-300 sẽ tụt xuống ~2.2:1. */
+  --sem-destructive: var(--red-600);
+  --sem-on-destructive: var(--white);
+  --sem-info: var(--prussian-300);
+  --sem-on-info: var(--stone-900);
+  --sem-success: var(--green-300);
+  --sem-on-success: var(--stone-900);
+  --sem-warning: var(--amber-300);
+  --sem-on-warning: var(--stone-900);
+  --sem-cream: var(--cream-900);
+  --sem-on-cream: var(--brass-100);
+}
+
+/* ── Tầng 3: component — hợp đồng shadcn + token riêng của project ───────── */
+/* Khai báo một lần: chúng trỏ vào tầng semantic, vốn đã tự đổi theo mode. */
+
+:root {
+  --radius: 0.625rem;
+
+  --background: var(--sem-background);
+  --foreground: var(--sem-foreground);
+  --card: var(--sem-surface);
+  --card-foreground: var(--sem-on-surface);
+  --popover: var(--sem-surface);
+  --popover-foreground: var(--sem-on-surface);
+
+  --primary: var(--sem-primary);
+  --primary-foreground: var(--sem-on-primary);
+  --secondary: var(--sem-subtle);
+  --secondary-foreground: var(--sem-on-subtle);
+  --muted: var(--sem-subtle);
+  --muted-foreground: var(--sem-muted-foreground);
+
+  /* CẢNH BÁO: `--accent` của shadcn là bề mặt hover, KHÔNG phải CTA.
+     CTA brass nằm ở `--cta` bên dưới. Đổi cái này thành brass sẽ khiến mọi
+     hover state trong app chuyển sang màu đồng. */
+  --accent: var(--sem-subtle);
+  --accent-foreground: var(--sem-on-subtle);
+
+  --destructive: var(--sem-destructive);
+  --destructive-foreground: var(--sem-on-destructive);
+  --border: var(--sem-border);
+  --input: var(--sem-border);
+  --input-background: var(--sem-field);
+  --ring: var(--sem-ring);
+
+  /* CTA + signature keyline */
+  --cta: var(--sem-accent);
+  --cta-foreground: var(--sem-on-accent);
+  --keyline: var(--sem-accent);
+  --button-primary-bg: var(--sem-primary);
+  --button-primary-bg-hover: var(--sem-primary-hover);
+  --button-primary-fg: var(--sem-on-primary);
+  --input-focus-keyline: var(--sem-ring);
+  /* backdrop modal — ink ấm, không phải đen thuần (MASTER.md § Modals) */
+  --overlay: oklch(0.216 0.006 56 / 0.6);
+
+  --chart-1: var(--prussian-700);
+  --chart-2: var(--brass-600);
+  --chart-3: var(--prussian-300);
+  --chart-4: var(--stone-600);
+  --chart-5: var(--green-600);
+
+  --sidebar: var(--sem-surface);
+  --sidebar-foreground: var(--sem-on-surface);
+  --sidebar-primary: var(--sem-primary);
+  --sidebar-primary-foreground: var(--sem-on-primary);
+  --sidebar-accent: var(--sem-subtle);
+  --sidebar-accent-foreground: var(--sem-on-subtle);
+  --sidebar-border: var(--sem-border);
+  --sidebar-ring: var(--sem-ring);
+
+  --info: var(--sem-info);
+  --info-foreground: var(--sem-on-info);
+  --cream: var(--sem-cream);
+  --cream-foreground: var(--sem-on-cream);
+  --success: var(--sem-success);
+  --success-foreground: var(--sem-on-success);
+  --warning: var(--sem-warning);
+  --warning-foreground: var(--sem-on-warning);
+}
+
+.dark {
+  --chart-1: var(--prussian-300);
+  --chart-2: var(--brass-300);
+  --chart-3: var(--prussian-500);
+  --chart-4: var(--stone-400);
+  --chart-5: var(--green-300);
+}
+
+/* ── Tailwind theme — sinh utility từ tầng component ─────────────────────── */
+
 @theme inline {
+  --font-display: var(--font-space-grotesk);
+  --font-sans: var(--font-plex-sans);
+  --font-mono: var(--font-plex-mono);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -26,7 +241,11 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
+  --color-cta: var(--cta);
+  --color-cta-foreground: var(--cta-foreground);
+  --color-keyline: var(--keyline);
   --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-input-background: var(--input-background);
@@ -54,94 +273,6 @@
   --color-warning-foreground: var(--warning-foreground);
 }
 
-:root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.141 0.005 285.823);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.141 0.005 285.823);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklch(0.141 0.005 285.823);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.967 0.001 286.375);
-  --secondary-foreground: oklch(0.21 0.006 285.885);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.21 0.006 285.885);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --input-background: oklch(0.967 0.001 286.375);
-  --ring: oklch(0.141 0.005 285.823);
-  --chart-1: oklch(0.141 0.005 285.823);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.666 0.179 58.318);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-primary: oklch(0.141 0.005 285.823);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.21 0.006 285.885);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.141 0.005 285.823);
-  --info: oklch(0.45 0.12 260);
-  --info-foreground: oklch(0.985 0 0);
-  --cream: oklch(0.95 0.02 70);
-  --cream-foreground: oklch(0.35 0.02 70);
-  --success: oklch(0.6 0.15 150);
-  --success-foreground: oklch(0.985 0 0);
-  --warning: oklch(0.75 0.15 85);
-  --warning-foreground: oklch(0.35 0.05 85);
-}
-
-.dark {
-  --shadow-color: oklch(0 0 0 / 0.25);
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.21 0.006 285.885);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.21 0.006 285.885);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.141 0.005 285.823);
-  --secondary: oklch(0.274 0.006 286.033);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(0.38 0.006 286);
-  --input: oklch(0.45 0.006 286);
-  --input-background: oklch(0.19 0.006 286);
-  --ring: oklch(0.985 0 0);
-  --chart-1: oklch(0.985 0 0);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.666 0.179 58.318);
-  --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.985 0 0);
-  --sidebar-primary-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(0.274 0.006 286.033);
-  --sidebar-ring: oklch(0.985 0 0);
-  --info: oklch(0.55 0.12 260);
-  --info-foreground: oklch(0.95 0.02 260);
-  --cream: oklch(0.25 0.02 70);
-  --cream-foreground: oklch(0.9 0.02 70);
-  --success: oklch(0.55 0.12 150);
-  --success-foreground: oklch(0.95 0.02 150);
-  --warning: oklch(0.65 0.12 85);
-  --warning-foreground: oklch(0.95 0.02 85);
-}
-
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -150,16 +281,16 @@
     @apply transition-colors duration-300;
   }
   body {
-    @apply bg-background text-foreground transition-colors duration-300;
+    @apply bg-background text-foreground font-sans transition-colors duration-300;
   }
   h1 {
-    @apply text-[2.438rem] leading-[1.15] font-bold tracking-tight text-balance;
+    @apply font-display text-[2.438rem] leading-[1.15] font-bold tracking-tight text-balance;
   }
   h2 {
-    @apply text-[1.938rem] leading-snug font-bold tracking-tight text-balance;
+    @apply font-display text-[1.938rem] leading-snug font-bold tracking-tight text-balance;
   }
   h3 {
-    @apply text-[1.563rem] leading-snug font-bold text-pretty;
+    @apply font-display text-[1.563rem] leading-snug font-bold text-pretty;
   }
   h4 {
     @apply text-[1.25rem] leading-relaxed font-bold;
@@ -182,33 +313,46 @@
   }
 
   .auth-card {
-    @apply rounded-2xl border-1 bg-white;
+    @apply bg-card rounded-2xl border;
   }
 
-  .dark .auth-card {
-    @apply bg-card;
+  /* Signature element — keyline brass đánh dấu biên đang-active.
+     Chỉ dùng cho: nav item active, field đang focus, app tile được chọn. */
+  .keyline-active {
+    @apply border-l-2;
+    border-left-color: var(--keyline);
   }
+}
+
+/* Backdrop modal/sheet — MASTER.md yêu cầu ink ấm thay vì `bg-black/50` mà
+   shadcn hardcode. Nhắm qua `data-slot` và để rule này NGOÀI mọi @layer: style
+   không thuộc layer nào luôn thắng style trong layer, nên không phải sửa
+   `components/ui/*` (immutable) và cũng không cần `!important`. */
+
+[data-slot="dialog-overlay"],
+[data-slot="sheet-overlay"] {
+  background-color: var(--overlay);
 }
 
 /* Custom error toast */
 
 [data-sonner-toast][data-type="error"] button[data-button] {
-  background-color: oklch(0.577 0.245 27.325) !important;
-  color: white !important;
+  background-color: var(--destructive) !important;
+  color: var(--destructive-foreground) !important;
   font-weight: 500;
   transition: background-color 0.2s linear;
 }
 
 [data-sonner-toast][data-type="error"] button[data-button]:hover {
-  background-color: oklch(0.5 0.22 27) !important;
+  opacity: 0.9;
 }
 
 [data-sonner-toast][data-type="error"] button[data-close-button] {
-  color: oklch(0.577 0.245 27.325) !important;
+  color: var(--destructive) !important;
 }
 
 [data-sonner-toast][data-type="error"] button[data-close-button]:hover {
-  background-color: oklch(0.95 0.02 27) !important;
+  background-color: var(--muted) !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

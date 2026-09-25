@@ -7,3 +7,6 @@ node_modules/
 /.claude/
 **/.claude/settings.local.json
 **/.claude/settings.json
+
+# git worktrees cho feature (xem .claude/CLAUDE.md)
+.worktrees/
