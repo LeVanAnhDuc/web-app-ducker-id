@@ -27,7 +27,7 @@ erDiagram
     USER ||--o{ ENTITLEMENT : "granted-to"
     WEB_APP ||--o{ ENTITLEMENT : "grants-on"
     USER ||--|| USER : "granted_by (admin self-ref)"
-    WEB_APP_CATEGORY ||--o{ WEB_APP : "groups"
+    WEB_APP_CATEGORY }o--o{ WEB_APP : "groups (1-5 per app, ordered)"
     USER ||--o{ OAUTH_CONSENT : "consented"
     WEB_APP ||--o{ OAUTH_CONSENT : "for-client"
     USER ||--o{ NOTIFICATION : "receives"
@@ -119,17 +119,17 @@ erDiagram
 
     WEB_APP_CATEGORY {
         ObjectId _id PK
-        String name UK
-        String display_name
-        String icon "nullable"
-        Number sort_order "default 0"
+        String slug UK "derived from name.en (DR-CATEGORY)"
+        String name_en UK "case-insensitive unique"
+        String name_vi
+        Number sort_order "renumbered 0..n-1 on move"
         Date created_at
         Date updated_at
     }
 
     WEB_APP {
         ObjectId _id PK
-        ObjectId category_id FK "→ WEB_APP_CATEGORY"
+        ObjectIdArray category_ids FK "→ WEB_APP_CATEGORY, 1-5, ordered, first = primary"
         String name UK
         String display_name
         String description "nullable"
@@ -281,6 +281,15 @@ erDiagram
 
 ### Naming note
 Field `login_histories.userId` (theo memory: `project_login_history_userid_naming`) thực tế lưu `auth._id`, **không phải** `user._id`. ERD đã đổi label thành `auth_id` cho đúng semantics. Code cũ vẫn có thể đọc/ghi field `userId` — kiểm tra Mongoose schema để xác nhận tên field thực tế.
+
+### DR-CATEGORY — Danh mục do admin quản lý, nhiều danh mục mỗi app (2026-10)
+
+- `web_app_categories`: `name` (slug) + `display_name` + `icon` → `slug` + `name: { en, vi }`; bỏ `icon`.
+  Slug luôn sinh từ `name.en` và đổi theo khi đổi tên.
+- `web_apps.category_id` → `category_ids` (1–5, có thứ tự, phần tử đầu là danh mục chính).
+- Xoá danh mục: app còn danh mục khác chỉ bị gỡ; app chỉ thuộc danh mục đó phải được chuyển sang
+  danh mục đích trong cùng transaction. Chi tiết: `docs/specs/category-management/design.md`.
+- Migration một lần: `pnpm migrate:category-management` (server).
 
 ## Satellite ERDs
 

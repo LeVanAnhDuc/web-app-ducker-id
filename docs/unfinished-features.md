@@ -150,6 +150,6 @@ Còn lại (ngoài phạm vi): biểu đồ Weekly Activity ở Home vẫn mock 
 
 ## Ghi chú
 
-- Các phần **đã nối API đầy đủ** (không cần làm): Auth (login/signup/logout/token/forgot-password/change-password), `/users/me`, Apps + AdminApps, Favorites, Contact submit + AdminContacts, LoginHistory, Notifications — tương ứng 41 endpoint BE hiện có.
+- Các phần **đã nối API đầy đủ** (không cần làm): Auth (login/signup/logout/token/forgot-password/change-password), `/users/me`, Apps + AdminApps, Danh mục (`/admin/categories`, 04.10.2026), Favorites, Contact submit + AdminContacts, LoginHistory, Notifications — tương ứng 41 endpoint BE hiện có.
 - Khi triển khai từng feature: theo flow chuẩn dự án (worktree per-repo → brainstorming → SuperDesign nếu đổi UI → plan → implement → E2E → review → security → PR). Xem `.claude/CLAUDE.md`.
 - Mỗi feature nên có `docs/specs/<feature-name>/design.md` riêng khi bắt đầu.

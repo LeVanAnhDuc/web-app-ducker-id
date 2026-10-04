@@ -52,6 +52,16 @@ bỏ mọi phần hard-code ở client.
 | DR-22 | **Migration kiểm tra trước** các `displayName` trùng khác hoa thường → dừng với thông báo rõ, không tạo index nửa vời | Unique collation index sẽ fail giữa chừng. |
 | DR-23 | **`appCount` đếm mọi app** (kể cả inactive); dialog xoá cũng tính app inactive | Xoá danh mục phải xử lý mọi app tham chiếu, không chỉ app đang hiện. |
 
+### Điều chỉnh khi triển khai (04.10.2026)
+
+| # | Điều chỉnh | Lý do |
+| --- | --- | --- |
+| DR-24 | **`+N` không tương tác** trong `QuickAccessCard` và dòng kết quả header search: chỉ là badge, danh sách đầy đủ nằm ở `aria-label`/`title` | Hai chỗ đó bản thân đã là `button` / `option`; lồng một nút trong đó là HTML không hợp lệ. Popover chỉ dùng ở card/row có vùng bấm riêng (DR-20 vẫn áp dụng ở đó). |
+| DR-25 | **Ngưỡng co chip là container `14rem`**, và chip trong `AppCard` nằm trên một hàng rộng hết card | Cột tên cạnh icon quá hẹp nên chip luôn bị thu gọn. Hệ quả: card một cột trên điện thoại đủ rộng để hiện hết; `+N` xuất hiện khi *cột* hẹp (lưới 3 cột ở ~1024px, bảng admin, hàng recently-used). |
+| DR-26 | **Mobile dùng chính `CustomTable`** (cột slug ẩn dưới `sm`), không làm danh sách thẻ riêng như mock 1c | Bảng 4 cột vẫn vừa 375px khi ẩn slug; một layout thứ hai cho cùng dữ liệu là chi phí bảo trì không cần thiết. |
+| DR-27 | **Dialog xoá dùng `Dialog`** (dự án chưa có `alert-dialog`), nút huỷ diệt bên trái theo MASTER.md | Không thêm component shadcn chỉ cho một chỗ. |
+| DR-28 | Trong lúc move chờ, nút ↑/↓ chỉ `aria-disabled`; ghost `MoveFocusEffect` trả focus về mũi tên của dòng vừa di chuyển | Nút bị `disabled` thật sẽ rơi focus bàn phím. |
+
 ## 3. Backend
 
 ### 3.1 Model
