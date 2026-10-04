@@ -1,12 +1,13 @@
 // types
 import type { RedisClientType } from "redis";
+import type { UnlockAccountRepository } from "../unlock-account.repository";
 // others
 import { buildKey } from "@/utils/redis/key-builder";
 import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { TTL_KEY_MISSING, TTL_NO_EXPIRY } from "@/constants/redis/ttl";
 import { SECONDS_PER_MINUTE } from "@/constants/time";
 import { LOGIN } from "@/constants/redis/store";
-import { UNLOCK_ACCOUNT_CONFIG } from "./constants";
+import { UNLOCK_ACCOUNT_CONFIG } from "../../constants";
 
 const KEYS = {
   UNLOCK_TOKEN: LOGIN.UNLOCK_TOKEN,
@@ -22,18 +23,6 @@ const {
 } = UNLOCK_ACCOUNT_CONFIG;
 
 const REDIS_DELETED_ONE = 1;
-
-export type UnlockAccountRepository = {
-  readonly COOLDOWN_SECONDS: number;
-  readonly MAX_REQUESTS_PER_HOUR: number;
-  readonly TEMP_PASSWORD_EXPIRY_SECONDS: number;
-  getCooldownRemaining(email: string): Promise<number>;
-  setCooldown(email: string): Promise<void>;
-  incrementRequestCount(email: string): Promise<number>;
-  hasExceededRateLimit(requestCount: number): boolean;
-  storeTempPassword(email: string, tempPassword: string): Promise<void>;
-  consumeTempPassword(email: string, tempPassword: string): Promise<boolean>;
-};
 
 export class RedisUnlockAccountRepository implements UnlockAccountRepository {
   readonly COOLDOWN_SECONDS = COOLDOWN_SECONDS;

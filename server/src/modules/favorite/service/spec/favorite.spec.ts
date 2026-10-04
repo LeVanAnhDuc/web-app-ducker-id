@@ -1,6 +1,6 @@
 // types
 import type { FavoriteRepository } from "../../repository/favorite.repository";
-import type { WebAppRepository } from "@/modules/web-app/repositories";
+import type { WebAppRepository } from "@/modules/web-app/repositories/web-app.repository";
 import type { AppFavoritableGuard } from "../../guards";
 // commons
 import { NotFoundError } from "@/common/exceptions";

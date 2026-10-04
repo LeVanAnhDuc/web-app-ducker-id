@@ -5,7 +5,7 @@ jest.mock("@/utils/crypto/bcrypt");
 jest.mock("@/utils/crypto/temp-password");
 
 // types
-import type { UserRepository } from "./user.repository";
+import type { UserRepository } from "../../repository/user.repository";
 import type { AuthenticationService } from "@/modules/authentication/service";
 // common
 import { ForbiddenError, NotFoundError } from "@/common/exceptions";
@@ -16,7 +16,7 @@ import { RequestContext } from "@/utils/request-context";
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { generateTempPassword } from "@/utils/crypto/temp-password";
 import { createEmailDispatcherMock } from "@test/mocks/email-dispatcher.mock";
-import { UserService } from "./user.service";
+import { UserService } from "../";
 
 const mockedHash = hashValue as jest.MockedFunction<typeof hashValue>;
 const mockedGenerateTempPassword = generateTempPassword as jest.MockedFunction<
@@ -57,11 +57,11 @@ describe("UserService.getAdminUsers", () => {
       ],
       total: 25
     });
-    const service = new UserService(
-      buildRepo({ findAdminUsers }),
-      buildAuthService(),
-      createEmailDispatcherMock()
-    );
+    const service = new UserService({
+      userRepo: buildRepo({ findAdminUsers }),
+      authService: buildAuthService(),
+      emailDispatcher: createEmailDispatcherMock()
+    });
 
     const result = await service.getAdminUsers({ page: 2, limit: 10 });
 
@@ -81,11 +81,11 @@ describe("UserService.getAdminUsers", () => {
 
   it("translates status filter to isActive and defaults sort", async () => {
     const findAdminUsers = jest.fn().mockResolvedValue({ data: [], total: 0 });
-    const service = new UserService(
-      buildRepo({ findAdminUsers }),
-      buildAuthService(),
-      createEmailDispatcherMock()
-    );
+    const service = new UserService({
+      userRepo: buildRepo({ findAdminUsers }),
+      authService: buildAuthService(),
+      emailDispatcher: createEmailDispatcherMock()
+    });
 
     await service.getAdminUsers({
       status: "locked",
@@ -118,11 +118,11 @@ describe("UserService.setUserActive", () => {
       .fn()
       .mockResolvedValue({ roles: "user", isActive: true });
     const countActiveAdmins = jest.fn().mockResolvedValue(0);
-    const service = new UserService(
-      buildRepo({ findAuthIdById }),
-      buildAuthService({ setActive, findById, countActiveAdmins }),
-      createEmailDispatcherMock()
-    );
+    const service = new UserService({
+      userRepo: buildRepo({ findAuthIdById }),
+      authService: buildAuthService({ setActive, findById, countActiveAdmins }),
+      emailDispatcher: createEmailDispatcherMock()
+    });
 
     const result = await service.setUserActive(targetUserId, false);
 
@@ -139,11 +139,11 @@ describe("UserService.setUserActive", () => {
       .fn()
       .mockResolvedValue({ roles: "admin", isActive: true });
     const countActiveAdmins = jest.fn().mockResolvedValue(2);
-    const service = new UserService(
-      buildRepo({ findAuthIdById }),
-      buildAuthService({ setActive, findById, countActiveAdmins }),
-      createEmailDispatcherMock()
-    );
+    const service = new UserService({
+      userRepo: buildRepo({ findAuthIdById }),
+      authService: buildAuthService({ setActive, findById, countActiveAdmins }),
+      emailDispatcher: createEmailDispatcherMock()
+    });
 
     const result = await service.setUserActive(targetUserId, false);
 
@@ -160,11 +160,11 @@ describe("UserService.setUserActive", () => {
       .fn()
       .mockResolvedValue({ roles: "admin", isActive: true });
     const countActiveAdmins = jest.fn().mockResolvedValue(1);
-    const service = new UserService(
-      buildRepo({ findAuthIdById }),
-      buildAuthService({ setActive, findById, countActiveAdmins }),
-      createEmailDispatcherMock()
-    );
+    const service = new UserService({
+      userRepo: buildRepo({ findAuthIdById }),
+      authService: buildAuthService({ setActive, findById, countActiveAdmins }),
+      emailDispatcher: createEmailDispatcherMock()
+    });
 
     await expect(service.setUserActive(targetUserId, false)).rejects.toThrow(
       ForbiddenError
@@ -181,11 +181,11 @@ describe("UserService.setUserActive", () => {
       .fn()
       .mockResolvedValue({ roles: "admin", isActive: false });
     const countActiveAdmins = jest.fn().mockResolvedValue(0);
-    const service = new UserService(
-      buildRepo({ findAuthIdById }),
-      buildAuthService({ setActive, findById, countActiveAdmins }),
-      createEmailDispatcherMock()
-    );
+    const service = new UserService({
+      userRepo: buildRepo({ findAuthIdById }),
+      authService: buildAuthService({ setActive, findById, countActiveAdmins }),
+      emailDispatcher: createEmailDispatcherMock()
+    });
 
     const result = await service.setUserActive(targetUserId, false);
 
@@ -199,11 +199,11 @@ describe("UserService.setUserActive", () => {
       .fn()
       .mockResolvedValue({ authId: targetAuthId });
     const setActive = jest.fn().mockResolvedValue(undefined);
-    const service = new UserService(
-      buildRepo({ findAuthIdById }),
-      buildAuthService({ setActive }),
-      createEmailDispatcherMock()
-    );
+    const service = new UserService({
+      userRepo: buildRepo({ findAuthIdById }),
+      authService: buildAuthService({ setActive }),
+      emailDispatcher: createEmailDispatcherMock()
+    });
 
     const result = await service.setUserActive(targetUserId, true);
 
@@ -214,11 +214,11 @@ describe("UserService.setUserActive", () => {
   it("throws NotFoundError and does not call setActive when target does not exist", async () => {
     const findAuthIdById = jest.fn().mockResolvedValue(null);
     const setActive = jest.fn();
-    const service = new UserService(
-      buildRepo({ findAuthIdById }),
-      buildAuthService({ setActive }),
-      createEmailDispatcherMock()
-    );
+    const service = new UserService({
+      userRepo: buildRepo({ findAuthIdById }),
+      authService: buildAuthService({ setActive }),
+      emailDispatcher: createEmailDispatcherMock()
+    });
 
     await expect(service.setUserActive(targetUserId, false)).rejects.toThrow(
       NotFoundError
@@ -229,11 +229,11 @@ describe("UserService.setUserActive", () => {
   it("throws ForbiddenError when an admin tries to lock their own account", async () => {
     const findAuthIdById = jest.fn().mockResolvedValue({ authId: adminAuthId });
     const setActive = jest.fn();
-    const service = new UserService(
-      buildRepo({ findAuthIdById }),
-      buildAuthService({ setActive }),
-      createEmailDispatcherMock()
-    );
+    const service = new UserService({
+      userRepo: buildRepo({ findAuthIdById }),
+      authService: buildAuthService({ setActive }),
+      emailDispatcher: createEmailDispatcherMock()
+    });
 
     await expect(service.setUserActive(targetUserId, false)).rejects.toThrow(
       ForbiddenError
@@ -244,11 +244,11 @@ describe("UserService.setUserActive", () => {
   it("allows an admin to unlock their own account", async () => {
     const findAuthIdById = jest.fn().mockResolvedValue({ authId: adminAuthId });
     const setActive = jest.fn().mockResolvedValue(undefined);
-    const service = new UserService(
-      buildRepo({ findAuthIdById }),
-      buildAuthService({ setActive }),
-      createEmailDispatcherMock()
-    );
+    const service = new UserService({
+      userRepo: buildRepo({ findAuthIdById }),
+      authService: buildAuthService({ setActive }),
+      emailDispatcher: createEmailDispatcherMock()
+    });
 
     const result = await service.setUserActive(targetUserId, true);
 
@@ -261,11 +261,11 @@ describe("UserService.setUserActive", () => {
       .fn()
       .mockResolvedValue({ authId: targetAuthId });
     const setActive = jest.fn().mockResolvedValue(undefined);
-    const service = new UserService(
-      buildRepo({ findAuthIdById }),
-      buildAuthService({ setActive }),
-      createEmailDispatcherMock()
-    );
+    const service = new UserService({
+      userRepo: buildRepo({ findAuthIdById }),
+      authService: buildAuthService({ setActive }),
+      emailDispatcher: createEmailDispatcherMock()
+    });
 
     await service.setUserActive(targetUserId, false);
     await service.setUserActive(targetUserId, false);
@@ -284,11 +284,11 @@ describe("UserService.setUserActive", () => {
       .fn()
       .mockResolvedValue({ roles: "admin", isActive: false });
     const countActiveAdmins = jest.fn().mockResolvedValue(1);
-    const service = new UserService(
-      buildRepo({ findAuthIdById }),
-      buildAuthService({ setActive, findById, countActiveAdmins }),
-      createEmailDispatcherMock()
-    );
+    const service = new UserService({
+      userRepo: buildRepo({ findAuthIdById }),
+      authService: buildAuthService({ setActive, findById, countActiveAdmins }),
+      emailDispatcher: createEmailDispatcherMock()
+    });
 
     const result = await service.setUserActive(targetUserId, true);
 
@@ -318,11 +318,11 @@ describe("UserService.adminResetPassword", () => {
     });
     const adminResetPassword = jest.fn().mockResolvedValue(undefined);
     const emailDispatcher = createEmailDispatcherMock();
-    const service = new UserService(
-      buildRepo({ findAuthIdById }),
-      buildAuthService({ adminResetPassword }),
+    const service = new UserService({
+      userRepo: buildRepo({ findAuthIdById }),
+      authService: buildAuthService({ adminResetPassword }),
       emailDispatcher
-    );
+    });
 
     const result = await service.adminResetPassword(targetUserId);
 
@@ -344,11 +344,11 @@ describe("UserService.adminResetPassword", () => {
       .mockResolvedValue({ authId: adminAuthId, email: "admin@e.vn" });
     const adminResetPassword = jest.fn();
     const emailDispatcher = createEmailDispatcherMock();
-    const service = new UserService(
-      buildRepo({ findAuthIdById }),
-      buildAuthService({ adminResetPassword }),
+    const service = new UserService({
+      userRepo: buildRepo({ findAuthIdById }),
+      authService: buildAuthService({ adminResetPassword }),
       emailDispatcher
-    );
+    });
 
     await expect(service.adminResetPassword(targetUserId)).rejects.toThrow(
       ForbiddenError
@@ -361,11 +361,11 @@ describe("UserService.adminResetPassword", () => {
     const findAuthIdById = jest.fn().mockResolvedValue(null);
     const adminResetPassword = jest.fn();
     const emailDispatcher = createEmailDispatcherMock();
-    const service = new UserService(
-      buildRepo({ findAuthIdById }),
-      buildAuthService({ adminResetPassword }),
+    const service = new UserService({
+      userRepo: buildRepo({ findAuthIdById }),
+      authService: buildAuthService({ adminResetPassword }),
       emailDispatcher
-    );
+    });
 
     await expect(service.adminResetPassword(targetUserId)).rejects.toThrow(
       NotFoundError

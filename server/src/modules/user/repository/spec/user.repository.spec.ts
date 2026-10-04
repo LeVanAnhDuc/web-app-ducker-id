@@ -7,7 +7,7 @@ jest.mock("@/models/user", () => ({
 import type { PaginationOptions } from "@/types/common";
 // models
 import UserModel from "@/models/user";
-import { MongoUserRepository } from "./user.repository";
+import { MongoUserRepository } from "../impl/mongo-user.repository";
 
 const mockedAggregate = UserModel.aggregate as unknown as jest.Mock;
 

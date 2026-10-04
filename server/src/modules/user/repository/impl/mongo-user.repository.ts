@@ -12,39 +12,12 @@ import type {
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { PaginationOptions } from "@/types/common";
 import type { ClientSession } from "mongoose";
+import type { UserRepository } from "../user.repository";
 // models
 import UserModel from "@/models/user";
 // others
 import { asyncDatabaseHandler } from "@/utils/async-handler";
 import { escapeRegex } from "@/utils/string/escape-regex";
-
-export type UserRepository = {
-  createProfile(
-    data: CreateUserData,
-    session?: ClientSession
-  ): Promise<UserRecord>;
-  findById(userId: string): Promise<UserDocument | null>;
-  findByAuthId(authId: string): Promise<{
-    _id: UserDocument["_id"];
-    email: string;
-    fullName: string;
-    avatar?: string | null;
-  } | null>;
-  updateById(
-    userId: string,
-    data: Partial<UpdateProfileData>
-  ): Promise<UserDocument | null>;
-  findPublicById(userId: string): Promise<PublicUserRecord | null>;
-  emailExists(email: string): Promise<boolean>;
-  findByEmailWithAuth(email: string): Promise<UserWithAuth | null>;
-  findAdminUsers(
-    filter: AdminUsersFilter,
-    options: PaginationOptions
-  ): Promise<{ data: AdminUserAggregateRow[]; total: number }>;
-  findAuthIdById(
-    userId: string
-  ): Promise<{ authId: string; email: string } | null>;
-};
 
 export class MongoUserRepository implements UserRepository {
   async createProfile(

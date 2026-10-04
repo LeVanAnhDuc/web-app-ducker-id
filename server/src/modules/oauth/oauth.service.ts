@@ -1,9 +1,9 @@
 // types
 import type { Request, Response } from "express";
 import type { WebAppDocument } from "@/modules/web-app/types";
-import type { WebAppRepository } from "@/modules/web-app/repositories";
+import type { WebAppRepository } from "@/modules/web-app/repositories/web-app.repository";
 import type { AuthenticationService } from "@/modules/authentication/service";
-import type { UserService } from "@/modules/user/user.service";
+import type { UserService } from "@/modules/user/service";
 import type { SessionService } from "@/modules/session/service";
 import type { SessionRecord } from "@/modules/session/types";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";

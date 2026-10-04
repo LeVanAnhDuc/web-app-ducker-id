@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { Gender } from "@/modules/user/types";
 import type { AuthenticationService } from "@/modules/authentication/service";
-import type { UserService } from "@/modules/user/user.service";
+import type { UserService } from "@/modules/user/service";
 import type {
   SendOtpBody,
   VerifyOtpBody,
