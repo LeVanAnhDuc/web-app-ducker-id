@@ -1,5 +1,5 @@
 // types
-import type { WebAppRepository } from "@/modules/web-app/repositories";
+import type { WebAppRepository } from "@/modules/web-app/repositories/web-app.repository";
 // commons
 import { NotFoundError } from "@/common/exceptions";
 // modules

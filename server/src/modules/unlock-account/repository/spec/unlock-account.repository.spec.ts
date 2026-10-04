@@ -1,12 +1,12 @@
 // types
 import type { RedisClientType } from "redis";
 // modules
-import { UNLOCK_ACCOUNT_CONFIG } from "./constants";
+import { UNLOCK_ACCOUNT_CONFIG } from "../../constants";
 // others
 import { LOGIN } from "@/constants/redis/store";
 import { SECONDS_PER_MINUTE } from "@/constants/time";
 import { hashValue } from "@/utils/crypto/bcrypt";
-import { RedisUnlockAccountRepository } from "./unlock-account.repository";
+import { RedisUnlockAccountRepository } from "../impl/redis-unlock-account.repository";
 
 const EMAIL = "user@example.com";
 const TOKEN_KEY = `${LOGIN.UNLOCK_TOKEN}:${EMAIL}`;

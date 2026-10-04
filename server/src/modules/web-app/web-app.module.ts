@@ -1,12 +1,10 @@
 // types
 import type { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter.middleware";
 // others
-import {
-  MongoWebAppRepository,
-  MongoWebAppCategoryRepository
-} from "./repositories";
+import { MongoWebAppRepository } from "./repositories/impl/mongo-web-app.repository";
+import { MongoWebAppCategoryRepository } from "./repositories/impl/mongo-web-app-category.repository";
 import { MongoFavoriteRepository } from "@/modules/favorite/repository/impl/mongo-favorite.repository";
-import { WebAppService } from "./web-app.service";
+import { WebAppService } from "./service";
 import { WebAppController } from "./web-app.controller";
 import {
   createAdminWebAppRoutes,
@@ -17,7 +15,11 @@ export const createWebAppModule = (rateLimiter: RateLimiterMiddleware) => {
   const webAppRepo = new MongoWebAppRepository();
   const categoryRepo = new MongoWebAppCategoryRepository();
   const favoriteRepo = new MongoFavoriteRepository();
-  const service = new WebAppService(webAppRepo, categoryRepo, favoriteRepo);
+  const service = new WebAppService({
+    webAppRepo,
+    categoryRepo,
+    favoriteRepo
+  });
   const controller = new WebAppController(service);
 
   return {

@@ -1,5 +1,5 @@
 // types
-import type { UnlockAccountRepository } from "@/modules/unlock-account/unlock-account.repository";
+import type { UnlockAccountRepository } from "@/modules/unlock-account/repository/unlock-account.repository";
 // modules
 import { UNLOCK_ACCOUNT_CONFIG } from "@/modules/unlock-account/constants";
 // others

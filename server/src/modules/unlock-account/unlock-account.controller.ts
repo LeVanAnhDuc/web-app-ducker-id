@@ -1,7 +1,7 @@
 // types
 import type { Response } from "express";
 import type { UnlockRequest, UnlockVerifyRequest } from "./types";
-import type { UnlockAccountService } from "./unlock-account.service";
+import type { UnlockAccountService } from "./service";
 // common
 import { OkSuccess } from "@/common/responses";
 // modules

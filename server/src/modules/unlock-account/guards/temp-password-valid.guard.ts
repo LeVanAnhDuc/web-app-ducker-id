@@ -1,5 +1,5 @@
 // types
-import type { UnlockAccountRepository } from "../unlock-account.repository";
+import type { UnlockAccountRepository } from "../repository/unlock-account.repository";
 // common
 import { UnauthorizedError } from "@/common/exceptions";
 // others

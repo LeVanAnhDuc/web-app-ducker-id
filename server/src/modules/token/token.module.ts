@@ -1,6 +1,6 @@
 // types
 import type { AuthenticationService } from "@/modules/authentication/service";
-import type { UserService } from "@/modules/user/user.service";
+import type { UserService } from "@/modules/user/service";
 // guards
 import {
   RefreshTokenPresentGuard,
