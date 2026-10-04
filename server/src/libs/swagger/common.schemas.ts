@@ -22,18 +22,6 @@ export const commonSchemas: Record<string, OpenAPIV3.SchemaObject> = {
       },
       data: {
         type: "object"
-      },
-      meta: {
-        $ref: "#/components/schemas/ResponseMeta"
-      }
-    }
-  },
-
-  ResponseMeta: {
-    type: "object",
-    properties: {
-      pagination: {
-        $ref: "#/components/schemas/PaginationMeta"
       }
     }
   },

@@ -108,7 +108,7 @@ Cross-cutting concerns deliberately live **outside** the modules:
 | Guards | `src/middlewares/guards/` | `authGuard`, `adminGuard`, `optionalAuthGuard` |
 | Rate limiting | `src/middlewares/common/rate-limiter.middleware.ts` | Redis-backed; one `RateLimiterMiddleware` instance is passed into route factories and applied per route (`rl.updateProfileByIp`, …) |
 | Errors | `src/common/exceptions/` + `src/middlewares/filters/error.filter.ts` | handlers are wrapped in `asyncHandler`, so throwing is how you fail a request |
-| Responses | `src/common/responses/`, `pagination/`, `sort/` | envelope `ResponsePattern<T> = { timestamp, path, message, data, meta? }`; errors `{ code, message, timestamp, path, errors? }`. The envelope's own `meta` is **never populated** — no controller passes it. Paginated endpoints return `data.meta` instead |
+| Responses | `src/common/responses/`, `pagination/`, `sort/` | envelope `ResponsePattern<T> = { timestamp, path, message, data }`; errors `{ code, message, timestamp, path, errors? }`. There is no envelope-level `meta` — paginated endpoints return `data.meta`, built by `toPageMeta` |
 | Messages | `src/i18n/` | error and success text is an i18next **key** translated per request (`req.t`), not a literal |
 
 Email is never sent inline: `EmailDispatcher` pushes onto the BullMQ `emailQueue` (templates are React Email components rendered server-side), with Bull Board at `/admin/queues`. `/health` reports MongoDB and Redis status.
