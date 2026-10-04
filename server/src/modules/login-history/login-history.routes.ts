@@ -6,7 +6,8 @@ import type { LoginHistoryController } from "./login-history.controller";
 import {
   loginHistoryQuerySchema,
   loginHistoryAdminQuerySchema,
-  loginHistoryIdParamSchema
+  loginHistoryIdParamSchema,
+  loginHistoryStatsQuerySchema
 } from "@/validators/schemas/login-history";
 // others
 import { adminGuard, authGuard, paramsPipe, queryPipe } from "@/middlewares";
@@ -20,7 +21,11 @@ export const createLoginHistoryUserRoutes = (
 
   loginHistory.use(authGuard);
 
-  loginHistory.get("/stats", asyncHandler(controller.getMyStats));
+  loginHistory.get(
+    "/stats",
+    queryPipe(loginHistoryStatsQuerySchema),
+    asyncHandler(controller.getMyStats)
+  );
 
   loginHistory.get(
     "/",

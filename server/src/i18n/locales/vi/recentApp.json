@@ -1,6 +1,7 @@
 {
   "success": {
-    "list": "Lấy danh sách ứng dụng dùng gần đây thành công."
+    "list": "Lấy danh sách ứng dụng dùng gần đây thành công.",
+    "stats": "Lấy thống kê sử dụng ứng dụng thành công."
   },
   "errors": {
     "appNotFound": "Không tìm thấy ứng dụng hoặc ứng dụng không khả dụng.",

@@ -3,10 +3,13 @@ import Joi from "joi";
 // types
 import type {
   ListRecentAppsQuery,
-  RecentAppIdParams
+  RecentAppIdParams,
+  RecentAppsStatsQuery
 } from "@/modules/recent-app/types";
 // common
 import { PAGINATION } from "@/common/pagination";
+// modules
+import { RECENT_APP_STATS } from "@/modules/recent-app/constants";
 // validators
 import { OBJECTID_PATTERN, SEARCH_MAX_LENGTH } from "@/validators/constants";
 
@@ -33,6 +36,21 @@ export const listRecentAppsQuerySchema: Joi.ObjectSchema<ListRecentAppsQuery> =
       .integer()
       .min(1)
       .max(PAGINATION.MAX_LIMIT)
+      .optional()
+      .messages({
+        "number.base": "validation:limit.invalid",
+        "number.integer": "validation:limit.invalid",
+        "number.min": "validation:limit.invalid",
+        "number.max": "validation:limit.invalid"
+      })
+  });
+
+export const recentAppsStatsQuerySchema: Joi.ObjectSchema<RecentAppsStatsQuery> =
+  Joi.object({
+    limit: Joi.number()
+      .integer()
+      .min(1)
+      .max(RECENT_APP_STATS.TOP_APPS_MAX_LIMIT)
       .optional()
       .messages({
         "number.base": "validation:limit.invalid",

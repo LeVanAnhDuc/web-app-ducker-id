@@ -8,19 +8,28 @@ import {
   DEVICE_TYPES,
   CLIENT_TYPES,
   LOGIN_HISTORY_SORT_BY_USER,
-  LOGIN_HISTORY_SORT_BY_ADMIN
+  LOGIN_HISTORY_SORT_BY_ADMIN,
+  LOGIN_HISTORY_STATS_RANGES
 } from "@/modules/login-history/constants";
 // common
 import { PAGINATION } from "@/common/pagination";
 import { SORT_ORDER_VALUES } from "@/common/sort";
 // validators
-import { OBJECTID_PATTERN, SEARCH_MAX_LENGTH } from "@/validators/constants";
+import {
+  OBJECTID_PATTERN,
+  SEARCH_MAX_LENGTH,
+  isSupportedTimeZone
+} from "@/validators/constants";
 
 const STATUS_VALUES = Object.values(LOGIN_STATUSES);
 const METHOD_VALUES = Object.values(LOGIN_METHODS);
 const SOURCE_VALUES = Object.values(LOGIN_SOURCES);
 const DEVICE_TYPE_VALUES = Object.values(DEVICE_TYPES);
 const CLIENT_TYPE_VALUES = Object.values(CLIENT_TYPES);
+
+// Long enough for any IANA name, short enough that a junk value never reaches
+// the resolver.
+const TIMEZONE_MAX_LENGTH = 64;
 
 const SORT_BY_USER_VALUES = LOGIN_HISTORY_SORT_BY_USER;
 const SORT_BY_ADMIN_VALUES = LOGIN_HISTORY_SORT_BY_ADMIN;
@@ -111,11 +120,14 @@ export const loginHistoryQuerySchema = Joi.object({
     "boolean.base": "validation:interactive.invalid"
   }),
 
-  fromDate: Joi.string().isoDate().optional().messages({
+  // .raw() keeps the string the caller sent. Without it Joi rewrites a plain
+  // "2026-10-04" into "2026-10-04T00:00:00.000Z", and the filter can no longer
+  // tell "that whole day" from "that day's first millisecond".
+  fromDate: Joi.string().isoDate().raw().optional().messages({
     "string.isoDate": "validation:fromDate.invalid"
   }),
 
-  toDate: Joi.string().isoDate().optional().messages({
+  toDate: Joi.string().isoDate().raw().optional().messages({
     "string.isoDate": "validation:toDate.invalid"
   }),
 
@@ -160,6 +172,25 @@ export const loginHistoryAdminQuerySchema = loginHistoryQuerySchema.keys({
     .optional()
     .messages({
       "any.only": "validation:sortBy.invalid"
+    })
+});
+
+export const loginHistoryStatsQuerySchema = Joi.object({
+  range: Joi.string()
+    .valid(...LOGIN_HISTORY_STATS_RANGES)
+    .optional()
+    .messages({
+      "any.only": "validation:range.invalid"
+    }),
+
+  tz: Joi.string()
+    .max(TIMEZONE_MAX_LENGTH)
+    .custom((value: string, helpers) =>
+      isSupportedTimeZone(value) ? value : helpers.error("any.only")
+    )
+    .optional()
+    .messages({
+      "any.only": "validation:timezone.invalid"
     })
 });
 

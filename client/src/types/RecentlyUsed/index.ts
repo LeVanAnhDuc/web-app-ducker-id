@@ -1,5 +1,5 @@
 // types
-import type { UserApp } from "@/types/Apps";
+import type { UserApp, UserCategory } from "@/types/Apps";
 // others
 import type RECENT_GROUP from "@/constants/recentGroup";
 
@@ -11,6 +11,34 @@ export interface RecentApp extends UserApp {
 }
 
 export type RecentAppsResponse = Paginated<RecentApp>;
+
+export interface TopApp {
+  appId: string;
+  displayName: string;
+  iconUrl: string | null;
+  homeUrl: string;
+  /** The app's primary category. */
+  category: UserCategory | null;
+  useCount: number;
+  lastUsedAt: string;
+}
+
+export interface AppCategoryCount {
+  category: UserCategory | null;
+  count: number;
+}
+
+export interface RecentAppsStats {
+  totalApps: number;
+  activeLast7Days: number;
+  activeLast30Days: number;
+  topApps: TopApp[];
+  byCategory: AppCategoryCount[];
+}
+
+export interface RecentAppsStatsQueryParams {
+  limit?: number;
+}
 
 export interface RecentAppsQueryParams {
   page?: number;

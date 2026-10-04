@@ -10,6 +10,7 @@ export interface RecentAppRepository {
     dedupeWindowMs: number
   ): Promise<void>;
   findVisibleWebAppIds(userId: string): Promise<string[]>;
+  findUsages(userId: string, webAppIds: string[]): Promise<RecentAppUsage[]>;
   findPage(
     userId: string,
     webAppIds: string[],

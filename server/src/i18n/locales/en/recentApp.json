@@ -1,6 +1,7 @@
 {
   "success": {
-    "list": "Recently used apps retrieved successfully."
+    "list": "Recently used apps retrieved successfully.",
+    "stats": "App usage statistics retrieved successfully."
   },
   "errors": {
     "appNotFound": "App not found or not available.",

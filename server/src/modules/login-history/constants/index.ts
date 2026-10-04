@@ -95,8 +95,18 @@ export const LOGIN_HISTORY_CONFIG = {
 } as const;
 
 export const LOGIN_HISTORY_STATS = {
-  DEFAULT_RANGE_DAYS: 30
+  // Nothing longer than the TTL: a 180-day range would answer with a silently
+  // empty tail rather than an error.
+  RANGE_DAYS: [7, 30, 90],
+  DEFAULT_RANGE_DAYS: 7,
+  TOP_APPS_LIMIT: 5,
+  DEFAULT_TIMEZONE: "UTC"
 } as const;
+
+/** Query values for `range`, derived from the day counts above: `7d`, `30d`, … */
+export const LOGIN_HISTORY_STATS_RANGES = LOGIN_HISTORY_STATS.RANGE_DAYS.map(
+  (days) => `${days}d`
+);
 
 export const LOCALHOST_VALUES = ["localhost", "0.0.0.0"] as const;
 

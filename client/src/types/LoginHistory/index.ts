@@ -101,14 +101,41 @@ export type AdminLoginHistoryFilterFormValues = {
   ip: string;
 };
 
+export type LoginStatsRange =
+  (typeof LOGIN_HISTORY.STATS_RANGE)[keyof typeof LOGIN_HISTORY.STATS_RANGE];
+
+export interface LoginStatsDay {
+  /** Local calendar day, `YYYY-MM-DD`, already cut in the requested zone. */
+  date: string;
+  total: number;
+  successful: number;
+  failed: number;
+}
+
+export interface LoginStatsApp {
+  webAppId: string;
+  clientName: string | null;
+  count: number;
+}
+
 export interface LoginHistoryStats {
   total: number;
   successful: number;
   failed: number;
   byMethod: Record<LoginHistoryMethod, number>;
   byDevice: Record<LoginHistoryDeviceType, number>;
+  byDay: LoginStatsDay[];
+  byApp: LoginStatsApp[];
+  anomalies: number;
   range: {
     from: string;
     to: string;
+    days: number;
+    timezone: string;
   };
+}
+
+export interface LoginStatsQueryParams {
+  range?: LoginStatsRange;
+  tz?: string;
 }

@@ -20,9 +20,16 @@ const useOpenApp = () => {
       window.open(app.homeUrl, "_blank", "noopener,noreferrer");
       recordRecentApp(app._id)
         .then(() =>
-          queryClient.invalidateQueries({
-            queryKey: [CONSTANTS.QUERY_KEYS.RECENT_APPS]
-          })
+          Promise.all([
+            queryClient.invalidateQueries({
+              queryKey: [CONSTANTS.QUERY_KEYS.RECENT_APPS]
+            }),
+            // Home ranks apps by this counter, so it goes stale on the same
+            // click that refreshes the recent list.
+            queryClient.invalidateQueries({
+              queryKey: [CONSTANTS.QUERY_KEYS.RECENT_APPS_STATS]
+            })
+          ])
         )
         .catch(() => undefined);
     },

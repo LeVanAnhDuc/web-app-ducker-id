@@ -15,6 +15,7 @@
 | 5   | RecentlyUsed           | ✅ Xong (04.10.2026) | ✅ Đủ       | ✅ API thật                   | ✅ `/users/me/recent-apps` | —          |
 | 6   | MyContacts             | ⚪ Placeholder    | ⚠️ Empty state | ❌ Chưa có                    | ❌ Chưa có list cho user  | Thấp       |
 | 7   | OIDC — phần còn lại    | 🟡 Một phần       | —              | —                             | ⚠️ Core xong, 4 phần thiếu | Trung bình |
+| 8   | Home — lượt mở app theo ngày | 🟡 Một phần | ✅ Đủ          | ✅ API thật                   | ⚠️ Cần bảng bucket theo ngày | Thấp       |
 
 ---
 
@@ -131,7 +132,8 @@ Wired tới `GET/DELETE /users/me/recent-apps`, `POST/DELETE /users/me/recent-ap
 `POST /users/me/recent-apps/:appId/restore`. Ghi nhận từ mọi nút mở app (`useOpenApp`) và từ `/oauth/authorize`.
 Xoá mềm có Undo, cuộn vô hạn, gắn yêu thích. Chi tiết: `docs/specs/recently-used/`.
 
-Còn lại (ngoài phạm vi): biểu đồ Weekly Activity ở Home vẫn mock — cần lưu từng lượt mở, `user_app_usages` chỉ giữ một dòng / app.
+Biểu đồ Weekly Activity ở Home đã được thay bằng "Hoạt động đăng nhập" dùng dữ liệu thật
+(04.10.2026, `docs/specs/home-activity-insights/`). Phần vẫn chưa làm được tách thành mục 8 bên dưới.
 
 ---
 
@@ -153,3 +155,30 @@ Còn lại (ngoài phạm vi): biểu đồ Weekly Activity ở Home vẫn mock 
 - Các phần **đã nối API đầy đủ** (không cần làm): Auth (login/signup/logout/token/forgot-password/change-password), `/users/me`, Apps + AdminApps, Danh mục (`/admin/categories`, 04.10.2026), Favorites, Contact submit + AdminContacts, LoginHistory, Notifications — tương ứng 41 endpoint BE hiện có.
 - Khi triển khai từng feature: theo flow chuẩn dự án (worktree per-repo → brainstorming → SuperDesign nếu đổi UI → plan → implement → E2E → review → security → PR). Xem `.claude/CLAUDE.md`.
 - Mỗi feature nên có `docs/specs/<feature-name>/design.md` riêng khi bắt đầu.
+
+---
+
+## 8. 🟡 Home — số lượt mở app theo ngày
+
+> Tách ra từ mục 5 ngày 04.10.2026, khi `home-activity-insights` lên.
+
+**Trạng thái**: Mọi con số trên Home đều là dữ liệu thật. Biểu đồ theo ngày đếm **lượt đăng nhập**
+(`login_histories`, có `createdAt` từng dòng), không phải **lượt mở app**.
+
+**Vì sao chưa làm được**: `user_app_usages` giữ một dòng / (user, app) với `useCount` cộng dồn
+all-time và `lastUsedAt` là mốc cuối — không có trục thời gian. Từ đó ra được bảng xếp hạng app và
+số app "còn dùng trong N ngày", nhưng **không** ra được chuỗi theo ngày.
+
+**Cần làm** (cần quyết định về schema trước):
+
+- [ ] Quyết định mô hình lưu: bucket theo ngày (`{ userId, webAppId, day, count }`, upsert `$inc`,
+      TTL ~400 ngày) hay event log từng lượt mở. Bucket đủ cho mọi thứ dưới đây trừ phân giải theo giờ
+- [ ] BE: ghi thêm ở đúng hai chỗ đang gọi `recentAppRepo.record` (`recordLaunch` + OIDC authorize),
+      dùng lại `DEDUPE_WINDOW_MS` để một lượt mở không đếm hai lần
+- [ ] BE: bổ sung `byDay` cho `/users/me/recent-apps/stats`
+- [ ] FE: thêm chuỗi "lượt mở app" vào biểu đồ Home, và mở lại các chỉ số streak /
+      "app tháng này so với tháng trước" đã gỡ khỏi UI
+
+**Ngoài phạm vi đã ghi nhận**: `fromDate` của bộ lọc Lịch sử đăng nhập vẫn cắt theo ngày UTC, nên với
+múi giờ lệch UTC thì vài giờ đầu ngày có thể rơi ra ngoài. Cần truyền timezone cho cả endpoint list
+mới xử lý triệt để.

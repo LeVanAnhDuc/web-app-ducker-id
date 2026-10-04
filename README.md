@@ -24,8 +24,10 @@ This repository is a monorepo: `client/` is the Next.js web UI, `server/` is the
   - Change your own password from the profile page
   - After an admin resets your password you are sent to a forced change-password screen and cannot use the rest of the site until you set a new one
 - **App launcher dashboard**
-  - Home page greets you by time of day and shows quick-access and recommended app tiles
-  - Home page also shows your sign-in activity — total, successful and failed logins — with a link to the full login history
+  - Home page greets you by time of day, and "Jump back in" shows the apps you actually opened last
+  - Home page charts your sign-in activity per day over 7, 30 or 90 days, cut in your own timezone, and breaks it down by sign-in method and device
+  - Every figure on Home links through to the matching filtered list — a day on the chart, a method, a device, or just the failed sign-ins
+  - A ranking of the apps you open most, counted over the whole history
   - `/apps` lists every app you may see, filtered by your role, with text search, category filter, grid/list toggle and pagination
   - Opening a tile launches that app's own URL in a new tab
   - Header search finds apps as you type, with keyboard navigation, and opens one directly or jumps to the full list
@@ -93,7 +95,7 @@ These have a user interface but no working backend, or are named in `docs/projec
 | --------- | ------------------------------------------------------------------------------------------------------------------------ |
 | Client    | Next.js 15.3 (App Router) · React 19 · TypeScript 5 · Tailwind CSS v4 · shadcn/ui + Radix · TanStack Query 5 · Zustand 5 · React Hook Form 7 + Zod 4 · next-intl 4 · Axios · Framer Motion |
 | Server    | Node.js · Express 4 · TypeScript 5 · MongoDB with Mongoose 8 · Redis + BullMQ · JWT + bcrypt · Joi 17 · i18next · Nodemailer + React Email · Winston · Swagger UI |
-| Testing   | Jest 30 + ts-jest on the server — **70 suites / 505 tests, all passing**. Playwright 1.60 on the client — 39 E2E spec files under `client/e2e/` (require a running client, server, MongoDB and Redis, so they are not counted here) |
+| Testing   | Jest 30 + ts-jest on the server — **76 suites / 547 tests, all passing**. Playwright 1.60 on the client — 39 E2E spec files under `client/e2e/` (require a running client, server, MongoDB and Redis, so they are not counted here) |
 | Tooling   | pnpm · ESLint · Prettier · Husky pre-commit running lint-staged in both `client/` and `server/`                 |
 
 ## Running

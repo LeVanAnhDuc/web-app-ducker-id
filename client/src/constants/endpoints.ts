@@ -56,6 +56,7 @@ const END_POINTS = {
   FAVORITES: "/users/me/favorites",
   FAVORITE_BY_APP_ID: "/users/me/favorites/:appId",
   RECENT_APPS: "/users/me/recent-apps",
+  RECENT_APPS_STATS: "/users/me/recent-apps/stats",
   RECENT_APP_BY_APP_ID: "/users/me/recent-apps/:appId",
   RECENT_APP_RESTORE: "/users/me/recent-apps/:appId/restore",
 
