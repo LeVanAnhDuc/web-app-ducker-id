@@ -8,8 +8,7 @@
     "unlockRateLimit": "Quá nhiều yêu cầu mở khóa. Vui lòng thử lại sau",
     "accountNotLocked": "Tài khoản không bị khóa",
     "accountDisabled": "Tài khoản đã bị đình chỉ. Vui lòng liên hệ hỗ trợ",
-    "invalidTempPassword": "Mật khẩu tạm thời không hợp lệ hoặc đã hết hạn",
-    "tempPasswordExpired": "Mật khẩu tạm thời đã hết hạn. Vui lòng yêu cầu mật khẩu mới"
+    "invalidTempPassword": "Mật khẩu tạm thời không hợp lệ hoặc đã hết hạn"
   },
   "success": {
     "unlockEmailSent": "Nếu email này đã đăng ký, email mở khóa đã được gửi",

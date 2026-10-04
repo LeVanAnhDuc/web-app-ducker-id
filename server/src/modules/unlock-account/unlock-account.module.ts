@@ -34,7 +34,7 @@ export const createUnlockAccountModule = (
   const cooldownGuard = new CooldownGuard(unlockAccountRepo);
   const rateLimitGuard = new RateLimitGuard(unlockAccountRepo);
   const authExistsGuard = new AuthExistsGuard(userService);
-  const tempPasswordValidGuard = new TempPasswordValidGuard();
+  const tempPasswordValidGuard = new TempPasswordValidGuard(unlockAccountRepo);
 
   const unlockAccountService = new UnlockAccountService(
     authService,

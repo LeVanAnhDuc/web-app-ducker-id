@@ -65,41 +65,14 @@ export class AuthenticationService {
     }
   }
 
-  async storeTempPassword(
-    authId: string,
-    tempPasswordHash: string,
-    tempPasswordExpAt: Date
-  ): Promise<void> {
-    validateObjectId(authId, "authId");
-    validateRequiredString(tempPasswordHash, "tempPasswordHash");
-
-    try {
-      await this.authRepo.storeTempPassword(
-        authId,
-        tempPasswordHash,
-        tempPasswordExpAt
-      );
-      Logger.info("Temporary password stored", {
-        authId,
-        expiresAt: tempPasswordExpAt
-      });
-    } catch (error) {
-      Logger.error("Failed to store temporary password", { authId, error });
-      throw error;
-    }
-  }
-
-  async markTempPasswordUsed(authId: string): Promise<void> {
+  async requirePasswordChange(authId: string): Promise<void> {
     validateObjectId(authId, "authId");
 
     try {
-      await this.authRepo.markTempPasswordUsed(authId);
-      Logger.info("Temporary password marked as used", { authId });
+      await this.authRepo.requirePasswordChange(authId);
+      Logger.info("Password change required", { authId });
     } catch (error) {
-      Logger.error("Failed to mark temporary password as used", {
-        authId,
-        error
-      });
+      Logger.error("Failed to require password change", { authId, error });
       throw error;
     }
   }
