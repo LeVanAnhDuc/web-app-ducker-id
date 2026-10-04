@@ -176,6 +176,7 @@ export const loadModules = (
     sessionService,
     authService,
     userService,
+    loginHistoryService,
     rateLimiter
   );
 

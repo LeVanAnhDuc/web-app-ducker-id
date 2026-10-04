@@ -5,6 +5,7 @@ import type { LoginHistoryDocument } from "@/modules/login-history/types";
 // modules
 import {
   LOGIN_METHODS,
+  LOGIN_SOURCES,
   LOGIN_STATUSES,
   LOGIN_FAIL_REASONS,
   DEVICE_TYPES,
@@ -15,7 +16,7 @@ import {
 // others
 import { MODEL_NAMES } from "@/constants/models";
 
-const { LOGIN_HISTORY, AUTHENTICATION } = MODEL_NAMES;
+const { LOGIN_HISTORY, AUTHENTICATION, WEB_APP } = MODEL_NAMES;
 
 const LoginHistorySchema = new Schema<LoginHistoryDocument>(
   {
@@ -88,6 +89,30 @@ const LoginHistorySchema = new Schema<LoginHistoryDocument>(
       type: String,
       default: null
     },
+    source: {
+      type: String,
+      enum: Object.values(LOGIN_SOURCES),
+      default: LOGIN_SOURCES.IDP
+    },
+    // The satellite app this row signed into; null for a sign-in to the IdP
+    // itself. Resolved server-side from the OAuth client, never from user input.
+    webAppId: {
+      type: Schema.Types.ObjectId,
+      ref: WEB_APP,
+      default: null
+    },
+    // Snapshot of the app's display name, so the row stays readable after the
+    // app is renamed or deleted.
+    clientName: {
+      type: String,
+      default: null
+    },
+    // false = silent SSO: the IdP issued a code from an existing session
+    // without the user typing anything.
+    interactive: {
+      type: Boolean,
+      default: true
+    },
     isAnomaly: {
       type: Boolean,
       default: false
@@ -115,6 +140,8 @@ LoginHistorySchema.index({ userId: 1, status: 1, createdAt: -1 });
 LoginHistorySchema.index({ ip: 1, createdAt: -1 });
 LoginHistorySchema.index({ usernameAttempted: 1, createdAt: -1 });
 LoginHistorySchema.index({ createdAt: -1 });
+LoginHistorySchema.index({ userId: 1, webAppId: 1, createdAt: -1 });
+LoginHistorySchema.index({ webAppId: 1, createdAt: -1 });
 LoginHistorySchema.index(
   { createdAt: 1 },
   { expireAfterSeconds: LOGIN_HISTORY_CONFIG.TTL_SECONDS }

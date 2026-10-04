@@ -64,5 +64,14 @@
   },
   "id": {
     "invalid": "Invalid identifier"
+  },
+  "source": {
+    "invalid": "Source must be idp or oauth"
+  },
+  "webAppId": {
+    "invalid": "Invalid web app id"
+  },
+  "interactive": {
+    "invalid": "interactive must be a boolean"
   }
 }

@@ -7,6 +7,7 @@ import type { LoginHistoryMethod } from "@/types/LoginHistory";
 // components
 import CustomBadge from "@/components/CustomBadge";
 import EntityName from "@/components/EntityName";
+import LoginAppLabel from "@/components/LoginAppLabel";
 import FormatTime from "@/components/FormatTime";
 import LoginHistoryDetailLoading from "../../components/LoginHistoryDetailLoading";
 import LoginHistoryDetailError from "../../components/LoginHistoryDetailError";
@@ -26,6 +27,7 @@ const LoginHistoryDetailCard = ({ id }: { id: string }) => {
   const tMethod = useTranslations("loginHistory.method");
   const tDevice = useTranslations("loginHistory.deviceType");
   const tLocation = useTranslations("loginHistory.location");
+  const tApp = useTranslations("loginHistory.app");
 
   const { data, isLoading, isError, error } = useAdminLoginHistoryDetail(id);
 
@@ -69,6 +71,25 @@ const LoginHistoryDetailCard = ({ id }: { id: string }) => {
             value={tMethod(data.method as LoginHistoryMethod)}
           />
           <DetailField label={tFields("status")} value={tStatus(data.status)} />
+          <DetailField
+            label={tFields("source")}
+            value={tApp(data.app ? "sourceOauth" : "sourceIdp")}
+          />
+          <DetailField
+            label={tFields("app")}
+            value={
+              <LoginAppLabel
+                app={data.app}
+                interactive
+                idpLabel={tApp("idp")}
+                silentLabel={tApp("silent")}
+              />
+            }
+          />
+          <DetailField
+            label={tFields("signIn")}
+            value={tApp(data.interactive ? "interactive" : "silentLong")}
+          />
           {data.userId && (
             <DetailField label={tFields("userId")} value={data.userId} mono />
           )}

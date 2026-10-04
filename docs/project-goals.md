@@ -264,3 +264,4 @@ Chi tiết version: `.claude/techstack/frontend.md`, `.claude/techstack/backend.
 | 2026-05-23 | Initial — định vị Ducker ID, scope MVP-1..4, glossary. |
 | 2026-06-29 | Gỡ bỏ Team collaboration placeholder (FE + docs); Team thành Non-Goal dứt khoát (single-tenant). |
 | 2026-10-04 | Mật khẩu tạm của self-unlock chuyển từ Mongo sang Redis (TTL 15 phút, consume một lần); 3 field `auths.tempPassword*` bị gỡ khỏi schema và khỏi dữ liệu. |
+| 2026-10-04 | Login history ghi nguồn đăng nhập (IdP hay app vệ tinh qua OIDC) và mọi lần IdP cấp code cho app, kể cả SSO im lặng (`method = sso`, `interactive = false`). Spec: `docs/specs/login-history-app-source/`. |

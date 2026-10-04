@@ -42,7 +42,8 @@
     "ipLocation": "IP & Location",
     "action": "Actions",
     "viewDetail": "View",
-    "viewDetailFor": "View details for {name}"
+    "viewDetailFor": "View details for {name}",
+    "app": "App"
   },
   "filters": {
     "title": "Filters",
@@ -55,7 +56,13 @@
     "userId": "User ID",
     "ip": "IP Address",
     "all": "All",
-    "clear": "Clear"
+    "clear": "Clear",
+    "app": "App",
+    "signIn": "Sign-in type",
+    "signInInteractiveDefault": "Manual sign-ins",
+    "signInInteractive": "Manual only",
+    "signInAll": "Include automatic SSO",
+    "signInSilent": "Automatic SSO only"
   },
   "status": {
     "success": "Success",
@@ -65,7 +72,8 @@
     "password": "Password",
     "otp": "OTP",
     "magic-link": "Magic Link",
-    "forgot-password": "Forgot Password"
+    "forgot-password": "Forgot Password",
+    "sso": "SSO"
   },
   "location": {
     "local": "Local",
@@ -113,7 +121,10 @@
         "timezoneOffset": "Timezone",
         "isAnomaly": "Anomaly",
         "anomalyReasons": "Anomaly Reasons",
-        "createdAt": "Date"
+        "createdAt": "Date",
+        "source": "Source",
+        "app": "App",
+        "signIn": "Sign-in type"
       }
     }
   },
@@ -121,5 +132,13 @@
     "loading": "Loading data...",
     "loaded": "{total} results loaded",
     "statsLoaded": "Stats loaded: {total} logins"
+  },
+  "app": {
+    "idp": "Ducker ID",
+    "silent": "Auto",
+    "silentLong": "Automatic SSO (existing session)",
+    "interactive": "Manual (credentials entered)",
+    "sourceIdp": "Ducker ID (identity provider)",
+    "sourceOauth": "Satellite app (OIDC)"
   }
 }

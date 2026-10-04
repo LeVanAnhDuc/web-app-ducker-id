@@ -66,3 +66,81 @@ describe("LoginHistoryService.getLoginHistoryDetail", () => {
     ).rejects.toBeInstanceOf(NotFoundError);
   });
 });
+
+describe("LoginHistoryService app sign-in recording", () => {
+  const req = {
+    headers: { "user-agent": "Mozilla/5.0" },
+    ip: "127.0.0.1",
+    socket: { remoteAddress: "127.0.0.1" }
+  } as never;
+  const app = {
+    webAppId: "64b7f0c2f1a2b3c4d5e6f7c1",
+    clientName: "Match CV",
+    interactive: false
+  };
+
+  it("writes an OAuth SSO row for recordAppSignIn", () => {
+    const repo = makeRepo({ create: jest.fn().mockResolvedValue(fakeDoc()) });
+    const service = new LoginHistoryService(repo);
+
+    service.recordAppSignIn({
+      userId: "64b7f0c2f1a2b3c4d5e6f7b9",
+      usernameAttempted: "user@test.com",
+      app,
+      req
+    });
+
+    expect(repo.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        method: "sso",
+        status: "success",
+        source: "oauth",
+        webAppId: app.webAppId,
+        clientName: "Match CV",
+        interactive: false
+      })
+    );
+  });
+
+  it("writes a failed not_entitled row for recordAppSignInDenied", () => {
+    const repo = makeRepo({ create: jest.fn().mockResolvedValue(fakeDoc()) });
+    const service = new LoginHistoryService(repo);
+
+    service.recordAppSignInDenied({
+      userId: "64b7f0c2f1a2b3c4d5e6f7b9",
+      usernameAttempted: "user@test.com",
+      app: { ...app, interactive: true },
+      req
+    });
+
+    expect(repo.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        method: "sso",
+        status: "failed",
+        failReason: "not_entitled",
+        source: "oauth"
+      })
+    );
+  });
+
+  it("keeps IdP logins as source=idp with no app", () => {
+    const repo = makeRepo({ create: jest.fn().mockResolvedValue(fakeDoc()) });
+    const service = new LoginHistoryService(repo);
+
+    service.recordSuccessfulLogin({
+      userId: "64b7f0c2f1a2b3c4d5e6f7b9",
+      usernameAttempted: "user@test.com",
+      loginMethod: "password",
+      req
+    });
+
+    expect(repo.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        source: "idp",
+        webAppId: null,
+        clientName: null,
+        interactive: true
+      })
+    );
+  });
+});

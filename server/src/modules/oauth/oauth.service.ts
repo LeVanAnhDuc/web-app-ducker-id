@@ -6,6 +6,7 @@ import type { AuthenticationService } from "@/modules/authentication/authenticat
 import type { UserService } from "@/modules/user/user.service";
 import type { SessionService } from "@/modules/session/session.service";
 import type { SessionRecord } from "@/modules/session/types";
+import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { OAuthRepository } from "./oauth.repository";
 import type {
   AuthorizeParams,
@@ -42,6 +43,14 @@ import {
   verifyPkceChallenge
 } from "./helpers";
 
+interface AppSignInAudit {
+  client: WebAppDocument;
+  session: SessionRecord;
+  interactive: boolean;
+  req: Request;
+  denied: boolean;
+}
+
 type AuthorizeOutcome =
   | { kind: "redirect"; url: string }
   | { kind: "login"; url: string };
@@ -52,7 +61,8 @@ export class OAuthService {
     private readonly webAppRepo: WebAppRepository,
     private readonly sessionService: SessionService,
     private readonly authService: AuthenticationService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly loginHistoryService: LoginHistoryService
   ) {}
 
   // ── authorize ──────────────────────────────────────────────────────────
@@ -161,10 +171,13 @@ export class OAuthService {
   private assertEntitled(
     client: WebAppDocument,
     session: SessionRecord,
-    params: AuthorizeParams
+    params: AuthorizeParams,
+    audit: AppSignInAudit
   ): void {
     if (client.requiredRoles.length === 0) return;
     if (client.requiredRoles.includes(session.roles as never)) return;
+
+    void this.auditAppSignIn({ ...audit, denied: true });
 
     throw new OAuthError({
       error: OAUTH_ERRORS.ACCESS_DENIED,
@@ -244,9 +257,19 @@ export class OAuthService {
       };
     }
 
-    this.assertEntitled(client, session, params);
+    const audit: AppSignInAudit = {
+      client,
+      session,
+      interactive: this.isInteractiveSignIn(query.auth_req, session),
+      req,
+      denied: false
+    };
+
+    this.assertEntitled(client, session, params, audit);
 
     const code = await this.issueCode(session, params);
+
+    void this.auditAppSignIn(audit);
 
     return {
       kind: "redirect",
@@ -256,6 +279,61 @@ export class OAuthService {
         iss: ENV.OIDC_ISSUER
       })
     };
+  }
+
+  /**
+   * A resumed request (`auth_req`) means the user was sent to the login page
+   * for this app. The auth_time check rules out resuming on top of a session
+   * that already existed — e.g. a login finished in another tab — so only a
+   * login made within the pending request's lifetime counts as interactive.
+   */
+  private isInteractiveSignIn(
+    authRequestId: string | undefined,
+    session: SessionRecord
+  ): boolean {
+    if (!authRequestId) return false;
+    const nowSeconds = Math.floor(Date.now() / 1000);
+    return (
+      nowSeconds - session.authTime <= OAUTH_CONFIG.PENDING_REQUEST_TTL_SECONDS
+    );
+  }
+
+  /**
+   * Fire-and-forget: the redirect never waits on, or fails because of, the
+   * audit write. The email lookup lives here rather than in the request path
+   * because SessionRecord does not carry it.
+   */
+  private async auditAppSignIn({
+    client,
+    session,
+    interactive,
+    req,
+    denied
+  }: AppSignInAudit): Promise<void> {
+    try {
+      const user = await this.userService.findByAuthId(session.authId);
+      if (!user) return;
+
+      const payload = {
+        userId: session.authId,
+        usernameAttempted: user.email,
+        app: {
+          webAppId: client._id,
+          clientName: client.displayName,
+          interactive
+        },
+        req
+      };
+
+      if (denied) this.loginHistoryService.recordAppSignInDenied(payload);
+      else this.loginHistoryService.recordAppSignIn(payload);
+    } catch (error) {
+      Logger.error("Failed to audit app sign-in", {
+        error,
+        clientId: client.clientId,
+        authId: session.authId
+      });
+    }
   }
 
   private async buildParamsFromQuery(

@@ -4,6 +4,7 @@ import Joi from "joi";
 import {
   LOGIN_STATUSES,
   LOGIN_METHODS,
+  LOGIN_SOURCES,
   DEVICE_TYPES,
   CLIENT_TYPES,
   LOGIN_HISTORY_SORT_BY_USER,
@@ -17,6 +18,7 @@ import { OBJECTID_PATTERN, SEARCH_MAX_LENGTH } from "@/validators/constants";
 
 const STATUS_VALUES = Object.values(LOGIN_STATUSES);
 const METHOD_VALUES = Object.values(LOGIN_METHODS);
+const SOURCE_VALUES = Object.values(LOGIN_SOURCES);
 const DEVICE_TYPE_VALUES = Object.values(DEVICE_TYPES);
 const CLIENT_TYPE_VALUES = Object.values(CLIENT_TYPES);
 
@@ -93,6 +95,21 @@ export const loginHistoryQuerySchema = Joi.object({
     .max(SEARCH_MAX_LENGTH)
     .optional()
     .messages({ "string.max": "validation:search.invalid" }),
+
+  source: Joi.string()
+    .valid(...SOURCE_VALUES)
+    .optional()
+    .messages({
+      "any.only": "validation:source.invalid"
+    }),
+
+  webAppId: Joi.string().pattern(OBJECTID_PATTERN).optional().messages({
+    "string.pattern.base": "validation:webAppId.invalid"
+  }),
+
+  interactive: Joi.boolean().optional().messages({
+    "boolean.base": "validation:interactive.invalid"
+  }),
 
   fromDate: Joi.string().isoDate().optional().messages({
     "string.isoDate": "validation:fromDate.invalid"

@@ -12,9 +12,16 @@ import type {
 import type { PaginationOptions } from "@/types/common";
 // models
 import LoginHistoryModel from "@/models/login-history";
+// modules
+import {
+  LOGIN_METHODS,
+  LOGIN_SOURCES
+} from "@/modules/login-history/constants";
 // others
 import { asyncDatabaseHandler } from "@/utils/async-handler";
 import { escapeRegex } from "@/utils/string/escape-regex";
+
+const WEB_APP_POPULATE = { path: "webAppId", select: "displayName iconUrl" };
 
 export type LoginHistoryRepository = {
   create(data: CreateLoginHistoryData): Promise<LoginHistoryDocument>;
@@ -42,7 +49,10 @@ export class MongoLoginHistoryRepository implements LoginHistoryRepository {
 
   async findById(id: string): Promise<LoginHistoryDocument | null> {
     return asyncDatabaseHandler("findById", async () => {
-      const doc = await LoginHistoryModel.findById(id).lean().exec();
+      const doc = await LoginHistoryModel.findById(id)
+        .populate(WEB_APP_POPULATE)
+        .lean()
+        .exec();
       return doc as unknown as LoginHistoryDocument | null;
     });
   }
@@ -58,6 +68,7 @@ export class MongoLoginHistoryRepository implements LoginHistoryRepository {
           .skip(options.skip)
           .limit(options.limit)
           .sort(options.sort)
+          .populate(WEB_APP_POPULATE)
           .lean()
           .exec(),
         LoginHistoryModel.countDocuments(mongoFilter).exec()
@@ -78,6 +89,7 @@ export class MongoLoginHistoryRepository implements LoginHistoryRepository {
           .skip(options.skip)
           .limit(options.limit)
           .sort(options.sort)
+          .populate(WEB_APP_POPULATE)
           .lean()
           .exec(),
         LoginHistoryModel.countDocuments(mongoFilter).exec()
@@ -96,6 +108,8 @@ export class MongoLoginHistoryRepository implements LoginHistoryRepository {
           {
             $match: {
               userId: new Types.ObjectId(range.userId),
+              // Stats count logins; a silent SSO into an app is not one.
+              method: { $ne: LOGIN_METHODS.SSO },
               createdAt: { $gte: range.from, $lte: range.to }
             }
           },
@@ -138,6 +152,15 @@ export class MongoLoginHistoryRepository implements LoginHistoryRepository {
     if (filter.browser)
       mongo.browser = { $regex: escapeRegex(filter.browser), $options: "i" };
     if (filter.ip) mongo.ip = { $regex: escapeRegex(filter.ip), $options: "i" };
+    // Rows older than the source/interactive fields count as IdP and
+    // interactive, so match on "not the other value" instead of equality.
+    if (filter.source === LOGIN_SOURCES.IDP)
+      mongo.source = { $ne: LOGIN_SOURCES.OAUTH };
+    if (filter.source === LOGIN_SOURCES.OAUTH)
+      mongo.source = LOGIN_SOURCES.OAUTH;
+    if (filter.webAppId) mongo.webAppId = new Types.ObjectId(filter.webAppId);
+    if (filter.interactive === true) mongo.interactive = { $ne: false };
+    if (filter.interactive === false) mongo.interactive = false;
     if (filter.fromDate || filter.toDate) {
       mongo.createdAt = {};
       if (filter.fromDate) mongo.createdAt.$gte = filter.fromDate;
