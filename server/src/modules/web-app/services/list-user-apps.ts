@@ -1,5 +1,6 @@
 // types
-import type { PaginatedResult, UserAppsQuery } from "../types";
+import type { UserAppsQuery } from "../types";
+import type { PaginatedResult } from "@/common/pagination";
 import type { UserAppDto } from "../dtos";
 import type { WebAppServiceDeps } from "./deps";
 // dtos
@@ -7,7 +8,7 @@ import { toUserAppDto } from "../dtos";
 // others
 import { buildWebAppFilter } from "../helpers";
 import { WEB_APP_STATUS_PUBLIC } from "../constants";
-import { PAGINATION } from "@/common/pagination";
+import { resolvePaging, toPageMeta } from "@/common/pagination";
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 import { RequestContext } from "@/utils/request-context";
 
@@ -16,9 +17,9 @@ export const listUserApps = async (
   query: UserAppsQuery,
   role?: string
 ): Promise<PaginatedResult<UserAppDto>> => {
-  const { DEFAULT_PAGE, DEFAULT_LIMIT, MAX_LIMIT } = PAGINATION;
-  const page = query.page && query.page > 0 ? query.page : DEFAULT_PAGE;
-  const limit = Math.min(query.limit ?? DEFAULT_LIMIT, MAX_LIMIT);
+  // Không dùng `sort` của resolvePaging: findActivePaginated chỉ nhận
+  // skip/limit, thứ tự do pipeline aggregate của repository quyết định.
+  const { page, limit, skip } = resolvePaging(query);
   const filter = buildWebAppFilter({
     search: query.search,
     status: WEB_APP_STATUS_PUBLIC.ACTIVE,
@@ -34,10 +35,7 @@ export const listUserApps = async (
   }
 
   const [docs, total] = await Promise.all([
-    deps.webAppRepo.findActivePaginated(filter, {
-      skip: (page - 1) * limit,
-      limit
-    }),
+    deps.webAppRepo.findActivePaginated(filter, { skip, limit }),
     deps.webAppRepo.countActive(filter)
   ]);
 
@@ -51,11 +49,8 @@ export const listUserApps = async (
 
   return {
     items: docs.map((d) => toUserAppDto(d, favoriteIds.has(d._id.toString()))),
-    meta: {
-      total,
-      page,
-      limit,
-      totalPages: Math.max(1, Math.ceil(total / limit))
-    }
+    // minTotalPages: 1 giữ nguyên hiện trạng của riêng endpoint này — sáu
+    // endpoint phân trang khác trả totalPages 0 khi rỗng. Xem toPageMeta.
+    meta: toPageMeta(total, page, limit, { minTotalPages: 1 })
   };
 };

@@ -1,9 +1,9 @@
 // types
+import type { PaginatedResult } from "@/common/pagination";
 import type {
   AdminContactsQuery,
   ContactStatus,
   MyContactsQuery,
-  PaginatedResult,
   SubmitContactBody
 } from "../types";
 import type {

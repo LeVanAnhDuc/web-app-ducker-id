@@ -57,7 +57,7 @@ cd client && pnpm e2e e2e/home/home-page.e2e.ts --project=chromium
 cd client && pnpm e2e e2e/admin-apps/ --project=admin
 ```
 
-Jest picks up `src/**/*.spec.ts` plus `test/integration/**` and `test/e2e/**`; factories, helpers and mocks live in `server/test/`. Service tests sit in `services/spec/`, repository tests in `repository/spec/`. Current suite: **59 suites / 398 tests**, no database required.
+Jest picks up `src/**/*.spec.ts` plus `test/integration/**` and `test/e2e/**`; factories, helpers and mocks live in `server/test/`. Service tests sit in `services/spec/`, repository tests in `repository/spec/`. Current suite: **60 suites / 410 tests**, no database required.
 
 `jest.config.ts` sets `resetMocks: true`, which clears the *implementations* a `jest.mock` factory set up, not just the call history. A factory must therefore close over bare `jest.fn()`s and the implementations be rebuilt in `beforeEach`, or the mock works in the first test of a file and returns `undefined` in every one after it.
 
@@ -97,6 +97,10 @@ A module with two or more services puts each one in its own sub-folder — `serv
 
 Every module with code uses this layout; `entitlement` and `oauth-consent` are schema-only stubs with nothing to split. No `*.service.ts` or `*.repository.ts` remains at a module root — one appearing means somebody created it off-standard, not that a module was missed. Full rules in `server/.claude/rules/modules.md`; design rationale in `docs/specs/authentication-module-structure/design.md` and the `docs/specs/module-struct-batch*/design.md` series.
 
+Every paginated endpoint goes through `src/common/pagination/`: `resolvePaging(query)` turns a validated query into the `{ skip, limit, sort }` a repository takes plus the `page` the response needs, and `toPageMeta(total, page, limit)` builds the `meta`. `PaginatedResult<T>` and `PageMeta` live there too. Don't recompute `(page - 1) * limit` in a service, and don't clamp `page` — every paginated Joi schema already enforces `min(1)`.
+
+`web-app.listUserApps` is the one endpoint that reports `totalPages: 1` for an empty result; the other six report `0`. That is why `toPageMeta` takes `minTotalPages` — the divergence predates the helper and unifying it would change a live response.
+
 Cross-cutting concerns deliberately live **outside** the modules:
 
 | Concern | Location | Notes |
@@ -106,7 +110,7 @@ Cross-cutting concerns deliberately live **outside** the modules:
 | Guards | `src/middlewares/guards/` | `authGuard`, `adminGuard`, `optionalAuthGuard` |
 | Rate limiting | `src/middlewares/common/rate-limiter.middleware.ts` | Redis-backed; one `RateLimiterMiddleware` instance is passed into route factories and applied per route (`rl.updateProfileByIp`, …) |
 | Errors | `src/common/exceptions/` + `src/middlewares/filters/error.filter.ts` | handlers are wrapped in `asyncHandler`, so throwing is how you fail a request |
-| Responses | `src/common/responses/`, `pagination/`, `sort/` | envelope `ResponsePattern<T> = { timestamp, path, message, data, meta? }`; errors `{ code, message, timestamp, path, errors? }` |
+| Responses | `src/common/responses/`, `pagination/`, `sort/` | envelope `ResponsePattern<T> = { timestamp, path, message, data, meta? }`; errors `{ code, message, timestamp, path, errors? }`. The envelope's own `meta` is **never populated** — no controller passes it. Paginated endpoints return `data.meta` instead |
 | Messages | `src/i18n/` | error and success text is an i18next **key** translated per request (`req.t`), not a literal |
 
 Email is never sent inline: `EmailDispatcher` pushes onto the BullMQ `emailQueue` (templates are React Email components rendered server-side), with Bull Board at `/admin/queues`. `/health` reports MongoDB and Redis status.

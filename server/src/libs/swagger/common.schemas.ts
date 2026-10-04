@@ -40,21 +40,12 @@ export const commonSchemas: Record<string, OpenAPIV3.SchemaObject> = {
 
   PaginationMeta: {
     type: "object",
-    required: [
-      "page",
-      "pageSize",
-      "totalItems",
-      "totalPages",
-      "hasNext",
-      "hasPrev"
-    ],
+    required: ["total", "page", "limit", "totalPages"],
     properties: {
+      total: { type: "integer", example: 157 },
       page: { type: "integer", example: 1 },
-      pageSize: { type: "integer", example: 20 },
-      totalItems: { type: "integer", example: 157 },
-      totalPages: { type: "integer", example: 8 },
-      hasNext: { type: "boolean", example: true },
-      hasPrev: { type: "boolean", example: false }
+      limit: { type: "integer", example: 20 },
+      totalPages: { type: "integer", example: 8 }
     }
   },
 

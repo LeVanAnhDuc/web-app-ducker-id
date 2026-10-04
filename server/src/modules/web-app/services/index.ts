@@ -1,9 +1,9 @@
 // types
+import type { PaginatedResult } from "@/common/pagination";
 import type {
   AdminAppCreateBody,
   AdminAppUpdateBody,
   AdminAppsQuery,
-  PaginatedResult,
   UserAppsQuery
 } from "../types";
 import type {

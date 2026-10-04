@@ -1,10 +1,10 @@
 // types
-import type { LoginHistoryAdminQuery, PaginatedResult } from "../types";
+import type { LoginHistoryAdminQuery } from "../types";
 import type { AllHistoryItemDto } from "../dtos";
 import type { LoginHistoryRepository } from "../repository/login-history.repository";
+import type { PaginatedResult } from "@/common/pagination";
 // common
-import { PAGINATION } from "@/common/pagination";
-import { resolveSortDirection } from "@/common/sort";
+import { resolvePaging, toPageMeta } from "@/common/pagination";
 // dtos
 import { toAllHistoryItemDto } from "../dtos";
 // others
@@ -14,31 +14,17 @@ export const getAllLoginHistory = async (
   loginHistoryRepo: LoginHistoryRepository,
   query: LoginHistoryAdminQuery
 ): Promise<PaginatedResult<AllHistoryItemDto>> => {
-  const { DEFAULT_PAGE, DEFAULT_LIMIT, MAX_LIMIT } = PAGINATION;
-  const {
-    page = DEFAULT_PAGE,
-    limit: rawLimit = DEFAULT_LIMIT,
-    sortBy = "createdAt",
-    sortOrder: rawSortOrder
-  } = query;
-  const limit = Math.min(rawLimit, MAX_LIMIT);
-  const skip = (page - 1) * limit;
-  const sortOrder = resolveSortDirection(rawSortOrder);
+  const { page, limit, skip, sort } = resolvePaging(query);
 
   const filter = buildLoginHistoryFilter(query);
   const { data, total } = await loginHistoryRepo.findAll(filter, {
     skip,
     limit,
-    sort: { [sortBy]: sortOrder }
+    sort
   });
 
   return {
     items: data.map(toAllHistoryItemDto),
-    meta: {
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit)
-    }
+    meta: toPageMeta(total, page, limit)
   };
 };
