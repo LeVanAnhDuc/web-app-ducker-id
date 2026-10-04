@@ -61,8 +61,6 @@ Jest picks up `src/**/*.spec.ts` plus `test/integration/**` and `test/e2e/**`; f
 
 `jest.config.ts` sets `resetMocks: true`, which clears the *implementations* a `jest.mock` factory set up, not just the call history. A factory must therefore close over bare `jest.fn()`s and the implementations be rebuilt in `beforeEach`, or the mock works in the first test of a file and returns `undefined` in every one after it.
 
-⚠️ `pnpm test` **fails from inside a worktree on Windows** with `No tests found`: Jest escapes the dot in the `.worktrees` path segment when it expands `<rootDir>` into `testMatch`, and micromatch then matches nothing. Run `npx jest --testMatch "**/src/**/*.spec.ts"` there instead.
-
 Playwright (`client/playwright.config.ts`) runs `*.e2e.ts` under `client/e2e/` with `workers: 1` and `fullyParallel: false`, across four projects: `setup` and `admin-setup` log in and write `e2e/.auth/{user,admin}.json`, then `chromium` runs as a **regular user** (it `testIgnore`s the admin-only folders) and `admin` runs those folders. `admin-authz/` is deliberately left in the regular-user project — its denial tests need a non-admin session. E2E needs client + server + MongoDB + Redis up **and the DB seeded**; credentials come from `E2E_*` (defaults `user@test.com` / `User@123`, `admin@test.com` / `Admin@123`). The base URL resolves as `E2E_BASE_URL` → the nearest `.worktree-state.json` entry keyed by the current folder name → `http://localhost:3000`.
 
 ## Architecture
