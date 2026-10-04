@@ -6,13 +6,13 @@ import type { Page } from "@playwright/test";
 // `testIgnore` on the `chromium` project only excludes admin-only suite
 // folders (admin-apps/admin-users-list/admin-login-history/contact), so this
 // new `login-history/` folder is picked up by the existing glob without any
-// config edit. Read-only feature (list + stats), no mutation — no revert
+// config edit. Read-only feature (list only), no mutation — no revert
 // needed. `page.route` stubs the list endpoint so assertions are deterministic
 // regardless of seed data.
 
 // List endpoint: GET /api/v1/login-history?... (CONSTANTS.END_POINTS.LOGIN_HISTORY
 // = "/login-history", proxied to the BE under /api/v1). Anchor to avoid
-// matching the sibling /login-history/stats endpoint used by StatsRow.
+// matching the sibling /login-history/stats endpoint (now shown on Home).
 const LIST_RE = /\/api\/v1\/login-history(\?|$)/;
 
 const LOCAL_ITEM = {
@@ -78,5 +78,18 @@ test.describe("My Login History — location/IP rendering (LOCAL)", () => {
       page.getByText("Nội bộ (Local)", { exact: true })
     ).toBeVisible();
     await expect(page.getByText("LOCAL", { exact: true })).toHaveCount(0);
+  });
+});
+
+test.describe("My Login History — stats moved to Home", () => {
+  test("the page no longer renders the summary stat cards", async ({
+    page
+  }) => {
+    await fulfillList(page);
+    await page.goto("/login-history");
+    await expect(page.getByText("127.0.0.1")).toBeVisible();
+    await expect(
+      page.getByRole("group", { name: /^Total Logins:/ })
+    ).toHaveCount(0);
   });
 });

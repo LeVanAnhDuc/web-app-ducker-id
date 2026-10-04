@@ -6,14 +6,14 @@ import { useTranslations } from "next-intl";
 // hooks
 import { useAnnounce } from "@/hooks";
 
-const StatsAnnouncer = ({
+const LoginStatsAnnouncer = ({
   isLoading,
   total
 }: {
   isLoading: boolean;
   total?: number;
 }) => {
-  const tAnnounce = useTranslations("loginHistory.announce");
+  const tAnnounce = useTranslations("home.loginStats.announce");
   const { announce } = useAnnounce();
 
   useEffect(() => {
@@ -22,11 +22,11 @@ const StatsAnnouncer = ({
 
   useEffect(() => {
     if (typeof total === "number") {
-      announce(tAnnounce("statsLoaded", { total }));
+      announce(tAnnounce("loaded", { total }));
     }
   }, [total, announce, tAnnounce]);
 
   return null;
 };
 
-export default StatsAnnouncer;
+export default LoginStatsAnnouncer;

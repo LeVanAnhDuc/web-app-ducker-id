@@ -18,6 +18,17 @@
     "hoursThisMonth": "+5 hrs this month",
     "personalBest": "Personal best!"
   },
+  "loginStats": {
+    "title": "Sign-in activity",
+    "viewHistory": "View login history",
+    "totalLogins": "Total Logins",
+    "successful": "Successful",
+    "failed": "Failed",
+    "announce": {
+      "loading": "Loading sign-in stats...",
+      "loaded": "Sign-in stats loaded: {total} logins"
+    }
+  },
   "weeklyActivity": {
     "title": "Weekly Activity",
     "subtitle": "Apps opened per day this week",

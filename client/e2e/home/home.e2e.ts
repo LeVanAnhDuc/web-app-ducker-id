@@ -51,3 +51,48 @@ test.describe("Home dashboard (/vi)", () => {
     ).toBeVisible();
   });
 });
+
+// GET /api/v1/login-history/stats — stubbed so the counts are deterministic.
+const STATS_RE = /\/api\/v1\/login-history\/stats(\?|$)/;
+
+test.describe("Home dashboard — sign-in activity", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.route(STATS_RE, (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          timestamp: new Date().toISOString(),
+          path: "/api/v1/login-history/stats",
+          message: "ok",
+          data: { total: 7, successful: 5, failed: 2 }
+        })
+      })
+    );
+  });
+
+  test("shows the login stat cards from the API (vi)", async ({ page }) => {
+    await page.goto(HOME_PATH);
+    await expect(
+      page.getByRole("heading", { name: "Hoạt động đăng nhập" })
+    ).toBeVisible();
+    await expect(
+      page.getByRole("group", { name: "Tổng lượt đăng nhập: 7" })
+    ).toBeVisible();
+    await expect(
+      page.getByRole("group", { name: "Thành công: 5" })
+    ).toBeVisible();
+    await expect(
+      page.getByRole("group", { name: "Thất bại: 2" })
+    ).toBeVisible();
+  });
+
+  test("links through to the full login history (en)", async ({ page }) => {
+    await page.goto("/");
+    await expect(
+      page.getByRole("group", { name: "Total Logins: 7" })
+    ).toBeVisible();
+    await page.getByRole("button", { name: "View login history" }).click();
+    await expect(page).toHaveURL(/\/login-history$/);
+  });
+});
