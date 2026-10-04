@@ -47,3 +47,14 @@ export const CONTACT_CONFIG = {
 export const OBJECTID_PATTERN = /^[a-fA-F0-9]{24}$/;
 
 export const SEARCH_MAX_LENGTH = 200;
+
+/**
+ * Every IANA zone this runtime knows, as a membership set. A timezone from the
+ * client reaches `$dateTrunc`, so it is matched against a list rather than a
+ * pattern. Some ICU builds expose `UTC` only as a link to `Etc/UTC`, so the
+ * default is added explicitly.
+ */
+export const SUPPORTED_TIMEZONES = new Set<string>([
+  ...Intl.supportedValuesOf("timeZone"),
+  "UTC"
+]);

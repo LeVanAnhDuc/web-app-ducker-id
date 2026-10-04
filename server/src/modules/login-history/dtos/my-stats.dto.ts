@@ -10,6 +10,22 @@ import {
   LOGIN_METHODS,
   LOGIN_STATUSES
 } from "@/modules/login-history/constants";
+// others
+import { addDays, toZonedDay } from "@/utils/date/zoned-day";
+
+export interface LoginStatsDayDto {
+  /** Local calendar day, `YYYY-MM-DD`. */
+  date: string;
+  total: number;
+  successful: number;
+  failed: number;
+}
+
+export interface LoginStatsAppDto {
+  webAppId: string;
+  clientName: string | null;
+  count: number;
+}
 
 export interface MyLoginStatsDto {
   total: number;
@@ -17,10 +33,22 @@ export interface MyLoginStatsDto {
   failed: number;
   byMethod: Record<LoginMethod, number>;
   byDevice: Record<DeviceType, number>;
+  byDay: LoginStatsDayDto[];
+  byApp: LoginStatsAppDto[];
+  anomalies: number;
   range: {
     from: string;
     to: string;
+    days: number;
+    timezone: string;
   };
+}
+
+export interface LoginStatsDtoRange {
+  from: Date;
+  to: Date;
+  days: number;
+  timezone: string;
 }
 
 const zeroByMethod = (): Record<LoginMethod, number> =>
@@ -41,9 +69,40 @@ const zeroByDevice = (): Record<DeviceType, number> =>
     {} as Record<DeviceType, number>
   );
 
+/**
+ * Every day in the range, in order, zero-filled. A day with no sign-in still
+ * gets a column: a chart that silently drops it misreads as a shorter week.
+ */
+const buildDaySeries = (
+  buckets: LoginStatsAggregationResult["byDay"],
+  range: LoginStatsDtoRange
+): LoginStatsDayDto[] => {
+  const byDay = new Map(buckets.map((bucket) => [bucket._id, bucket]));
+  const lastDay = toZonedDay(range.to, range.timezone);
+
+  const series: LoginStatsDayDto[] = [];
+  let day = toZonedDay(range.from, range.timezone);
+
+  // The range is validated against a fixed list, so the walk is bounded; the
+  // guard only stops a malformed range from spinning.
+  for (let step = 0; step <= range.days + 1; step += 1) {
+    const bucket = byDay.get(day);
+    series.push({
+      date: day,
+      total: bucket?.total ?? 0,
+      successful: bucket?.successful ?? 0,
+      failed: bucket?.failed ?? 0
+    });
+    if (day === lastDay) break;
+    day = addDays(day, 1);
+  }
+
+  return series;
+};
+
 export const toMyLoginStatsDto = (
   aggregation: LoginStatsAggregationResult,
-  range: { from: Date; to: Date }
+  range: LoginStatsDtoRange
 ): MyLoginStatsDto => {
   const total = aggregation.total[0]?.count ?? 0;
 
@@ -70,9 +129,18 @@ export const toMyLoginStatsDto = (
     failed,
     byMethod,
     byDevice,
+    byDay: buildDaySeries(aggregation.byDay, range),
+    byApp: aggregation.byApp.map((b) => ({
+      webAppId: String(b._id.webAppId),
+      clientName: b._id.clientName ?? null,
+      count: b.count
+    })),
+    anomalies: aggregation.anomalies[0]?.count ?? 0,
     range: {
       from: range.from.toISOString(),
-      to: range.to.toISOString()
+      to: range.to.toISOString(),
+      days: range.days,
+      timezone: range.timezone
     }
   };
 };

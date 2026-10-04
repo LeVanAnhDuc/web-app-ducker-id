@@ -8,13 +8,18 @@ import {
   DEVICE_TYPES,
   CLIENT_TYPES,
   LOGIN_HISTORY_SORT_BY_USER,
-  LOGIN_HISTORY_SORT_BY_ADMIN
+  LOGIN_HISTORY_SORT_BY_ADMIN,
+  LOGIN_HISTORY_STATS_RANGES
 } from "@/modules/login-history/constants";
 // common
 import { PAGINATION } from "@/common/pagination";
 import { SORT_ORDER_VALUES } from "@/common/sort";
 // validators
-import { OBJECTID_PATTERN, SEARCH_MAX_LENGTH } from "@/validators/constants";
+import {
+  OBJECTID_PATTERN,
+  SEARCH_MAX_LENGTH,
+  SUPPORTED_TIMEZONES
+} from "@/validators/constants";
 
 const STATUS_VALUES = Object.values(LOGIN_STATUSES);
 const METHOD_VALUES = Object.values(LOGIN_METHODS);
@@ -160,6 +165,24 @@ export const loginHistoryAdminQuerySchema = loginHistoryQuerySchema.keys({
     .optional()
     .messages({
       "any.only": "validation:sortBy.invalid"
+    })
+});
+
+export const loginHistoryStatsQuerySchema = Joi.object({
+  range: Joi.string()
+    .valid(...LOGIN_HISTORY_STATS_RANGES)
+    .optional()
+    .messages({
+      "any.only": "validation:range.invalid"
+    }),
+
+  tz: Joi.string()
+    .custom((value: string, helpers) =>
+      SUPPORTED_TIMEZONES.has(value) ? value : helpers.error("any.only")
+    )
+    .optional()
+    .messages({
+      "any.only": "validation:timezone.invalid"
     })
 });
 

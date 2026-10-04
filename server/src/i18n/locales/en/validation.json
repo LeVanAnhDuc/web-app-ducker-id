@@ -53,6 +53,12 @@
   "limit": {
     "invalid": "Invalid page size."
   },
+  "range": {
+    "invalid": "Invalid statistics range."
+  },
+  "timezone": {
+    "invalid": "Invalid timezone."
+  },
   "sortBy": {
     "invalid": "Invalid sort field."
   },

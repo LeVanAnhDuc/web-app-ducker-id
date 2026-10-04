@@ -155,11 +155,27 @@ export interface LoginStatsAggregationBucket<TKey extends string> {
   count: number;
 }
 
+export interface LoginStatsDayBucket {
+  /** Local calendar day, `YYYY-MM-DD`, already cut in the caller's timezone. */
+  _id: string;
+  total: number;
+  successful: number;
+  failed: number;
+}
+
+export interface LoginStatsAppBucket {
+  _id: { webAppId: Schema.Types.ObjectId; clientName: string | null };
+  count: number;
+}
+
 export interface LoginStatsAggregationResult {
   total: { count: number }[];
   byStatus: LoginStatsAggregationBucket<LoginStatus>[];
   byMethod: LoginStatsAggregationBucket<LoginMethod>[];
   byDevice: LoginStatsAggregationBucket<DeviceType>[];
+  byDay: LoginStatsDayBucket[];
+  byApp: LoginStatsAppBucket[];
+  anomalies: { count: number }[];
 }
 
 export interface LoginHistoryFilter {
@@ -184,4 +200,16 @@ export interface LoginStatsRange {
   userId: string;
   from: Date;
   to: Date;
+  /** IANA zone the day buckets are cut in; never built from raw user input. */
+  timezone: string;
+  topAppsLimit: number;
+}
+
+export interface LoginStatsQuery {
+  range?: string;
+  tz?: string;
+}
+
+export interface MyStatsRequest extends Omit<Request, "query"> {
+  query: LoginStatsQuery;
 }

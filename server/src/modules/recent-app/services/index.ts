@@ -1,6 +1,11 @@
 // types
 import type { PaginatedResult } from "@/common/pagination";
-import type { ListRecentAppsQuery, RecentAppDto } from "../types";
+import type {
+  ListRecentAppsQuery,
+  RecentAppDto,
+  RecentAppsStatsQuery
+} from "../types";
+import type { RecentAppsStatsDto } from "../dtos";
 import type { RecentAppServiceDeps } from "./deps";
 // others
 import { hide } from "./hide";
@@ -9,12 +14,17 @@ import { list } from "./list";
 import { record } from "./record";
 import { recordLaunch } from "./record-launch";
 import { restore } from "./restore";
+import { stats } from "./stats";
 
 export class RecentAppService {
   constructor(private readonly deps: RecentAppServiceDeps) {}
 
   list(query: ListRecentAppsQuery): Promise<PaginatedResult<RecentAppDto>> {
     return list(this.deps, query);
+  }
+
+  stats(query: RecentAppsStatsQuery): Promise<RecentAppsStatsDto> {
+    return stats(this.deps, query);
   }
 
   recordLaunch(appId: string): Promise<void> {
