@@ -57,7 +57,9 @@ cd client && pnpm e2e e2e/home/home-page.e2e.ts --project=chromium
 cd client && pnpm e2e e2e/admin-apps/ --project=admin
 ```
 
-Jest picks up `src/**/*.spec.ts` (colocated with the code, or under `service/spec/` in a converted module) plus `test/integration/**` and `test/e2e/**`; factories, helpers and mocks live in `server/test/`. Current suite: **48 suites / 309 tests**, no database required.
+Jest picks up `src/**/*.spec.ts` plus `test/integration/**` and `test/e2e/**`; factories, helpers and mocks live in `server/test/`. Service tests sit in `services/spec/`, repository tests in `repository/spec/`. Current suite: **59 suites / 398 tests**, no database required.
+
+`jest.config.ts` sets `resetMocks: true`, which clears the *implementations* a `jest.mock` factory set up, not just the call history. A factory must therefore close over bare `jest.fn()`s and the implementations be rebuilt in `beforeEach`, or the mock works in the first test of a file and returns `undefined` in every one after it.
 
 ⚠️ `pnpm test` **fails from inside a worktree on Windows** with `No tests found`: Jest escapes the dot in the `.worktrees` path segment when it expands `<rootDir>` into `testMatch`, and micromatch then matches nothing. Run `npx jest --testMatch "**/src/**/*.spec.ts"` there instead.
 
@@ -75,9 +77,9 @@ There is no DI container. Every module exports a `create<Name>Module(...)` facto
 - Adding an endpoint touches up to **three** places: the module's `*.routes.ts`, `modules.loader.ts` (only for a new module or router), and `src/libs/swagger/openapi.ts`, which imports each module's `swagger/` barrel and spreads it into `allSchemas` / `allPaths`. That registry is incomplete today — `login-history`, `notification` and `favorite` have no Swagger entry, so their routes are missing from `/api-docs`.
 - A module exposing both a user and an admin surface returns two routers (`userRouter` + `userAdminRouter`, `webAppUserRouter` + `webAppAdminRouter`, …) instead of branching inside one.
 
-Module anatomy: `<name>.module.ts` (factory), `<name>.routes.ts`, `<name>.controller.ts`, `<name>.service.ts`, `<name>.repository.ts`, plus `dtos/`, `types/`, `constants/`, `swagger/` (`paths.ts` + `schemas.ts` + a Postman collection) and colocated `*.spec.ts`. 13 wired modules, ~50 route handlers.
+Module anatomy: `<name>.module.ts` (factory), `<name>.routes.ts`, `<name>.controller.ts`, plus `dtos/`, `types/`, `constants/` and `swagger/` (`paths.ts` + `schemas.ts` + a Postman collection). 13 wired modules, ~50 route handlers.
 
-**The layout below replaced the one above across every module** (`docs/specs/module-struct-batch*/`). It splits the two files that grow worst:
+Service and repository live in folders rather than single files (`docs/specs/module-struct-batch*/`) — those are the two that grow worst:
 
 - `repository/<name>.repository.ts` holds only `interface <Name>Repository` (type imports and nothing else); the Mongoose class moves to `repository/impl/mongo-<name>.repository.ts`. There is **deliberately no barrel** — the service imports the interface, and only the module factory is allowed to reach into `impl/`, which is what keeps the boundary real.
 - `services/` holds **one public method per file** (`update-password.ts` exports `updatePassword(authRepo, …)` — a plain function whose first argument is the dependency), with `services/index.ts` as a façade class whose methods are one-line delegates and `services/spec/` for the unit tests. Validation, logging and `try/catch` live in the method file, never in the façade.
@@ -93,7 +95,7 @@ Private methods follow the call graph. One that serves a single public method be
 
 A module with two or more services puts each one in its own sub-folder — `services/login/`, `services/login-audit/` — and `strategies/` is laid out the same way. Neither folder has a barrel; the only `index.ts` is the class inside each sub-folder. Where a `strategies/` folder already splits the work per use case, the façade's one-line delegates stay on the façade: a method file holding `return deps.otpStrategy.sendCode(req)` adds a hop to a trace rather than removing one.
 
-Every module with code now uses this layout; `entitlement` and `oauth-consent` are schema-only stubs with nothing to split. No `*.service.ts` or `*.repository.ts` remains at a module root. They are not exceptions — they just have not been migrated. (`entitlement` and `oauth-consent` are schema-only stubs with nothing to split.) Full rules in `server/.claude/rules/modules.md`; design rationale in `docs/specs/authentication-module-structure/design.md` and the `docs/specs/module-struct-batch*/design.md` series.
+Every module with code uses this layout; `entitlement` and `oauth-consent` are schema-only stubs with nothing to split. No `*.service.ts` or `*.repository.ts` remains at a module root — one appearing means somebody created it off-standard, not that a module was missed. Full rules in `server/.claude/rules/modules.md`; design rationale in `docs/specs/authentication-module-structure/design.md` and the `docs/specs/module-struct-batch*/design.md` series.
 
 Cross-cutting concerns deliberately live **outside** the modules:
 
