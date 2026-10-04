@@ -10,6 +10,7 @@ import type {
   LoginStatsRange
 } from "@/modules/login-history/types";
 import type { PaginationOptions } from "@/types/common";
+import type { LoginHistoryRepository } from "../login-history.repository";
 // models
 import LoginHistoryModel from "@/models/login-history";
 // modules
@@ -22,22 +23,6 @@ import { asyncDatabaseHandler } from "@/utils/async-handler";
 import { escapeRegex } from "@/utils/string/escape-regex";
 
 const WEB_APP_POPULATE = { path: "webAppId", select: "displayName iconUrl" };
-
-export type LoginHistoryRepository = {
-  create(data: CreateLoginHistoryData): Promise<LoginHistoryDocument>;
-  findByUser(
-    filter: LoginHistoryFilter,
-    options: PaginationOptions
-  ): Promise<{ data: LoginHistoryDocument[]; total: number }>;
-  findAll(
-    filter: LoginHistoryFilter,
-    options: PaginationOptions
-  ): Promise<{ data: LoginHistoryDocument[]; total: number }>;
-  aggregateMyStats(
-    range: LoginStatsRange
-  ): Promise<LoginStatsAggregationResult>;
-  findById(id: string): Promise<LoginHistoryDocument | null>;
-};
 
 export class MongoLoginHistoryRepository implements LoginHistoryRepository {
   async create(data: CreateLoginHistoryData): Promise<LoginHistoryDocument> {

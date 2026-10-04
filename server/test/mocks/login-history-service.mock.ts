@@ -1,5 +1,5 @@
 // types
-import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
+import type { LoginHistoryService } from "@/modules/login-history/services";
 
 export function createLoginHistoryServiceMock(): jest.Mocked<LoginHistoryService> {
   return {

@@ -1,6 +1,6 @@
 // others
-import { MongoLoginHistoryRepository } from "./login-history.repository";
-import { LoginHistoryService } from "./login-history.service";
+import { MongoLoginHistoryRepository } from "./repository/impl/mongo-login-history.repository";
+import { LoginHistoryService } from "./services";
 import { LoginHistoryController } from "./login-history.controller";
 import {
   createLoginHistoryUserRoutes,

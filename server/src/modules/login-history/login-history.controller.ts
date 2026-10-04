@@ -5,7 +5,7 @@ import type {
   HistoryIdParamRequest
 } from "@/modules/login-history/types";
 import type { Request, Response } from "express";
-import type { LoginHistoryService } from "./login-history.service";
+import type { LoginHistoryService } from "./services";
 // common
 import { OkSuccess } from "@/common/responses";
 

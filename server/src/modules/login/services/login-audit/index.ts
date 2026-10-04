@@ -3,7 +3,7 @@ import type { Request } from "express";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { UserDocument } from "@/modules/user/types";
 import type { LoginMethod } from "@/modules/login-history/types";
-import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
+import type { LoginHistoryService } from "@/modules/login-history/services";
 // others
 import { recordEmailNotVerified } from "./record-email-not-verified";
 import { recordInactiveAccount } from "./record-inactive-account";
