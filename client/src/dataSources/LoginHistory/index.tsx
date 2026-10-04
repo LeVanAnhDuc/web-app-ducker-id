@@ -27,8 +27,7 @@ const {
   METHOD_VALUES,
   STATUS_VALUES,
   SOURCE,
-  APP_FILTER_IDP,
-  SIGN_IN_FILTER
+  APP_FILTER_IDP
 } = CONSTANTS.LOGIN_HISTORY;
 
 export const LOGIN_HISTORY_METHOD_COLOR: Record<LoginHistoryMethod, string> = {
@@ -51,14 +50,9 @@ export interface LoginAppOption {
   name: string;
 }
 
-/**
- * The "app" filter (Ducker ID or one catalog app) and the "signIn" filter.
- * `scope` decides what an empty signIn filter means: the user page hides
- * silent SSO by default, the admin page shows everything.
- */
+/** The "app" filter: Ducker ID itself or one catalog app. */
 export const buildLoginAppFilterDefs = (
   apps: LoginAppOption[],
-  scope: "user" | "admin",
   tFilters: TFilters,
   tApp: TApp
 ): ListFilterDef[] => [
@@ -70,61 +64,17 @@ export const buildLoginAppFilterDefs = (
       { value: APP_FILTER_IDP, label: tApp("idp") },
       ...apps.map((a) => ({ value: a.id, label: a.name }))
     ]
-  },
-  scope === "user"
-    ? {
-        key: "signIn",
-        type: "select",
-        label: tFilters("signIn"),
-        allLabel: tFilters("signInInteractiveDefault"),
-        options: [
-          { value: SIGN_IN_FILTER.ALL, label: tFilters("signInAll") },
-          { value: SIGN_IN_FILTER.SILENT, label: tFilters("signInSilent") }
-        ]
-      }
-    : {
-        key: "signIn",
-        type: "select",
-        label: tFilters("signIn"),
-        options: [
-          {
-            value: SIGN_IN_FILTER.INTERACTIVE,
-            label: tFilters("signInInteractive")
-          },
-          { value: SIGN_IN_FILTER.SILENT, label: tFilters("signInSilent") }
-        ]
-      }
+  }
 ];
 
 export const toLoginAppQueryParams = (
-  filters: Record<string, string | null | undefined>,
-  scope: "user" | "admin"
-): Pick<LoginHistoryQueryParams, "source" | "webAppId" | "interactive"> => {
+  filters: Record<string, string | null | undefined>
+): Pick<LoginHistoryQueryParams, "source" | "webAppId"> => {
   const app = filters.app ?? null;
-  const signIn = filters.signIn ?? null;
 
-  const appParams =
-    app === APP_FILTER_IDP
-      ? { source: SOURCE.IDP }
-      : app
-        ? { webAppId: app }
-        : {};
-
-  const interactive =
-    signIn === SIGN_IN_FILTER.SILENT
-      ? false
-      : signIn === SIGN_IN_FILTER.INTERACTIVE
-        ? true
-        : signIn === SIGN_IN_FILTER.ALL
-          ? undefined
-          : scope === "user"
-            ? true
-            : undefined;
-
-  return {
-    ...appParams,
-    ...(interactive !== undefined && { interactive })
-  };
+  if (app === APP_FILTER_IDP) return { source: SOURCE.IDP };
+  if (app) return { webAppId: app };
+  return {};
 };
 
 export const buildLoginHistoryFilterDefs = (

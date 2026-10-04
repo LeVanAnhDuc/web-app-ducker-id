@@ -34,7 +34,7 @@ This repository is a monorepo: `client/` is the Next.js web UI, `server/` is the
 - **Login history**
   - Your own sign-in attempts with method, success/failure and reason, IP, country and city, device type, OS and browser, and an anomaly flag
   - Summary stat cards above the table
-  - Each row shows where you signed in — Ducker ID itself or a satellite app over OIDC — and automatic SSO sign-ins from an existing session are recorded too, hidden by default behind a sign-in type filter; filter by app as well
+  - Each row shows where you signed in — Ducker ID itself or a satellite app over OIDC — and automatic SSO sign-ins from an existing session are recorded too, marked with an "Auto" badge; filter by app or by the SSO method
 - **Notifications inbox**
   - Unread badge and panel in the header, plus a full `/notifications` page grouped by date
   - Mark a single notification or all of them as read

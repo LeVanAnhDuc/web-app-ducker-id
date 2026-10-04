@@ -69,15 +69,6 @@ test.describe("Admin Login History — app source", () => {
     expect(query.has("interactive")).toBe(false);
   });
 
-  test("signIn=interactive sends interactive=true", async ({ page }) => {
-    const seen: Request[] = [];
-    await stubList(page, seen);
-    await page.goto("/admin/login-history?signIn=interactive");
-    await expect(page.getByText("Match CV")).toBeVisible();
-    const query = new URL(seen[seen.length - 1].url()).searchParams;
-    expect(query.get("interactive")).toBe("true");
-  });
-
   // Row 8: detail adds Source / App / Sign-in type.
   test("detail shows source, app and sign-in type", async ({ page }) => {
     await page.route("**/api/v1/admin/login-history/*", (route) =>

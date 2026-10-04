@@ -117,11 +117,11 @@ SSO tới app vệ tinh) đã bao phạm vi này, nên không cần sửa Goals.
 11. **Bộ lọc** (khai báo dạng data trong `buildLoginHistoryFilterDefs`):
     - *Ứng dụng*: select gồm "Ducker ID" + các app trong catalog (`requests/` web-app hiện có),
       map sang `source=idp` hoặc `webAppId=<id>`.
-    - **Trang user**: filter *"Kiểu đăng nhập"*. Để trống nghĩa là chỉ thủ công (`interactive=true`), ngoài ra
-      có "Gồm cả SSO tự động" và "Chỉ SSO tự động". Ban đầu định làm toggle, nhưng `ListFilterDef` chỉ có
-      `select`/`dateRange`/`text`, nên dùng select có cùng ngữ nghĩa thay vì thêm loại filter mới.
-      Giá trị nằm trên URL query như mọi filter khác (`useListQuery`).
-    - **Admin**: select *Interactive* (tất cả / có / không), mặc định là tất cả.
+    - ~~Filter "Kiểu đăng nhập" (thủ công / SSO tự động)~~: **đã gỡ ngày 04.10.2026**. Trang user ẩn SSO tự
+      động khi filter để trống, và chính người làm feature, khi test, tưởng là log không được ghi. Filter này
+      cũng chồng nghĩa với *Phương thức = SSO* và *Ứng dụng*: chọn SSO mà vẫn không thấy dòng SSO. Bây giờ cả
+      hai trang hiện tất cả. Thủ công / tự động chỉ còn là badge "Tự động" trên dòng và một trường ở trang
+      chi tiết admin. API vẫn nhận query `interactive` cho ai cần lọc qua API.
 12. **Admin detail** (`AdminLoginHistoryDetailCard`): thêm các dòng *Nguồn*, *Ứng dụng*, *Kiểu đăng nhập*
     (interactive / SSO im lặng).
 13. **i18n** `locales/{en,vi}/loginHistory.json`: `method.sso`, `failReason.not_entitled`, `source.*`,

@@ -38,7 +38,7 @@ const LoginHistoryTable = () => {
   const filterDefs = useMemo(
     () => [
       ...buildLoginHistoryFilterDefs(tStatus, tMethod, tFilters),
-      ...buildLoginAppFilterDefs(appOptions, "user", tFilters, tApp)
+      ...buildLoginAppFilterDefs(appOptions, tFilters, tApp)
     ],
     [tStatus, tMethod, tFilters, tApp, appOptions]
   );
@@ -61,7 +61,7 @@ const LoginHistoryTable = () => {
     }),
     ...(query.filters.fromDate && { fromDate: query.filters.fromDate }),
     ...(query.filters.toDate && { toDate: query.filters.toDate }),
-    ...toLoginAppQueryParams(query.filters, "user")
+    ...toLoginAppQueryParams(query.filters)
   };
 
   const { data, isLoading } = useMyLoginHistory(params);
