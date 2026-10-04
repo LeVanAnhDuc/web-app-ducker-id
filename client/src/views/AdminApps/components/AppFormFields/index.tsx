@@ -14,6 +14,7 @@ import CategorySelect from "../CategorySelect";
 import StatusSwitch from "../StatusSwitch";
 import RequiredRolesGroup from "../RequiredRolesGroup";
 import RedirectUrisField from "../RedirectUrisField";
+import TokenAuthMethodSelect from "../TokenAuthMethodSelect";
 
 const AppFormFields = ({
   categories,
@@ -70,6 +71,13 @@ const AppFormFields = ({
         label={t("redirectUris.label")}
         placeholder={t("redirectUris.placeholder")}
         hint={t("redirectUris.hint")}
+        disabled={disabled}
+      />
+      <TokenAuthMethodSelect
+        label={t("tokenEndpointAuthMethod.label")}
+        hint={t("tokenEndpointAuthMethod.hint")}
+        confidentialLabel={t("tokenEndpointAuthMethod.confidential")}
+        publicLabel={t("tokenEndpointAuthMethod.public")}
         disabled={disabled}
       />
     </div>

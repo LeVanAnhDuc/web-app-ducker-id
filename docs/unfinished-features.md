@@ -14,6 +14,28 @@
 | 4   | Billing                | 🔴 Mock hoàn toàn | ✅ Đủ          | ❌ Không có request           | ❌ Không có module        | Trung bình |
 | 5   | RecentlyUsed           | 🔴 Mock hoàn toàn | ✅ Đủ          | ❌ Client-side only           | ❌ Không có endpoint      | Trung bình |
 | 6   | MyContacts             | ⚪ Placeholder    | ⚠️ Empty state | ❌ Chưa có                    | ❌ Chưa có list cho user  | Thấp       |
+| 7   | OIDC — phần còn lại    | 🟡 Một phần       | —              | —                             | ⚠️ Core xong, 4 phần thiếu | Trung bình |
+
+---
+
+## 7. 🟡 OIDC — phần còn lại của MVP-1
+
+> Cập nhật 26.09.2026. Core đã xong ở nhánh `feat/oidc-provider` — xem
+> `docs/specs/oidc-provider/design.md`.
+
+**Đã có**: `/oauth/authorize` (kèm `prompt=none`), `/oauth/token` (Authorization Code +
+PKCE S256), `/oauth/userinfo`, `/.well-known/openid-configuration`,
+`/.well-known/jwks.json`, phiên IdP qua cookie `sid` trên Redis, ký RS256 có `kid`.
+
+**Còn thiếu**:
+
+| Phần | Vì sao chưa làm |
+| --- | --- |
+| Consent screen | Mâu thuẫn chưa phân xử giữa ADR-002 (first-party vẫn phải consent) và yêu cầu "đã đăng nhập thì quay về ngay". Model `oauth_consents` vẫn chưa có route |
+| `/oauth/introspect`, `/oauth/revoke` | Chỉ cần khi có endpoint nhạy cảm cần check revoke real-time; app vệ tinh đầu tiên (badminton) chưa có API nào |
+| Refresh-token grant | Public client không có chỗ cất refresh token an toàn. Sẽ cần khi có app vệ tinh **có** backend (Match CV, Shorten Link) |
+| Back-channel logout | Cần endpoint server phía client để nhận webhook. Badminton tĩnh nên không có. Hiện dựa vào TTL 15 phút của access token |
+| Entitlement per-user | Đang gate theo `requiredRoles`. Model `entitlements` vẫn chưa có route — xem mục 1 |
 
 ---
 

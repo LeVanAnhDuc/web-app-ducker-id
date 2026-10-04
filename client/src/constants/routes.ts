@@ -4,6 +4,7 @@ const ROUTES = {
   FORGOT_PASSWORD_MAGIC_LINK: "/forgot-password/magic-link",
   FORGOT_PASSWORD_RESET: "/forgot-password/reset",
   LOGIN: "/login",
+  OAUTH_AUTHORIZE: "/oauth/authorize",
   LOGIN_PASSWORD: "/login/password",
   LOGIN_OTP: "/login/otp",
   LOGIN_MAGIC_LINK: "/login/magic-link",

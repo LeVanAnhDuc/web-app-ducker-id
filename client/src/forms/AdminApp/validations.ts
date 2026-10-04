@@ -12,10 +12,12 @@ const {
   CATEGORY_ID,
   STATUS,
   REQUIRED_ROLES,
-  REDIRECT_URIS
+  REDIRECT_URIS,
+  TOKEN_ENDPOINT_AUTH_METHOD
 } = CONSTANTS.FIELD_NAMES.ADMIN_APP_FIELD_NAMES;
 const { USER, ADMIN } = CONSTANTS.AUTHENTICATION_ROLES;
 const { ACTIVE, INACTIVE } = CONSTANTS.APP_STATUS;
+const { CLIENT_SECRET_BASIC, NONE } = CONSTANTS.TOKEN_AUTH_METHOD;
 
 const NAME_MIN = 2;
 const NAME_MAX = 64;
@@ -61,5 +63,6 @@ export const adminAppValidation = z.object({
   [REDIRECT_URIS]: z
     .array(requiredUrl)
     .min(1, { message: "required" })
-    .max(REDIRECT_URIS_MAX, { message: "maxItems" })
+    .max(REDIRECT_URIS_MAX, { message: "maxItems" }),
+  [TOKEN_ENDPOINT_AUTH_METHOD]: z.enum([CLIENT_SECRET_BASIC, NONE])
 });

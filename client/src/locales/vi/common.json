@@ -142,5 +142,9 @@
     "sortBy": "Sắp xếp theo {column}",
     "sortedAscending": "Đã sắp xếp tăng dần.",
     "sortedDescending": "Đã sắp xếp giảm dần."
+  },
+  "redirecting": {
+    "toApp": "Đang chuyển về {app}…",
+    "generic": "Đang chuyển hướng…"
   }
 }

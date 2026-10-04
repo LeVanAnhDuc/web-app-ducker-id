@@ -88,6 +88,12 @@
         "label": "Redirect URIs",
         "placeholder": "https://app.example.com/auth/callback",
         "hint": "OAuth redirect_uri whitelist. At least one required."
+      },
+      "tokenEndpointAuthMethod": {
+        "label": "Client authentication",
+        "hint": "Choose \"Public\" for a static SPA or mobile app — it gets no client secret, because a browser cannot keep one. PKCE protects it instead.",
+        "confidential": "Confidential — issue a client secret",
+        "public": "Public — no client secret (PKCE only)"
       }
     },
     "validation": {
@@ -126,6 +132,9 @@
         "invalid": "Must start with http:// or https://",
         "maxLength": "URL is too long.",
         "maxItems": "You can add at most 20 redirect URIs."
+      },
+      "tokenEndpointAuthMethod": {
+        "invalid": "Select a valid client authentication method."
       }
     }
   },
@@ -152,6 +161,7 @@
     "clientIdLabel": "Client ID",
     "clientSecretLabel": "Client Secret",
     "warning": "Store the client secret now — it will not be shown again.",
+    "publicClientNote": "This is a public client, so it has no client secret. It authenticates with PKCE instead — never add a secret to a browser app.",
     "done": "Done",
     "announce": {
       "copied": "Copied to clipboard."

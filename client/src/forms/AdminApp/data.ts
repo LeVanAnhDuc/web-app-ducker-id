@@ -3,7 +3,7 @@ import type { AdminAppFormValues } from "@/types/AdminApps";
 // others
 import CONSTANTS from "@/constants";
 
-const { AUTHENTICATION_ROLES, APP_STATUS } = CONSTANTS;
+const { AUTHENTICATION_ROLES, APP_STATUS, TOKEN_AUTH_METHOD } = CONSTANTS;
 
 export const initialAdminAppData: AdminAppFormValues = {
   name: "",
@@ -14,5 +14,6 @@ export const initialAdminAppData: AdminAppFormValues = {
   categoryId: "",
   status: APP_STATUS.ACTIVE,
   requiredRoles: [AUTHENTICATION_ROLES.USER],
-  redirectUris: []
+  redirectUris: [],
+  tokenEndpointAuthMethod: TOKEN_AUTH_METHOD.CLIENT_SECRET_BASIC
 };

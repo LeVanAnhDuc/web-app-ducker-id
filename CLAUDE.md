@@ -18,7 +18,9 @@ Ducker ID (Identity Management System) is the sign-in gateway and app launcher p
 > blind. Dated specs under `docs/specs/` keep `IDMS` as historical record.
 > The OpenAPI document also still calls itself `AppStore Web API` (`server/src/libs/swagger/openapi.ts`).
 
-Note: despite the OAuth client metadata stored on app-registry entries, the OAuth 2.0 / OIDC endpoints (`/oauth/authorize`, `/oauth/token`, JWKS, consent screen) are **not implemented yet** — see `docs/project-goals.md` (MVP-1) and `docs/unfinished-features.md`.
+The OIDC core is implemented — `/oauth/authorize`, `/oauth/token`, `/oauth/userinfo`, discovery and JWKS, with Authorization Code + PKCE. Missing from MVP-1: consent screen, `/oauth/introspect`, `/oauth/revoke`, refresh-token grant and back-channel logout. See `docs/project-goals.md` and `docs/unfinished-features.md`.
+
+**These endpoints do not live under `/api/v1`.** OIDC discovery must sit at the origin root, so `oauth.routes.ts` is mounted straight onto `app` by `mountOAuthRoutes` in `modules.loader.ts`, and `client/next.config.ts` rewrites `/oauth/*` and `/.well-known/*` to the API. The client's `middleware.ts` matcher excludes both — letting next-intl touch them would prefix a locale and break every registered `redirect_uri`.
 
 ## Commands
 
@@ -55,7 +57,7 @@ cd client && pnpm e2e e2e/home/home-page.e2e.ts --project=chromium
 cd client && pnpm e2e e2e/admin-apps/ --project=admin
 ```
 
-Jest picks up `src/**/*.spec.ts` (colocated with the code) plus `test/integration/**` and `test/e2e/**`; factories, helpers and mocks live in `server/test/`. Current suite: **43 suites / 276 tests**, no database required.
+Jest picks up `src/**/*.spec.ts` (colocated with the code) plus `test/integration/**` and `test/e2e/**`; factories, helpers and mocks live in `server/test/`. Current suite: **44 suites / 302 tests**, no database required.
 
 Playwright (`client/playwright.config.ts`) runs `*.e2e.ts` under `client/e2e/` with `workers: 1` and `fullyParallel: false`, across four projects: `setup` and `admin-setup` log in and write `e2e/.auth/{user,admin}.json`, then `chromium` runs as a **regular user** (it `testIgnore`s the admin-only folders) and `admin` runs those folders. `admin-authz/` is deliberately left in the regular-user project — its denial tests need a non-admin session. E2E needs client + server + MongoDB + Redis up **and the DB seeded**; credentials come from `E2E_*` (defaults `user@test.com` / `User@123`, `admin@test.com` / `Admin@123`). The base URL resolves as `E2E_BASE_URL` → the nearest `.worktree-state.json` entry keyed by the current folder name → `http://localhost:3000`.
 
@@ -119,9 +121,9 @@ Feature work is spec-driven and worktree-isolated: branch from a fresh `origin/m
 
 `docs/unfinished-features.md` is the backlog, but it was last audited 2026-07-09 and now overstates the gap — AdminUsers lock/unlock/reset and the entitlements matrix have since been wired to real endpoints. What still imports from `@/mocks` today: `AdminEntitlements` (`useUserGrants`, `useUpdateUserGrants`), `useForceLogoutAdminUser`, all three Billing cards, the Profile stat badges, and `RecentlyUsed`.
 
-## README (REQUIRED — keep in sync with features)
+## README — keep `## Features` in sync
 
-`README.md` describes what the app does for its users — it is not a boilerplate page. Every commit that adds or changes user-facing behaviour (`feat:`) MUST update the `## Features` section of `README.md` in the same branch, before merging — one short English bullet in the existing style.
+`README.md` describes what the app does for its users — it is not a boilerplate page. Every commit that adds or changes user-facing behaviour (`feat:`) also updates the `## Features` section of `README.md` in the same branch, before merging — one short English bullet in the existing style.
 
 While touching README, refresh any stale numbers you notice (test counts, stack versions).
 

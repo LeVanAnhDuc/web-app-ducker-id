@@ -2,8 +2,12 @@
 import type { AuthenticationRole } from "@/types/User";
 // others
 import type APP_STATUS from "@/constants/appStatus";
+import type TOKEN_AUTH_METHOD from "@/constants/tokenAuthMethod";
 
 export type AppStatus = (typeof APP_STATUS)[keyof typeof APP_STATUS];
+
+export type TokenAuthMethod =
+  (typeof TOKEN_AUTH_METHOD)[keyof typeof TOKEN_AUTH_METHOD];
 
 export interface WebAppCategory {
   _id: string;
@@ -23,6 +27,7 @@ export interface WebApp {
   requiredRoles: AuthenticationRole[];
   redirectUris: string[];
   clientId: string;
+  tokenEndpointAuthMethod: TokenAuthMethod;
   createdAt: string;
   updatedAt: string;
 }
@@ -43,10 +48,12 @@ export interface AdminAppFormValues {
   status: AppStatus;
   requiredRoles: AuthenticationRole[];
   redirectUris: string[];
+  tokenEndpointAuthMethod: TokenAuthMethod;
 }
 
 export type AdminAppCreateInput = AdminAppFormValues;
 
 export type AdminAppUpdateInput = AdminAppFormValues;
 
-export type AdminAppCreateResult = WebApp & { clientSecret: string };
+/** clientSecret = null với public client — không có secret nào để hiện. */
+export type AdminAppCreateResult = WebApp & { clientSecret: string | null };

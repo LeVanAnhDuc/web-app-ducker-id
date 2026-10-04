@@ -6,6 +6,7 @@ import ERROR_CODES from "./errorCodes";
 import QUERY_KEYS from "./queryKeys";
 import AUTHENTICATION_ROLES from "./roles";
 import APP_STATUS from "./appStatus";
+import TOKEN_AUTH_METHOD from "./tokenAuthMethod";
 import NOTIF_GROUP from "./notifGroup";
 import LOGIN_HISTORY from "./loginHistory";
 import CONTACT_STATUS from "./contactStatus";
@@ -32,6 +33,7 @@ const CONSTANTS = {
   QUERY_KEYS,
   AUTHENTICATION_ROLES,
   APP_STATUS,
+  TOKEN_AUTH_METHOD,
   NOTIF_GROUP,
   LOGIN_HISTORY,
   CONTACT_STATUS,

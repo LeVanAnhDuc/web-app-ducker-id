@@ -88,6 +88,12 @@
         "label": "Redirect URI",
         "placeholder": "https://app.example.com/auth/callback",
         "hint": "Whitelist redirect_uri của OAuth. Cần ít nhất một."
+      },
+      "tokenEndpointAuthMethod": {
+        "label": "Xác thực client",
+        "hint": "Chọn \"Public\" cho SPA tĩnh hoặc app mobile — loại này không được cấp client secret, vì trình duyệt không giữ được bí mật. PKCE thay vai trò bảo vệ.",
+        "confidential": "Confidential — có cấp client secret",
+        "public": "Public — không có client secret (chỉ PKCE)"
       }
     },
     "validation": {
@@ -126,6 +132,9 @@
         "invalid": "Phải bắt đầu bằng http:// hoặc https://",
         "maxLength": "URL quá dài.",
         "maxItems": "Tối đa 20 redirect URI."
+      },
+      "tokenEndpointAuthMethod": {
+        "invalid": "Chọn phương thức xác thực client hợp lệ."
       }
     }
   },
@@ -152,6 +161,7 @@
     "clientIdLabel": "Client ID",
     "clientSecretLabel": "Client Secret",
     "warning": "Hãy lưu client secret ngay — nó sẽ không hiển thị lại.",
+    "publicClientNote": "Đây là public client nên không có client secret. Nó xác thực bằng PKCE — tuyệt đối không nhét secret vào app chạy trên trình duyệt.",
     "done": "Xong",
     "announce": {
       "copied": "Đã sao chép vào clipboard."

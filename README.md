@@ -58,6 +58,13 @@ This repository is a monorepo: `client/` is the Next.js web UI, `server/` is the
   - `/admin/login-history` shows sign-in attempts across all accounts, with a detail page per entry
   - `/admin/contact` lists incoming support requests with a detail view and a `new → processing → resolved` status workflow
   - `/admin` is a landing page linking to each admin area
+- **Single sign-on for satellite apps (OpenID Connect)**
+  - `/oauth/authorize`, `/oauth/token` and `/oauth/userinfo`, plus the discovery document at `/.well-known/openid-configuration` and public keys at `/.well-known/jwks.json`
+  - Authorization Code with PKCE (S256), required for every client — authorization codes live 60 seconds and are single-use
+  - A browser session cookie at the identity provider means an app you open while already signed in comes straight back, with no screen in between
+  - `prompt=none` lets an app check for a session without ever showing a login screen
+  - Apps register as confidential (issued a client secret) or public (no secret — for a browser-only app that cannot keep one)
+  - ID and access tokens are signed RS256, so an app verifies them from the public JWKS without holding any secret
 - **Operator tooling**
   - Swagger UI at `/api-docs` (and `/api-docs.json`) on the API
   - `/health` reports MongoDB and Redis status
@@ -67,9 +74,9 @@ This repository is a monorepo: `client/` is the Next.js web UI, `server/` is the
 
 These have a user interface but no working backend, or are named in `docs/project-goals.md` and not started. See `docs/unfinished-features.md`.
 
-- **OAuth 2.0 / OIDC provider** — none of `/oauth/authorize`, `/oauth/token`, `/oauth/introspect`, `/oauth/revoke`, `/oauth/userinfo`, the JWKS or discovery documents exist, and there is no consent screen. App-registry entries already store OAuth client metadata (client ID/secret, redirect URIs, grant types, scopes) but nothing consumes it, and the `oauth_consents` schema has no routes. Launching an app just opens its URL — there is no single sign-on handoff.
+- **The rest of the OIDC surface** — `/oauth/introspect`, `/oauth/revoke` and refresh-token grants are not built, and there is no consent screen: an app a user is entitled to is authorized without being asked. `/oauth/logout` ends the identity-provider session but there is no back-channel logout, so an already-issued access token stays valid until it expires. The `oauth_consents` schema still has no routes.
 - **Per-user entitlements** — `/admin/entitlements` has a full user × app matrix with a multi-select user picker, role filter and edit mode, but it reads and writes mock data; the server's entitlement module is a schema only. App visibility today is by role, not per user.
-- **Admin force logout** — the dialog and success toast are wired to a mock; there is no endpoint. Signing out only clears the current browser's refresh-token cookie, so there is no global or back-channel sign-out and no server-side session revocation list.
+- **Admin force logout** — the dialog and success toast are wired to a mock; there is no endpoint. Signing out now destroys the server-side session, so satellite apps stop getting new tokens, but an admin still cannot end someone else's session.
 - **Recently used apps** — `/recently-used` groups apps by Today / Yesterday / This Week / Earlier with search and a clear button, but the list is hardcoded in the client and nothing is persisted.
 - **Billing** — `/billing` shows payment methods, invoices and usage from hardcoded data; the Add and Download buttons do nothing and there is no billing module on the server.
 - **Smaller gaps** — the three stat badges on the profile card are hardcoded, as is the weekly-activity chart on the home page; the profile Danger Zone "delete account" button has no handler; avatar upload has no endpoint.
@@ -80,7 +87,7 @@ These have a user interface but no working backend, or are named in `docs/projec
 | --------- | ------------------------------------------------------------------------------------------------------------------------ |
 | Client    | Next.js 15.3 (App Router) · React 19 · TypeScript 5 · Tailwind CSS v4 · shadcn/ui + Radix · TanStack Query 5 · Zustand 5 · React Hook Form 7 + Zod 4 · next-intl 4 · Axios · Framer Motion |
 | Server    | Node.js · Express 4 · TypeScript 5 · MongoDB with Mongoose 8 · Redis + BullMQ · JWT + bcrypt · Joi 17 · i18next · Nodemailer + React Email · Winston · Swagger UI |
-| Testing   | Jest 30 + ts-jest on the server — **43 suites / 276 tests, all passing**. Playwright 1.60 on the client — 30 E2E spec files under `client/e2e/` (require a running client, server, MongoDB and Redis, so they are not counted here) |
+| Testing   | Jest 30 + ts-jest on the server — **44 suites / 302 tests, all passing**. Playwright 1.60 on the client — 30 E2E spec files under `client/e2e/` (require a running client, server, MongoDB and Redis, so they are not counted here) |
 | Tooling   | pnpm · ESLint · Prettier · Husky pre-commit running lint-staged in both `client/` and `server/`                 |
 
 ## Running

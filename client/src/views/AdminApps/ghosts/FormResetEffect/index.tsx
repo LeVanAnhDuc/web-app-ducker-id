@@ -17,7 +17,8 @@ const toFormValues = (app: WebApp): AdminAppFormValues => ({
   categoryId: app.categoryId,
   status: app.status,
   requiredRoles: app.requiredRoles,
-  redirectUris: app.redirectUris
+  redirectUris: app.redirectUris,
+  tokenEndpointAuthMethod: app.tokenEndpointAuthMethod
 });
 
 const FormResetEffect = ({

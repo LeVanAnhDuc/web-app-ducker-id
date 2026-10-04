@@ -142,5 +142,9 @@
     "sortBy": "Sort by {column}",
     "sortedAscending": "Sorted ascending.",
     "sortedDescending": "Sorted descending."
+  },
+  "redirecting": {
+    "toApp": "Taking you back to {app}…",
+    "generic": "Redirecting…"
   }
 }
