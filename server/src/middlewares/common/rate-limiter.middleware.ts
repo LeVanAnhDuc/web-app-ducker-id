@@ -37,6 +37,7 @@ export class RateLimiterMiddleware {
   public readonly updateProfileByIp: RateLimitRequestHandler;
   public readonly categoriesByIp: RateLimitRequestHandler;
   public readonly adminUserMutationByIpAndUser: RateLimitRequestHandler;
+  public readonly recordRecentAppByUser: RateLimitRequestHandler;
 
   constructor(redisClient: RedisClient) {
     this.redisClient = redisClient;
@@ -285,6 +286,21 @@ export class RateLimiterMiddleware {
         `${req.ip ?? "unknown"}:${RequestContext.requireAuthId()}`,
       handler: this.createRateLimitExceededHandler(
         "user:errors.rateLimitExceeded"
+      )
+    });
+
+    this.recordRecentAppByUser = rateLimit({
+      windowMs:
+        RATE_LIMIT_CONFIG.RECENT_APP.RECORD.PER_USER.WINDOW_SECONDS * 1000,
+      max: RATE_LIMIT_CONFIG.RECENT_APP.RECORD.PER_USER.MAX_REQUESTS,
+      store: this.createRedisStore(
+        RATE_LIMIT_CONFIG.RECENT_APP.RECORD.PER_USER.KEY
+      ),
+      standardHeaders: true,
+      legacyHeaders: false,
+      keyGenerator: () => RequestContext.requireUserId(),
+      handler: this.createRateLimitExceededHandler(
+        "recentApp:errors.rateLimitExceeded"
       )
     });
   }

@@ -19,6 +19,10 @@ import {
 } from "@/modules/contact-admin/swagger";
 import { userSwaggerSchemas, userPaths } from "@/modules/user/swagger";
 import { webAppSwaggerSchemas, webAppPaths } from "@/modules/web-app/swagger";
+import {
+  recentAppSwaggerSchemas,
+  recentAppPaths
+} from "@/modules/recent-app/swagger";
 // others
 import ENV from "@/constants/env";
 import { commonSchemas, commonResponses } from "./common.schemas";
@@ -35,7 +39,8 @@ const allSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   ...changePasswordSwaggerSchemas,
   ...contactAdminSwaggerSchemas,
   ...userSwaggerSchemas,
-  ...webAppSwaggerSchemas
+  ...webAppSwaggerSchemas,
+  ...recentAppSwaggerSchemas
 };
 
 const allPaths: OpenAPIV3.PathsObject = {
@@ -47,7 +52,8 @@ const allPaths: OpenAPIV3.PathsObject = {
   ...changePasswordPaths,
   ...contactAdminPaths,
   ...userPaths,
-  ...webAppPaths
+  ...webAppPaths,
+  ...recentAppPaths
 };
 
 export const openApiSpec: OpenAPIV3.Document = {

@@ -7,6 +7,8 @@ import { Card } from "@/components/ui/card";
 import CustomButton from "@/components/CustomButton";
 import CustomImage from "@/components/CustomImage";
 import FavoriteButton from "@/components/FavoriteButton";
+// hooks
+import { useOpenApp } from "@/hooks";
 
 const RecommendedAppCard = ({
   id,
@@ -34,9 +36,8 @@ const RecommendedAppCard = ({
   onToggleFavorite: () => void;
 }) => {
   const initial = name.charAt(0).toUpperCase();
-  const handleOpen = () => {
-    window.open(homeUrl, "_blank", "noopener,noreferrer");
-  };
+  const openApp = useOpenApp();
+  const handleOpen = () => openApp({ _id: id, homeUrl });
   return (
     <Card
       className="flex flex-col gap-4 rounded-xl border p-6"

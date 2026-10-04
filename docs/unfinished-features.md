@@ -12,7 +12,7 @@
 | 2   | AdminUsers (mutations) | 🟡 Hybrid         | ✅ Đủ          | ⚠️ List thật, 4 mutation mock | ⚠️ List có, 4 action chưa | Cao        |
 | 3   | Profile stats          | 🟡 Hybrid         | ✅ Đủ          | ⚠️ Info thật, stats mock      | ❌ Chưa có stats          | Thấp (nhỏ) |
 | 4   | Billing                | 🔴 Mock hoàn toàn | ✅ Đủ          | ❌ Không có request           | ❌ Không có module        | Trung bình |
-| 5   | RecentlyUsed           | 🔴 Mock hoàn toàn | ✅ Đủ          | ❌ Client-side only           | ❌ Không có endpoint      | Trung bình |
+| 5   | RecentlyUsed           | ✅ Xong (04.10.2026) | ✅ Đủ       | ✅ API thật                   | ✅ `/users/me/recent-apps` | —          |
 | 6   | MyContacts             | ⚪ Placeholder    | ⚠️ Empty state | ❌ Chưa có                    | ❌ Chưa có list cho user  | Thấp       |
 | 7   | OIDC — phần còn lại    | 🟡 Một phần       | —              | —                             | ⚠️ Core xong, 4 phần thiếu | Trung bình |
 
@@ -125,24 +125,13 @@ PKCE S256), `/oauth/userinfo`, `/.well-known/openid-configuration`,
 
 ---
 
-## 5. 🔴 RecentlyUsed — Ứng dụng dùng gần đây
+## 5. ✅ RecentlyUsed — Ứng dụng dùng gần đây (xong 04.10.2026)
 
-**Vị trí FE**: `client/src/views/RecentlyUsed/mains/HistoryList/index.tsx`
-**Mock**: `client/src/mocks/RecentlyUsed/index.ts` (124 dòng, 10 app)
+Wired tới `GET/DELETE /users/me/recent-apps`, `POST/DELETE /users/me/recent-apps/:appId`,
+`POST /users/me/recent-apps/:appId/restore`. Ghi nhận từ mọi nút mở app (`useOpenApp`) và từ `/oauth/authorize`.
+Xoá mềm có Undo, cuộn vô hạn, gắn yêu thích. Chi tiết: `docs/specs/recently-used/`.
 
-**UI hiện có**: Danh sách app group theo ngày (Today / Yesterday / This Week / Earlier), search + nút clear history. Toàn bộ chạy client-side, reload là mất; clear không persist.
-
-**Cần làm**:
-
-- [ ] BE: cơ chế ghi nhận truy cập app + endpoint
-  - `GET /apps/recently-used`
-  - `DELETE /apps/recently-used` (clear)
-- [ ] FE: `client/src/requests/recentlyUsed.ts` + hook, thay mock + persist clear
-
-> **Nguồn dữ liệu có sẵn (04.10.2026):** từ `login-history-app-source`, mỗi lần IdP cấp code
-> cho app vệ tinh đều ghi một dòng `login_histories` với `method = sso` + `webAppId`. Đó là tín
-> hiệu "đã mở app qua SSO" thật — `GET /apps/recently-used` có thể aggregate từ đây thay vì
-> dựng cơ chế ghi riêng. Click mở app không qua OIDC (link ngoài) vẫn chưa được ghi nhận.
+Còn lại (ngoài phạm vi): biểu đồ Weekly Activity ở Home vẫn mock — cần lưu từng lượt mở, `user_app_usages` chỉ giữ một dòng / app.
 
 ---
 

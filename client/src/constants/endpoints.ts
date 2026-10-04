@@ -52,6 +52,9 @@ const END_POINTS = {
   ADMIN_APP_CATEGORIES: "/admin/apps/categories",
   FAVORITES: "/users/me/favorites",
   FAVORITE_BY_APP_ID: "/users/me/favorites/:appId",
+  RECENT_APPS: "/users/me/recent-apps",
+  RECENT_APP_BY_APP_ID: "/users/me/recent-apps/:appId",
+  RECENT_APP_RESTORE: "/users/me/recent-apps/:appId/restore",
 
   // Users (admin)
   ADMIN_USERS: "/admin/users",

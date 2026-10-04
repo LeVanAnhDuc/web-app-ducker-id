@@ -99,6 +99,9 @@ export const ERROR_CODES = {
   // ── Favorite ──
   FAVORITE_APP_NOT_FOUND: "FAVORITE_APP_NOT_FOUND",
 
+  // ── Recent app ──
+  RECENT_APP_NOT_FOUND: "RECENT_APP_NOT_FOUND",
+
   // ── Notification ──
   NOTIFICATION_NOT_FOUND: "NOTIFICATION_NOT_FOUND",
 
