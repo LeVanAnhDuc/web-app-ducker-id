@@ -18,7 +18,8 @@
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
     "seed": "ts-node -r tsconfig-paths/register src/database/seeders/index.ts",
-    "seed:clear": "ts-node -r tsconfig-paths/register src/database/seeders/index.ts --clear"
+    "seed:clear": "ts-node -r tsconfig-paths/register src/database/seeders/index.ts --clear",
+    "migrate:drop-temp-password": "ts-node --files -r tsconfig-paths/register src/database/migrations/drop-temp-password-fields.ts"
   },
   "lint-staged": {
     "**/*.{js,ts,mts,cts,tsx}": [
