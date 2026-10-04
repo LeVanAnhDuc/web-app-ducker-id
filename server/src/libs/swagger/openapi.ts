@@ -20,6 +20,10 @@ import {
 import { userSwaggerSchemas, userPaths } from "@/modules/user/swagger";
 import { webAppSwaggerSchemas, webAppPaths } from "@/modules/web-app/swagger";
 import {
+  categorySwaggerSchemas,
+  categoryPaths
+} from "@/modules/category/swagger";
+import {
   recentAppSwaggerSchemas,
   recentAppPaths
 } from "@/modules/recent-app/swagger";
@@ -40,6 +44,7 @@ const allSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   ...contactAdminSwaggerSchemas,
   ...userSwaggerSchemas,
   ...webAppSwaggerSchemas,
+  ...categorySwaggerSchemas,
   ...recentAppSwaggerSchemas
 };
 
@@ -53,6 +58,7 @@ const allPaths: OpenAPIV3.PathsObject = {
   ...contactAdminPaths,
   ...userPaths,
   ...webAppPaths,
+  ...categoryPaths,
   ...recentAppPaths
 };
 
@@ -97,7 +103,16 @@ export const openApiSpec: OpenAPIV3.Document = {
     },
     {
       name: "Web App Admin",
-      description: "Admin endpoints for managing apps and categories"
+      description: "Admin endpoints for managing apps"
+    },
+    {
+      name: "Categories",
+      description: "Public category list for the launcher filter"
+    },
+    {
+      name: "Categories Admin",
+      description:
+        "Admin endpoints for creating, renaming, ordering and deleting categories"
     }
   ],
   paths: allPaths,

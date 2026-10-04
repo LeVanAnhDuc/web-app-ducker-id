@@ -1,11 +1,22 @@
 export const WEB_APP_CATEGORIES = [
-  { name: "content", displayName: "Content", icon: null, sortOrder: 1 },
-  { name: "tools", displayName: "Internal Tools", icon: null, sortOrder: 2 },
-  { name: "identity", displayName: "Identity", icon: null, sortOrder: 3 },
   {
-    name: "productivity",
-    displayName: "Productivity",
-    icon: null,
-    sortOrder: 4
+    slug: "content",
+    name: { en: "Content", vi: "Nội dung" },
+    sortOrder: 0
+  },
+  {
+    slug: "internal-tools",
+    name: { en: "Internal Tools", vi: "Công cụ nội bộ" },
+    sortOrder: 1
+  },
+  {
+    slug: "identity",
+    name: { en: "Identity", vi: "Định danh" },
+    sortOrder: 2
+  },
+  {
+    slug: "productivity",
+    name: { en: "Productivity", vi: "Năng suất" },
+    sortOrder: 3
   }
 ] as const;

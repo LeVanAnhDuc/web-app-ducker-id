@@ -1,5 +1,5 @@
 // types
-import type { WebAppRepository } from "@/modules/web-app/repositories/web-app.repository";
+import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
 import type { AuthenticationService } from "@/modules/authentication/services";
 import type { UserService } from "@/modules/user/services";
 import type { SessionService } from "@/modules/session/services";

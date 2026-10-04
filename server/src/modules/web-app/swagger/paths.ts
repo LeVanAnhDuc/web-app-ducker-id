@@ -13,7 +13,7 @@ Register a satellite app with Ducker ID. Generates an OAuth \`clientId\` and \`c
 
 **Business rules:**
 - \`name\` must be unique across all apps (lowercase, alphanumeric + hyphens)
-- \`categoryId\` must reference an existing category
+- \`categoryIds\` must be 1-5 distinct existing categories
 - \`clientSecret\` is bcrypt-hashed before storage; the plaintext is returned only in this response
       `.trim(),
       tags: ["Web App Admin"],
@@ -74,7 +74,7 @@ List registered apps for the admin console.
 **Filtering:**
 - \`search\` — case-insensitive match on app name / display name
 - \`status\` — filter by app status (\`active\` | \`inactive\`)
-- \`categoryId\` — filter by owning category (MongoDB ObjectId)
+- \`categoryId\` — apps having this category among their categories (MongoDB ObjectId)
       `.trim(),
       tags: ["Web App Admin"],
       security: [{ bearerAuth: [] }],
@@ -151,7 +151,7 @@ Update one or more fields of a registered app. At least one field must be provid
 
 **Business rules:**
 - \`name\` must remain unique across all apps (conflict returns 409)
-- \`categoryId\` must reference an existing category (not found returns 404)
+- \`categoryIds\` must be 1-5 distinct existing categories (otherwise 400 WEB_APP_CATEGORY_NOT_FOUND)
 - Setting \`status\` to \`inactive\` pauses the app — it stays in the registry but is hidden from users' dashboards
       `.trim(),
       tags: ["Web App Admin"],
@@ -200,8 +200,7 @@ Update one or more fields of a registered app. At least one field must be provid
         "401": { $ref: "#/components/responses/Unauthorized" },
         "403": { $ref: "#/components/responses/Forbidden" },
         "404": {
-          description:
-            "Not found — app id does not exist (WEB_APP_NOT_FOUND) or category not found (WEB_APP_CATEGORY_NOT_FOUND)",
+          description: "Not found — app id does not exist (WEB_APP_NOT_FOUND) ",
           content: {
             "application/json": {
               schema: { $ref: "#/components/schemas/ErrorResponse" }
@@ -238,7 +237,7 @@ List the active-app catalog for the launcher. Returns apps with \`status=active\
 - \`page\` — 1-based page number (default 1)
 - \`limit\` — page size (default 12, max 100)
 - \`search\` — case-insensitive match on name / display name / description
-- \`categoryId\` — filter the catalog by owning category (MongoDB ObjectId)
+- \`categoryId\` — apps having this category among their categories (MongoDB ObjectId)
       `.trim(),
       tags: ["Web App"],
       security: [{ bearerAuth: [] }],
@@ -297,92 +296,6 @@ List the active-app catalog for the launcher. Returns apps with \`status=active\
         "400": { $ref: "#/components/responses/BadRequest" },
         "401": { $ref: "#/components/responses/Unauthorized" },
         "422": { $ref: "#/components/responses/ValidationError" }
-      }
-    }
-  },
-  "/apps/categories": {
-    get: {
-      summary: "List categories (public)",
-      description: `
-List all app categories for the launcher catalog filter. Returns every
-category so callers can filter the active-app catalog by \`categoryId\`.
-
-**Authentication:**
-- Public endpoint — no authentication required.
-- An optional Bearer token is accepted (attaches the requesting user when present) but anonymous requests are allowed.
-
-**Rate limiting:**
-- IP-based rate limit applies (see \`429\` response).
-
-**Caching:**
-- Response is cacheable — served with \`Cache-Control: public, max-age=300\`.
-      `.trim(),
-      tags: ["Web App"],
-      responses: {
-        "200": {
-          description: "Categories retrieved successfully",
-          content: {
-            "application/json": {
-              schema: {
-                allOf: [
-                  { $ref: "#/components/schemas/SuccessResponse" },
-                  {
-                    type: "object",
-                    properties: {
-                      data: {
-                        type: "array",
-                        items: {
-                          $ref: "#/components/schemas/UserCategoryResponse"
-                        }
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "429": { $ref: "#/components/responses/TooManyRequests" }
-      }
-    }
-  },
-  "/admin/apps/categories": {
-    get: {
-      summary: "List categories (admin)",
-      description: `
-List all app categories for the admin console.
-
-**Authentication:**
-- Requires valid Bearer token (admin role)
-      `.trim(),
-      tags: ["Web App Admin"],
-      security: [{ bearerAuth: [] }],
-      responses: {
-        "200": {
-          description: "Categories retrieved successfully",
-          content: {
-            "application/json": {
-              schema: {
-                allOf: [
-                  { $ref: "#/components/schemas/SuccessResponse" },
-                  {
-                    type: "object",
-                    properties: {
-                      data: {
-                        type: "array",
-                        items: {
-                          $ref: "#/components/schemas/AdminCategoryResponse"
-                        }
-                      }
-                    }
-                  }
-                ]
-              }
-            }
-          }
-        },
-        "401": { $ref: "#/components/responses/Unauthorized" },
-        "403": { $ref: "#/components/responses/Forbidden" }
       }
     }
   }

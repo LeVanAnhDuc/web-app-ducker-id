@@ -2,7 +2,11 @@
 import { WebAppService } from "../";
 // modules
 import { WEB_APP_STATUSES } from "../../constants";
-import { ConflictRequestError, NotFoundError } from "@/common/exceptions";
+import {
+  BadRequestError,
+  ConflictRequestError,
+  NotFoundError
+} from "@/common/exceptions";
 // others
 import { RequestContext } from "@/utils/request-context";
 
@@ -18,8 +22,8 @@ const makeRepos = () => {
     updateById: jest.fn()
   };
   const categoryRepo = {
-    findAll: jest.fn(),
-    existsById: jest.fn().mockResolvedValue(true)
+    // Echo the count back so every id exists unless a test says otherwise.
+    countByIds: jest.fn((ids: string[]) => Promise.resolve(ids.length))
   };
   const favoriteRepo = {
     findFavoritedAppIds: jest.fn().mockResolvedValue(new Set<string>())
@@ -33,7 +37,7 @@ const validBody = {
   description: "",
   iconUrl: "",
   homeUrl: "https://blog.example.com",
-  categoryId: "6a24f14e6d65650b697c34c5",
+  categoryIds: ["6a24f14e6d65650b697c34c5", "6a24f14e6d65650b697c34c6"],
   status: "active" as const,
   requiredRoles: ["user" as const],
   redirectUris: ["https://blog.example.com/cb"]
@@ -41,7 +45,7 @@ const validBody = {
 
 const createdDoc = {
   _id: { toString: () => "app1" },
-  categoryId: { toString: () => "6a24f14e6d65650b697c34c5" },
+  categoryIds: [{ toString: () => "6a24f14e6d65650b697c34c5" }],
   name: "blog",
   displayName: "Blog",
   description: null,
@@ -75,9 +79,9 @@ describe("WebAppService.createApp", () => {
     expect(webAppRepo.create).not.toHaveBeenCalled();
   });
 
-  it("throws NotFoundError when the category does not exist", async () => {
+  it("throws BadRequestError when one of the categories does not exist", async () => {
     const { webAppRepo, categoryRepo, favoriteRepo } = makeRepos();
-    categoryRepo.existsById.mockResolvedValue(false);
+    categoryRepo.countByIds.mockResolvedValue(1);
     const service = new WebAppService({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       webAppRepo: webAppRepo as any,
@@ -87,8 +91,9 @@ describe("WebAppService.createApp", () => {
       favoriteRepo: favoriteRepo as any
     });
     await expect(service.createApp(validBody)).rejects.toBeInstanceOf(
-      NotFoundError
+      BadRequestError
     );
+    expect(categoryRepo.countByIds).toHaveBeenCalledWith(validBody.categoryIds);
     expect(webAppRepo.create).not.toHaveBeenCalled();
   });
 
@@ -114,7 +119,7 @@ describe("WebAppService.createApp", () => {
     expect(persisted.scopes).toEqual(["openid", "profile", "email"]);
     expect(persisted.description).toBeNull(); // "" → null
     expect(persisted.name).toBe(validBody.name);
-    expect(persisted.categoryId).toBe(validBody.categoryId);
+    expect(persisted.categoryIds).toEqual(validBody.categoryIds);
     expect(persisted.homeUrl).toBe(validBody.homeUrl);
     expect(persisted.redirectUris).toEqual(validBody.redirectUris);
     expect(result.clientSecret).toMatch(/^[a-f0-9]{64}$/);
@@ -124,7 +129,7 @@ describe("WebAppService.createApp", () => {
 
 const existingDoc = {
   _id: { toString: () => "app1" },
-  categoryId: { toString: () => "6a24f14e6d65650b697c34c5" },
+  categoryIds: [{ toString: () => "6a24f14e6d65650b697c34c5" }],
   name: "blog",
   displayName: "Blog",
   description: null,
@@ -193,10 +198,10 @@ describe("WebAppService.updateApp", () => {
     expect(webAppRepo.updateById).toHaveBeenCalled();
   });
 
-  it("throws NotFoundError when the new category does not exist", async () => {
+  it("throws BadRequestError when a new category does not exist", async () => {
     const { webAppRepo, categoryRepo, favoriteRepo } = makeRepos();
     webAppRepo.findById.mockResolvedValue(existingDoc);
-    categoryRepo.existsById.mockResolvedValue(false);
+    categoryRepo.countByIds.mockResolvedValue(0);
     const service = new WebAppService({
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       webAppRepo: webAppRepo as any,
@@ -206,8 +211,8 @@ describe("WebAppService.updateApp", () => {
       favoriteRepo: favoriteRepo as any
     });
     await expect(
-      service.updateApp("app1", { categoryId: "6a24f14e6d65650b697c34c6" })
-    ).rejects.toBeInstanceOf(NotFoundError);
+      service.updateApp("app1", { categoryIds: ["6a24f14e6d65650b697c34c6"] })
+    ).rejects.toBeInstanceOf(BadRequestError);
     expect(webAppRepo.updateById).not.toHaveBeenCalled();
   });
 
@@ -274,6 +279,7 @@ describe("WebAppService.updateApp", () => {
     const result = await service.updateApp("app1", { displayName: "Renamed" });
     const persisted = webAppRepo.updateById.mock.calls[0][1];
     expect(Object.keys(persisted)).toEqual(["displayName"]);
+    expect(categoryRepo.countByIds).not.toHaveBeenCalled();
     expect(result.displayName).toBe("Renamed");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     expect((result as any).clientSecret).toBeUndefined();
@@ -287,7 +293,20 @@ describe("WebAppService.listUserApps", () => {
     description: "A blog",
     iconUrl: null,
     homeUrl: "https://blog.example.com",
-    category: { displayName: "Content" }
+    categoryIds: [{ toString: () => "c2" }, { toString: () => "c1" }],
+    // Populated in query order, not in the admin's order.
+    categories: [
+      {
+        _id: { toString: () => "c1" },
+        slug: "content",
+        name: { en: "Content", vi: "Nội dung" }
+      },
+      {
+        _id: { toString: () => "c2" },
+        slug: "tools",
+        name: { en: "Internal Tools", vi: "Công cụ nội bộ" }
+      }
+    ]
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } as any;
 
@@ -332,8 +351,14 @@ describe("WebAppService.listUserApps", () => {
       description: "A blog",
       iconUrl: null,
       homeUrl: "https://blog.example.com",
-      category: "Content",
-      categorySlug: null,
+      categories: [
+        {
+          _id: "c2",
+          slug: "tools",
+          name: { en: "Internal Tools", vi: "Công cụ nội bộ" }
+        },
+        { _id: "c1", slug: "content", name: { en: "Content", vi: "Nội dung" } }
+      ],
       isFavorite: false
     });
     expect(result.meta).toEqual({
@@ -370,7 +395,7 @@ describe("WebAppService.listUserApps", () => {
     expect(result.meta.totalPages).toBe(0);
   });
 
-  it("passes categoryId into the filter when provided", async () => {
+  it("matches the category anywhere in categoryIds when filtering", async () => {
     const { webAppRepo, categoryRepo, favoriteRepo } = makeRepos();
     webAppRepo.findActivePaginated.mockResolvedValue([]);
     webAppRepo.countActive.mockResolvedValue(0);
@@ -389,7 +414,7 @@ describe("WebAppService.listUserApps", () => {
     );
 
     const filter = webAppRepo.findActivePaginated.mock.calls[0][0];
-    expect(filter.categoryId).toBe("64b2f0c2f1a2b3c4d5e6f7a8");
+    expect(filter.categoryIds).toBe("64b2f0c2f1a2b3c4d5e6f7a8");
   });
 
   it("omits categoryId from the filter when not provided", async () => {
@@ -408,7 +433,7 @@ describe("WebAppService.listUserApps", () => {
     await service.listUserApps({}, "user");
 
     const filter = webAppRepo.findActivePaginated.mock.calls[0][0];
-    expect(filter.categoryId).toBeUndefined();
+    expect(filter.categoryIds).toBeUndefined();
   });
 });
 
@@ -452,39 +477,6 @@ describe("WebAppService.listUserApps role visibility", () => {
   });
 });
 
-describe("WebAppService.listUserCategories", () => {
-  it("returns all categories mapped to UserCategoryDto", async () => {
-    const { webAppRepo, categoryRepo, favoriteRepo } = makeRepos();
-    categoryRepo.findAll.mockResolvedValue([
-      {
-        _id: { toString: () => "c1" },
-        displayName: "Productivity",
-        name: "productivity"
-      },
-      {
-        _id: { toString: () => "c2" },
-        displayName: "Entertainment",
-        name: "entertainment"
-      }
-    ]);
-    const service = new WebAppService({
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      webAppRepo: webAppRepo as any,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      categoryRepo: categoryRepo as any,
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      favoriteRepo: favoriteRepo as any
-    });
-
-    const result = await service.listUserCategories();
-
-    expect(result).toEqual([
-      { _id: "c1", displayName: "Productivity", slug: "productivity" },
-      { _id: "c2", displayName: "Entertainment", slug: "entertainment" }
-    ]);
-  });
-});
-
 describe("WebAppService.listUserApps isFavorite", () => {
   it("marks isFavorite=true for favorited app ids", async () => {
     const { webAppRepo, categoryRepo, favoriteRepo } = makeRepos();
@@ -495,7 +487,8 @@ describe("WebAppService.listUserApps isFavorite", () => {
         description: null,
         iconUrl: null,
         homeUrl: "h",
-        category: null
+        categoryIds: [],
+        categories: []
       },
       {
         _id: { toString: () => "app2" },
@@ -503,7 +496,8 @@ describe("WebAppService.listUserApps isFavorite", () => {
         description: null,
         iconUrl: null,
         homeUrl: "h",
-        category: null
+        categoryIds: [],
+        categories: []
       }
     ]);
     webAppRepo.countActive.mockResolvedValue(2);

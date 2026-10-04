@@ -31,14 +31,9 @@ export const WEB_APP_CONFIG = {
   MAX_RESPONSE_TYPES: 10,
   MAX_SCOPES: 50,
   MAX_REQUIRED_ROLES: 10,
+  MAX_CATEGORIES: 5,
   DEFAULT_GRANT_TYPES: ["authorization_code", "refresh_token"] as string[],
   DEFAULT_RESPONSE_TYPES: ["code"] as string[]
-} as const;
-
-export const WEB_APP_CATEGORY_CONFIG = {
-  NAME_MAX_LENGTH: 100,
-  DISPLAY_NAME_MAX_LENGTH: 150,
-  ICON_MAX_LENGTH: 500
 } as const;
 
 export const WEB_APP_STATUS_PUBLIC = {

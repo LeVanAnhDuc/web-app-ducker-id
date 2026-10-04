@@ -1,6 +1,6 @@
 // others
 import { MongoFavoriteRepository } from "./repository/impl/mongo-favorite.repository";
-import { MongoWebAppRepository } from "@/modules/web-app/repositories/impl/mongo-web-app.repository";
+import { MongoWebAppRepository } from "@/modules/web-app/repository/impl/mongo-web-app.repository";
 import { AppFavoritableGuard } from "./guards";
 import { FavoriteService } from "./services";
 import { FavoriteController } from "./favorite.controller";

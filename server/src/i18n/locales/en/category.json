@@ -1,0 +1,50 @@
+{
+  "success": {
+    "list": "Categories retrieved successfully.",
+    "create": "Category created successfully.",
+    "update": "Category updated successfully.",
+    "move": "Category order updated.",
+    "deleteImpact": "Delete impact retrieved successfully."
+  },
+  "errors": {
+    "notFound": "Category not found.",
+    "nameTaken": "A category with this English name already exists.",
+    "nameNoSlug": "The English name needs at least one letter or digit.",
+    "reassignRequired": "Choose a new category for every app that only belongs to this one.",
+    "reassignInvalid": "A selected target category no longer exists or is the one being deleted.",
+    "impactChanged": "The apps in this category changed. Review the list and try again.",
+    "rateLimitExceeded": "Too many requests. Please try again later"
+  },
+  "validation": {
+    "nameEn": {
+      "required": "English name is required.",
+      "maxLength": "English name must not exceed 100 characters.",
+      "noSlug": "The English name needs at least one letter or digit."
+    },
+    "nameVi": {
+      "required": "Vietnamese name is required.",
+      "maxLength": "Vietnamese name must not exceed 100 characters.",
+      "noSlug": "The Vietnamese name needs at least one letter or digit."
+    },
+    "body": {
+      "empty": "Provide at least one name to update."
+    },
+    "direction": {
+      "invalid": "Direction must be up or down."
+    },
+    "id": {
+      "invalid": "Invalid category id."
+    },
+    "appId": {
+      "invalid": "Invalid app id."
+    },
+    "targetId": {
+      "invalid": "Invalid target category id."
+    },
+    "reassignments": {
+      "invalid": "Reassignments must be a list.",
+      "duplicateApp": "Each app can only be reassigned once.",
+      "tooMany": "Too many reassignments."
+    }
+  }
+}

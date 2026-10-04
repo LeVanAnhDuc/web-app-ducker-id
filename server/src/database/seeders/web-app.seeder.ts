@@ -10,26 +10,25 @@ import { Logger } from "@/libs/logger";
 export const seedWebApps = async (): Promise<void> => {
   Logger.info("Starting web-app seeding...");
 
-  const categoryIdByName = new Map<string, string>();
+  const categoryIdBySlug = new Map<string, string>();
 
   for (const cat of WEB_APP_CATEGORIES) {
-    const existing = await WebAppCategoryModel.findOne({ name: cat.name });
+    const existing = await WebAppCategoryModel.findOne({ slug: cat.slug });
 
     if (existing) {
-      categoryIdByName.set(cat.name, existing._id.toString());
-      Logger.warn(`Category already exists: ${cat.name}, skipping...`);
+      categoryIdBySlug.set(cat.slug, existing._id.toString());
+      Logger.warn(`Category already exists: ${cat.slug}, skipping...`);
       continue;
     }
 
     const created = await WebAppCategoryModel.create({
-      name: cat.name,
-      displayName: cat.displayName,
-      icon: cat.icon,
+      slug: cat.slug,
+      name: { en: cat.name.en, vi: cat.name.vi },
       sortOrder: cat.sortOrder
     });
 
-    categoryIdByName.set(cat.name, created._id.toString());
-    Logger.info(`Created category: ${cat.name}`);
+    categoryIdBySlug.set(cat.slug, created._id.toString());
+    Logger.info(`Created category: ${cat.slug}`);
   }
 
   let createdCount = 0;
@@ -44,18 +43,20 @@ export const seedWebApps = async (): Promise<void> => {
       continue;
     }
 
-    const categoryId = categoryIdByName.get(app.categoryName);
+    const categoryIds = app.categorySlugs.map((slug) =>
+      categoryIdBySlug.get(slug)
+    );
 
-    if (!categoryId) {
+    if (categoryIds.some((id) => !id)) {
       Logger.warn(
-        `Category not found for app ${app.name}: ${app.categoryName}, skipping...`
+        `Category not found for app ${app.name}: ${app.categorySlugs.join(", ")}, skipping...`
       );
       skippedCount++;
       continue;
     }
 
     await WebAppModel.create({
-      categoryId,
+      categoryIds,
       name: app.name,
       displayName: app.displayName,
       description: app.description,
@@ -86,11 +87,11 @@ export const clearWebApps = async (): Promise<void> => {
   Logger.info("Clearing seeded web apps...");
 
   const appNames = WEB_APPS.map((a) => a.name);
-  const categoryNames = WEB_APP_CATEGORIES.map((c) => c.name);
+  const categorySlugs = WEB_APP_CATEGORIES.map((c) => c.slug);
 
   const appResult = await WebAppModel.deleteMany({ name: { $in: appNames } });
   const catResult = await WebAppCategoryModel.deleteMany({
-    name: { $in: categoryNames }
+    slug: { $in: categorySlugs }
   });
 
   Logger.info(

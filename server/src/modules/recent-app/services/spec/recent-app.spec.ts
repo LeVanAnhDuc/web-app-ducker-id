@@ -1,5 +1,5 @@
 // types
-import type { WebAppRepository } from "@/modules/web-app/repositories/web-app.repository";
+import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
 import type { FavoriteRepository } from "@/modules/favorite/repository/favorite.repository";
 import type { RecentAppRepository } from "../../repository/recent-app.repository";
 import type { RecentAppUsage } from "../../types";
@@ -21,7 +21,8 @@ const makeApp = (id: string, displayName: string) => ({
   description: null,
   iconUrl: null,
   homeUrl: `https://${id}.example.com`,
-  category: null
+  categoryIds: [],
+  categories: []
 });
 
 const usage = (

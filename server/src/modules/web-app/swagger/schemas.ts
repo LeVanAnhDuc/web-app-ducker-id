@@ -11,7 +11,7 @@ export const webAppSwaggerSchemas: Record<string, OpenAPIV3.SchemaObject> = {
       "description",
       "iconUrl",
       "homeUrl",
-      "categoryId",
+      "categoryIds",
       "status",
       "requiredRoles",
       "redirectUris",
@@ -48,10 +48,11 @@ export const webAppSwaggerSchemas: Record<string, OpenAPIV3.SchemaObject> = {
         type: "string",
         example: "https://monitor.example.com"
       },
-      categoryId: {
-        type: "string",
-        example: "507f1f77bcf86cd799439012",
-        description: "MongoDB _id of the owning category"
+      categoryIds: {
+        type: "array",
+        items: { type: "string", example: "507f1f77bcf86cd799439012" },
+        description:
+          "MongoDB _ids of the app's categories, in display order (first = primary)"
       },
       status: {
         type: "string",
@@ -98,34 +99,13 @@ export const webAppSwaggerSchemas: Record<string, OpenAPIV3.SchemaObject> = {
       }
     }
   },
-  AdminCategoryResponse: {
-    type: "object",
-    required: ["_id", "name", "slug"],
-    properties: {
-      _id: {
-        type: "string",
-        example: "507f1f77bcf86cd799439012",
-        description: "MongoDB _id of the category"
-      },
-      name: {
-        type: "string",
-        example: "Monitoring",
-        description: "Human-readable category display name"
-      },
-      slug: {
-        type: "string",
-        example: "monitoring",
-        description: "Internal unique category name used as a slug"
-      }
-    }
-  },
   AdminAppCreateBody: {
     type: "object",
     required: [
       "name",
       "displayName",
       "homeUrl",
-      "categoryId",
+      "categoryIds",
       "status",
       "requiredRoles",
       "redirectUris"
@@ -158,11 +138,18 @@ export const webAppSwaggerSchemas: Record<string, OpenAPIV3.SchemaObject> = {
         example: "https://monitor.example.com",
         description: "App home URL (must start with http:// or https://)"
       },
-      categoryId: {
-        type: "string",
-        pattern: "^[a-fA-F0-9]{24}$",
-        example: "507f1f77bcf86cd799439012",
-        description: "MongoDB ObjectId of the owning category"
+      categoryIds: {
+        type: "array",
+        minItems: 1,
+        maxItems: 5,
+        uniqueItems: true,
+        items: {
+          type: "string",
+          pattern: "^[a-fA-F0-9]{24}$",
+          example: "507f1f77bcf86cd799439012"
+        },
+        description:
+          "1-5 distinct existing category ids, in display order (first = primary)"
       },
       status: {
         type: "string",
@@ -220,11 +207,18 @@ export const webAppSwaggerSchemas: Record<string, OpenAPIV3.SchemaObject> = {
         example: "https://monitor.example.com",
         description: "App home URL (must start with http:// or https://)"
       },
-      categoryId: {
-        type: "string",
-        pattern: "^[a-fA-F0-9]{24}$",
-        example: "507f1f77bcf86cd799439012",
-        description: "MongoDB ObjectId of the owning category"
+      categoryIds: {
+        type: "array",
+        minItems: 1,
+        maxItems: 5,
+        uniqueItems: true,
+        items: {
+          type: "string",
+          pattern: "^[a-fA-F0-9]{24}$",
+          example: "507f1f77bcf86cd799439012"
+        },
+        description:
+          "1-5 distinct existing category ids, in display order (first = primary)"
       },
       status: {
         type: "string",
@@ -259,7 +253,7 @@ export const webAppSwaggerSchemas: Record<string, OpenAPIV3.SchemaObject> = {
       "description",
       "iconUrl",
       "homeUrl",
-      "category"
+      "categories"
     ],
     properties: {
       _id: { type: "string", example: "507f1f77bcf86cd799439011" },
@@ -275,22 +269,10 @@ export const webAppSwaggerSchemas: Record<string, OpenAPIV3.SchemaObject> = {
         example: "https://cdn.example.com/icons/monitor.png"
       },
       homeUrl: { type: "string", example: "https://monitor.example.com" },
-      category: { type: "string", nullable: true, example: "Internal Tools" }
-    }
-  },
-  UserCategoryResponse: {
-    type: "object",
-    required: ["_id", "displayName"],
-    properties: {
-      _id: {
-        type: "string",
-        example: "507f1f77bcf86cd799439012",
-        description: "MongoDB _id of the category"
-      },
-      displayName: {
-        type: "string",
-        example: "Monitoring",
-        description: "Human-readable category display name"
+      categories: {
+        type: "array",
+        description: "In the order the admin chose; the first is the primary",
+        items: { $ref: "#/components/schemas/PublicCategoryResponse" }
       }
     }
   },

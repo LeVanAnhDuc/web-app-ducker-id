@@ -5,7 +5,7 @@ import { WEB_APP_STATUSES, TOKEN_ENDPOINT_AUTH_METHODS } from "../constants";
 
 const baseDoc = {
   _id: { toString: () => "app1" },
-  categoryId: { toString: () => "cat1" },
+  categoryIds: [{ toString: () => "cat1" }],
   name: "blog",
   displayName: "Blog",
   description: "desc",
@@ -51,7 +51,7 @@ describe("toAdminAppDto", () => {
   it("converts ObjectIds and dates to strings", () => {
     const dto = toAdminAppDto(baseDoc);
     expect(dto._id).toBe("app1");
-    expect(dto.categoryId).toBe("cat1");
+    expect(dto.categoryIds).toEqual(["cat1"]);
     expect(dto.createdAt).toBe("2026-03-12T09:24:00.000Z");
   });
 });

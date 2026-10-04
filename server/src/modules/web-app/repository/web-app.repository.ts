@@ -1,11 +1,12 @@
 // types
-import type { FilterQuery } from "mongoose";
+import type { ClientSession, FilterQuery } from "mongoose";
 import type {
   WebAppDocument,
   WebAppCreateInput,
   WebAppUpdateInput,
-  WebAppWithCategory
+  WebAppWithCategories
 } from "../types";
+import type { CategoryReassignment, OrphanApp } from "@/modules/category/types";
 
 export interface WebAppRepository {
   findAll(filter: FilterQuery<WebAppDocument>): Promise<WebAppDocument[]>;
@@ -21,10 +22,24 @@ export interface WebAppRepository {
   findActivePaginated(
     filter: FilterQuery<WebAppDocument>,
     options: { skip: number; limit: number }
-  ): Promise<WebAppWithCategory[]>;
+  ): Promise<WebAppWithCategories[]>;
   findActiveByIds(
     ids: string[],
     filter: { role?: string; search?: string; categoryId?: string }
-  ): Promise<WebAppWithCategory[]>;
+  ): Promise<WebAppWithCategories[]>;
   countActive(filter: FilterQuery<WebAppDocument>): Promise<number>;
+  /** Every app referencing the category, active or not. */
+  countByCategory(categoryId: string): Promise<number>;
+  /** Apps whose only category is `categoryId`. */
+  findOrphansOf(
+    categoryId: string,
+    session?: ClientSession
+  ): Promise<OrphanApp[]>;
+  /** Moves each orphan to its target; an app that is no longer an orphan is skipped. */
+  reassignOrphans(
+    categoryId: string,
+    reassignments: CategoryReassignment[],
+    session: ClientSession
+  ): Promise<void>;
+  pullCategory(categoryId: string, session: ClientSession): Promise<void>;
 }

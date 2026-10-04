@@ -1,14 +1,18 @@
 // libs
 import { Types } from "mongoose";
 // types
-import type { FilterQuery } from "mongoose";
+import type { ClientSession, FilterQuery } from "mongoose";
 import type {
   WebAppDocument,
   WebAppCreateInput,
   WebAppUpdateInput,
-  WebAppWithCategory,
-  WebAppCategoryDocument
+  WebAppWithCategories
 } from "../../types";
+import type {
+  CategoryReassignment,
+  OrphanApp,
+  WebAppCategoryDocument
+} from "@/modules/category/types";
 import type { WebAppRepository } from "../web-app.repository";
 // models
 import WebAppModel from "@/models/web-app";
@@ -21,6 +25,10 @@ import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 import { asyncDatabaseHandler } from "@/utils/async-handler";
 import { isDuplicateKeyError, getDuplicatedField } from "@/utils/mongo-errors";
 import { ERROR_CODES } from "@/constants/error-code";
+
+const onlyCategory = (categoryId: string) => ({
+  categoryIds: { $size: 1, $all: [new Types.ObjectId(categoryId)] }
+});
 
 export class MongoWebAppRepository implements WebAppRepository {
   async findAll(
@@ -37,17 +45,17 @@ export class MongoWebAppRepository implements WebAppRepository {
   async findActivePaginated(
     filter: FilterQuery<WebAppDocument>,
     { skip, limit }: { skip: number; limit: number }
-  ): Promise<WebAppWithCategory[]> {
+  ): Promise<WebAppWithCategories[]> {
     return asyncDatabaseHandler("findActivePaginated", () =>
       WebAppModel.find(filter)
         .sort({ sortOrder: 1, displayName: 1 })
         .skip(skip)
         .limit(limit)
-        .populate<{ category: WebAppCategoryDocument | null }>({
-          path: "category",
-          select: "displayName name"
+        .populate<{ categories: WebAppCategoryDocument[] }>({
+          path: "categories",
+          select: "slug name"
         })
-        .lean<WebAppWithCategory[]>()
+        .lean<WebAppWithCategories[]>()
         .exec()
     );
   }
@@ -55,7 +63,7 @@ export class MongoWebAppRepository implements WebAppRepository {
   async findActiveByIds(
     ids: string[],
     filter: { role?: string; search?: string; categoryId?: string }
-  ): Promise<WebAppWithCategory[]> {
+  ): Promise<WebAppWithCategories[]> {
     return asyncDatabaseHandler("findActiveByIds", () => {
       const mongoFilter = buildWebAppFilter({
         search: filter.search,
@@ -67,11 +75,11 @@ export class MongoWebAppRepository implements WebAppRepository {
         mongoFilter.requiredRoles = AUTHENTICATION_ROLES.USER;
       }
       return WebAppModel.find(mongoFilter)
-        .populate<{ category: WebAppCategoryDocument | null }>({
-          path: "category",
-          select: "displayName"
+        .populate<{ categories: WebAppCategoryDocument[] }>({
+          path: "categories",
+          select: "slug name"
         })
-        .lean<WebAppWithCategory[]>()
+        .lean<WebAppWithCategories[]>()
         .exec();
     });
   }
@@ -149,6 +157,70 @@ export class MongoWebAppRepository implements WebAppRepository {
         }
         throw err;
       }
+    });
+  }
+
+  async countByCategory(categoryId: string): Promise<number> {
+    return asyncDatabaseHandler("countByCategory", () =>
+      WebAppModel.countDocuments({
+        categoryIds: new Types.ObjectId(categoryId)
+      }).exec()
+    );
+  }
+
+  async findOrphansOf(
+    categoryId: string,
+    session?: ClientSession
+  ): Promise<OrphanApp[]> {
+    return asyncDatabaseHandler("findOrphansOf", async () => {
+      const docs = await WebAppModel.find(onlyCategory(categoryId))
+        .sort({ displayName: 1 })
+        .select("displayName")
+        .session(session ?? null)
+        .lean<Pick<WebAppDocument, "_id" | "displayName">[]>()
+        .exec();
+      return docs.map((doc) => ({
+        _id: doc._id.toString(),
+        displayName: doc.displayName
+      }));
+    });
+  }
+
+  async reassignOrphans(
+    categoryId: string,
+    reassignments: CategoryReassignment[],
+    session: ClientSession
+  ): Promise<void> {
+    if (reassignments.length === 0) return;
+    return asyncDatabaseHandler("reassignOrphans", async () => {
+      await WebAppModel.bulkWrite(
+        reassignments.map(({ appId, categoryId: targetId }) => ({
+          updateOne: {
+            filter: {
+              _id: new Types.ObjectId(appId),
+              ...onlyCategory(categoryId)
+            },
+            update: {
+              $set: { categoryIds: [new Types.ObjectId(targetId)] }
+            }
+          }
+        })),
+        { session }
+      );
+    });
+  }
+
+  async pullCategory(
+    categoryId: string,
+    session: ClientSession
+  ): Promise<void> {
+    return asyncDatabaseHandler("pullCategory", async () => {
+      const id = new Types.ObjectId(categoryId);
+      await WebAppModel.updateMany(
+        { categoryIds: id },
+        { $pull: { categoryIds: id } },
+        { session }
+      ).exec();
     });
   }
 }

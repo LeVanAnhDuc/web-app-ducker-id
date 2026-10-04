@@ -1,6 +1,6 @@
 // types
 import type { FavoriteRepository } from "../../repository/favorite.repository";
-import type { WebAppRepository } from "@/modules/web-app/repositories/web-app.repository";
+import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
 import type { AppFavoritableGuard } from "../../guards";
 // commons
 import { NotFoundError } from "@/common/exceptions";
@@ -16,7 +16,8 @@ const makeDoc = (id: string, displayName: string) => ({
   description: null,
   iconUrl: null,
   homeUrl: `https://${id}.example.com`,
-  category: null
+  categoryIds: [],
+  categories: []
 });
 
 const makeDeps = () => {

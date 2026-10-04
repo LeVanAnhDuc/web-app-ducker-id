@@ -1,44 +1,54 @@
 // libs
 import { Schema, model, type Model } from "mongoose";
 // types
-import type { WebAppCategoryDocument } from "@/modules/web-app/types";
+import type {
+  CategoryName,
+  WebAppCategoryDocument
+} from "@/modules/category/types";
 // modules
-import { WEB_APP_CATEGORY_CONFIG } from "@/modules/web-app/constants";
+import {
+  CATEGORY_CONFIG,
+  CATEGORY_NAME_COLLATION
+} from "@/modules/category/constants";
 // others
 import { MODEL_NAMES } from "@/constants/models";
 
 const { WEB_APP_CATEGORY } = MODEL_NAMES;
 
+const nameField = (label: string) => ({
+  type: String,
+  required: [true, `${label} is required`] as [boolean, string],
+  trim: true,
+  maxlength: [
+    CATEGORY_CONFIG.NAME_MAX_LENGTH,
+    `${label} must not exceed ${CATEGORY_CONFIG.NAME_MAX_LENGTH} characters`
+  ] as [number, string]
+});
+
+const CategoryNameSchema = new Schema<CategoryName>(
+  {
+    en: nameField("English name"),
+    vi: nameField("Vietnamese name")
+  },
+  { _id: false }
+);
+
 const WebAppCategorySchema = new Schema<WebAppCategoryDocument>(
   {
-    name: {
+    slug: {
       type: String,
-      required: [true, "Name is required"],
+      required: [true, "Slug is required"],
       trim: true,
       lowercase: true,
       maxlength: [
-        WEB_APP_CATEGORY_CONFIG.NAME_MAX_LENGTH,
-        `Name must not exceed ${WEB_APP_CATEGORY_CONFIG.NAME_MAX_LENGTH} characters`
+        CATEGORY_CONFIG.SLUG_MAX_LENGTH,
+        `Slug must not exceed ${CATEGORY_CONFIG.SLUG_MAX_LENGTH} characters`
       ],
       unique: true
     },
-    displayName: {
-      type: String,
-      required: [true, "Display name is required"],
-      trim: true,
-      maxlength: [
-        WEB_APP_CATEGORY_CONFIG.DISPLAY_NAME_MAX_LENGTH,
-        `Display name must not exceed ${WEB_APP_CATEGORY_CONFIG.DISPLAY_NAME_MAX_LENGTH} characters`
-      ]
-    },
-    icon: {
-      type: String,
-      default: null,
-      trim: true,
-      maxlength: [
-        WEB_APP_CATEGORY_CONFIG.ICON_MAX_LENGTH,
-        `Icon must not exceed ${WEB_APP_CATEGORY_CONFIG.ICON_MAX_LENGTH} characters`
-      ]
+    name: {
+      type: CategoryNameSchema,
+      required: [true, "Name is required"]
     },
     sortOrder: {
       type: Number,
@@ -51,7 +61,11 @@ const WebAppCategorySchema = new Schema<WebAppCategoryDocument>(
   }
 );
 
-WebAppCategorySchema.index({ sortOrder: 1, name: 1 });
+WebAppCategorySchema.index(
+  { "name.en": 1 },
+  { unique: true, collation: CATEGORY_NAME_COLLATION }
+);
+WebAppCategorySchema.index({ sortOrder: 1, _id: 1 });
 
 const WebAppCategoryModel: Model<WebAppCategoryDocument> =
   model<WebAppCategoryDocument>(WEB_APP_CATEGORY, WebAppCategorySchema);
