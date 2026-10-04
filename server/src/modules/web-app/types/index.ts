@@ -160,13 +160,3 @@ export interface UserAppsQueryRequest extends Omit<Request, "query"> {
 export interface WebAppWithCategory extends WebAppDocument {
   category: WebAppCategoryDocument | null;
 }
-
-export interface PaginatedResult<T> {
-  items: T[];
-  meta: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  };
-}

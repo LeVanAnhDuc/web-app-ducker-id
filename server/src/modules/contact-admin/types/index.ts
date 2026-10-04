@@ -82,13 +82,3 @@ export interface UpdateContactStatusRequest extends Omit<
   params: { id: string };
   body: { status: ContactStatus };
 }
-
-export interface PaginatedResult<T> {
-  items: T[];
-  meta: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  };
-}

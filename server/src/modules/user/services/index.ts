@@ -1,7 +1,7 @@
 // types
+import type { PageMeta } from "@/common/pagination";
 import type {
   AdminResetPasswordResult,
-  AdminUserListMeta,
   AdminUsersQuery,
   CreateUserData,
   SetUserActiveResult,
@@ -66,7 +66,7 @@ export class UserService {
 
   getAdminUsers(
     query: AdminUsersQuery
-  ): Promise<{ items: AdminUserDto[]; meta: AdminUserListMeta }> {
+  ): Promise<{ items: AdminUserDto[]; meta: PageMeta }> {
     return getAdminUsers(this.deps, query);
   }
 

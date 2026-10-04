@@ -1,35 +1,19 @@
 // types
-import type {
-  AdminUserListMeta,
-  AdminUsersFilter,
-  AdminUsersQuery
-} from "@/modules/user/types";
+import type { AdminUsersFilter, AdminUsersQuery } from "@/modules/user/types";
 import type { AdminUserDto } from "../dtos";
+import type { PageMeta } from "@/common/pagination";
 import type { UserServiceDeps } from "./deps";
 // common
-import { PAGINATION } from "@/common/pagination";
-import { resolveSortDirection } from "@/common/sort";
+import { resolvePaging, toPageMeta } from "@/common/pagination";
 // dtos
 import { toAdminUserDto } from "../dtos";
 
 export const getAdminUsers = async (
   deps: UserServiceDeps,
   query: AdminUsersQuery
-): Promise<{ items: AdminUserDto[]; meta: AdminUserListMeta }> => {
-  const { DEFAULT_PAGE, DEFAULT_LIMIT, MAX_LIMIT } = PAGINATION;
-  const {
-    page = DEFAULT_PAGE,
-    limit: rawLimit = DEFAULT_LIMIT,
-    sortBy = "createdAt",
-    sortOrder: rawSortOrder,
-    search,
-    role,
-    status
-  } = query;
-
-  const limit = Math.min(rawLimit, MAX_LIMIT);
-  const skip = (page - 1) * limit;
-  const sortOrder = resolveSortDirection(rawSortOrder);
+): Promise<{ items: AdminUserDto[]; meta: PageMeta }> => {
+  const { page, limit, skip, sort } = resolvePaging(query);
+  const { search, role, status } = query;
 
   const filter: AdminUsersFilter = {
     ...(search ? { search } : {}),
@@ -40,16 +24,11 @@ export const getAdminUsers = async (
   const { data, total } = await deps.userRepo.findAdminUsers(filter, {
     skip,
     limit,
-    sort: { [sortBy]: sortOrder }
+    sort
   });
 
   return {
     items: data.map(toAdminUserDto),
-    meta: {
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit)
-    }
+    meta: toPageMeta(total, page, limit)
   };
 };

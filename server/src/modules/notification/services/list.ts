@@ -1,40 +1,28 @@
 // types
-import type {
-  NotificationListQuery,
-  PaginatedResult
-} from "@/modules/notification/types";
+import type { NotificationListQuery } from "@/modules/notification/types";
 import type { NotificationItemDto } from "../dtos";
 import type { NotificationRepository } from "../repository/notification.repository";
+import type { PaginatedResult } from "@/common/pagination";
 // common
-import { PAGINATION } from "@/common/pagination";
-import { resolveSortDirection } from "@/common/sort";
+import { resolvePaging, toPageMeta } from "@/common/pagination";
 // dtos
 import { toNotificationItemDto } from "../dtos";
 // others
 import { RequestContext } from "@/utils/request-context";
 import { buildNotificationFilter } from "../helpers";
 
-const { DEFAULT_PAGE, DEFAULT_LIMIT, MAX_LIMIT } = PAGINATION;
-
 export const list = async (
   repo: NotificationRepository,
   query: NotificationListQuery
 ): Promise<PaginatedResult<NotificationItemDto>> => {
   const userId = RequestContext.requireUserId();
-  const page = query.page ?? DEFAULT_PAGE;
-  const limit = Math.min(query.limit ?? DEFAULT_LIMIT, MAX_LIMIT);
-  const skip = (page - 1) * limit;
-  const sortOrder = resolveSortDirection(query.sortOrder);
+  const { page, limit, skip, sort } = resolvePaging(query);
 
   const filter = buildNotificationFilter(query, userId);
-  const { data, total } = await repo.findByUser(filter, {
-    skip,
-    limit,
-    sort: { createdAt: sortOrder }
-  });
+  const { data, total } = await repo.findByUser(filter, { skip, limit, sort });
 
   return {
     items: data.map(toNotificationItemDto),
-    meta: { total, page, limit, totalPages: Math.ceil(total / limit) }
+    meta: toPageMeta(total, page, limit)
   };
 };

@@ -1,8 +1,6 @@
 // types
-import type {
-  NotificationListQuery,
-  PaginatedResult
-} from "@/modules/notification/types";
+import type { PaginatedResult } from "@/common/pagination";
+import type { NotificationListQuery } from "@/modules/notification/types";
 import type { NotificationItemDto } from "../dtos";
 import type { NotificationRepository } from "../repository/notification.repository";
 // others

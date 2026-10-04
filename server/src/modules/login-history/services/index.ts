@@ -1,4 +1,5 @@
 // types
+import type { PaginatedResult } from "@/common/pagination";
 import type { Schema } from "mongoose";
 import type { Request } from "express";
 import type {
@@ -6,8 +7,7 @@ import type {
   LoginFailReason,
   LoginHistoryAdminQuery,
   LoginHistoryQuery,
-  LoginMethod,
-  PaginatedResult
+  LoginMethod
 } from "../types";
 import type {
   AllHistoryItemDto,

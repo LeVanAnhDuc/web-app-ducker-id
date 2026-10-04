@@ -5,12 +5,10 @@ export interface ValidationErrorItem {
 }
 
 export interface PaginationMeta {
+  total: number;
   page: number;
-  pageSize: number;
-  totalItems: number;
+  limit: number;
   totalPages: number;
-  hasNext: boolean;
-  hasPrev: boolean;
 }
 
 export interface ResponseMeta {
