@@ -37,7 +37,10 @@ const FAILED_RECORD = {
   usernameAttempted: "victim@test.com",
   timezoneOffset: "+07:00",
   isAnomaly: true,
-  anomalyReasons: ["new_device", "new_country"]
+  anomalyReasons: ["new_device", "new_country"],
+  source: "idp",
+  app: null,
+  interactive: true
 };
 
 const fulfillDetail = (page: Page, body: Record<string, unknown>) =>

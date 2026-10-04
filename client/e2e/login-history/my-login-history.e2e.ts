@@ -27,7 +27,10 @@ const LOCAL_ITEM = {
   os: "Windows 10",
   browser: "Chrome 120",
   clientType: "WEB",
-  createdAt: "2026-01-15T08:30:00.000Z"
+  createdAt: "2026-01-15T08:30:00.000Z",
+  source: "idp",
+  app: null,
+  interactive: true
 };
 
 const fulfillList = (page: Page) =>

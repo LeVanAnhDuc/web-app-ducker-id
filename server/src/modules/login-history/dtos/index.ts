@@ -9,3 +9,6 @@ export { toMyLoginStatsDto } from "./my-stats.dto";
 
 export type { HistoryDetailItemDto } from "./history-detail-item.dto";
 export { toHistoryDetailItemDto } from "./history-detail-item.dto";
+
+export type { LoginAppDto, LoginAppFieldsDto } from "./login-app.dto";
+export { toLoginAppFieldsDto } from "./login-app.dto";

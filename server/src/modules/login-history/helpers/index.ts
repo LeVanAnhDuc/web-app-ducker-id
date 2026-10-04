@@ -229,6 +229,9 @@ export const buildLoginHistoryFilter = (
   if (query.os) filter.os = query.os;
   if (query.browser) filter.browser = query.browser;
   if (query.ip) filter.ip = query.ip;
+  if (query.source) filter.source = query.source;
+  if (query.webAppId) filter.webAppId = query.webAppId;
+  if (query.interactive !== undefined) filter.interactive = query.interactive;
   if (query.fromDate) filter.fromDate = new Date(query.fromDate);
   if (query.toDate) filter.toDate = new Date(query.toDate);
 

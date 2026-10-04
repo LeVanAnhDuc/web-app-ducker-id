@@ -14,12 +14,14 @@ import CustomPagination from "@/components/CustomPagination";
 import CustomTable from "@/components/CustomTable";
 import LoginHistoryTableSkeleton from "../../components/LoginHistoryTableSkeleton";
 // hooks
-import { useListQuery } from "@/hooks";
+import { useListQuery, useLoginAppOptions } from "@/hooks";
 import useAdminLoginHistory from "../../hooks/useAdminLoginHistory";
 // dataSources
 import {
   buildAdminLoginHistoryColumns,
-  buildLoginHistoryFilterDefs
+  buildLoginAppFilterDefs,
+  buildLoginHistoryFilterDefs,
+  toLoginAppQueryParams
 } from "@/dataSources/LoginHistory";
 // others
 import { isLoginHistoryStatus, isLoginHistoryMethod } from "@/utils";
@@ -34,15 +36,21 @@ const AdminLoginHistoryTable = () => {
   const tMethod = useTranslations("loginHistory.method");
   const tFilters = useTranslations("loginHistory.filters");
   const tLocation = useTranslations("loginHistory.location");
+  const tApp = useTranslations("loginHistory.app");
+  const appOptions = useLoginAppOptions();
 
   const filterDefs = useMemo(
-    () => buildLoginHistoryFilterDefs(tStatus, tMethod, tFilters),
-    [tStatus, tMethod, tFilters]
+    () => [
+      ...buildLoginHistoryFilterDefs(tStatus, tMethod, tFilters),
+      ...buildLoginAppFilterDefs(appOptions, "admin", tFilters, tApp)
+    ],
+    [tStatus, tMethod, tFilters, tApp, appOptions]
   );
 
   const columns = useMemo(
-    () => buildAdminLoginHistoryColumns(tTable, tMethod, tStatus, tLocation),
-    [tTable, tMethod, tStatus, tLocation]
+    () =>
+      buildAdminLoginHistoryColumns(tTable, tMethod, tStatus, tLocation, tApp),
+    [tTable, tMethod, tStatus, tLocation, tApp]
   );
 
   const query = useListQuery(filterDefs);
@@ -57,7 +65,8 @@ const AdminLoginHistoryTable = () => {
       method: query.filters.method
     }),
     ...(query.filters.fromDate && { fromDate: query.filters.fromDate }),
-    ...(query.filters.toDate && { toDate: query.filters.toDate })
+    ...(query.filters.toDate && { toDate: query.filters.toDate }),
+    ...toLoginAppQueryParams(query.filters, "admin")
   };
 
   const { data, isLoading } = useAdminLoginHistory(params);

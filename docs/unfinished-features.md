@@ -139,6 +139,11 @@ PKCE S256), `/oauth/userinfo`, `/.well-known/openid-configuration`,
   - `DELETE /apps/recently-used` (clear)
 - [ ] FE: `client/src/requests/recentlyUsed.ts` + hook, thay mock + persist clear
 
+> **Nguồn dữ liệu có sẵn (04.10.2026):** từ `login-history-app-source`, mỗi lần IdP cấp code
+> cho app vệ tinh đều ghi một dòng `login_histories` với `method = sso` + `webAppId`. Đó là tín
+> hiệu "đã mở app qua SSO" thật — `GET /apps/recently-used` có thể aggregate từ đây thay vì
+> dựng cơ chế ghi riêng. Click mở app không qua OIDC (link ngoài) vẫn chưa được ghi nhận.
+
 ---
 
 ## 6. ⚪ MyContacts — Danh sách liên hệ của user

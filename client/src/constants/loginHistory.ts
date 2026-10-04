@@ -2,7 +2,24 @@ const METHOD = {
   PASSWORD: "password",
   OTP: "otp",
   MAGIC_LINK: "magic-link",
-  FORGOT_PASSWORD: "forgot-password"
+  FORGOT_PASSWORD: "forgot-password",
+  SSO: "sso"
+} as const;
+
+const SOURCE = {
+  IDP: "idp",
+  OAUTH: "oauth"
+} as const;
+
+// Values of the "app" filter: "idp" or a web-app id.
+const APP_FILTER_IDP = SOURCE.IDP;
+
+// Values of the "signIn" filter. The user page treats "no value" as
+// interactive-only; the admin page treats it as everything.
+const SIGN_IN_FILTER = {
+  ALL: "all",
+  INTERACTIVE: "interactive",
+  SILENT: "silent"
 } as const;
 
 const STATUS = {
@@ -30,6 +47,9 @@ const CLIENT_TYPE = {
 
 const LOGIN_HISTORY = {
   METHOD,
+  SOURCE,
+  APP_FILTER_IDP,
+  SIGN_IN_FILTER,
   STATUS,
   DEVICE_TYPE,
   LOCATION_SENTINEL,

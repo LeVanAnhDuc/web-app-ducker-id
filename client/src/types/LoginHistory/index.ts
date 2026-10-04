@@ -10,6 +10,14 @@ export type LoginHistoryMethod =
 export type LoginHistoryDeviceType =
   (typeof LOGIN_HISTORY.DEVICE_TYPE)[keyof typeof LOGIN_HISTORY.DEVICE_TYPE];
 type DeviceType = LoginHistoryDeviceType;
+export type LoginHistorySource =
+  (typeof LOGIN_HISTORY.SOURCE)[keyof typeof LOGIN_HISTORY.SOURCE];
+
+export interface LoginHistoryApp {
+  id: string | null;
+  name: string;
+  iconUrl: string | null;
+}
 type ClientType =
   (typeof LOGIN_HISTORY.CLIENT_TYPE)[keyof typeof LOGIN_HISTORY.CLIENT_TYPE];
 
@@ -26,6 +34,11 @@ export interface LoginHistoryItem {
   browser: string;
   clientType: ClientType;
   createdAt: string;
+  source: LoginHistorySource;
+  // null when the row is a sign-in to Ducker ID itself
+  app: LoginHistoryApp | null;
+  // false = silent SSO from an existing session
+  interactive: boolean;
 }
 
 export interface LoginHistoryAdminItem extends LoginHistoryItem {
@@ -57,6 +70,9 @@ export interface LoginHistoryQueryParams {
   browser?: string;
   fromDate?: string;
   toDate?: string;
+  source?: LoginHistorySource;
+  webAppId?: string;
+  interactive?: boolean;
   sortBy?: "createdAt" | "method" | "status" | "country";
   sortOrder?: SortOrder;
 }

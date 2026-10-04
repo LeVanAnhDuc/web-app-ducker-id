@@ -9,7 +9,8 @@ import type {
   LoginHistoryAdminQuery,
   PaginatedResult,
   LoginMethod,
-  LoginFailReason
+  LoginFailReason,
+  LoginEventApp
 } from "@/modules/login-history/types";
 import type {
   MyHistoryItemDto,
@@ -20,6 +21,9 @@ import type {
 // modules
 import {
   LOGIN_STATUSES,
+  LOGIN_METHODS,
+  LOGIN_SOURCES,
+  LOGIN_FAIL_REASONS,
   HTTP_HEADERS,
   LOGIN_HISTORY_STATS
 } from "@/modules/login-history/constants";
@@ -91,6 +95,54 @@ export class LoginHistoryService {
       status: LOGIN_STATUSES.FAILED,
       failReason,
       loginMethod,
+      req
+    });
+  }
+
+  /**
+   * The IdP handed an authorization code to a satellite app. `interactive`
+   * says whether the user had just logged in for it or the code came silently
+   * from an existing session.
+   */
+  recordAppSignIn({
+    userId,
+    usernameAttempted,
+    app,
+    req
+  }: {
+    userId: Schema.Types.ObjectId | string;
+    usernameAttempted: string;
+    app: LoginEventApp;
+    req: Request;
+  }): void {
+    this.logLoginAttempt({
+      userId: userId.toString(),
+      usernameAttempted,
+      status: LOGIN_STATUSES.SUCCESS,
+      loginMethod: LOGIN_METHODS.SSO,
+      app,
+      req
+    });
+  }
+
+  recordAppSignInDenied({
+    userId,
+    usernameAttempted,
+    app,
+    req
+  }: {
+    userId: Schema.Types.ObjectId | string;
+    usernameAttempted: string;
+    app: LoginEventApp;
+    req: Request;
+  }): void {
+    this.logLoginAttempt({
+      userId: userId.toString(),
+      usernameAttempted,
+      status: LOGIN_STATUSES.FAILED,
+      failReason: LOGIN_FAIL_REASONS.NOT_ENTITLED,
+      loginMethod: LOGIN_METHODS.SSO,
+      app,
       req
     });
   }
@@ -202,7 +254,8 @@ export class LoginHistoryService {
         failReason,
         loginMethod,
         req,
-        timezoneOffset
+        timezoneOffset,
+        app
       } = payload;
 
       const ip = extractIp(req);
@@ -233,7 +286,11 @@ export class LoginHistoryService {
         clientType,
         timezoneOffset: timezoneOffset || null,
         isAnomaly: false,
-        anomalyReasons: []
+        anomalyReasons: [],
+        source: app ? LOGIN_SOURCES.OAUTH : LOGIN_SOURCES.IDP,
+        webAppId: app?.webAppId ?? null,
+        clientName: app?.clientName ?? null,
+        interactive: app?.interactive ?? true
       };
 
       await this.loginHistoryRepo.create(loginHistoryData);

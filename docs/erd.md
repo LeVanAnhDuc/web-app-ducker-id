@@ -33,6 +33,7 @@ erDiagram
     USER ||--o{ NOTIFICATION : "receives"
     USER ||--o{ USER_FAVORITE : "favorites"
     WEB_APP ||--o{ USER_FAVORITE : "favorited-as"
+    WEB_APP |o--o{ LOGIN_HISTORY : "signed-into (nullable)"
     USER ||--o{ CONTACT : "submits (nullable — guest submit = no owner)"
 
     AUTH {
@@ -95,6 +96,10 @@ erDiagram
         String timezone_offset "nullable"
         Boolean is_anomaly "default false"
         StringArray anomaly_reasons
+        Enum source "idp|oauth, default idp"
+        ObjectId web_app_id FK "→ WEB_APP, nullable (null = sign-in to the IdP)"
+        String client_name "nullable — snapshot of WEB_APP.display_name"
+        Boolean interactive "default true; false = silent SSO"
         Date created_at "TTL index"
     }
 

@@ -64,5 +64,14 @@
   },
   "id": {
     "invalid": "Định danh không hợp lệ"
+  },
+  "source": {
+    "invalid": "Nguồn phải là idp hoặc oauth"
+  },
+  "webAppId": {
+    "invalid": "Mã ứng dụng không hợp lệ"
+  },
+  "interactive": {
+    "invalid": "interactive phải là giá trị boolean"
   }
 }
