@@ -1,16 +1,20 @@
 // others
-import { MongoFavoriteRepository } from "./favorite.repository";
+import { MongoFavoriteRepository } from "./repository/impl/mongo-favorite.repository";
 import { MongoWebAppRepository } from "@/modules/web-app/repositories";
 import { AppFavoritableGuard } from "./guards";
-import { FavoriteService } from "./favorite.service";
+import { FavoriteService } from "./service";
 import { FavoriteController } from "./favorite.controller";
 import { createFavoriteUserRoutes } from "./favorite.routes";
 
 export const createFavoriteModule = () => {
   const favoriteRepo = new MongoFavoriteRepository();
   const webAppRepo = new MongoWebAppRepository();
-  const guard = new AppFavoritableGuard(webAppRepo);
-  const service = new FavoriteService(favoriteRepo, webAppRepo, guard);
+  const favoritableGuard = new AppFavoritableGuard(webAppRepo);
+  const service = new FavoriteService({
+    favoriteRepo,
+    webAppRepo,
+    favoritableGuard
+  });
   const controller = new FavoriteController(service);
 
   return {

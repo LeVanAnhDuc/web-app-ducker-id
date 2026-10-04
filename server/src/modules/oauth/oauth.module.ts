@@ -1,9 +1,9 @@
 // types
 import type { RedisClientType } from "redis";
 import type { RateLimiterMiddleware } from "@/middlewares";
-import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { AuthenticationService } from "@/modules/authentication/service";
 import type { UserService } from "@/modules/user/user.service";
-import type { SessionService } from "@/modules/session/session.service";
+import type { SessionService } from "@/modules/session/service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 // modules
 import { MongoWebAppRepository } from "@/modules/web-app/repositories";

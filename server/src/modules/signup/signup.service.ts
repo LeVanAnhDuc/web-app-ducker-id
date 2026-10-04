@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 // types
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { Gender } from "@/modules/user/types";
-import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { AuthenticationService } from "@/modules/authentication/service";
 import type { UserService } from "@/modules/user/user.service";
 import type {
   SendOtpBody,

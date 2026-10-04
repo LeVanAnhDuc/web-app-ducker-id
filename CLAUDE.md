@@ -57,7 +57,9 @@ cd client && pnpm e2e e2e/home/home-page.e2e.ts --project=chromium
 cd client && pnpm e2e e2e/admin-apps/ --project=admin
 ```
 
-Jest picks up `src/**/*.spec.ts` (colocated with the code) plus `test/integration/**` and `test/e2e/**`; factories, helpers and mocks live in `server/test/`. Current suite: **44 suites / 302 tests**, no database required.
+Jest picks up `src/**/*.spec.ts` (colocated with the code, or under `service/spec/` in a converted module) plus `test/integration/**` and `test/e2e/**`; factories, helpers and mocks live in `server/test/`. Current suite: **48 suites / 309 tests**, no database required.
+
+⚠️ `pnpm test` **fails from inside a worktree on Windows** with `No tests found`: Jest escapes the dot in the `.worktrees` path segment when it expands `<rootDir>` into `testMatch`, and micromatch then matches nothing. Run `npx jest --testMatch "**/src/**/*.spec.ts"` there instead.
 
 Playwright (`client/playwright.config.ts`) runs `*.e2e.ts` under `client/e2e/` with `workers: 1` and `fullyParallel: false`, across four projects: `setup` and `admin-setup` log in and write `e2e/.auth/{user,admin}.json`, then `chromium` runs as a **regular user** (it `testIgnore`s the admin-only folders) and `admin` runs those folders. `admin-authz/` is deliberately left in the regular-user project — its denial tests need a non-admin session. E2E needs client + server + MongoDB + Redis up **and the DB seeded**; credentials come from `E2E_*` (defaults `user@test.com` / `User@123`, `admin@test.com` / `Admin@123`). The base URL resolves as `E2E_BASE_URL` → the nearest `.worktree-state.json` entry keyed by the current folder name → `http://localhost:3000`.
 
@@ -74,6 +76,18 @@ There is no DI container. Every module exports a `create<Name>Module(...)` facto
 - A module exposing both a user and an admin surface returns two routers (`userRouter` + `userAdminRouter`, `webAppUserRouter` + `webAppAdminRouter`, …) instead of branching inside one.
 
 Module anatomy: `<name>.module.ts` (factory), `<name>.routes.ts`, `<name>.controller.ts`, `<name>.service.ts`, `<name>.repository.ts`, plus `dtos/`, `types/`, `constants/`, `swagger/` (`paths.ts` + `schemas.ts` + a Postman collection) and colocated `*.spec.ts`. 13 wired modules, ~50 route handlers.
+
+**A second layout is being rolled out, one module at a time.** It splits the two files that grow worst:
+
+- `repository/<name>.repository.ts` holds only `interface <Name>Repository` (type imports and nothing else); the Mongoose class moves to `repository/impl/mongo-<name>.repository.ts`. There is **deliberately no barrel** — the service imports the interface, and only the module factory is allowed to reach into `impl/`, which is what keeps the boundary real.
+- `service/` holds **one public method per file** (`update-password.ts` exports `updatePassword(authRepo, …)` — a plain function whose first argument is the dependency), with `service/index.ts` as a façade class whose methods are one-line delegates and `service/spec/` for the unit tests. Validation, logging and `try/catch` live in the method file, never in the façade.
+
+Two shapes fall out of that:
+
+- A service with **one** public method keeps class and logic together in `service/index.ts` — splitting 23 lines across two files buys nothing the module name does not already give. The uniform `@/modules/<name>/service` import path is the part worth keeping.
+- A service with **two or more** dependencies declares them in `service/deps.ts` as `interface <Name>ServiceDeps`; method files take `deps` as their first argument and the façade constructor takes one object instead of a positional list. With seven dependencies, `refreshAccessToken(authService, userService, g1, g2, g3, g4, g5, token)` is not a signature anyone can read.
+
+Converted so far: `authentication`, `logout`, `token`, `change-password`, `session`, `favorite`, `notification`, `contact-admin`. Still on the old layout: `user`, `web-app`, `unlock-account`, `signup`, `oauth`, `forgot-password`, `login`, `login-history`. They are not exceptions — they just have not been migrated. (`entitlement` and `oauth-consent` are schema-only stubs with nothing to split.) Full rules in `server/.claude/rules/modules.md`; design rationale in `docs/specs/authentication-module-structure/design.md` and `docs/specs/module-struct-batch1/design.md`.
 
 Cross-cutting concerns deliberately live **outside** the modules:
 
