@@ -1,7 +1,8 @@
 # Design — Home Activity Insights
 
 > Feature: `home-activity-insights` · Branch: `feat/home-activity-insights` · Worktree: `.worktrees/home-activity-insights`
-> Status: draft — chờ user duyệt design, sau đó tới gate mock UI (`docs/ui-designs/home-activity-insights/`).
+> Status: implemented. Mock đã duyệt. Phần dưới đã được cập nhật theo code thật — mọi chỗ
+> implementation lệch khỏi dự định ban đầu đều ghi lại tại chỗ, không sửa lịch sử quyết định.
 
 ## 1. Bối cảnh & vấn đề
 
@@ -43,9 +44,10 @@ tới trang chi tiết đã lọc sẵn.
 | DR-10 | Thẻ/biểu đồ có đích điều hướng thì render bằng `Link` của `@/i18n/navigation`; thẻ không có đích thì **không** cho trông như click được | `LoginStatsRow` đang `router.push` trên `<button>` → mất middle-click, mất ngữ nghĩa link cho screen reader |
 | DR-11 | Quick Access đổi nguồn sang `GET /users/me/recent-apps`, rỗng thì fallback catalog | "Jump back in" mà lấy 4 app đầu catalog là sai nghĩa; endpoint đã có sẵn từ `recently-used` |
 | DR-12 | **Ngày trống fill ở tầng DTO** (`count: 0`), BE không trả thiếu cột | Chart phải giữ đủ 7/30/90 cột. Cùng tinh thần `totalPages: 0` của PR #21 |
-| DR-13 | Cache Redis 60s theo `userId + range + tz` | Cả hai endpoint đều là aggregation, Home là trang được tải lại nhiều nhất |
-| DR-14 | **Chuỗi có ngữ nghĩa trạng thái (thành công/thất bại) dùng `--primary` / `--destructive`, không dùng `--chart-*`.** `--chart-1/3/4/5` chỉ dành cho chuỗi phân loại; **bỏ qua `--chart-2`** (brass) trừ khi thật sự cần màu thứ 5 | Đỏ "thất bại" đã có nghĩa cố định khắp app (`LoginStatCard tone="danger"`, cột trạng thái Login History). MASTER.md: brass là signature — "ngoài fill CTA là fill phi trung tính duy nhất; dùng chỗ khác là hết nghĩa". `globals.css` gán `--chart-2: brass-600` đúng chữ nhưng sai tinh thần |
-| DR-15 | **`--chart-3` ở light mode phải đổi sang `--prussian-500 #2A5F8F`** | `--prussian-300 #7CA9D8` là màu brand cho **dark mode**; trên nền trắng chỉ ~**2.5:1**, dưới ngưỡng 3:1 của WCAG 1.4.11 cho đồ hoạ phi văn bản. Phương án thay thế (giữ token + viền 1px quanh mỗi lát/thanh) ghi ở mock §1 |
+| DR-13 | ~~Cache Redis 60s theo `userId + range + tz`~~ — **hoãn** | Mọi truy cập Redis trong project đi qua một repository. Thêm cache nghĩa là module có **hai** repository khác nhau, kéo theo đổi `repository/` → `repositories/` ở cả hai module — một diff lớn cho một tối ưu mà hai endpoint đọc theo user, có index, chưa cần. Ghi vào backlog |
+| DR-14 | **Chuỗi có ngữ nghĩa trạng thái (thành công/thất bại) dùng `--primary` / `--destructive`, không dùng `--chart-*`.** Chuỗi phân loại dùng thứ tự `--chart-1`, `--chart-5`, `--chart-4`, rồi `--chart-2` | Đỏ "thất bại" đã có nghĩa cố định khắp app (`LoginStatCard tone="danger"`, cột trạng thái Login History). MASTER.md: brass là signature — "ngoài fill CTA là fill phi trung tính duy nhất; dùng chỗ khác là hết nghĩa". **Điều chỉnh khi implement:** bản nháp định bỏ hẳn `--chart-2`, nhưng bảng màu chỉ còn 3 slot thật sự dùng được mỗi theme (xem DR-15), mà donut phương thức có 4 lát. Brass vì thế là slot thứ **tư**, không phải slot bị cấm |
+| DR-15 | **`--chart-3` ở light mode đổi sang `--prussian-500 #2A5F8F`**, và mọi fill phân loại có thêm viền 1px màu `--card` | `--prussian-300 #7CA9D8` là màu brand cho **dark mode**; trên nền trắng chỉ ~**2.5:1**, dưới ngưỡng 3:1 của WCAG 1.4.11. **Phát hiện thêm khi implement:** dark mode của `--chart-3` là `--prussian-500`, cũng không đạt trên nền tối — nghĩa là hai giá trị bị đặt ngược nhau từ đầu. Bảng màu không có hue thứ năm để sửa triệt để, nên `--chart-3` được ghi nhận là slot yếu và tránh dùng; viền 1px đảm nhiệm ranh giới (WCAG 1.4.11 xét biên, không xét riêng fill) |
+| DR-16 | **Sửa luôn một lỗi có sẵn của bộ lọc ngày** ở Lịch sử đăng nhập: `fromDate`/`toDate` thêm `.raw()` trong Joi, và `toDate` không kèm giờ thì phủ trọn ngày | Phát hiện khi bấm thử một cột trên biểu đồ: link đi đúng nhưng danh sách **rỗng**. Joi `.isoDate()` viết lại `"2026-10-04"` thành `"2026-10-04T00:00:00.000Z"`, rồi `toDate` thành cận trên lúc nửa đêm → chỉ khớp mili-giây đầu tiên của ngày. Preset "Hôm nay" / "7 ngày" / "30 ngày" vẫn luôn mất ngày cuối cùng vì đúng lý do này. Không sửa thì feature này ship một đường dẫn luôn dẫn tới trang rỗng |
 
 ## 3. Backend
 
@@ -74,8 +76,10 @@ Aggregation (`repository/impl/mongo-login-history.repository.ts`):
 
 - `$match` gốc: chỉ `userId` + khoảng `createdAt` — **bỏ `method != sso` khỏi đây** (DR-8)
 - `total` / `byStatus` / `byMethod` / `byDevice`: mỗi facet mở đầu bằng `{ $match: { method: { $ne: SSO } } }` → số không đổi
-- `byDay`: lọc `method != sso` → `$group` theo `$dateTrunc { date: "$createdAt", unit: "day", timezone: tz }`,
-  đếm `total` + `successful` + `failed` bằng `$cond` trên `status`
+- `byDay`: lọc `method != sso` → `$group` theo `$dateToString { date: "$createdAt", format: "%Y-%m-%d", timezone: tz }`,
+  đếm `total` + `successful` + `failed` bằng `$cond` trên `status`.
+  **Dùng `$dateToString` chứ không phải `$dateTrunc`** như bản nháp: DTO cần đúng khoá `YYYY-MM-DD`
+  theo giờ người dùng, `$dateTrunc` trả về `Date` rồi vẫn phải format lại, và nó yêu cầu MongoDB 5.0+
 - `byApp`: `$match { method: SSO, webAppId: { $ne: null } }` → `$group` theo `{ webAppId, clientName }` → `$sort count desc` → `$limit 5`
 - `anomalies`: `$match { isAnomaly: true }` → `$count`
 
@@ -100,12 +104,12 @@ Response:
   byCategory: [{ category, count }] }
 ```
 
-Aggregation: `$match { userId, hiddenAt: null }` → `$facet`:
-
-- `totals` — `$count`, cộng `$cond(lastUsedAt >= now - 7d)` và `30d`
-- `topApps` — `$sort { useCount: -1, lastUsedAt: -1 }` → `$limit` → `$lookup` sang `web_apps`,
-  lọc theo cùng điều kiện hiển thị mà `isAppVisibleTo` dùng (không rò app user không còn quyền thấy)
-- `byCategory` — `$lookup` → `$group` theo `category`
+**Điều chỉnh khi implement:** không dùng `$facet` + `$lookup` trong repository. Service đi đúng
+đường mà `list` đã đi — lấy id từ usage, đối chiếu catalog qua `webAppRepo.findActiveByIds`, rồi
+`recentAppRepo.findUsages(userId, visibleIds)` trả về **toàn bộ** dòng (một dòng / app, chặn trên là
+kích thước catalog). Tổng, bảng xếp hạng và phân bổ category tính trong DTO từ cùng tập dòng đó.
+Đổi lại: một quy tắc hiển thị duy nhất cho cả `list` lẫn `stats`, không phải viết `$lookup` lặp lại
+logic của `isAppVisibleTo` bằng ngôn ngữ aggregation.
 
 ⚠️ `useCount` **cộng dồn từ trước tới nay**, không lọc được theo range → UI bắt buộc ghi nhãn
 "tổng từ trước tới nay" và **không** gắn chung toggle 7d/30d/90d.
@@ -187,6 +191,29 @@ Mapping này khai ở `dataSources/Home/` dạng **data**, không nhúng trong J
 `stats.hoursThisMonth`, `stats.personalBest`, `achievement.*`, `weeklyActivity.legend`.
 Thêm nhóm `activity.*`, `topApps.*`, `range.*`.
 `locales/{en,vi}/loginHistory.json`: thêm `filters.deviceType` + nhãn từng giá trị.
+
+## 4.6 E2E Scenario Matrix
+
+Home đã có suite sẵn (`client/e2e/home/home.e2e.ts`) viết cho bản mock, nên đây là một lượt
+**reconcile**: thêm hành vi mới, **sửa** assertion đã sai, **xoá** phần không còn tồn tại.
+Gate mặc định `A+B`; không có dòng nào `A only` vì Home chỉ đọc.
+
+| #  | Category | Quyết định |
+| --- | --- | --- |
+| 1 | Happy path | ✅ `/vi` dựng greeting + 4 thẻ số + biểu đồ 7 cột từ stats đã stub; `/` dựng bản tiếng Anh |
+| 2 | AuthN | ✅ Vào `/vi` với storageState rỗng → chuyển hướng `/login` |
+| 3 | AuthZ | **N/A** — Home không có phần tử nào gate theo role. Lọc theo quyền nhìn app nằm ở server và đã được `recently-used` + `web-app-user-list` phủ |
+| 4 | Validation / tampered query | ✅ **[EP]** `range`: `7d`/`30d`/`90d` (hợp lệ) · `999d` (ngoài tập) · thiếu hẳn → cả hai trường hợp sau đều rơi về 7 ngày, không văng. **[EP]** `deviceType` ở Lịch sử đăng nhập: `MOBILE` (hợp lệ) · `NOPE` (không có trong `filterDefs` → bị bỏ, danh sách không lọc) |
+| 5 | Empty / null | ✅ stats toàn 0 → vẫn đủ 7 cột + câu "Chưa ghi nhận lần đăng nhập nào"; `recent-apps` rỗng → Quick Access rơi về catalog kèm phụ đề empty; `topApps` rỗng → câu mời mở app |
+| 6 | Boundary | ✅ **[BVA]** số cột theo range: `7d`→7 · `30d`→30 · `90d`→90. **[BVA]** ngưỡng thưa `SPARSE_THRESHOLD = 3`: `total=0`→"Chưa ghi nhận…" · `total=3`→câu giải thích phiên tự gia hạn · `total=4`→đổi sang gợi ý chọn ngày |
+| 7 | Filter / điều hướng | ✅ Thẻ "Đăng nhập thất bại" → `?status=failed` · lát donut → `?method=password` · dòng thiết bị → `?deviceType=MOBILE` **và panel lọc hiện đúng filter** (chính chỗ sẽ hỏng âm thầm nếu thiếu filter def) · click cột → `?dateRange=custom&fromDate=…&toDate=…` · đổi range ghi vào URL và F5 giữ nguyên |
+| 8 | Data rendering | ✅ Nhãn người đọc được chứ không phải enum thô: `Mật khẩu` không phải `password`, `Máy tính` không phải `DESKTOP`; trục ngày là `dd/MM`, không phải chuỗi ISO |
+| 9 | i18n | ✅ Chạy nhóm khoá chính ở **cả hai** locale: nhãn 4 thẻ, tiêu đề biểu đồ, nút range, câu empty |
+| 10 | Error / loading | ✅ `/login-history/stats` trả 500 → thẻ hoạt động hiện `role="alert"`, phần còn lại của trang vẫn dựng (lỗi không kéo sập cả Home) |
+| 11 | Mutation safety | **N/A** — Home chỉ đọc. Nút tim là mutation duy nhất và đã nằm trong `e2e/favorite-apps/` |
+| 12 | Accessibility | ✅ 4 thẻ là `link` thật (không phải div bắt click), tên gồm cả con số; biểu đồ có `role="img"` + `aria-label` tóm tắt; bảng `sr-only` chứa đúng dữ liệu; cụm range là `group` có `aria-pressed` |
+| 13 | Timezone (riêng feature) | ✅ Với `timezoneId: "Asia/Ho_Chi_Minh"`, request stats phải kèm `tz=Asia/Ho_Chi_Minh` — bắt được trường hợp `useBrowserTimeZone` thoái hoá về `undefined` và server âm thầm cắt ngày theo UTC |
+| 14 | Lỗi bộ lọc ngày (DR-16) | ✅ ở tầng unit (`login-history-filter.spec.ts`: date-only phủ trọn ngày, và Joi `.raw()` không viết lại chuỗi). **Không** khẳng định ở E2E vì cần seed có bản ghi đúng ngày chạy test — ghi lại ở `e2e.md` như phụ thuộc seed |
 
 ## 5. Bảo mật
 

@@ -5,6 +5,7 @@ import type {
   PaginatedLoginHistoryResponse,
   PaginatedAdminLoginHistoryResponse,
   LoginHistoryStats,
+  LoginStatsQueryParams,
   LoginHistoryAdminDetailItem
 } from "@/types/LoginHistory";
 // others
@@ -23,9 +24,12 @@ export const getMyLoginHistory = async (
   return response.data.data;
 };
 
-export const getMyLoginHistoryStats = async (): Promise<LoginHistoryStats> => {
+export const getMyLoginHistoryStats = async (
+  params?: LoginStatsQueryParams
+): Promise<LoginHistoryStats> => {
   const response = await axiosInstance.get<ResponsePattern<LoginHistoryStats>>(
-    END_POINTS.LOGIN_HISTORY_STATS
+    END_POINTS.LOGIN_HISTORY_STATS,
+    { params }
   );
   return response.data.data;
 };

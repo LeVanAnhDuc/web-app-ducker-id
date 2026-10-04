@@ -37,8 +37,16 @@ const CLIENT_TYPE = {
   MOBILE_ANDROID: "MOBILE_ANDROID"
 } as const;
 
+// Offered on the Home activity chart; the server validates the same set.
+const STATS_RANGE = {
+  WEEK: "7d",
+  MONTH: "30d",
+  QUARTER: "90d"
+} as const;
+
 const LOGIN_HISTORY = {
   METHOD,
+  STATS_RANGE,
   SOURCE,
   APP_FILTER_IDP,
   STATUS,
@@ -46,7 +54,9 @@ const LOGIN_HISTORY = {
   LOCATION_SENTINEL,
   CLIENT_TYPE,
   METHOD_VALUES: Object.values(METHOD),
-  STATUS_VALUES: Object.values(STATUS)
+  STATUS_VALUES: Object.values(STATUS),
+  DEVICE_TYPE_VALUES: Object.values(DEVICE_TYPE),
+  STATS_RANGE_VALUES: Object.values(STATS_RANGE)
 };
 
 export default LOGIN_HISTORY;

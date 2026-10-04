@@ -44,6 +44,7 @@
     "title": "Bộ lọc",
     "status": "Trạng thái",
     "method": "Phương thức",
+    "deviceType": "Thiết bị",
     "country": "Quốc gia",
     "city": "Thành phố",
     "fromDate": "Từ ngày",

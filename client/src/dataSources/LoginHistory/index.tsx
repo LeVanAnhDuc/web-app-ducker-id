@@ -7,6 +7,7 @@ import type {
   LoginHistoryAdminItem,
   LoginHistoryItem,
   LoginHistoryMethod,
+  LoginHistoryDeviceType,
   LoginHistoryQueryParams,
   LoginHistoryStatus
 } from "@/types/LoginHistory";
@@ -26,6 +27,7 @@ const {
   DEVICE_TYPE,
   METHOD_VALUES,
   STATUS_VALUES,
+  DEVICE_TYPE_VALUES,
   SOURCE,
   APP_FILTER_IDP
 } = CONSTANTS.LOGIN_HISTORY;
@@ -41,6 +43,9 @@ export const LOGIN_HISTORY_METHOD_COLOR: Record<LoginHistoryMethod, string> = {
 export const LOGIN_HISTORY_STATUS_VALUES: LoginHistoryStatus[] = STATUS_VALUES;
 
 export const LOGIN_HISTORY_METHOD_VALUES: LoginHistoryMethod[] = METHOD_VALUES;
+
+export const LOGIN_HISTORY_DEVICE_TYPE_VALUES: LoginHistoryDeviceType[] =
+  DEVICE_TYPE_VALUES;
 
 type TFilters = (key: LeafKeyOf<LoginHistoryMessages["filters"]>) => string;
 type TApp = (key: LeafKeyOf<LoginHistoryMessages["app"]>) => string;
@@ -80,7 +85,8 @@ export const toLoginAppQueryParams = (
 export const buildLoginHistoryFilterDefs = (
   tStatus: (key: LeafKeyOf<LoginHistoryMessages["status"]>) => string,
   tMethod: (key: LeafKeyOf<LoginHistoryMessages["method"]>) => string,
-  tFilters: TFilters
+  tFilters: TFilters,
+  tDevice: (key: LeafKeyOf<LoginHistoryMessages["deviceType"]>) => string
 ): ListFilterDef[] => [
   {
     key: "status",
@@ -98,6 +104,18 @@ export const buildLoginHistoryFilterDefs = (
     options: LOGIN_HISTORY_METHOD_VALUES.map((v) => ({
       value: v,
       label: tMethod(v)
+    }))
+  },
+  // Home links in with ?deviceType=…; useListQuery drops any param that has
+  // no definition here, so without this the chart would navigate to an
+  // unfiltered list without a word of complaint.
+  {
+    key: "deviceType",
+    type: "select",
+    label: tFilters("deviceType"),
+    options: LOGIN_HISTORY_DEVICE_TYPE_VALUES.map((v) => ({
+      value: v,
+      label: tDevice(v)
     }))
   },
   {

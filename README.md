@@ -24,8 +24,10 @@ This repository is a monorepo: `client/` is the Next.js web UI, `server/` is the
   - Change your own password from the profile page
   - After an admin resets your password you are sent to a forced change-password screen and cannot use the rest of the site until you set a new one
 - **App launcher dashboard**
-  - Home page greets you by time of day and shows quick-access and recommended app tiles
-  - Home page also shows your sign-in activity — total, successful and failed logins — with a link to the full login history
+  - Home page greets you by time of day, and "Jump back in" shows the apps you actually opened last
+  - Home page charts your sign-in activity per day over 7, 30 or 90 days, cut in your own timezone, and breaks it down by sign-in method and device
+  - Every figure on Home links through to the matching filtered list — a day on the chart, a method, a device, or just the failed sign-ins
+  - A ranking of the apps you open most, counted over the whole history
   - `/apps` lists every app you may see, filtered by your role, with text search, category filter, grid/list toggle and pagination
   - Opening a tile launches that app's own URL in a new tab
   - Header search finds apps as you type, with keyboard navigation, and opens one directly or jumps to the full list

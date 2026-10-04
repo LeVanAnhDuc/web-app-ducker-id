@@ -24,7 +24,11 @@ import {
 } from "@/dataSources/LoginHistory";
 // others
 import CONSTANTS from "@/constants";
-import { isLoginHistoryStatus, isLoginHistoryMethod } from "@/utils";
+import {
+  isLoginHistoryStatus,
+  isLoginHistoryMethod,
+  isLoginHistoryDeviceType
+} from "@/utils";
 
 const LoginHistoryTable = () => {
   const tTable = useTranslations("loginHistory.table");
@@ -33,14 +37,15 @@ const LoginHistoryTable = () => {
   const tFilters = useTranslations("loginHistory.filters");
   const tLocation = useTranslations("loginHistory.location");
   const tApp = useTranslations("loginHistory.app");
+  const tDevice = useTranslations("loginHistory.deviceType");
   const appOptions = useLoginAppOptions();
 
   const filterDefs = useMemo(
     () => [
-      ...buildLoginHistoryFilterDefs(tStatus, tMethod, tFilters),
+      ...buildLoginHistoryFilterDefs(tStatus, tMethod, tFilters, tDevice),
       ...buildLoginAppFilterDefs(appOptions, tFilters, tApp)
     ],
-    [tStatus, tMethod, tFilters, tApp, appOptions]
+    [tStatus, tMethod, tFilters, tApp, tDevice, appOptions]
   );
 
   const columns = useMemo(
@@ -58,6 +63,9 @@ const LoginHistoryTable = () => {
     }),
     ...(isLoginHistoryMethod(query.filters.method) && {
       method: query.filters.method
+    }),
+    ...(isLoginHistoryDeviceType(query.filters.deviceType) && {
+      deviceType: query.filters.deviceType
     }),
     ...(query.filters.fromDate && { fromDate: query.filters.fromDate }),
     ...(query.filters.toDate && { toDate: query.filters.toDate }),
