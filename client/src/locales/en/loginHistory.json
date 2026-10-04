@@ -1,11 +1,6 @@
 {
   "title": "Login History",
   "description": "Monitor your account access and security events",
-  "stats": {
-    "totalLogins": "Total Logins",
-    "successful": "Successful",
-    "failed": "Failed"
-  },
   "toolbar": {
     "search": "Search logs...",
     "export": "Export"
@@ -125,8 +120,7 @@
   },
   "announce": {
     "loading": "Loading data...",
-    "loaded": "{total} results loaded",
-    "statsLoaded": "Stats loaded: {total} logins"
+    "loaded": "{total} results loaded"
   },
   "app": {
     "idp": "Ducker ID",

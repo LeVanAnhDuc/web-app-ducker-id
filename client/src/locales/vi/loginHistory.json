@@ -1,11 +1,6 @@
 {
   "title": "Lịch sử đăng nhập",
   "description": "Theo dõi truy cập tài khoản và sự kiện bảo mật",
-  "stats": {
-    "totalLogins": "Tổng lượt đăng nhập",
-    "successful": "Thành công",
-    "failed": "Thất bại"
-  },
   "toolbar": {
     "search": "Tìm log...",
     "export": "Xuất"
@@ -125,8 +120,7 @@
   },
   "announce": {
     "loading": "Đang tải dữ liệu...",
-    "loaded": "Đã tải {total} kết quả",
-    "statsLoaded": "Đã tải thống kê: {total} lượt đăng nhập"
+    "loaded": "Đã tải {total} kết quả"
   },
   "app": {
     "idp": "Ducker ID",

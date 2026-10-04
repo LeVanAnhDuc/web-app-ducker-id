@@ -18,6 +18,17 @@
     "hoursThisMonth": "+5 giờ tháng này",
     "personalBest": "Kỷ lục cá nhân!"
   },
+  "loginStats": {
+    "title": "Hoạt động đăng nhập",
+    "viewHistory": "Xem lịch sử đăng nhập",
+    "totalLogins": "Tổng lượt đăng nhập",
+    "successful": "Thành công",
+    "failed": "Thất bại",
+    "announce": {
+      "loading": "Đang tải thống kê đăng nhập...",
+      "loaded": "Đã tải thống kê: {total} lượt đăng nhập"
+    }
+  },
   "weeklyActivity": {
     "title": "Hoạt động hàng tuần",
     "subtitle": "Số ứng dụng mở mỗi ngày trong tuần",

@@ -16,6 +16,7 @@ import HeroTitle from "@/components/HeroTitle";
 import { Card } from "@/components/ui/card";
 import CustomButton from "@/components/CustomButton";
 import StatCard from "../../components/StatCard";
+import LoginStatsRow from "../../components/LoginStatsRow";
 // others
 import useHomeApps from "../../hooks/useHomeApps";
 
@@ -106,6 +107,7 @@ const GreetingSection = () => {
           badgeText="text-warning-foreground"
         />
       </div>
+      <LoginStatsRow />
       <Card
         className="rounded-2xl border p-7"
         aria-labelledby="weekly-activity-title"

@@ -25,6 +25,7 @@ This repository is a monorepo: `client/` is the Next.js web UI, `server/` is the
   - After an admin resets your password you are sent to a forced change-password screen and cannot use the rest of the site until you set a new one
 - **App launcher dashboard**
   - Home page greets you by time of day and shows quick-access and recommended app tiles
+  - Home page also shows your sign-in activity — total, successful and failed logins — with a link to the full login history
   - `/apps` lists every app you may see, filtered by your role, with text search, category filter, grid/list toggle and pagination
   - Opening a tile launches that app's own URL in a new tab
   - Header search finds apps as you type, with keyboard navigation, and opens one directly or jumps to the full list
@@ -33,7 +34,6 @@ This repository is a monorepo: `client/` is the Next.js web UI, `server/` is the
   - `/favorites` shows just your starred apps
 - **Login history**
   - Your own sign-in attempts with method, success/failure and reason, IP, country and city, device type, OS and browser, and an anomaly flag
-  - Summary stat cards above the table
   - Each row shows where you signed in — Ducker ID itself or a satellite app over OIDC — and automatic SSO sign-ins from an existing session are recorded too, marked with an "Auto" badge; filter by app or by the SSO method
 - **Notifications inbox**
   - Unread badge and panel in the header, plus a full `/notifications` page grouped by date
