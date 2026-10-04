@@ -1,5 +1,5 @@
 // types
-import type { LoginCompletionService } from "@/modules/login/services/login-completion.service";
+import type { LoginCompletionService } from "@/modules/login/services/login-completion";
 
 export function createLoginCompletionServiceMock(): jest.Mocked<LoginCompletionService> {
   return {

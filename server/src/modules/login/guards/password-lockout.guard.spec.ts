@@ -1,6 +1,6 @@
 // types
 import type { Request } from "express";
-import type { FailedAttemptsRepository } from "../repositories";
+import type { FailedAttemptsRepository } from "../repositories/failed-attempts.repository";
 // common
 import { TooManyRequestsError } from "@/common/exceptions";
 // others

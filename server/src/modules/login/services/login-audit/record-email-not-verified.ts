@@ -1,0 +1,31 @@
+// types
+import type { Request } from "express";
+import type { AuthenticationDocument } from "@/modules/authentication/types";
+import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
+import type { LoginMethod } from "@/modules/login-history/types";
+// modules
+import { LOGIN_FAIL_REASONS } from "@/modules/login-history/constants";
+// others
+import { Logger } from "@/libs/logger";
+
+export const recordEmailNotVerified = (
+  historyService: LoginHistoryService,
+  params: {
+    auth: AuthenticationDocument;
+    email: string;
+    method: LoginMethod;
+    req: Request;
+  }
+): void => {
+  const { auth, email, method, req } = params;
+
+  historyService.recordFailedLogin({
+    userId: auth._id,
+    usernameAttempted: email,
+    loginMethod: method,
+    failReason: LOGIN_FAIL_REASONS.EMAIL_NOT_VERIFIED,
+    req
+  });
+
+  Logger.warn("Email not verified", { email });
+};

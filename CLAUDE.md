@@ -91,7 +91,9 @@ A module with two or more **different** repositories (not two implementations of
 
 Private methods follow the call graph. One that serves a single public method becomes an unexported function in that method's file; one shared by two or more goes to `services/shared/<name>.ts`, same shape, not on the façade. Neither becomes a helper — `helpers/` is for pure functions, and these touch Redis, Mongo or a transaction.
 
-Converted so far: `authentication`, `logout`, `token`, `change-password`, `session`, `favorite`, `notification`, `contact-admin`, `unlock-account`, `web-app`, `user`, `signup`, `oauth`. Still on the old layout: `forgot-password`, `login`, `login-history`. They are not exceptions — they just have not been migrated. (`entitlement` and `oauth-consent` are schema-only stubs with nothing to split.) Full rules in `server/.claude/rules/modules.md`; design rationale in `docs/specs/authentication-module-structure/design.md` and the `docs/specs/module-struct-batch*/design.md` series.
+A module with two or more services puts each one in its own sub-folder — `services/login/`, `services/login-audit/` — and `strategies/` is laid out the same way. Neither folder has a barrel; the only `index.ts` is the class inside each sub-folder. Where a `strategies/` folder already splits the work per use case, the façade's one-line delegates stay on the façade: a method file holding `return deps.otpStrategy.sendCode(req)` adds a hop to a trace rather than removing one.
+
+Converted: every module except `login-history`. (`entitlement` and `oauth-consent` are schema-only stubs with nothing to split.) They are not exceptions — they just have not been migrated. (`entitlement` and `oauth-consent` are schema-only stubs with nothing to split.) Full rules in `server/.claude/rules/modules.md`; design rationale in `docs/specs/authentication-module-structure/design.md` and the `docs/specs/module-struct-batch*/design.md` series.
 
 Cross-cutting concerns deliberately live **outside** the modules:
 
