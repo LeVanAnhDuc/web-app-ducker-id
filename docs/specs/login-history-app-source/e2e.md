@@ -32,3 +32,9 @@ real SSO thì seed trên một DB riêng (`DB_NAME` khác) rồi chạy:
 ```bash
 cd client && pnpm e2e e2e/login-history/login-history-app-source.e2e.ts --project=chromium
 ```
+
+## Cập nhật 04.10.2026: gỡ filter "Kiểu đăng nhập"
+
+- Bỏ case "signIn filter maps to the interactive query param" (user) và "signIn=interactive" (admin).
+- Thêm "the default list sends no interactive filter and shows silent SSO" và "method = SSO sends method=sso and no interactive filter".
+- Hai case real SSO giờ kiểm ở `/login-history?method=sso` thay vì `?signIn=silent`.

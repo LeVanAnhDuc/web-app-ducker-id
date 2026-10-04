@@ -67,7 +67,7 @@ test.describe("My Login History — app source (stubbed)", () => {
     page
   }) => {
     await stubList(page, [IDP_ROW, SILENT_SSO_ROW]);
-    await page.goto("/login-history?signIn=all");
+    await page.goto("/login-history");
 
     const rows = page.getByRole("row");
     await expect(rows.filter({ hasText: "Ducker ID" })).toHaveCount(1);
@@ -80,25 +80,32 @@ test.describe("My Login History — app source (stubbed)", () => {
     ).toHaveCount(0);
   });
 
-  // Row 7 DT (signIn filter × request): default hides silent SSO
-  // (interactive=true); "all" drops the param; "silent" sends false.
-  test("signIn filter maps to the interactive query param", async ({
+  // Row 7: nothing is hidden by default — the request carries no
+  // interactive filter, so silent SSO rows show up next to manual logins.
+  test("the default list sends no interactive filter and shows silent SSO", async ({
     page
   }) => {
     const seen: Request[] = [];
-    await stubList(page, [IDP_ROW], seen);
+    await stubList(page, [IDP_ROW, SILENT_SSO_ROW], seen);
 
     await page.goto("/login-history");
-    await expect(page.getByText("Ducker ID")).toBeVisible();
-    expect(lastQuery(seen).get("interactive")).toBe("true");
-
-    await page.goto("/login-history?signIn=all");
-    await expect(page.getByText("Ducker ID")).toBeVisible();
+    await expect(
+      page.getByRole("row").filter({ hasText: "Match CV" })
+    ).toBeVisible();
     expect(lastQuery(seen).has("interactive")).toBe(false);
+  });
 
-    await page.goto("/login-history?signIn=silent");
-    await expect(page.getByText("Ducker ID")).toBeVisible();
-    expect(lastQuery(seen).get("interactive")).toBe("false");
+  // Row 7: method=SSO means every sign-in into an app, silent ones included.
+  test("method = SSO sends method=sso and no interactive filter", async ({
+    page
+  }) => {
+    const seen: Request[] = [];
+    await stubList(page, [SILENT_SSO_ROW], seen);
+
+    await page.goto("/login-history?method=sso");
+    await expect(page.getByText("Match CV")).toBeVisible();
+    expect(lastQuery(seen).get("method")).toBe("sso");
+    expect(lastQuery(seen).has("interactive")).toBe(false);
   });
 
   // Row 7: app filter "Ducker ID" → source=idp, survives a reload (URL state).
@@ -131,7 +138,7 @@ test.describe("My Login History — app source (stubbed)", () => {
     page
   }) => {
     await stubList(page, [SILENT_SSO_ROW]);
-    await page.goto("/vi/login-history?signIn=all");
+    await page.goto("/vi/login-history");
     await expect(
       page.getByRole("columnheader", { name: "Ứng dụng" })
     ).toBeVisible();
@@ -156,9 +163,8 @@ const authorizeUrl = (clientId: string, redirectUri: string) =>
 
 test.describe("My Login History — app source (real SSO)", () => {
   // Row 1 + Row 7: an existing IdP session (sid cookie from auth.setup) gets
-  // a code silently; the row is hidden by default and listed under
-  // "Automatic SSO only".
-  test("a silent SSO into IDMS Portal is recorded and shown under the silent filter", async ({
+  // a code silently; the row shows up under method = SSO with the Auto badge.
+  test("a silent SSO into IDMS Portal is recorded and shown under method = SSO", async ({
     page
   }) => {
     const res = await page.request.get(
@@ -173,7 +179,7 @@ test.describe("My Login History — app source (real SSO)", () => {
       "https://idms.example.com/auth/callback?code="
     );
 
-    await page.goto("/login-history?signIn=silent");
+    await page.goto("/login-history?method=sso");
     const row = page
       .getByRole("row")
       .filter({ hasText: "IDMS Portal" })
@@ -197,7 +203,7 @@ test.describe("My Login History — app source (real SSO)", () => {
     expect(res.status()).toBe(302);
     expect(res.headers()["location"]).toContain("error=access_denied");
 
-    await page.goto("/login-history?signIn=silent");
+    await page.goto("/login-history?method=sso");
     const row = page
       .getByRole("row")
       .filter({ hasText: "Analytics Dashboard" })

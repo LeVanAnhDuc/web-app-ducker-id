@@ -42,7 +42,7 @@ const AdminLoginHistoryTable = () => {
   const filterDefs = useMemo(
     () => [
       ...buildLoginHistoryFilterDefs(tStatus, tMethod, tFilters),
-      ...buildLoginAppFilterDefs(appOptions, "admin", tFilters, tApp)
+      ...buildLoginAppFilterDefs(appOptions, tFilters, tApp)
     ],
     [tStatus, tMethod, tFilters, tApp, appOptions]
   );
@@ -66,7 +66,7 @@ const AdminLoginHistoryTable = () => {
     }),
     ...(query.filters.fromDate && { fromDate: query.filters.fromDate }),
     ...(query.filters.toDate && { toDate: query.filters.toDate }),
-    ...toLoginAppQueryParams(query.filters, "admin")
+    ...toLoginAppQueryParams(query.filters)
   };
 
   const { data, isLoading } = useAdminLoginHistory(params);

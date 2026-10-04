@@ -57,12 +57,7 @@
     "ip": "IP Address",
     "all": "All",
     "clear": "Clear",
-    "app": "App",
-    "signIn": "Sign-in type",
-    "signInInteractiveDefault": "Manual sign-ins",
-    "signInInteractive": "Manual only",
-    "signInAll": "Include automatic SSO",
-    "signInSilent": "Automatic SSO only"
+    "app": "App"
   },
   "status": {
     "success": "Success",

@@ -57,12 +57,7 @@
     "ip": "Địa chỉ IP",
     "all": "Tất cả",
     "clear": "Xóa",
-    "app": "Ứng dụng",
-    "signIn": "Kiểu đăng nhập",
-    "signInInteractiveDefault": "Đăng nhập thủ công",
-    "signInInteractive": "Chỉ thủ công",
-    "signInAll": "Gồm cả SSO tự động",
-    "signInSilent": "Chỉ SSO tự động"
+    "app": "Ứng dụng"
   },
   "status": {
     "success": "Thành công",

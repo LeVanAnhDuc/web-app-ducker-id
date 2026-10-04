@@ -14,14 +14,6 @@ const SOURCE = {
 // Values of the "app" filter: "idp" or a web-app id.
 const APP_FILTER_IDP = SOURCE.IDP;
 
-// Values of the "signIn" filter. The user page treats "no value" as
-// interactive-only; the admin page treats it as everything.
-const SIGN_IN_FILTER = {
-  ALL: "all",
-  INTERACTIVE: "interactive",
-  SILENT: "silent"
-} as const;
-
 const STATUS = {
   SUCCESS: "success",
   FAILED: "failed"
@@ -49,7 +41,6 @@ const LOGIN_HISTORY = {
   METHOD,
   SOURCE,
   APP_FILTER_IDP,
-  SIGN_IN_FILTER,
   STATUS,
   DEVICE_TYPE,
   LOCATION_SENTINEL,
