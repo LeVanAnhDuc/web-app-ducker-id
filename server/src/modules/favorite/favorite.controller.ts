@@ -4,7 +4,7 @@ import type {
   FavoriteAppIdRequest,
   ListFavoritesRequest
 } from "@/modules/favorite/types";
-import type { FavoriteService } from "./service";
+import type { FavoriteService } from "./services";
 // commons
 import {
   CreatedSuccess,

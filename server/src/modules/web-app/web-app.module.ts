@@ -4,7 +4,7 @@ import type { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter.mi
 import { MongoWebAppRepository } from "./repositories/impl/mongo-web-app.repository";
 import { MongoWebAppCategoryRepository } from "./repositories/impl/mongo-web-app-category.repository";
 import { MongoFavoriteRepository } from "@/modules/favorite/repository/impl/mongo-favorite.repository";
-import { WebAppService } from "./service";
+import { WebAppService } from "./services";
 import { WebAppController } from "./web-app.controller";
 import {
   createAdminWebAppRoutes,

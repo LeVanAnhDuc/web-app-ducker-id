@@ -1,5 +1,5 @@
 // types
-import type { UserService } from "@/modules/user/service";
+import type { UserService } from "@/modules/user/services";
 // common
 import { ConflictRequestError } from "@/common/exceptions";
 // others

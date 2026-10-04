@@ -1,7 +1,7 @@
 // types
 import type { Response } from "express";
 import type { LogoutRequest } from "./types";
-import type { LogoutService } from "./service";
+import type { LogoutService } from "./services";
 // common
 import { NoContentSuccess } from "@/common/responses";
 // modules

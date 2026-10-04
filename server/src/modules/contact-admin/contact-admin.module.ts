@@ -2,7 +2,7 @@
 import type { RateLimiterMiddleware } from "@/middlewares";
 // others
 import { MongoContactRepository } from "./repository/impl/mongo-contact-admin.repository";
-import { ContactAdminService } from "./service";
+import { ContactAdminService } from "./services";
 import { ContactAdminController } from "./contact-admin.controller";
 import {
   createContactRoutes,

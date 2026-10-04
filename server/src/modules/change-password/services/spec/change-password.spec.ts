@@ -6,8 +6,8 @@ jest.mock("@/utils/request-context", () => ({
 
 // types
 import type { ChangePasswordRequest } from "../../types";
-import type { AuthenticationService } from "@/modules/authentication/service";
-import type { UserService } from "@/modules/user/service";
+import type { AuthenticationService } from "@/modules/authentication/services";
+import type { UserService } from "@/modules/user/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 // common
 import { BadRequestError, UnauthorizedError } from "@/common/exceptions";

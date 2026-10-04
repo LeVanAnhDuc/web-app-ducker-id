@@ -1,7 +1,7 @@
 // types
 import type { Response } from "express";
 import type { ChangePasswordRequest } from "./types";
-import type { ChangePasswordService } from "./service";
+import type { ChangePasswordService } from "./services";
 // common
 import { OkSuccess } from "@/common/responses";
 // modules

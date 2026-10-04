@@ -1,7 +1,7 @@
 // types
 import type { RedisClientType } from "redis";
-import type { AuthenticationService } from "@/modules/authentication/service";
-import type { UserService } from "@/modules/user/service";
+import type { AuthenticationService } from "@/modules/authentication/services";
+import type { UserService } from "@/modules/user/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { RateLimiterMiddleware } from "@/middlewares";
 // repositories
@@ -10,7 +10,7 @@ import { RedisSessionSignupRepository } from "./repositories/impl/redis-session-
 // guards
 import { EmailAvailableGuard, CooldownGuard } from "./guards";
 // others
-import { SignupService } from "./service";
+import { SignupService } from "./services";
 import { SignupController } from "./signup.controller";
 import { createSignupRoutes } from "./signup.routes";
 

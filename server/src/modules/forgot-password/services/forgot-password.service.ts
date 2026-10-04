@@ -6,7 +6,7 @@ import type {
   FPMagicLinkVerifyRequest,
   FPResetPasswordRequest
 } from "../types";
-import type { AuthenticationService } from "@/modules/authentication/service";
+import type { AuthenticationService } from "@/modules/authentication/services";
 import type { ResetTokenRepository } from "../repositories";
 import type {
   SendOtpResponseDto,

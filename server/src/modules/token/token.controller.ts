@@ -1,6 +1,6 @@
 // types
 import type { Request, Response } from "express";
-import type { TokenService } from "./service";
+import type { TokenService } from "./services";
 // common
 import { OkSuccess } from "@/common/responses";
 

@@ -1,7 +1,7 @@
 // types
-import type { SessionService } from "@/modules/session/service";
+import type { SessionService } from "@/modules/session/services";
 // others
-import { LogoutService } from "./service";
+import { LogoutService } from "./services";
 import { LogoutController } from "./logout.controller";
 import { createLogoutRoutes } from "./logout.routes";
 

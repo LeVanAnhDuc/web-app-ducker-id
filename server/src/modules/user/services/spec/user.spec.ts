@@ -6,7 +6,7 @@ jest.mock("@/utils/crypto/temp-password");
 
 // types
 import type { UserRepository } from "../../repository/user.repository";
-import type { AuthenticationService } from "@/modules/authentication/service";
+import type { AuthenticationService } from "@/modules/authentication/services";
 // common
 import { ForbiddenError, NotFoundError } from "@/common/exceptions";
 // modules
