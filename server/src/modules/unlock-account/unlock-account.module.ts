@@ -1,7 +1,7 @@
 // types
 import type { RedisClientType } from "redis";
-import type { AuthenticationService } from "@/modules/authentication/service";
-import type { UserService } from "@/modules/user/service";
+import type { AuthenticationService } from "@/modules/authentication/services";
+import type { UserService } from "@/modules/user/services";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { LoginService } from "@/modules/login/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
@@ -16,7 +16,7 @@ import {
   TempPasswordValidGuard
 } from "./guards";
 // others
-import { UnlockAccountService } from "./service";
+import { UnlockAccountService } from "./services";
 import { UnlockAccountController } from "./unlock-account.controller";
 import { createUnlockAccountRoutes } from "./unlock-account.routes";
 

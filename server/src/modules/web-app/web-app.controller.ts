@@ -1,6 +1,6 @@
 // types
 import type { Request, Response } from "express";
-import type { WebAppService } from "./service";
+import type { WebAppService } from "./services";
 import type {
   AdminAppsQueryRequest,
   AdminCreateAppRequest,

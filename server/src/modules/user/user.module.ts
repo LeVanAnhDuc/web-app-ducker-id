@@ -1,10 +1,10 @@
 // types
 import type { RateLimiterMiddleware } from "@/middlewares";
-import type { AuthenticationService } from "@/modules/authentication/service";
+import type { AuthenticationService } from "@/modules/authentication/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 // others
 import { MongoUserRepository } from "./repository/impl/mongo-user.repository";
-import { UserService } from "./service";
+import { UserService } from "./services";
 import { UserController } from "./user.controller";
 import { createUserRoutes, createUserAdminRoutes } from "./user.routes";
 

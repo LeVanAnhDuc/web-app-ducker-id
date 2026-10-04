@@ -1,10 +1,10 @@
 // types
 import type { RedisClientType } from "redis";
-import type { UserService } from "@/modules/user/service";
+import type { UserService } from "@/modules/user/services";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { RateLimiterMiddleware } from "@/middlewares";
-import type { SessionService } from "@/modules/session/service";
+import type { SessionService } from "@/modules/session/services";
 // repositories
 import {
   RedisOtpLoginRepository,

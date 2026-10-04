@@ -8,7 +8,7 @@ import type {
   ResetPasswordRequest
 } from "@/modules/user/types";
 import type { Response } from "express";
-import type { UserService } from "./service";
+import type { UserService } from "./services";
 // common
 import { OkSuccess } from "@/common/responses";
 
