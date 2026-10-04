@@ -77,7 +77,7 @@ There is no DI container. Every module exports a `create<Name>Module(...)` facto
 
 Module anatomy: `<name>.module.ts` (factory), `<name>.routes.ts`, `<name>.controller.ts`, `<name>.service.ts`, `<name>.repository.ts`, plus `dtos/`, `types/`, `constants/`, `swagger/` (`paths.ts` + `schemas.ts` + a Postman collection) and colocated `*.spec.ts`. 13 wired modules, ~50 route handlers.
 
-**A second layout is being rolled out, one module at a time.** It splits the two files that grow worst:
+**The layout below replaced the one above across every module** (`docs/specs/module-struct-batch*/`). It splits the two files that grow worst:
 
 - `repository/<name>.repository.ts` holds only `interface <Name>Repository` (type imports and nothing else); the Mongoose class moves to `repository/impl/mongo-<name>.repository.ts`. There is **deliberately no barrel** — the service imports the interface, and only the module factory is allowed to reach into `impl/`, which is what keeps the boundary real.
 - `services/` holds **one public method per file** (`update-password.ts` exports `updatePassword(authRepo, …)` — a plain function whose first argument is the dependency), with `services/index.ts` as a façade class whose methods are one-line delegates and `services/spec/` for the unit tests. Validation, logging and `try/catch` live in the method file, never in the façade.
@@ -93,7 +93,7 @@ Private methods follow the call graph. One that serves a single public method be
 
 A module with two or more services puts each one in its own sub-folder — `services/login/`, `services/login-audit/` — and `strategies/` is laid out the same way. Neither folder has a barrel; the only `index.ts` is the class inside each sub-folder. Where a `strategies/` folder already splits the work per use case, the façade's one-line delegates stay on the façade: a method file holding `return deps.otpStrategy.sendCode(req)` adds a hop to a trace rather than removing one.
 
-Converted: every module except `login-history`. (`entitlement` and `oauth-consent` are schema-only stubs with nothing to split.) They are not exceptions — they just have not been migrated. (`entitlement` and `oauth-consent` are schema-only stubs with nothing to split.) Full rules in `server/.claude/rules/modules.md`; design rationale in `docs/specs/authentication-module-structure/design.md` and the `docs/specs/module-struct-batch*/design.md` series.
+Every module with code now uses this layout; `entitlement` and `oauth-consent` are schema-only stubs with nothing to split. No `*.service.ts` or `*.repository.ts` remains at a module root. They are not exceptions — they just have not been migrated. (`entitlement` and `oauth-consent` are schema-only stubs with nothing to split.) Full rules in `server/.claude/rules/modules.md`; design rationale in `docs/specs/authentication-module-structure/design.md` and the `docs/specs/module-struct-batch*/design.md` series.
 
 Cross-cutting concerns deliberately live **outside** the modules:
 

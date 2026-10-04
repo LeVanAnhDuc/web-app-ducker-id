@@ -1,7 +1,7 @@
 // types
 import type { Request } from "express";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
-import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
+import type { LoginHistoryService } from "@/modules/login-history/services";
 // others
 import { recordInvalidMagicLink } from "./record-invalid-magic-link";
 import { recordInvalidOtp } from "./record-invalid-otp";

@@ -1,8 +1,8 @@
 // libs
-import type { LoginHistoryRepository } from "./login-history.repository";
+import type { LoginHistoryRepository } from "../../repository/login-history.repository";
 import type { LoginHistoryDocument } from "@/modules/login-history/types";
 // module under test
-import { LoginHistoryService } from "./login-history.service";
+import { LoginHistoryService } from "../";
 import { NotFoundError } from "@/common/exceptions";
 
 const makeRepo = (
