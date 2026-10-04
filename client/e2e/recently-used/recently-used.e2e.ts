@@ -181,8 +181,7 @@ test.describe("Recently used (/recently-used)", () => {
       description: null,
       iconUrl: null,
       homeUrl: "https://example.com",
-      category: null,
-      categorySlug: null,
+      categories: [],
       isFavorite: false,
       lastUsedAt: new Date().toISOString(),
       useCount: 1

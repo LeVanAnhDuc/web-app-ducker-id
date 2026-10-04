@@ -16,7 +16,7 @@ const SCOPES = ["openid", "profile", "email"];
 
 export const WEB_APPS = [
   {
-    categoryName: "content",
+    categorySlugs: ["content"],
     name: "blog",
     displayName: "Blog",
     description: "Internal publishing platform for the constellation.",
@@ -37,7 +37,7 @@ export const WEB_APPS = [
     sortOrder: 1
   },
   {
-    categoryName: "tools",
+    categorySlugs: ["internal-tools"],
     name: "analytics-dashboard",
     displayName: "Analytics Dashboard",
     description: "Org-wide metrics and dashboards.",
@@ -55,7 +55,7 @@ export const WEB_APPS = [
     sortOrder: 2
   },
   {
-    categoryName: "identity",
+    categorySlugs: ["identity"],
     name: "idms-portal",
     displayName: "IDMS Portal",
     description: "Identity Management System portal — this app.",
@@ -73,7 +73,7 @@ export const WEB_APPS = [
     sortOrder: 3
   },
   {
-    categoryName: "productivity",
+    categorySlugs: ["productivity"],
     name: "team-calendar",
     displayName: "Team Calendar",
     description: "Shared calendar for booking and reminders.",
@@ -91,7 +91,7 @@ export const WEB_APPS = [
     sortOrder: 4
   },
   {
-    categoryName: "productivity",
+    categorySlugs: ["productivity"],
     name: "notes",
     displayName: "Notes",
     description: "Personal and shared notes workspace.",
@@ -109,7 +109,7 @@ export const WEB_APPS = [
     sortOrder: 5
   },
   {
-    categoryName: "tools",
+    categorySlugs: ["internal-tools"],
     name: "ops-console",
     displayName: "Operations Console",
     description: "Internal ops tooling — restricted to admin role.",

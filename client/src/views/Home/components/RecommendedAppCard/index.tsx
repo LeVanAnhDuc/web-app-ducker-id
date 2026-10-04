@@ -1,7 +1,10 @@
 "use client";
 // libs
 import { ArrowUpRight } from "lucide-react";
+// types
+import type { UserCategory } from "@/types/Apps";
 // components
+import CategoryChips from "@/components/CategoryChips";
 import CardItemTitle from "@/components/CardItemTitle";
 import { Card } from "@/components/ui/card";
 import CustomButton from "@/components/CustomButton";
@@ -13,7 +16,7 @@ import { useOpenApp } from "@/hooks";
 const RecommendedAppCard = ({
   id,
   name,
-  category,
+  categories,
   iconUrl,
   homeUrl,
   openLabel,
@@ -25,7 +28,7 @@ const RecommendedAppCard = ({
 }: {
   id: string;
   name: string;
-  category: string | null;
+  categories: UserCategory[];
   iconUrl: string | null;
   homeUrl: string;
   openLabel: string;
@@ -61,11 +64,9 @@ const RecommendedAppCard = ({
         )}
       </div>
       <div className="flex items-start justify-between gap-2">
-        <div className="flex flex-col gap-1">
+        <div className="flex min-w-0 flex-col gap-1">
           <CardItemTitle id={`rec-${name}-title`}>{name}</CardItemTitle>
-          {category && (
-            <span className="text-muted-foreground text-xs">{category}</span>
-          )}
+          <CategoryChips categories={categories} />
         </div>
         <FavoriteButton
           isFavorite={isFavorite}

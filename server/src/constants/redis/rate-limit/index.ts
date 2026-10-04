@@ -129,6 +129,13 @@ export const RATE_LIMIT_CONFIG = {
       KEY: "rate-limit:categories:ip:",
       MAX_REQUESTS: 100,
       WINDOW_SECONDS: 300
+    },
+    MUTATION: {
+      PER_IP_USER: {
+        KEY: "rate-limit:category-mutation:ip-user:",
+        MAX_REQUESTS: 120,
+        WINDOW_SECONDS: 60
+      }
     }
   },
 

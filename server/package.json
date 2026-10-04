@@ -19,7 +19,8 @@
     "test:watch": "jest --watch",
     "seed": "ts-node --files -r tsconfig-paths/register src/database/seeders/index.ts",
     "seed:clear": "ts-node --files -r tsconfig-paths/register src/database/seeders/index.ts --clear",
-    "migrate:drop-temp-password": "ts-node --files -r tsconfig-paths/register src/database/migrations/drop-temp-password-fields.ts"
+    "migrate:drop-temp-password": "ts-node --files -r tsconfig-paths/register src/database/migrations/drop-temp-password-fields.ts",
+    "migrate:category-management": "ts-node --files -r tsconfig-paths/register src/database/migrations/category-management.ts"
   },
   "lint-staged": {
     "**/*.{js,ts,mts,cts,tsx}": [

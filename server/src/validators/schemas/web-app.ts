@@ -11,6 +11,7 @@ import type {
 // modules
 import {
   TOKEN_ENDPOINT_AUTH_METHODS,
+  WEB_APP_CONFIG,
   WEB_APP_STATUS_PUBLIC
 } from "@/modules/web-app/constants";
 import { isValidRedirectUri } from "@/modules/oauth/helpers";
@@ -144,11 +145,25 @@ export const adminCreateAppBodySchema: Joi.ObjectSchema<AdminAppCreateBody> =
         "string.max": "webApp:validation.homeUrl.maxLength",
         "string.pattern.base": "webApp:validation.homeUrl.invalid"
       }),
-    categoryId: Joi.string().pattern(OBJECTID_PATTERN).required().messages({
-      "string.empty": "webApp:validation.categoryId.required",
-      "any.required": "webApp:validation.categoryId.required",
-      "string.pattern.base": "webApp:validation.categoryId.invalid"
-    }),
+    categoryIds: Joi.array()
+      .items(
+        Joi.string().pattern(OBJECTID_PATTERN).messages({
+          "string.base": "webApp:validation.categoryIds.invalid",
+          "string.empty": "webApp:validation.categoryIds.invalid",
+          "string.pattern.base": "webApp:validation.categoryIds.invalid"
+        })
+      )
+      .min(1)
+      .max(WEB_APP_CONFIG.MAX_CATEGORIES)
+      .unique()
+      .required()
+      .messages({
+        "array.base": "webApp:validation.categoryIds.required",
+        "array.min": "webApp:validation.categoryIds.required",
+        "any.required": "webApp:validation.categoryIds.required",
+        "array.max": "webApp:validation.categoryIds.max",
+        "array.unique": "webApp:validation.categoryIds.duplicate"
+      }),
     status: Joi.string()
       .valid(...STATUS_VALUES)
       .required()
@@ -208,7 +223,7 @@ export const adminUpdateAppBodySchema = adminCreateAppBodySchema
       "name",
       "displayName",
       "homeUrl",
-      "categoryId",
+      "categoryIds",
       "status",
       "requiredRoles",
       "redirectUris",

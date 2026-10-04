@@ -17,6 +17,7 @@ import { createUnlockAccountModule } from "@/modules/unlock-account/unlock-accou
 import { createForgotPasswordModule } from "@/modules/forgot-password/forgot-password.module";
 import { createChangePasswordModule } from "@/modules/change-password/change-password.module";
 import { createContactAdminModule } from "@/modules/contact-admin/contact-admin.module";
+import { createCategoryModule } from "@/modules/category/category.module";
 import { createWebAppModule } from "@/modules/web-app/web-app.module";
 import { createUserModule } from "@/modules/user/user.module";
 import { createNotificationModule } from "@/modules/notification/notification.module";
@@ -48,6 +49,8 @@ interface ModuleRoutes {
   myContacts: Router;
   webAppAdmin: Router;
   webAppUser: Router;
+  categoryAdmin: Router;
+  categoryUser: Router;
 }
 
 /**
@@ -90,6 +93,8 @@ const mountRoutes = (app: Express, routes: ModuleRoutes): void => {
   // App Registry
   v1Router.use(routes.webAppAdmin);
   v1Router.use(routes.webAppUser);
+  v1Router.use(routes.categoryAdmin);
+  v1Router.use(routes.categoryUser);
 
   app.use("/api/v1", v1Router);
 };
@@ -167,8 +172,11 @@ export const loadModules = (
   const { contactAdminRouter, adminContactsRouter, myContactsRouter } =
     createContactAdminModule(rateLimiter);
 
+  const { categoryRepository, categoryAdminRouter, categoryUserRouter } =
+    createCategoryModule(rateLimiter);
+
   const { webAppAdminRouter, webAppUserRouter } =
-    createWebAppModule(rateLimiter);
+    createWebAppModule(categoryRepository);
 
   const { notificationUserRouter } = createNotificationModule();
 
@@ -211,7 +219,9 @@ export const loadModules = (
     contactAdmin: adminContactsRouter,
     myContacts: myContactsRouter,
     webAppAdmin: webAppAdminRouter,
-    webAppUser: webAppUserRouter
+    webAppUser: webAppUserRouter,
+    categoryAdmin: categoryAdminRouter,
+    categoryUser: categoryUserRouter
   });
 
   Logger.info("Modules loaded and routes mounted successfully");

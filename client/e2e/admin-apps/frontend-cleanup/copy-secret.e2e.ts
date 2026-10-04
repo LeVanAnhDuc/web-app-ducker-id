@@ -32,7 +32,7 @@ const FAKE_APP = {
   clientId: "copy-e2e-client-id-abc123",
   clientSecret: "copy-e2e-client-secret-xyz789",
   status: "active" as const,
-  categoryId: "cat-000000000000",
+  categoryIds: ["cat-000000000000"],
   description: null,
   iconUrl: null,
   homeUrl: "https://copy-e2e.example.com",
@@ -138,11 +138,10 @@ async function openSecretDialog(browser: Browser) {
     .getByRole("textbox", { name: "Home URL" })
     .fill("https://copy-e2e.example.com");
 
-  // Select a category (required). Use the combobox — first available option.
-  const categoryCombo = page.getByRole("combobox", { name: "Category" });
-  await categoryCombo.click();
-  // Pick the first option in the listbox.
+  // Select a category (required): open the picker, tick the first option.
+  await page.getByRole("combobox", { name: /^Categories:/ }).click();
   await page.getByRole("option").first().click();
+  await page.keyboard.press("Escape");
 
   // Add one redirect URI.
   const uriDraft = page.getByRole("textbox", {

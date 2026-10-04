@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Category Management — mock</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            background: 'var(--background)',
+            foreground: 'var(--foreground)',
+            card: 'var(--card)',
+            muted: 'var(--muted)',
+            'muted-foreground': 'var(--muted-foreground)',
+            border: 'var(--border)',
+            primary: 'var(--primary)',
+            'primary-foreground': 'var(--primary-foreground)',
+            'primary-hover': 'var(--primary-hover)',
+            cta: 'var(--cta)',
+            'cta-foreground': 'var(--cta-foreground)',
+            destructive: 'var(--destructive)',
+            keyline: 'var(--keyline)',
+            hover: 'var(--hover)'
+          },
+          fontFamily: {
+            display: ['"Space Grotesk"', 'sans-serif'],
+            sans: ['"IBM Plex Sans"', 'sans-serif'],
+            mono: ['"IBM Plex Mono"', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    /* Tokens from docs/design-system/ducker-id/MASTER.md (hex = authoring reference) */
+    :root {
+      --background: #FAFAF9; --foreground: #1C1917; --card: #FFFFFF; --muted: #F5F5F4;
+      --muted-foreground: #57534E; --border: #E7E5E4; --primary: #143A5A; --primary-foreground: #FFFFFF;
+      --primary-hover: #2A5F8F; --cta: #B07D2B; --cta-foreground: #1C1917; --destructive: #B42318;
+      --keyline: #B07D2B; --hover: #F5F5F4; --overlay: rgba(28, 25, 23, 0.6);
+    }
+    .dark {
+      --background: #1C1917; --foreground: #FAFAF9; --card: #292524; --muted: #292524;
+      --muted-foreground: #A8A29E; --border: #44403C; --primary: #7CA9D8; --primary-foreground: #1C1917;
+      --primary-hover: #A3C3E5; --cta: #E7B75F; --cta-foreground: #1C1917; --keyline: #E7B75F; --hover: #44403C;
+    }
+    body { font-family: 'IBM Plex Sans', sans-serif; }
+    h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; }
+    [data-lucide] { width: 16px; height: 16px; stroke-width: 2; }
+    .ic-20 [data-lucide], [data-lucide].ic-20 { width: 20px; height: 20px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border-radius: 8px;
+      font-weight: 500; font-size: 14px; cursor: pointer; transition: background-color 150ms ease, border-color 150ms ease; white-space: nowrap; }
+    .btn:active { transform: scale(0.98); }
+    .btn:focus-visible, .focus-ring:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--keyline); }
+    .btn:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+    .btn-md { height: 40px; padding: 0 16px; }
+    .btn-sm { height: 36px; padding: 0 12px; }
+    .btn-primary { background: var(--primary); color: var(--primary-foreground); }
+    .btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
+    .btn-outline { border: 1px solid var(--border); color: var(--foreground); background: transparent; }
+    .btn-outline:hover:not(:disabled) { background: var(--hover); }
+    .btn-destructive { background: var(--destructive); color: #fff; }
+    .btn-icon { width: 36px; height: 36px; padding: 0; border-radius: 8px; color: var(--muted-foreground); }
+    .btn-icon:hover:not(:disabled) { background: var(--hover); color: var(--foreground); }
+    /* 36px control, hit area padded to 44 */
+    .btn-icon { position: relative; }
+    .btn-icon::after { content: ''; position: absolute; inset: -4px; }
+    .input { height: 40px; width: 100%; padding: 0 12px; border: 1px solid var(--border); border-radius: 8px;
+      background: var(--card); color: var(--foreground); font-size: 16px; transition: border-color 150ms ease; }
+    .input:focus-visible { outline: none; border-color: var(--keyline); box-shadow: 0 0 0 2px var(--keyline); }
+    .input[aria-invalid="true"] { border-color: var(--destructive); }
+    .label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+    .chip { display: inline-flex; align-items: center; gap: 4px; height: 24px; padding: 0 8px; border-radius: 6px;
+      border: 1px solid var(--border); background: var(--muted); color: var(--foreground); font-size: 12px; font-weight: 500; white-space: nowrap; }
+    .chip-more { cursor: pointer; color: var(--muted-foreground); background: transparent; }
+    .chip-more:hover { background: var(--hover); color: var(--foreground); }
+    .chip-primary { border-left: 2px solid var(--keyline); }
+    .tab { padding: 8px 12px; font-size: 14px; font-weight: 500; color: var(--muted-foreground); border-bottom: 2px solid transparent; cursor: pointer; }
+    .tab[aria-selected="true"] { color: var(--foreground); border-bottom-color: var(--keyline); }
+    .nav-item { display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 12px; border-radius: 8px; font-size: 14px;
+      color: var(--muted-foreground); border-left: 2px solid transparent; cursor: pointer; }
+    .nav-item:hover { background: var(--hover); color: var(--foreground); }
+    .nav-item.active { color: var(--foreground); background: var(--muted); border-left-color: var(--keyline); font-weight: 500; }
+    .overlay { background: var(--overlay); backdrop-filter: blur(4px); }
+    .frame-label { font-size: 12px; font-weight: 500; color: var(--muted-foreground); text-transform: uppercase; letter-spacing: .04em; margin-bottom: 8px; }
+    .note { border-left: 2px solid var(--keyline); background: var(--muted); padding: 8px 12px; font-size: 13px; color: var(--muted-foreground); border-radius: 0 6px 6px 0; }
+    .checkbox { width: 16px; height: 16px; border-radius: 4px; border: 1px solid var(--muted-foreground); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .checkbox.on { background: var(--primary); border-color: var(--primary); color: var(--primary-foreground); }
+    .checkbox.on [data-lucide] { width: 12px; height: 12px; stroke-width: 3; }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  </style>
+</head>
+<body class="bg-background text-foreground min-h-screen">
+
+  <!-- Mock chrome: screen switcher -->
+  <div class="sticky top-0 z-50 border-b border-border bg-card/90 backdrop-blur">
+    <div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-2 px-4 pt-3">
+      <div>
+        <p class="font-display text-lg font-bold">Category Management — mock</p>
+        <p class="text-xs text-muted-foreground">docs/specs/category-management/design.md · locale vi</p>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="document.documentElement.classList.toggle('dark')"><i data-lucide="sun-moon"></i>Light / Dark</button>
+    </div>
+    <div class="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4" role="tablist">
+      <button class="tab" role="tab" data-screen="s1" aria-selected="true">1 · Trang danh mục</button>
+      <button class="tab" role="tab" data-screen="s2">2 · Tạo / sửa</button>
+      <button class="tab" role="tab" data-screen="s3">3 · Xoá</button>
+      <button class="tab" role="tab" data-screen="s4">4 · Form app</button>
+      <button class="tab" role="tab" data-screen="s5">5 · Chip trên card</button>
+    </div>
+  </div>
+
+  <!-- Shared admin shell, cloned into screens 1–3 -->
+  <template id="shell">
+    <div class="overflow-hidden rounded-xl border border-border bg-background shadow-sm">
+      <header class="flex h-14 items-center justify-between border-b border-border bg-card px-4">
+        <div class="flex items-center gap-2"><span class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground"><i data-lucide="key-round"></i></span><span class="font-display font-bold">Ducker ID</span></div>
+        <div class="flex items-center gap-2 text-sm text-muted-foreground"><i data-lucide="bell"></i><span class="flex h-8 w-8 items-center justify-center rounded-full bg-muted font-medium text-foreground">AD</span></div>
+      </header>
+      <div class="flex">
+        <nav class="hidden w-56 shrink-0 space-y-1 border-r border-border bg-card p-3 md:block" aria-label="Admin">
+          <a class="nav-item"><i data-lucide="layout-dashboard"></i>Tổng quan</a>
+          <a class="nav-item"><i data-lucide="app-window"></i>Ứng dụng</a>
+          <a class="nav-item active" aria-current="page"><i data-lucide="tags"></i>Danh mục</a>
+          <a class="nav-item"><i data-lucide="users"></i>Người dùng</a>
+          <a class="nav-item"><i data-lucide="shield-check"></i>Quyền truy cập</a>
+          <a class="nav-item"><i data-lucide="history"></i>Lịch sử đăng nhập</a>
+          <a class="nav-item"><i data-lucide="mail"></i>Liên hệ</a>
+        </nav>
+        <main class="slot relative min-w-0 flex-1 p-4 md:p-6"></main>
+      </div>
+    </div>
+  </template>
+
+  <template id="page-header">
+    <div class="mb-6 flex flex-wrap items-start justify-between gap-3">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight">Danh mục</h1>
+        <p class="mt-1 text-sm text-muted-foreground">Phân loại ứng dụng. Thứ tự ở đây là thứ tự trong bộ lọc và danh sách chọn.</p>
+      </div>
+      <button class="btn btn-primary btn-md"><i data-lucide="plus"></i>Tạo danh mục</button>
+    </div>
+  </template>
+
+  <template id="table">
+    <div class="overflow-x-auto rounded-xl border border-border bg-card">
+      <table class="w-full min-w-[640px] text-sm">
+        <thead class="border-b border-border text-left text-muted-foreground">
+          <tr>
+            <th class="w-24 px-4 py-3 font-medium">Thứ tự</th>
+            <th class="px-4 py-3 font-medium">Tên</th>
+            <th class="px-4 py-3 font-medium">Slug</th>
+            <th class="w-24 px-4 py-3 text-right font-medium">Số app</th>
+            <th class="w-28 px-4 py-3 text-right font-medium"><span class="sr-only">Hành động</span></th>
+          </tr>
+        </thead>
+        <tbody class="rows divide-y divide-border"></tbody>
+      </table>
+    </div>
+  </template>
+
+  <div class="mx-auto max-w-6xl space-y-10 px-4 py-8">
+
+    <!-- ============ 1. LIST ============ -->
+    <section id="s1" class="screen space-y-8">
+      <div>
+        <p class="frame-label">1a · /admin/categories — desktop 1440</p>
+        <div class="mount-list"></div>
+      </div>
+      <div class="note">↑ ở dòng đầu và ↓ ở dòng cuối bị disable. Nhấn ↑ / ↓ thì dòng đổi chỗ tại chỗ (optimistic, rollback khi lỗi) và focus vẫn ở nút vừa nhấn. Tên theo locale hiện tại, tên ngôn ngữ còn lại là dòng phụ. Không có toolbar / search / phân trang (DR-10).</div>
+      <div class="grid gap-8 lg:grid-cols-2">
+        <div>
+          <p class="frame-label">1b · Empty state</p>
+          <div class="rounded-xl border border-border bg-card p-10 text-center">
+            <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-muted text-muted-foreground"><i data-lucide="tags" style="width:32px;height:32px"></i></div>
+            <h3 class="font-display text-lg font-bold">Chưa có danh mục nào</h3>
+            <p class="mx-auto mt-1 max-w-xs text-sm text-muted-foreground">Tạo danh mục đầu tiên để phân loại ứng dụng trong launcher.</p>
+            <button class="btn btn-primary btn-md mt-5"><i data-lucide="plus"></i>Tạo danh mục</button>
+          </div>
+        </div>
+        <div>
+          <p class="frame-label">1c · Mobile 375 — bảng thành danh sách thẻ</p>
+          <div class="mx-auto w-[375px] max-w-full rounded-xl border border-border bg-background p-4">
+            <div class="mb-4 flex items-center justify-between"><h1 class="text-xl font-bold">Danh mục</h1><button class="btn btn-primary btn-md" aria-label="Tạo danh mục"><i data-lucide="plus"></i></button></div>
+            <div class="space-y-2">
+              <div class="rounded-xl border border-border bg-card p-3">
+                <div class="flex items-start justify-between gap-2">
+                  <div><p class="font-medium">Nội dung</p><p class="text-xs text-muted-foreground">Content · <span class="font-mono">content</span> · 3 app</p></div>
+                  <div class="flex"><button class="btn btn-icon" aria-label="Sửa"><i data-lucide="pencil"></i></button><button class="btn btn-icon" aria-label="Xoá"><i data-lucide="trash-2"></i></button></div>
+                </div>
+                <div class="mt-2 flex gap-2 border-t border-border pt-2"><button class="btn btn-outline btn-sm flex-1" disabled><i data-lucide="arrow-up"></i>Lên</button><button class="btn btn-outline btn-sm flex-1"><i data-lucide="arrow-down"></i>Xuống</button></div>
+              </div>
+              <div class="rounded-xl border border-border bg-card p-3">
+                <div class="flex items-start justify-between gap-2">
+                  <div><p class="font-medium">Công cụ nội bộ</p><p class="text-xs text-muted-foreground">Internal Tools · <span class="font-mono">tools</span> · 4 app</p></div>
+                  <div class="flex"><button class="btn btn-icon" aria-label="Sửa"><i data-lucide="pencil"></i></button><button class="btn btn-icon" aria-label="Xoá"><i data-lucide="trash-2"></i></button></div>
+                </div>
+                <div class="mt-2 flex gap-2 border-t border-border pt-2"><button class="btn btn-outline btn-sm flex-1"><i data-lucide="arrow-up"></i>Lên</button><button class="btn btn-outline btn-sm flex-1"><i data-lucide="arrow-down"></i>Xuống</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 2. CREATE / EDIT SHEET ============ -->
+    <section id="s2" class="screen hidden space-y-8">
+      <div>
+        <p class="frame-label">2a · Sheet tạo danh mục (slug sinh trực tiếp từ tên English khi gõ)</p>
+        <div class="mount-sheet-create"></div>
+      </div>
+      <div>
+        <p class="frame-label">2b · Sheet sửa — đổi tên English, slug đổi theo (preview cũ → mới)</p>
+        <div class="mount-sheet-edit"></div>
+      </div>
+      <div>
+        <p class="frame-label">2c · Sheet sửa — tên English trùng, lỗi 409 gắn vào ô English</p>
+        <div class="mount-sheet-409"></div>
+      </div>
+    </section>
+
+    <!-- ============ 3. DELETE ============ -->
+    <section id="s3" class="screen hidden space-y-8">
+      <div class="note">Mở dialog → gọi <span class="font-mono">GET /admin/categories/:id/delete-impact</span>, trong lúc chờ thì hiện skeleton 2 dòng. Nút huỷ diệt bên trái, nút an toàn bên phải (MASTER.md · Modals).</div>
+      <div class="grid gap-6 lg:grid-cols-2">
+        <div><p class="frame-label">3a · Không app nào dùng</p><div class="dlg-a"></div></div>
+        <div><p class="frame-label">3b · Có app nhưng không mồ côi — chỉ gỡ</p><div class="dlg-b"></div></div>
+        <div><p class="frame-label">3d · Danh mục cuối cùng, còn app — chặn</p><div class="dlg-d"></div></div>
+      </div>
+      <div class="grid gap-6 lg:grid-cols-[1fr_320px]">
+        <div>
+          <p class="frame-label">3c · Nhiều app mồ côi — chọn chung + chọn riêng từng app (tương tác được)</p>
+          <div class="dlg-c"></div>
+        </div>
+        <div class="space-y-3 lg:pt-6">
+          <div class="note"><b class="text-foreground">Chọn chung:</b> ô "Chuyển tất cả sang" điền cho mọi app <i>chưa đặt riêng</i>.</div>
+          <div class="note"><b class="text-foreground">Chọn riêng:</b> đổi select trên một dòng thì dòng đó thành "Đặt riêng" (có keyline brass) và không bị lựa chọn chung ghi đè nữa. Chọn lại dòng "… (chung)" đầu danh sách để bỏ đặt riêng.</div>
+          <div class="note">Nút xoá chỉ bật khi mọi app đã có đích. Bộ đếm và dòng nhắc cho biết còn bao nhiêu app chưa chọn. Danh sách dài thì cuộn trong hộp thoại (tối đa ~6 dòng).</div>
+          <div class="note">Gửi đi: <span class="font-mono">{ reassignments: [{ appId, categoryId }] }</span>, mỗi app mồ côi một phần tử. Nếu tập app mồ côi đã đổi kể từ lúc mở dialog → 409, dialog tải lại impact và giữ các lựa chọn còn hợp lệ.</div>
+          <button class="btn btn-outline btn-sm" id="reassign-reset"><i data-lucide="rotate-ccw"></i>Đặt lại demo</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 4. APP FORM ============ -->
+    <section id="s4" class="screen hidden space-y-8">
+      <div class="grid gap-8 lg:grid-cols-2">
+        <div>
+          <p class="frame-label">4a · Sheet "Sửa ứng dụng" — chọn nhiều, mở danh sách</p>
+          <div class="rounded-xl border border-border bg-card p-6 shadow-sm">
+            <h2 class="text-lg font-bold">Sửa ứng dụng</h2>
+            <p class="mb-5 text-sm text-muted-foreground">Match CV</p>
+            <div class="space-y-4">
+              <div><label class="label">Tên hiển thị <span class="text-destructive">*</span></label><input class="input" value="Match CV" /></div>
+              <div class="relative">
+                <label class="label" id="cat-label">Danh mục <span class="text-destructive">*</span></label>
+                <div class="flex min-h-10 flex-wrap items-center gap-1.5 rounded-lg border px-2 py-1.5" style="border-color:var(--keyline);box-shadow:0 0 0 2px var(--keyline)" role="combobox" aria-expanded="true" aria-labelledby="cat-label">
+                  <span class="chip chip-primary">Năng suất<span class="text-[10px] font-normal text-muted-foreground">· Chính</span><button class="focus-ring rounded" aria-label="Bỏ Năng suất"><i data-lucide="x" style="width:12px;height:12px"></i></button></span>
+                  <span class="chip">Nội dung<button class="focus-ring rounded" aria-label="Bỏ Nội dung"><i data-lucide="x" style="width:12px;height:12px"></i></button></span>
+                  <span class="ml-auto pr-1 text-muted-foreground"><i data-lucide="chevrons-up-down"></i></span>
+                </div>
+                <div class="absolute left-0 right-0 z-10 mt-1 rounded-lg border border-border bg-card shadow-lg">
+                  <div class="flex items-center gap-2 border-b border-border px-3"><i data-lucide="search" class="text-muted-foreground"></i><input class="h-10 flex-1 bg-transparent text-sm outline-none" value="analy" aria-label="Tìm danh mục" /></div>
+                  <div class="p-1 text-sm" role="listbox" aria-multiselectable="true">
+                    <p class="px-2 py-6 text-center text-muted-foreground">Không có danh mục khớp "analy"</p>
+                    <div class="border-t border-border pt-1"><button class="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left font-medium hover:bg-hover"><i data-lucide="plus"></i>Tạo danh mục "analy"</button></div>
+                  </div>
+                </div>
+                <p class="mt-[188px] text-xs text-muted-foreground">Chọn 1–5 danh mục. Danh mục đầu tiên là danh mục chính, hiện trước khi card bị thu gọn.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="space-y-8">
+          <div>
+            <p class="frame-label">4b · Danh sách bình thường (đã chọn 2)</p>
+            <div class="rounded-lg border border-border bg-card shadow-lg">
+              <div class="flex items-center gap-2 border-b border-border px-3"><i data-lucide="search" class="text-muted-foreground"></i><input class="h-10 flex-1 bg-transparent text-sm outline-none" placeholder="Tìm danh mục…" aria-label="Tìm danh mục" /></div>
+              <div class="p-1 text-sm">
+                <div class="flex items-center gap-2 rounded-md bg-hover px-2 py-2"><span class="checkbox on"><i data-lucide="check"></i></span>Năng suất<span class="ml-auto text-xs text-muted-foreground">Chính</span></div>
+                <div class="flex items-center gap-2 rounded-md px-2 py-2"><span class="checkbox on"><i data-lucide="check"></i></span>Nội dung</div>
+                <div class="flex items-center gap-2 rounded-md px-2 py-2"><span class="checkbox"></span>Công cụ nội bộ</div>
+                <div class="flex items-center gap-2 rounded-md px-2 py-2"><span class="checkbox"></span>Định danh</div>
+                <div class="mt-1 border-t border-border pt-1"><button class="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left font-medium hover:bg-hover"><i data-lucide="plus"></i>Tạo danh mục mới</button></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <p class="frame-label">4c · Đã đủ 5 — mục chưa chọn bị khoá</p>
+            <div class="rounded-lg border border-border bg-card shadow-lg">
+              <div class="p-1 text-sm">
+                <p class="flex items-center gap-2 px-2 py-2 text-xs text-muted-foreground"><i data-lucide="info"></i>Tối đa 5 danh mục. Bỏ bớt một danh mục để chọn danh mục khác.</p>
+                <div class="flex items-center gap-2 rounded-md px-2 py-2"><span class="checkbox on"><i data-lucide="check"></i></span>Năng suất<span class="ml-auto text-xs text-muted-foreground">Chính</span></div>
+                <div class="flex items-center gap-2 rounded-md px-2 py-2 opacity-45" aria-disabled="true"><span class="checkbox"></span>Tài chính</div>
+                <div class="mt-1 border-t border-border pt-1"><button class="flex w-full items-center gap-2 rounded-md px-2 py-2 text-left font-medium opacity-45" disabled><i data-lucide="plus"></i>Tạo danh mục mới</button></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p class="frame-label">4d · Dialog tạo nhanh (mở từ "Tạo danh mục …", điền sẵn chuỗi đang gõ vào ô English)</p>
+        <div class="overlay flex items-center justify-center rounded-xl p-8">
+          <div class="w-[90%] max-w-[440px] rounded-2xl bg-card p-8 shadow-xl" role="dialog" aria-labelledby="qc-title">
+            <h2 id="qc-title" class="text-lg font-bold">Tạo danh mục</h2>
+            <p class="mb-5 text-sm text-muted-foreground">Danh mục mới sẽ được thêm vào ứng dụng đang sửa.</p>
+            <div class="space-y-4">
+              <div><label class="label">Tên (English) <span class="text-destructive">*</span></label><input class="input" value="Analytics" /></div>
+              <div><label class="label">Tên (Tiếng Việt) <span class="text-destructive">*</span></label><input class="input" value="Phân tích" style="border-color:var(--keyline);box-shadow:0 0 0 2px var(--keyline)" /></div>
+              <p class="text-xs text-muted-foreground">Slug: <span class="font-mono text-foreground">analytics</span></p>
+            </div>
+            <div class="mt-6 flex justify-end gap-2"><button class="btn btn-outline btn-md">Huỷ</button><button class="btn btn-primary btn-md">Tạo và chọn</button></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 5. CHIPS ============ -->
+    <section id="s5" class="screen hidden space-y-8">
+      <div class="note">Thứ tự chip = thứ tự admin chọn. Card đo bằng container query: đủ chỗ thì hiện hết (tối đa 2 dòng), hẹp thì chip đầu + <span class="font-mono">+N</span>. <span class="font-mono">+N</span> là button mở Popover khi hover, focus hoặc tap.</div>
+      <div>
+        <p class="frame-label">5a · /apps — lưới rộng, hiện đủ chip</p>
+        <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="rounded-xl border border-border bg-card p-5 shadow-sm">
+            <div class="flex items-start gap-3"><span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-muted"><i data-lucide="file-search" class="ic-20"></i></span><div class="min-w-0"><p class="font-medium">Match CV</p><p class="line-clamp-2 text-sm text-muted-foreground">So khớp CV và JD bằng từ khoá, embedding và LLM.</p></div></div>
+            <div class="mt-4 flex flex-wrap gap-1.5"><span class="chip">Năng suất</span><span class="chip">Nội dung</span><span class="chip">Phân tích</span></div>
+          </div>
+          <div class="rounded-xl border border-border bg-card p-5 shadow-sm">
+            <div class="flex items-start gap-3"><span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-muted"><i data-lucide="link" class="ic-20"></i></span><div class="min-w-0"><p class="font-medium">Shorten Link</p><p class="line-clamp-2 text-sm text-muted-foreground">Rút gọn URL và tạo mã QR.</p></div></div>
+            <div class="mt-4 flex flex-wrap gap-1.5"><span class="chip">Công cụ nội bộ</span></div>
+          </div>
+          <div class="rounded-xl border border-border bg-card p-5 shadow-sm">
+            <div class="flex items-start gap-3"><span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-muted"><i data-lucide="key-round" class="ic-20"></i></span><div class="min-w-0"><p class="font-medium">IDMS Portal</p><p class="line-clamp-2 text-sm text-muted-foreground">Cổng đăng nhập và quản trị.</p></div></div>
+            <div class="mt-4 flex flex-wrap gap-1.5"><span class="chip">Định danh</span><span class="chip">Công cụ nội bộ</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="grid gap-8 lg:grid-cols-2">
+        <div>
+          <p class="frame-label">5b · Mobile 375 — chip đầu + "+2", Popover đang mở</p>
+          <div class="mx-auto w-[375px] max-w-full space-y-3 rounded-xl border border-border bg-background p-4">
+            <div class="relative rounded-xl border border-border bg-card p-4">
+              <div class="flex items-center gap-3"><span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted"><i data-lucide="file-search"></i></span><div class="min-w-0 flex-1"><p class="truncate font-medium">Match CV</p>
+                <div class="mt-1 flex items-center gap-1.5"><span class="chip">Năng suất</span><button class="chip chip-more focus-ring" aria-label="Thêm 2 danh mục" aria-expanded="true">+2</button></div></div></div>
+              <div class="absolute left-[120px] top-[78px] z-10 w-48 rounded-lg border border-border bg-card p-2 shadow-lg" role="dialog" aria-label="Danh mục của Match CV">
+                <p class="px-1 pb-1 text-xs font-medium text-muted-foreground">Danh mục</p>
+                <div class="flex flex-wrap gap-1.5"><span class="chip">Năng suất</span><span class="chip">Nội dung</span><span class="chip">Phân tích</span></div>
+              </div>
+            </div>
+            <div class="h-14"></div>
+            <div class="rounded-xl border border-border bg-card p-4">
+              <div class="flex items-center gap-3"><span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-muted"><i data-lucide="link"></i></span><div class="min-w-0 flex-1"><p class="truncate font-medium">Shorten Link</p><div class="mt-1 flex items-center gap-1.5"><span class="chip">Công cụ nội bộ</span></div></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="space-y-8">
+          <div>
+            <p class="frame-label">5c · Header search — một dòng, luôn thu gọn</p>
+            <div class="rounded-lg border border-border bg-card p-1 shadow-lg">
+              <div class="flex items-center gap-3 rounded-md bg-hover px-3 py-2"><span class="flex h-8 w-8 items-center justify-center rounded-md bg-muted"><i data-lucide="file-search"></i></span><span class="flex-1 truncate text-sm font-medium">Match CV</span><span class="chip">Năng suất</span><span class="chip chip-more">+2</span></div>
+              <div class="flex items-center gap-3 rounded-md px-3 py-2"><span class="flex h-8 w-8 items-center justify-center rounded-md bg-muted"><i data-lucide="link"></i></span><span class="flex-1 truncate text-sm font-medium">Shorten Link</span><span class="chip">Công cụ nội bộ</span></div>
+            </div>
+          </div>
+          <div>
+            <p class="frame-label">5d · Bảng /admin/apps — cột Danh mục</p>
+            <div class="overflow-x-auto rounded-xl border border-border bg-card">
+              <table class="w-full text-sm">
+                <thead class="border-b border-border text-left text-muted-foreground"><tr><th class="px-4 py-3 font-medium">Ứng dụng</th><th class="px-4 py-3 font-medium">Danh mục</th><th class="px-4 py-3 font-medium">Trạng thái</th></tr></thead>
+                <tbody class="divide-y divide-border">
+                  <tr><td class="px-4 py-3 font-medium">Match CV</td><td class="px-4 py-3"><div class="flex items-center gap-1.5"><span class="chip">Năng suất</span><span class="chip chip-more">+2</span></div></td><td class="px-4 py-3 text-muted-foreground">Active</td></tr>
+                  <tr><td class="px-4 py-3 font-medium">IDMS Portal</td><td class="px-4 py-3"><div class="flex items-center gap-1.5"><span class="chip">Định danh</span><span class="chip chip-more">+1</span></div></td><td class="px-4 py-3 text-muted-foreground">Active</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const CATS = [
+      { vi: 'Nội dung', en: 'Content', slug: 'content', apps: 3 },
+      { vi: 'Công cụ nội bộ', en: 'Internal Tools', slug: 'tools', apps: 4 },
+      { vi: 'Định danh', en: 'Identity', slug: 'identity', apps: 1 },
+      { vi: 'Năng suất', en: 'Productivity', slug: 'productivity', apps: 2 },
+      { vi: 'Phân tích', en: 'Analytics', slug: 'analytics', apps: 0 }
+    ];
+    const clone = (id) => document.getElementById(id).content.cloneNode(true);
+
+    const row = (c, i, n) => `
+      <tr class="hover:bg-hover">
+        <td class="px-4 py-2"><div class="flex">
+          <button class="btn btn-icon" aria-label="Chuyển ${c.vi} lên" ${i === 0 ? 'disabled' : ''}><i data-lucide="arrow-up"></i></button>
+          <button class="btn btn-icon" aria-label="Chuyển ${c.vi} xuống" ${i === n - 1 ? 'disabled' : ''}><i data-lucide="arrow-down"></i></button>
+        </div></td>
+        <td class="px-4 py-2"><p class="font-medium">${c.vi}</p><p class="text-xs text-muted-foreground">${c.en}</p></td>
+        <td class="px-4 py-2 font-mono text-xs text-muted-foreground">${c.slug}</td>
+        <td class="px-4 py-2 text-right tabular-nums">${c.apps}</td>
+        <td class="px-4 py-2"><div class="flex justify-end">
+          <button class="btn btn-icon" aria-label="Sửa ${c.vi}"><i data-lucide="pencil"></i></button>
+          <button class="btn btn-icon" aria-label="Xoá ${c.vi}"><i data-lucide="trash-2"></i></button>
+        </div></td>
+      </tr>`;
+
+    const shellWithList = () => {
+      const s = clone('shell');
+      const main = s.querySelector('.slot');
+      main.appendChild(clone('page-header'));
+      const t = clone('table');
+      t.querySelector('.rows').innerHTML = CATS.map((c, i) => row(c, i, CATS.length)).join('');
+      main.appendChild(t);
+      return { s, main };
+    };
+
+    // 1 · list
+    document.querySelector('.mount-list').appendChild(shellWithList().s);
+
+    // 2 · sheets
+    const sheet = ({ title, sub, en, vi, slug, slugFrom, enError, submit }) => `
+      <div class="overlay absolute inset-0 flex justify-end">
+        <div class="flex h-full w-full max-w-[420px] flex-col bg-card shadow-xl" role="dialog" aria-labelledby="sh-${submit}">
+          <div class="flex items-start justify-between border-b border-border p-6">
+            <div><h2 id="sh-${submit}" class="text-lg font-bold">${title}</h2><p class="text-sm text-muted-foreground">${sub}</p></div>
+            <button class="btn btn-icon" aria-label="Đóng"><i data-lucide="x"></i></button>
+          </div>
+          <div class="flex-1 space-y-4 p-6">
+            <div><label class="label">Tên (English) <span class="text-destructive">*</span></label>
+              <input class="input" value="${en}" ${enError ? 'aria-invalid="true" aria-describedby="en-err"' : ''} />
+              ${enError ? `<p id="en-err" class="mt-1.5 flex items-center gap-1 text-xs text-destructive"><i data-lucide="circle-alert" style="width:14px;height:14px"></i>${enError}</p>` : ''}
+            </div>
+            <div><label class="label">Tên (Tiếng Việt) <span class="text-destructive">*</span></label><input class="input" value="${vi}" /></div>
+            <div><label class="label">Slug</label>
+              <div class="flex h-10 items-center gap-2 rounded-lg border border-dashed border-border bg-muted px-3 font-mono text-sm text-muted-foreground" aria-live="polite">
+                ${slugFrom ? `<span class="line-through">${slugFrom}</span><i data-lucide="arrow-right" style="width:14px;height:14px"></i><span class="text-foreground">${slug}</span>` : slug}
+              </div>
+              <p class="mt-1.5 text-xs text-muted-foreground">Tự sinh từ tên English${slugFrom ? ' — đổi tên English thì slug đổi theo khi lưu' : ''}.</p>
+            </div>
+          </div>
+          <div class="flex justify-end gap-2 border-t border-border p-6"><button class="btn btn-outline btn-md">Huỷ</button><button class="btn btn-primary btn-md">${submit}</button></div>
+        </div>
+      </div>`;
+    const mountSheet = (sel, opts) => {
+      const { s, main } = shellWithList();
+      main.style.minHeight = '560px';
+      main.insertAdjacentHTML('beforeend', sheet(opts));
+      document.querySelector(sel).appendChild(s);
+    };
+    mountSheet('.mount-sheet-create', { title: 'Tạo danh mục', sub: 'Nhập tên ở cả hai ngôn ngữ.', en: 'Finance & Billing', vi: 'Tài chính', slug: 'finance-billing', submit: 'Tạo' });
+    mountSheet('.mount-sheet-edit', { title: 'Sửa danh mục', sub: '4 ứng dụng đang dùng danh mục này.', en: 'Dev Tools', vi: 'Công cụ nội bộ', slug: 'dev-tools', slugFrom: 'tools', submit: 'Lưu' });
+    mountSheet('.mount-sheet-409', { title: 'Sửa danh mục', sub: '4 ứng dụng đang dùng danh mục này.', en: 'Content', vi: 'Công cụ nội bộ', slug: 'content', slugFrom: 'tools', enError: 'Đã có danh mục tên "Content".', submit: 'Lưu' });
+
+    // 3 · delete dialogs
+    const dialog = (title, body, actions) => `
+      <div class="overlay flex min-h-[360px] items-center justify-center rounded-xl p-6">
+        <div class="w-full max-w-[460px] rounded-2xl bg-card p-8 shadow-xl" role="alertdialog">
+          <div class="mb-3 flex items-center gap-3"><span class="flex h-10 w-10 items-center justify-center rounded-full" style="background:color-mix(in srgb, var(--destructive) 12%, transparent);color:var(--destructive)"><i data-lucide="trash-2" class="ic-20"></i></span><h2 class="text-lg font-bold">${title}</h2></div>
+          <div class="space-y-3 text-sm text-muted-foreground">${body}</div>
+          <div class="mt-6 flex justify-between gap-2">${actions}</div>
+        </div>
+      </div>`;
+    const del = (dis = false) => `<button class="btn btn-destructive btn-md" ${dis ? 'disabled' : ''}>Xoá danh mục</button>`;
+    const cancel = `<button class="btn btn-outline btn-md">Huỷ</button>`;
+
+    document.querySelector('.dlg-a').innerHTML = dialog('Xoá "Phân tích"?',
+      '<p>Chưa có ứng dụng nào dùng danh mục này. Thao tác không thể hoàn tác.</p>', del() + cancel);
+
+    document.querySelector('.dlg-b').innerHTML = dialog('Xoá "Nội dung"?',
+      `<p>3 ứng dụng đang dùng danh mục này. Chúng đều còn danh mục khác nên chỉ bị gỡ "Nội dung".</p>
+       <ul class="space-y-1 rounded-lg border border-border p-3 text-foreground">
+         <li class="flex items-center gap-2"><i data-lucide="check" class="text-muted-foreground"></i>Match CV</li>
+         <li class="flex items-center gap-2"><i data-lucide="check" class="text-muted-foreground"></i>Wiki</li>
+         <li class="flex items-center gap-2"><i data-lucide="check" class="text-muted-foreground"></i>Blog</li>
+       </ul>`, del() + cancel);
+
+    // 3c · interactive reassignment: one bulk target + per-app overrides
+    const TARGETS = CATS.filter((c) => c.slug !== 'tools');
+    const ORPHANS = [
+      { id: 'a1', name: 'Shorten Link', icon: 'link' },
+      { id: 'a2', name: 'Bull Board', icon: 'list-checks' },
+      { id: 'a3', name: 'Status Page', icon: 'activity' },
+      { id: 'a4', name: 'Deploy Bot', icon: 'rocket' },
+      { id: 'a5', name: 'Log Viewer', icon: 'scroll-text' }
+    ];
+    const rs = { bulk: '', overrides: {} };
+    const opts = (selected, first) => first + TARGETS.map((c) =>
+      `<option value="${c.slug}" ${c.slug === selected ? 'selected' : ''}>${c.vi}</option>`).join('');
+    const nameOf = (slug) => TARGETS.find((c) => c.slug === slug)?.vi;
+
+    const renderReassign = () => {
+      const target = (a) => rs.overrides[a.id] ?? rs.bulk;
+      const done = ORPHANS.filter((a) => target(a)).length;
+      const left = ORPHANS.length - done;
+      const rows = ORPHANS.map((a) => {
+        const own = a.id in rs.overrides;
+        const t = target(a);
+        const first = `<option value="">${rs.bulk ? `${nameOf(rs.bulk)} (chung)` : 'Chọn danh mục…'}</option>`;
+        return `
+          <li class="flex flex-col gap-2 px-3 py-2.5 sm:flex-row sm:items-center" style="${own ? 'border-left:2px solid var(--keyline)' : 'border-left:2px solid transparent'}">
+            <div class="flex min-w-0 flex-1 items-center gap-2.5">
+              <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-muted text-foreground"><i data-lucide="${a.icon}"></i></span>
+              <span class="truncate font-medium text-foreground">${a.name}</span>
+              ${own ? '<span class="chip" style="height:20px;font-size:11px">Đặt riêng</span>' : ''}
+              ${!t ? '<span class="sr-only">chưa chọn</span>' : ''}
+            </div>
+            <label class="sr-only" for="row-${a.id}">Danh mục mới cho ${a.name}</label>
+            <select id="row-${a.id}" data-app="${a.id}" class="input focus-ring cursor-pointer text-sm sm:w-44 ${own ? '' : 'text-muted-foreground'}" style="height:36px;font-size:14px" ${!t ? 'aria-invalid="false"' : ''}>
+              ${own ? opts(t, first) : first.replace('<option value="">', '<option value="" selected>') + TARGETS.map((c) => `<option value="${c.slug}">${c.vi}</option>`).join('')}
+            </select>
+          </li>`;
+      }).join('');
+
+      document.querySelector('.dlg-c').innerHTML = `
+        <div class="overlay flex items-center justify-center rounded-xl p-4 sm:p-6">
+          <div class="w-full max-w-[500px] rounded-2xl bg-card p-6 shadow-xl sm:p-8" role="alertdialog" aria-labelledby="rc-title">
+            <div class="mb-3 flex items-center gap-3"><span class="flex h-10 w-10 items-center justify-center rounded-full" style="background:color-mix(in srgb, var(--destructive) 12%, transparent);color:var(--destructive)"><i data-lucide="trash-2" class="ic-20"></i></span><h2 id="rc-title" class="text-lg font-bold">Xoá "Công cụ nội bộ"?</h2></div>
+            <div class="space-y-3 text-sm text-muted-foreground">
+              <p>8 ứng dụng đang dùng danh mục này.</p>
+              <p class="flex items-center gap-2"><i data-lucide="check"></i>3 ứng dụng còn danh mục khác → chỉ gỡ.</p>
+              <div class="rounded-lg border" style="border-color:${left ? 'var(--keyline)' : 'var(--border)'}">
+                <div class="space-y-3 p-3">
+                  <p class="flex items-center gap-2 font-medium text-foreground"><i data-lucide="circle-alert"></i>${ORPHANS.length} ứng dụng chỉ thuộc danh mục này — chọn danh mục mới</p>
+                  <div>
+                    <label class="label text-foreground" for="bulk">Chuyển tất cả sang</label>
+                    <select id="bulk" class="input focus-ring cursor-pointer ${rs.bulk ? '' : 'text-muted-foreground'}">${opts(rs.bulk, '<option value="">Chọn danh mục…</option>')}</select>
+                    <p class="mt-1.5 text-xs">Áp dụng cho các ứng dụng chưa đặt riêng.</p>
+                  </div>
+                </div>
+                <div class="flex items-center justify-between border-y border-border bg-muted px-3 py-2 text-xs">
+                  <span class="font-medium text-foreground">Hoặc chọn riêng từng ứng dụng</span>
+                  <span class="tabular-nums" aria-live="polite">${done}/${ORPHANS.length} đã có đích</span>
+                </div>
+                <ul class="max-h-[288px] divide-y divide-border overflow-y-auto">${rows}</ul>
+              </div>
+              <p class="text-xs ${left ? 'text-foreground' : ''}" aria-live="polite">${left ? `Còn ${left} ứng dụng chưa có danh mục mới.` : 'Mọi ứng dụng đã có danh mục mới.'}</p>
+            </div>
+            <div class="mt-6 flex justify-between gap-2">${del(left > 0)}${cancel}</div>
+          </div>
+        </div>`;
+      lucide.createIcons();
+    };
+
+    document.querySelector('.dlg-c').addEventListener('change', (e) => {
+      if (e.target.id === 'bulk') rs.bulk = e.target.value;
+      else if (e.target.dataset.app) {
+        if (e.target.value) rs.overrides[e.target.dataset.app] = e.target.value;
+        else delete rs.overrides[e.target.dataset.app];
+      }
+      const focusId = e.target.id;
+      renderReassign();
+      document.getElementById(focusId)?.focus();
+    });
+    document.getElementById('reassign-reset').addEventListener('click', () => { rs.bulk = ''; rs.overrides = {}; renderReassign(); });
+    renderReassign();
+
+    document.querySelector('.dlg-d').innerHTML = dialog('Không thể xoá "Định danh"',
+      `<p>Đây là danh mục duy nhất, và 1 ứng dụng (IDMS Portal) không có danh mục nào khác để chuyển sang.</p>
+       <p>Hãy tạo thêm một danh mục rồi thử lại.</p>`,
+      `<span></span><button class="btn btn-primary btn-md">Đã hiểu</button>`);
+
+    // tabs
+    document.querySelectorAll('.tab').forEach((tab) => tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach((t) => t.setAttribute('aria-selected', 'false'));
+      tab.setAttribute('aria-selected', 'true');
+      document.querySelectorAll('.screen').forEach((s) => s.classList.toggle('hidden', s.id !== tab.dataset.screen));
+    }));
+
+    lucide.createIcons();
+  </script>
+</body>
+</html>

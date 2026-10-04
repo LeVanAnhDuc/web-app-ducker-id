@@ -20,13 +20,16 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
 // hooks
-import { useListQuery, useToggleFavorite } from "@/hooks";
+import {
+  useAppCategories,
+  useListQuery,
+  useLocalizedName,
+  useToggleFavorite
+} from "@/hooks";
 import useFavorites from "../../hooks/useFavorites";
-import useAppCategories from "@/views/Apps/hooks/useAppCategories";
 // dataSources
 import { buildFavoritesFilterDefs } from "@/dataSources/Favorites";
 // others
-import { resolveCategoryLabel } from "@/utils";
 import CONSTANTS from "@/constants";
 
 const FavoritesGridSkeleton = () => (
@@ -39,7 +42,7 @@ const FavoritesGridSkeleton = () => (
 
 const FavoritesGrid = () => {
   const t = useTranslations("favorites");
-  const tCat = useTranslations("common.categories");
+  const localize = useLocalizedName();
 
   // sort is a display preference — kept in local state, not URL
   const [sort, setSort] = useState<FavoritesSortKey>(
@@ -52,9 +55,9 @@ const FavoritesGrid = () => {
     () =>
       categories.map((cat) => ({
         value: cat._id,
-        label: resolveCategoryLabel(tCat, cat.slug, cat.displayName)
+        label: localize(cat.name)
       })),
-    [categories, tCat]
+    [categories, localize]
   );
 
   const filterDefs = useMemo(
@@ -136,15 +139,7 @@ const FavoritesGrid = () => {
               key={app._id}
               id={app._id}
               displayName={app.displayName}
-              category={
-                app.category
-                  ? resolveCategoryLabel(
-                      tCat,
-                      app.categorySlug ?? "",
-                      app.category
-                    )
-                  : null
-              }
+              categories={app.categories}
               description={app.description}
               iconUrl={app.iconUrl}
               homeUrl={app.homeUrl}

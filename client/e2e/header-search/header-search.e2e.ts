@@ -285,7 +285,7 @@ test.describe("Header search (AppHeader combobox)", () => {
   test("a suggested/result app with no category renders without a category line (no literal null)", async ({
     page
   }) => {
-    // Intercept /apps to control the shape: one app has category: null and
+    // Intercept /apps to control the shape: one app has no categories and
     // iconUrl: null to verify the row falls back to an initial letter and
     // simply omits the category line instead of rendering the word "null".
     await page.route(/\/api\/v1\/apps(\?|$)/, (route: Route) =>
@@ -304,7 +304,7 @@ test.describe("Header search (AppHeader combobox)", () => {
                 description: "A test app with no category",
                 iconUrl: null,
                 homeUrl: "https://uncategorized.example.com",
-                category: null,
+                categories: [],
                 isFavorite: false
               }
             ],
@@ -335,7 +335,13 @@ test.describe("Header search (AppHeader combobox)", () => {
         description: "desc",
         iconUrl: null,
         homeUrl: "https://fake.example.com",
-        category: "Utilities",
+        categories: [
+          {
+            _id: "cat-utilities",
+            slug: "utilities",
+            name: { en: "Utilities", vi: "Tiện ích" }
+          }
+        ],
         isFavorite: false
       }));
 
@@ -376,7 +382,13 @@ test.describe("Header search (AppHeader combobox)", () => {
         description: "desc",
         iconUrl: null,
         homeUrl: "https://fake.example.com",
-        category: "Utilities",
+        categories: [
+          {
+            _id: "cat-utilities",
+            slug: "utilities",
+            name: { en: "Utilities", vi: "Tiện ích" }
+          }
+        ],
         isFavorite: false
       }));
 
@@ -497,7 +509,13 @@ test.describe("Header search (AppHeader combobox)", () => {
                 description: "desc",
                 iconUrl: null,
                 homeUrl: "https://blog.example.com",
-                category: "Productivity",
+                categories: [
+                  {
+                    _id: "cat-productivity",
+                    slug: "productivity",
+                    name: { en: "Productivity", vi: "Năng suất" }
+                  }
+                ],
                 isFavorite: false
               }
             ],
@@ -645,7 +663,13 @@ test.describe("Header search (AppHeader combobox)", () => {
                 description: "desc",
                 iconUrl: null,
                 homeUrl: "https://blog.example.com",
-                category: "Productivity",
+                categories: [
+                  {
+                    _id: "cat-productivity",
+                    slug: "productivity",
+                    name: { en: "Productivity", vi: "Năng suất" }
+                  }
+                ],
                 isFavorite: false
               }
             ],

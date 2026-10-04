@@ -3,10 +3,11 @@ import type { AdminAppCreateBody } from "../types";
 import type { AdminAppCreatedDto } from "../dtos";
 import type { WebAppServiceDeps } from "./deps";
 // common
-import { ConflictRequestError, NotFoundError } from "@/common/exceptions";
+import { ConflictRequestError } from "@/common/exceptions";
 // dtos
 import { toAdminAppCreatedDto } from "../dtos";
 // others
+import { assertCategoriesExist } from "./shared/assert-categories-exist";
 import {
   toInternalStatus,
   generateClientId,
@@ -31,13 +32,7 @@ export const createApp = async (
     });
   }
 
-  const categoryExists = await deps.categoryRepo.existsById(body.categoryId);
-  if (!categoryExists) {
-    throw new NotFoundError({
-      i18nMessage: (t) => t("webApp:errors.categoryNotFound"),
-      code: ERROR_CODES.WEB_APP_CATEGORY_NOT_FOUND
-    });
-  }
+  await assertCategoriesExist(deps, body.categoryIds);
 
   const clientId = generateClientId();
 
@@ -56,7 +51,7 @@ export const createApp = async (
     description: body.description?.trim() ? body.description.trim() : null,
     iconUrl: body.iconUrl?.trim() ? body.iconUrl.trim() : null,
     homeUrl: body.homeUrl,
-    categoryId: body.categoryId,
+    categoryIds: body.categoryIds,
     status: toInternalStatus(body.status),
     requiredRoles: body.requiredRoles,
     redirectUris: body.redirectUris,

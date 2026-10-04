@@ -14,3 +14,4 @@ export { default as webApp } from "./webApp.json";
 export { default as favorite } from "./favorite.json";
 export { default as notification } from "./notification.json";
 export { default as recentApp } from "./recentApp.json";
+export { default as category } from "./category.json";

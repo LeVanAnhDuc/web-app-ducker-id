@@ -12,6 +12,7 @@
       "loginHistory": "Login History",
       "contacts": "Contact Inbox",
       "apps": "App Registry",
+      "categories": "Categories",
       "entitlements": "Entitlements"
     },
     "backToDashboard": "Back to User Dashboard"

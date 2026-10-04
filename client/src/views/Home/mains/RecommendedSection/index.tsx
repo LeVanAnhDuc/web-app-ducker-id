@@ -65,7 +65,7 @@ const RecommendedSection = () => {
               key={app._id}
               id={app._id}
               name={app.displayName}
-              category={app.category}
+              categories={app.categories}
               iconUrl={app.iconUrl}
               homeUrl={app.homeUrl}
               openLabel={tCard("open")}

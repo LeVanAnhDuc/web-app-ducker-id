@@ -4,7 +4,7 @@ const ADMIN_APP_FIELD_NAMES = {
   DESCRIPTION: "description",
   ICON_URL: "iconUrl",
   HOME_URL: "homeUrl",
-  CATEGORY_ID: "categoryId",
+  CATEGORY_IDS: "categoryIds",
   STATUS: "status",
   REQUIRED_ROLES: "requiredRoles",
   REDIRECT_URIS: "redirectUris",

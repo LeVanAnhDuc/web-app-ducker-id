@@ -3,14 +3,14 @@
 // libs
 import { useTranslations } from "next-intl";
 // types
-import type { WebAppCategory } from "@/types/AdminApps";
+import type { AdminCategory } from "@/types/AdminCategories";
 // components
 import NameInput from "../NameInput";
 import DisplayNameInput from "../DisplayNameInput";
 import DescriptionTextarea from "../DescriptionTextarea";
 import HomeUrlInput from "../HomeUrlInput";
 import IconUrlInput from "../IconUrlInput";
-import CategorySelect from "../CategorySelect";
+import CategoryMultiSelect from "../CategoryMultiSelect";
 import StatusSwitch from "../StatusSwitch";
 import RequiredRolesGroup from "../RequiredRolesGroup";
 import RedirectUrisField from "../RedirectUrisField";
@@ -20,7 +20,7 @@ const AppFormFields = ({
   categories,
   disabled = false
 }: {
-  categories: WebAppCategory[];
+  categories: AdminCategory[];
   disabled?: boolean;
 }) => {
   const t = useTranslations("adminApps.form.fields");
@@ -55,12 +55,7 @@ const AppFormFields = ({
         placeholder={t("iconUrl.placeholder")}
         disabled={disabled}
       />
-      <CategorySelect
-        label={t("categoryId.label")}
-        placeholder={t("categoryId.placeholder")}
-        categories={categories}
-        disabled={disabled}
-      />
+      <CategoryMultiSelect categories={categories} disabled={disabled} />
       <StatusSwitch label={t("status.label")} disabled={disabled} />
       <RequiredRolesGroup
         label={t("requiredRoles.label")}

@@ -13,6 +13,7 @@ import type {
 import type { ContactStatus } from "@/types/ContactAdmin";
 import type { AdminUser } from "@/types/AdminUsers";
 import type { WebApp } from "@/types/AdminApps";
+import type { CategoryName } from "@/types/Apps";
 import type {
   EntitlementChange,
   EntitlementMatrixFormValues
@@ -22,7 +23,6 @@ import type { UpdatePersonalInfoFormValues } from "@/types/UpdatePersonalInfo";
 import type { LeafKeyOf, Messages } from "@/types/libs";
 import type { ColumnAlign, ColumnBreakpoint } from "@/types/CustomTable";
 // dataSources
-import { CATEGORY_LABEL_KEY } from "@/dataSources/Categories";
 // others
 import CONSTANTS from "@/constants";
 import { COLUMN_BREAKPOINT } from "@/constants/list";
@@ -271,17 +271,47 @@ export const buildPaginationPageNumbers = (
   return result;
 };
 
-type CategoryKey = keyof Messages["common"]["categories"];
-type CategoryTranslator = (key: CategoryKey) => string;
+export const pickLocalized = (name: CategoryName, locale: string): string =>
+  locale === "vi" ? name.vi : name.en;
 
-export const resolveCategoryLabel = (
-  t: CategoryTranslator,
-  slug: string,
-  fallback: string
-): string => {
-  const key = CATEGORY_LABEL_KEY[slug] as CategoryKey | undefined;
-  return key ? t(key) : fallback;
-};
+const ZERO_WIDTH = /[\u200B-\u200D\u2060\uFEFF]/g;
+const COMBINING_MARKS = /[\u0300-\u036f]/g;
+
+/** Same folding the server applies before checking uniqueness. */
+export const normalizeCategoryName = (value: string): string =>
+  value.replace(ZERO_WIDTH, "").replace(/\s+/g, " ").trim();
+
+/**
+ * Preview of the server's slug for a name.en — the server stays the source of
+ * truth (it may add a -2 suffix on collision). `đ` has no NFD decomposition.
+ */
+export const slugifyCategoryName = (value: string): string =>
+  normalizeCategoryName(value)
+    .replace(/[đĐ]/g, "d")
+    .normalize("NFKD")
+    .replace(COMBINING_MARKS, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 90)
+    .replace(/^-+|-+$/g, "");
+
+/** Form values → the `{ en, vi }` payload, folded the way the server stores it. */
+export const toCategoryName = (values: {
+  nameEn: string;
+  nameVi: string;
+}): CategoryName => ({
+  en: normalizeCategoryName(values.nameEn),
+  vi: normalizeCategoryName(values.nameVi)
+});
+
+/** Case- and accent-insensitive key for matching names ("nang suat" ↔ "Năng suất"). */
+export const foldForSearch = (value: string): string =>
+  normalizeCategoryName(value)
+    .replace(/[đĐ]/g, "d")
+    .normalize("NFKD")
+    .replace(COMBINING_MARKS, "")
+    .toLowerCase();
 
 export const mapProfileToFormValues = (
   profile: MyProfileResponse

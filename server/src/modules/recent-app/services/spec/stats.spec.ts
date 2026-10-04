@@ -1,5 +1,5 @@
 // types
-import type { WebAppRepository } from "@/modules/web-app/repositories/web-app.repository";
+import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
 import type { FavoriteRepository } from "@/modules/favorite/repository/favorite.repository";
 import type { RecentAppRepository } from "../../repository/recent-app.repository";
 import type { RecentAppUsage } from "../../types";
@@ -17,14 +17,24 @@ const NOW = new Date("2026-10-04T10:00:00.000Z");
 const DAY_MS = 24 * 60 * 60 * 1000;
 const daysAgo = (days: number): Date => new Date(NOW.getTime() - days * DAY_MS);
 
-const makeApp = (id: string, displayName: string, category?: string) => ({
-  _id: { toString: () => id },
-  displayName,
-  description: null,
-  iconUrl: null,
-  homeUrl: `https://${id}.example.com`,
-  category: category ? { displayName: category, name: category } : null
-});
+const makeApp = (id: string, displayName: string, category?: string) => {
+  const doc = category
+    ? {
+        _id: { toString: () => `cat-${category}` },
+        slug: category.toLowerCase(),
+        name: { en: category, vi: `${category} (vi)` }
+      }
+    : null;
+  return {
+    _id: { toString: () => id },
+    displayName,
+    description: null,
+    iconUrl: null,
+    homeUrl: `https://${id}.example.com`,
+    categoryIds: doc ? [doc._id] : [],
+    categories: doc ? [doc] : []
+  };
+};
 
 const usage = (
   webAppId: string,
@@ -189,7 +199,14 @@ describe("RecentAppService.stats", () => {
     const result = await service.stats({});
 
     expect(result.byCategory).toEqual([
-      { category: "Tools", count: 2 },
+      {
+        category: {
+          _id: "cat-Tools",
+          slug: "tools",
+          name: { en: "Tools", vi: "Tools (vi)" }
+        },
+        count: 2
+      },
       { category: null, count: 1 }
     ]);
   });

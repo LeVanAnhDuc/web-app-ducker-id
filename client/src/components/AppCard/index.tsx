@@ -1,8 +1,11 @@
 "use client";
 // libs
 import { ArrowUpRight } from "lucide-react";
+// types
+import type { UserCategory } from "@/types/Apps";
 // components
 import CardItemTitle from "@/components/CardItemTitle";
+import CategoryChips from "@/components/CategoryChips";
 import CustomButton from "@/components/CustomButton";
 import CustomImage from "@/components/CustomImage";
 import FavoriteButton from "@/components/FavoriteButton";
@@ -13,7 +16,7 @@ import { useOpenApp } from "@/hooks";
 const AppCard = ({
   id,
   displayName,
-  category,
+  categories,
   description,
   iconUrl,
   homeUrl,
@@ -26,7 +29,7 @@ const AppCard = ({
 }: {
   id: string;
   displayName: string;
-  category: string | null;
+  categories: UserCategory[];
   description: string | null;
   iconUrl: string | null;
   homeUrl: string;
@@ -68,11 +71,6 @@ const AppCard = ({
             <CardItemTitle id={`apps-${id}-title`} className="truncate">
               {displayName}
             </CardItemTitle>
-            {category && (
-              <span className="text-muted-foreground text-xs font-medium">
-                {category}
-              </span>
-            )}
           </div>
           <FavoriteButton
             isFavorite={isFavorite}
@@ -82,6 +80,7 @@ const AppCard = ({
             onToggle={onToggleFavorite}
           />
         </div>
+        <CategoryChips categories={categories} />
         <p className="text-muted-foreground line-clamp-2 min-h-10 text-sm leading-relaxed">
           {description}
         </p>

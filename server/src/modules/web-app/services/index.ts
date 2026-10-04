@@ -6,20 +6,12 @@ import type {
   AdminAppsQuery,
   UserAppsQuery
 } from "../types";
-import type {
-  AdminAppCreatedDto,
-  AdminAppDto,
-  AdminCategoryDto,
-  UserAppDto,
-  UserCategoryDto
-} from "../dtos";
+import type { AdminAppCreatedDto, AdminAppDto, UserAppDto } from "../dtos";
 import type { WebAppServiceDeps } from "./deps";
 // others
 import { createApp } from "./create-app";
 import { listApps } from "./list-apps";
-import { listCategories } from "./list-categories";
 import { listUserApps } from "./list-user-apps";
-import { listUserCategories } from "./list-user-categories";
 import { updateApp } from "./update-app";
 
 export class WebAppService {
@@ -34,14 +26,6 @@ export class WebAppService {
     role?: string
   ): Promise<PaginatedResult<UserAppDto>> {
     return listUserApps(this.deps, query, role);
-  }
-
-  listCategories(): Promise<AdminCategoryDto[]> {
-    return listCategories(this.deps);
-  }
-
-  listUserCategories(): Promise<UserCategoryDto[]> {
-    return listUserCategories(this.deps);
   }
 
   createApp(body: AdminAppCreateBody): Promise<AdminAppCreatedDto> {

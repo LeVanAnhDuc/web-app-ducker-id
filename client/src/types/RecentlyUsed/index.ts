@@ -1,5 +1,5 @@
 // types
-import type { UserApp } from "@/types/Apps";
+import type { UserApp, UserCategory } from "@/types/Apps";
 // others
 import type RECENT_GROUP from "@/constants/recentGroup";
 
@@ -17,13 +17,14 @@ export interface TopApp {
   displayName: string;
   iconUrl: string | null;
   homeUrl: string;
-  category: string | null;
+  /** The app's primary category. */
+  category: UserCategory | null;
   useCount: number;
   lastUsedAt: string;
 }
 
 export interface AppCategoryCount {
-  category: string | null;
+  category: UserCategory | null;
   count: number;
 }
 

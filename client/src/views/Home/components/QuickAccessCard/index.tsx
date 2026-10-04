@@ -1,17 +1,19 @@
 "use client";
 // types
 import type { ReactNode } from "react";
+import type { UserCategory } from "@/types/Apps";
 // components
+import CategoryChips from "@/components/CategoryChips";
 import CustomButton from "@/components/CustomButton";
 import CustomImage from "@/components/CustomImage";
 import FavoriteButton from "@/components/FavoriteButton";
 // hooks
-import { useOpenApp } from "@/hooks";
+import { useLocalizedName, useOpenApp } from "@/hooks";
 
 const QuickAccessCard = ({
   id,
   name,
-  category,
+  categories,
   iconUrl,
   homeUrl,
   isFavorite,
@@ -22,7 +24,7 @@ const QuickAccessCard = ({
 }: {
   id: string;
   name: string;
-  category: string | null;
+  categories: UserCategory[];
   iconUrl: string | null;
   homeUrl: string;
   isFavorite: boolean;
@@ -33,6 +35,8 @@ const QuickAccessCard = ({
 }) => {
   const initial = name.charAt(0).toUpperCase();
   const openApp = useOpenApp();
+  const localize = useLocalizedName();
+  const categoryNames = categories.map((c) => localize(c.name)).join(", ");
   const handleOpen = () => openApp({ _id: id, homeUrl });
   const icon: ReactNode = iconUrl ? (
     <CustomImage
@@ -52,7 +56,7 @@ const QuickAccessCard = ({
         variant="ghost"
         size="default"
         onClick={handleOpen}
-        aria-label={category ? `${name}, ${category}` : name}
+        aria-label={categoryNames ? `${name}, ${categoryNames}` : name}
         className="bg-muted flex h-[140px] w-full cursor-pointer flex-col items-start justify-start gap-2.5 rounded-xl p-6 text-left whitespace-normal transition-opacity hover:opacity-90"
       >
         <div
@@ -67,11 +71,9 @@ const QuickAccessCard = ({
         >
           {name}
         </span>
-        {category && (
-          <span className="text-muted-foreground text-xs" aria-hidden="true">
-            {category}
-          </span>
-        )}
+        <div className="w-full" aria-hidden="true">
+          <CategoryChips categories={categories} interactive={false} />
+        </div>
       </CustomButton>
       <div className="text-muted-foreground [&_svg]:text-muted-foreground absolute top-3 right-3">
         <FavoriteButton

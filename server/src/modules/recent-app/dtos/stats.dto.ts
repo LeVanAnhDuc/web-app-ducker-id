@@ -1,6 +1,10 @@
 // types
-import type { WebAppWithCategory } from "@/modules/web-app/types";
+import type { WebAppWithCategories } from "@/modules/web-app/types";
+import type { PublicCategoryDto } from "@/modules/category/dtos";
 import type { RecentAppUsage } from "../types";
+// modules
+import { toPublicCategoryDto } from "@/modules/category/dtos";
+import { orderByCategoryIds } from "@/modules/web-app/helpers";
 // constants
 import { RECENT_APP_STATS } from "../constants";
 // others
@@ -11,13 +15,15 @@ export interface TopAppDto {
   displayName: string;
   iconUrl: string | null;
   homeUrl: string;
-  category: string | null;
+  /** The app's primary category (first of its ordered categories). */
+  category: PublicCategoryDto | null;
   useCount: number;
   lastUsedAt: string;
 }
 
 export interface AppCategoryCountDto {
-  category: string | null;
+  /** Grouped by primary category; null for an app whose categories are gone. */
+  category: PublicCategoryDto | null;
   count: number;
 }
 
@@ -28,6 +34,13 @@ export interface RecentAppsStatsDto {
   topApps: TopAppDto[];
   byCategory: AppCategoryCountDto[];
 }
+
+const primaryCategory = (
+  app: WebAppWithCategories
+): PublicCategoryDto | null => {
+  const [first] = orderByCategoryIds(app);
+  return first ? toPublicCategoryDto(first) : null;
+};
 
 const usedWithin = (
   usages: RecentAppUsage[],
@@ -45,7 +58,7 @@ const usedWithin = (
  * question: how many apps are still in use, not how often.
  */
 export const toRecentAppsStatsDto = (
-  apps: WebAppWithCategory[],
+  apps: WebAppWithCategories[],
   usages: RecentAppUsage[],
   limit: number,
   now: Date = new Date()
@@ -69,19 +82,26 @@ export const toRecentAppsStatsDto = (
           displayName: app.displayName,
           iconUrl: app.iconUrl ?? null,
           homeUrl: app.homeUrl,
-          category: app.category?.displayName ?? null,
+          category: primaryCategory(app),
           useCount: usage.useCount,
           lastUsedAt: usage.lastUsedAt.toISOString()
         }
       ];
     });
 
-  const counts = new Map<string | null, number>();
+  // Keyed by category id so two languages of one name never split a group.
+  const counts = new Map<
+    string | null,
+    { category: PublicCategoryDto | null; count: number }
+  >();
   usages.forEach((usage) => {
     const app = appById.get(usage.webAppId);
     if (!app) return;
-    const category = app.category?.displayName ?? null;
-    counts.set(category, (counts.get(category) ?? 0) + 1);
+    const category = primaryCategory(app);
+    const key = category?._id ?? null;
+    const entry = counts.get(key) ?? { category, count: 0 };
+    entry.count += 1;
+    counts.set(key, entry);
   });
 
   return {
@@ -97,8 +117,6 @@ export const toRecentAppsStatsDto = (
       nowMs
     ),
     topApps,
-    byCategory: [...counts.entries()]
-      .map(([category, count]) => ({ category, count }))
-      .sort((a, b) => b.count - a.count)
+    byCategory: [...counts.values()].sort((a, b) => b.count - a.count)
   };
 };

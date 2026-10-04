@@ -1,0 +1,104 @@
+{
+  "title": "Danh mục",
+  "description": "Phân loại ứng dụng trong launcher. Thứ tự ở đây là thứ tự trong mọi bộ lọc và danh sách chọn danh mục.",
+  "actions": {
+    "create": "Tạo danh mục",
+    "edit": "Sửa {name}",
+    "delete": "Xoá {name}",
+    "moveUp": "Chuyển {name} lên",
+    "moveDown": "Chuyển {name} xuống",
+    "up": "Lên",
+    "down": "Xuống",
+    "cancel": "Huỷ",
+    "createSubmit": "Tạo",
+    "updateSubmit": "Lưu",
+    "confirmDelete": "Xoá danh mục",
+    "retry": "Thử lại",
+    "understood": "Đã hiểu"
+  },
+  "table": {
+    "order": "Thứ tự",
+    "name": "Tên",
+    "slug": "Slug",
+    "apps": "Số app",
+    "actions": "Hành động",
+    "appCount": "{count} app"
+  },
+  "empty": {
+    "title": "Chưa có danh mục nào",
+    "description": "Tạo danh mục đầu tiên để phân loại ứng dụng trong launcher."
+  },
+  "form": {
+    "createTitle": "Tạo danh mục",
+    "createDescription": "Nhập tên ở cả hai ngôn ngữ.",
+    "editTitle": "Sửa danh mục",
+    "editDescription": "{count, plural, =0 {Chưa có ứng dụng nào dùng danh mục này.} other {# ứng dụng đang dùng danh mục này.}}",
+    "fields": {
+      "nameEn": {
+        "label": "Tên (English)",
+        "placeholder": "Internal Tools"
+      },
+      "nameVi": {
+        "label": "Tên (Tiếng Việt)",
+        "placeholder": "Công cụ nội bộ"
+      },
+      "slug": {
+        "label": "Slug",
+        "hintCreate": "Tự sinh từ tên English.",
+        "hintEdit": "Đổi theo tên English khi lưu.",
+        "empty": "—"
+      }
+    },
+    "validation": {
+      "nameEn": {
+        "required": "Hãy nhập tên tiếng Anh.",
+        "maxLength": "Tên tiếng Anh không được vượt quá 100 ký tự.",
+        "noSlug": "Tên tiếng Anh cần có ít nhất một chữ cái hoặc chữ số.",
+        "taken": "Đã có danh mục với tên tiếng Anh này."
+      },
+      "nameVi": {
+        "required": "Hãy nhập tên tiếng Việt.",
+        "maxLength": "Tên tiếng Việt không được vượt quá 100 ký tự."
+      }
+    }
+  },
+  "quickCreate": {
+    "title": "Tạo danh mục",
+    "description": "Danh mục mới sẽ được thêm vào ứng dụng đang sửa.",
+    "submit": "Tạo và chọn"
+  },
+  "delete": {
+    "title": "Xoá \"{name}\"?",
+    "blockedTitle": "Không thể xoá \"{name}\"",
+    "noApps": "Chưa có ứng dụng nào dùng danh mục này. Thao tác không thể hoàn tác.",
+    "total": "{count} ứng dụng đang dùng danh mục này.",
+    "onlyRemoved": "Các ứng dụng này đều còn danh mục khác nên chỉ bị gỡ danh mục này.",
+    "keepOthers": "{count} ứng dụng còn danh mục khác → chỉ gỡ.",
+    "orphansTitle": "{count} ứng dụng chỉ thuộc danh mục này — chọn danh mục mới",
+    "bulkLabel": "Chuyển tất cả sang",
+    "bulkHint": "Áp dụng cho các ứng dụng chưa đặt riêng.",
+    "perAppTitle": "Hoặc chọn riêng từng ứng dụng",
+    "progress": "{done}/{total} đã có đích",
+    "remaining": "Còn {count} ứng dụng chưa có danh mục mới.",
+    "complete": "Mọi ứng dụng đã có danh mục mới.",
+    "choose": "Chọn danh mục…",
+    "shared": "{name} (chung)",
+    "override": "Đặt riêng",
+    "rowLabel": "Danh mục mới cho {name}",
+    "lastCategory": "Đây là danh mục duy nhất, và {count} ứng dụng không còn danh mục nào khác để chuyển sang. Hãy tạo thêm một danh mục trước.",
+    "loadError": "Không tải được danh sách ứng dụng của danh mục này.",
+    "disabledHint": "Hãy chọn danh mục mới cho mọi ứng dụng trước."
+  },
+  "announce": {
+    "created": "Đã tạo danh mục {name}.",
+    "updated": "Đã lưu danh mục {name}.",
+    "deleted": "Đã xoá danh mục {name}.",
+    "moved": "Đã chuyển {name} tới vị trí {position}.",
+    "impactChanged": "Danh sách ứng dụng của danh mục đã thay đổi và được tải lại."
+  },
+  "toast": {
+    "createSuccess": "Đã tạo danh mục.",
+    "updateSuccess": "Đã lưu danh mục.",
+    "deleteSuccess": "Đã xoá danh mục."
+  }
+}

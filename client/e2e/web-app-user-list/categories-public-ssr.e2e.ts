@@ -101,24 +101,28 @@ test.describe("GET /api/v1/apps/categories — public endpoint", () => {
     expect(garbageRes.status()).toBe(403);
   });
 
-  // Row: Cache-Control header present.
-  test("response carries Cache-Control: public, max-age=300", async ({
+  // Row: Cache-Control header present. category-management (DR-19) cut it
+  // from 300s to 60s so a renamed or deleted category leaves the filter fast.
+  test("response carries Cache-Control: public, max-age=60", async ({
     page
   }) => {
     const res = await page.request.get(CATEGORIES_PATH);
     expect(res.status()).toBe(200);
-    expect(res.headers()["cache-control"]).toBe("public, max-age=300");
+    expect(res.headers()["cache-control"]).toBe("public, max-age=60");
   });
 });
 
 test.describe("Apps catalog (/apps) — SSR category prop", () => {
-  // Row: happy path — server prop used, no client categories fetch fires.
-  test("loading /apps fires ZERO client GET /apps/categories requests", async ({
+  // Reconciled for category-management (DR-19): the SSR list now SEEDS the
+  // client cache instead of replacing the client fetch. The filter renders
+  // from server data straight away, and the client refetches exactly once on
+  // mount so a category deleted within the SSR cache window disappears.
+  test("loading /apps renders the filter from SSR data and refetches once", async ({
     page
   }) => {
-    let categoriesRequestSeen = false;
+    let categoriesRequests = 0;
     page.on("request", (req) => {
-      if (req.url().includes("/apps/categories")) categoriesRequestSeen = true;
+      if (req.url().includes("/apps/categories")) categoriesRequests += 1;
     });
 
     const listResponse = page.waitForResponse(
@@ -126,21 +130,14 @@ test.describe("Apps catalog (/apps) — SSR category prop", () => {
     );
     await page.goto("/vi/apps");
     await listResponse;
-
-    // Give any (incorrect) client-side categories fetch a short window to
-    // fire; the categories prop should already be server-supplied so none
-    // should appear.
     await page.waitForTimeout(1000);
 
-    expect(categoriesRequestSeen).toBe(false);
+    expect(categoriesRequests).toBe(1);
   });
 });
 
 test.describe("Apps catalog (/apps) — category i18n", () => {
-  // Row: filter group label differs per locale; slug w/o an i18n key falls
-  // back to displayName in BOTH locales. Seeded categories (content, tools,
-  // identity, productivity) all HAVE an i18n key in common.categories, so the
-  // fallback leg is exercised via a stubbed category with an unmapped slug.
+  // Row: filter group label differs per locale.
   test("filter group label is localized per locale (en vs vi)", async ({
     page
   }) => {
@@ -164,53 +161,6 @@ test.describe("Apps catalog (/apps) — category i18n", () => {
     await page.getByRole("button", { name: /Bộ lọc/i }).click();
     await expect(page.getByText("Lọc theo danh mục")).toBeVisible();
   });
-
-  // DEFERRED (no silent gap): categories are now fetched in a Next.js Server
-  // Component (getServerAppCategories) BEFORE HTML is streamed, so a browser
-  // `page.route` stub cannot intercept them, and the client fallback hook is
-  // disabled whenever the server prop is present. Forcing the fallback would
-  // require making the server fetch fail, which isn't reproducible from the
-  // browser layer. The slug→displayName fallback logic in resolveCategoryLabel
-  // is covered by unit-level reasoning; a live E2E for it needs a seeded
-  // unmapped-slug category (data mutation) — tracked as a follow-up in e2e.md.
-  test.skip("a category slug without an i18n key falls back to displayName in both locales", async ({
-    page
-  }) => {
-    // Stub the categories response with one seeded-shaped category whose slug
-    // ("beta-labs") has NO entry in common.categories — resolveCategoryLabel
-    // must fall back to the raw displayName in both locales.
-    const stubbed = {
-      timestamp: new Date().toISOString(),
-      path: "/api/v1/apps/categories",
-      message: "OK",
-      data: [
-        { _id: "cat-beta-labs", displayName: "Beta Labs", slug: "beta-labs" }
-      ]
-    };
-    await page.route("**/api/v1/apps/categories", (route) =>
-      route.fulfill({ status: 200, json: stubbed })
-    );
-
-    await page.goto("/vi/apps");
-    await page.waitForResponse(
-      (r) => r.url().includes(APPS_PATH) && r.status() === 200
-    );
-    await page.getByRole("button", { name: /Bộ lọc/i }).click();
-    const popoverVi = page.locator('[data-slot="popover-content"]');
-    await popoverVi.getByRole("combobox").click();
-    await expect(page.getByRole("option", { name: "Beta Labs" })).toBeVisible();
-    await page.keyboard.press("Escape");
-    await page.keyboard.press("Escape");
-
-    await page.goto("/apps");
-    await page.waitForResponse(
-      (r) => r.url().includes(APPS_PATH) && r.status() === 200
-    );
-    await page.getByRole("button", { name: /Filters/i }).click();
-    const popoverEn = page.locator('[data-slot="popover-content"]');
-    await popoverEn.getByRole("combobox").click();
-    await expect(page.getByRole("option", { name: "Beta Labs" })).toBeVisible();
-  });
 });
 
 test.describe("Apps catalog (/apps) — categoryId deep link", () => {
@@ -223,7 +173,7 @@ test.describe("Apps catalog (/apps) — categoryId deep link", () => {
     const catRes = await page.request.get(CATEGORIES_PATH);
     expect(catRes.status()).toBe(200);
     const catBody = (await catRes.json()) as {
-      data: { _id: string; displayName: string; slug: string }[];
+      data: { _id: string; slug: string; name: { en: string; vi: string } }[];
     };
     expect(catBody.data.length).toBeGreaterThan(0);
     const target = catBody.data[0];
@@ -249,9 +199,12 @@ test.describe("Apps catalog (/apps) — categoryId deep link", () => {
     const popover = page.locator('[data-slot="popover-content"]');
     await expect(popover.getByRole("combobox")).toBeVisible();
 
-    // Every returned item (if any) belongs to the requested category.
-    for (const item of body.data.items as { category?: string }[]) {
-      if (target.displayName) expect(item.category).toBe(target.displayName);
+    // Every returned item (if any) has the requested category among its
+    // categories (category-management: apps carry 1–5 categories).
+    for (const item of body.data.items as {
+      categories: { _id: string }[];
+    }[]) {
+      expect(item.categories.map((c) => c._id)).toContain(target._id);
     }
   });
 

@@ -7,6 +7,7 @@ import { ConflictRequestError, NotFoundError } from "@/common/exceptions";
 // dtos
 import { toAdminAppDto } from "../dtos";
 // others
+import { assertCategoriesExist } from "./shared/assert-categories-exist";
 import { toInternalStatus } from "../helpers";
 import { ERROR_CODES } from "@/constants/error-code";
 
@@ -33,14 +34,8 @@ export const updateApp = async (
     }
   }
 
-  if (body.categoryId !== undefined) {
-    const categoryExists = await deps.categoryRepo.existsById(body.categoryId);
-    if (!categoryExists) {
-      throw new NotFoundError({
-        i18nMessage: (t) => t("webApp:errors.categoryNotFound"),
-        code: ERROR_CODES.WEB_APP_CATEGORY_NOT_FOUND
-      });
-    }
+  if (body.categoryIds !== undefined) {
+    await assertCategoriesExist(deps, body.categoryIds);
   }
 
   const updateInput: WebAppUpdateInput = {};
@@ -54,7 +49,8 @@ export const updateApp = async (
   if (body.iconUrl !== undefined)
     updateInput.iconUrl = body.iconUrl.trim() ? body.iconUrl.trim() : null;
   if (body.homeUrl !== undefined) updateInput.homeUrl = body.homeUrl;
-  if (body.categoryId !== undefined) updateInput.categoryId = body.categoryId;
+  if (body.categoryIds !== undefined)
+    updateInput.categoryIds = body.categoryIds;
   if (body.status !== undefined)
     updateInput.status = toInternalStatus(body.status);
   if (body.requiredRoles !== undefined)

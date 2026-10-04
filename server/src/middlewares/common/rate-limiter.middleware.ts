@@ -36,6 +36,7 @@ export class RateLimiterMiddleware {
   public readonly contactByIp: RateLimitRequestHandler;
   public readonly updateProfileByIp: RateLimitRequestHandler;
   public readonly categoriesByIp: RateLimitRequestHandler;
+  public readonly categoryMutationByIpAndUser: RateLimitRequestHandler;
   public readonly adminUserMutationByIpAndUser: RateLimitRequestHandler;
   public readonly recordRecentAppByUser: RateLimitRequestHandler;
 
@@ -269,7 +270,23 @@ export class RateLimiterMiddleware {
       legacyHeaders: false,
       keyGenerator: (req) => req.ip ?? "unknown",
       handler: this.createRateLimitExceededHandler(
-        "webApp:errors.rateLimitExceeded"
+        "category:errors.rateLimitExceeded"
+      )
+    });
+
+    this.categoryMutationByIpAndUser = rateLimit({
+      windowMs:
+        RATE_LIMIT_CONFIG.CATEGORIES.MUTATION.PER_IP_USER.WINDOW_SECONDS * 1000,
+      max: RATE_LIMIT_CONFIG.CATEGORIES.MUTATION.PER_IP_USER.MAX_REQUESTS,
+      store: this.createRedisStore(
+        RATE_LIMIT_CONFIG.CATEGORIES.MUTATION.PER_IP_USER.KEY
+      ),
+      standardHeaders: true,
+      legacyHeaders: false,
+      keyGenerator: (req) =>
+        `${req.ip ?? "unknown"}:${RequestContext.requireAuthId()}`,
+      handler: this.createRateLimitExceededHandler(
+        "category:errors.rateLimitExceeded"
       )
     });
 

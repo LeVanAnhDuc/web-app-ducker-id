@@ -57,11 +57,11 @@ cd client && pnpm e2e e2e/home/home-page.e2e.ts --project=chromium
 cd client && pnpm e2e e2e/admin-apps/ --project=admin
 ```
 
-Jest picks up `src/**/*.spec.ts` plus `test/integration/**` and `test/e2e/**`; factories, helpers and mocks live in `server/test/`. Service tests sit in `services/spec/`, repository tests in `repository/spec/`. Current suite: **61 suites / 420 tests**, no database required.
+Jest picks up `src/**/*.spec.ts` plus `test/integration/**` and `test/e2e/**`; factories, helpers and mocks live in `server/test/`. Service tests sit in `services/spec/`, repository tests in `repository/spec/`. Current suite: **76 suites / 547 tests**, no database required.
 
 `jest.config.ts` sets `resetMocks: true`, which clears the *implementations* a `jest.mock` factory set up, not just the call history. A factory must therefore close over bare `jest.fn()`s and the implementations be rebuilt in `beforeEach`, or the mock works in the first test of a file and returns `undefined` in every one after it.
 
-Playwright (`client/playwright.config.ts`) runs `*.e2e.ts` under `client/e2e/` with `workers: 1` and `fullyParallel: false`, across four projects: `setup` and `admin-setup` log in and write `e2e/.auth/{user,admin}.json`, then `chromium` runs as a **regular user** (it `testIgnore`s the admin-only folders) and `admin` runs those folders. `admin-authz/` is deliberately left in the regular-user project — its denial tests need a non-admin session. E2E needs client + server + MongoDB + Redis up **and the DB seeded**; credentials come from `E2E_*` (defaults `user@test.com` / `User@123`, `admin@test.com` / `Admin@123`). The base URL resolves as `E2E_BASE_URL` → the nearest `.worktree-state.json` entry keyed by the current folder name → `http://localhost:3000`.
+Playwright (`client/playwright.config.ts`) runs `*.e2e.ts` under `client/e2e/` with `workers: 1` and `fullyParallel: false`, across four projects: `setup` and `admin-setup` log in and write `e2e/.auth/{user,admin}.json`, then `chromium` runs as a **regular user** (it `testIgnore`s the admin-only folders) and `admin` runs those folders. `admin-authz/` is deliberately left in the regular-user project — its denial tests need a non-admin session. E2E needs client + server + MongoDB + Redis up **and the DB seeded**; credentials come from `E2E_*` (defaults `user@test.com` / `User@123`, `admin@test.com` / `Admin@123`). The base URL resolves as `E2E_BASE_URL` → the nearest `.worktree-state.json` entry keyed by the current folder name → `http://localhost:3000`. Playwright runs from `client/`, so that key is `client` — a worktree entry keyed by the feature name is never found, and a worktree run silently hits the main checkout on `:3000` unless `E2E_BASE_URL` is set.
 
 ## Architecture
 
@@ -75,7 +75,7 @@ There is no DI container. Every module exports a `create<Name>Module(...)` facto
 - Adding an endpoint touches up to **three** places: the module's `*.routes.ts`, `modules.loader.ts` (only for a new module or router), and `src/libs/swagger/openapi.ts`, which imports each module's `swagger/` barrel and spreads it into `allSchemas` / `allPaths`. That registry is incomplete today — `login-history`, `notification` and `favorite` have no Swagger entry, so their routes are missing from `/api-docs`.
 - A module exposing both a user and an admin surface returns two routers (`userRouter` + `userAdminRouter`, `webAppUserRouter` + `webAppAdminRouter`, …) instead of branching inside one.
 
-Module anatomy: `<name>.module.ts` (factory), `<name>.routes.ts`, `<name>.controller.ts`, plus `dtos/`, `types/`, `constants/` and `swagger/` (`paths.ts` + `schemas.ts` + a Postman collection). 14 wired modules, ~55 route handlers.
+Module anatomy: `<name>.module.ts` (factory), `<name>.routes.ts`, `<name>.controller.ts`, plus `dtos/`, `types/`, `constants/` and `swagger/` (`paths.ts` + `schemas.ts` + a Postman collection). 15 wired modules, ~60 route handlers.
 
 Service and repository live in folders rather than single files (`docs/specs/module-struct-batch*/`) — those are the two that grow worst:
 
@@ -94,6 +94,8 @@ Private methods follow the call graph. One that serves a single public method be
 A module with two or more services puts each one in its own sub-folder — `services/login/`, `services/login-audit/` — and `strategies/` is laid out the same way. Neither folder has a barrel; the only `index.ts` is the class inside each sub-folder. Where a `strategies/` folder already splits the work per use case, the façade's one-line delegates stay on the façade: a method file holding `return deps.otpStrategy.sendCode(req)` adds a hop to a trace rather than removing one.
 
 Every module with code uses this layout; `entitlement` and `oauth-consent` are schema-only stubs with nothing to split. No `*.service.ts` or `*.repository.ts` remains at a module root — one appearing means somebody created it off-standard, not that a module was missed. Full rules in `server/.claude/rules/modules.md`; design rationale in `docs/specs/authentication-module-structure/design.md` and the `docs/specs/module-struct-batch*/design.md` series.
+
+Categories are their own module (`modules/category/`), wired **before** `web-app` so its repository can be handed to `createWebAppModule` for the `categoryIds` existence check. It owns both `/admin/categories*` and the public `GET /apps/categories`; `/admin/apps/categories` no longer exists. An app carries 1–5 ordered `categoryIds` (first = primary); category names are `{ en, vi }` and the client picks one by locale — there is no slug→locale map anymore. Data from before this shape is moved by `pnpm migrate:category-management` (idempotent; `server/src/database/migrations/`).
 
 Every paginated endpoint goes through `src/common/pagination/`: `resolvePaging(query)` turns a validated query into the `{ skip, limit, sort }` a repository takes plus the `page` the response needs, and `toPageMeta(total, page, limit)` builds the `meta`. `PaginatedResult<T>` and `PageMeta` live there too. Don't recompute `(page - 1) * limit` in a service, and don't clamp `page` — every paginated Joi schema already enforces `min(1)`.
 

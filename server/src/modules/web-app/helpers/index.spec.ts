@@ -37,8 +37,8 @@ describe("buildWebAppFilter", () => {
     ]);
   });
 
-  it("passes categoryId through and returns empty filter when no params", () => {
-    expect(buildWebAppFilter({ categoryId: "cat1" }).categoryId).toBe("cat1");
+  it("matches categoryId against categoryIds and returns empty filter when no params", () => {
+    expect(buildWebAppFilter({ categoryId: "cat1" }).categoryIds).toBe("cat1");
     expect(buildWebAppFilter({})).toEqual({});
   });
 });

@@ -1,10 +1,10 @@
 // types
+import type { CategoryRepository } from "@/modules/category/repository/category.repository";
 import type { FavoriteRepository } from "@/modules/favorite/repository/favorite.repository";
-import type { WebAppRepository } from "../repositories/web-app.repository";
-import type { WebAppCategoryRepository } from "../repositories/web-app-category.repository";
+import type { WebAppRepository } from "../repository/web-app.repository";
 
 export interface WebAppServiceDeps {
   webAppRepo: WebAppRepository;
-  categoryRepo: WebAppCategoryRepository;
+  categoryRepo: CategoryRepository;
   favoriteRepo: FavoriteRepository;
 }

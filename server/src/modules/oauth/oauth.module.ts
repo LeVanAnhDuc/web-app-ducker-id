@@ -7,7 +7,7 @@ import type { SessionService } from "@/modules/session/services";
 import type { LoginHistoryService } from "@/modules/login-history/services";
 import type { RecentAppService } from "@/modules/recent-app/services";
 // modules
-import { MongoWebAppRepository } from "@/modules/web-app/repositories/impl/mongo-web-app.repository";
+import { MongoWebAppRepository } from "@/modules/web-app/repository/impl/mongo-web-app.repository";
 // others
 import { RedisOAuthRepository } from "./repository/impl/redis-oauth.repository";
 import { OAuthService } from "./services";

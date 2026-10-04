@@ -2,6 +2,7 @@
 import type { Request } from "express";
 import type { Schema } from "mongoose";
 import type { AuthenticationRole } from "@/modules/authentication/types";
+import type { WebAppCategoryDocument } from "@/modules/category/types";
 import type {
   WEB_APP_STATUSES,
   TOKEN_ENDPOINT_AUTH_METHODS,
@@ -16,7 +17,7 @@ export type TokenEndpointAuthMethod =
 
 export interface WebAppDocument {
   _id: Schema.Types.ObjectId;
-  categoryId: Schema.Types.ObjectId;
+  categoryIds: Schema.Types.ObjectId[];
   name: string;
   displayName: string;
   description: string | null;
@@ -33,16 +34,6 @@ export interface WebAppDocument {
   tokenEndpointAuthMethod: TokenEndpointAuthMethod;
   requiredRoles: AuthenticationRole[];
   status: WebAppStatus;
-  sortOrder: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface WebAppCategoryDocument {
-  _id: Schema.Types.ObjectId;
-  name: string;
-  displayName: string;
-  icon: string | null;
   sortOrder: number;
   createdAt: Date;
   updatedAt: Date;
@@ -67,7 +58,7 @@ export interface AdminAppCreateBody {
   description?: string;
   iconUrl?: string;
   homeUrl: string;
-  categoryId: string;
+  categoryIds: string[];
   status: WebAppStatusPublic;
   requiredRoles: AuthenticationRole[];
   redirectUris: string[];
@@ -90,7 +81,7 @@ export interface WebAppCreateInput {
   description: string | null;
   iconUrl: string | null;
   homeUrl: string;
-  categoryId: string;
+  categoryIds: string[];
   status: WebAppStatus;
   requiredRoles: AuthenticationRole[];
   redirectUris: string[];
@@ -107,7 +98,7 @@ export interface AdminAppUpdateBody {
   description?: string;
   iconUrl?: string;
   homeUrl?: string;
-  categoryId?: string;
+  categoryIds?: string[];
   status?: WebAppStatusPublic;
   requiredRoles?: AuthenticationRole[];
   redirectUris?: string[];
@@ -134,7 +125,7 @@ export interface WebAppUpdateInput {
   description?: string | null;
   iconUrl?: string | null;
   homeUrl?: string;
-  categoryId?: string;
+  categoryIds?: string[];
   status?: WebAppStatus;
   requiredRoles?: AuthenticationRole[];
   redirectUris?: string[];
@@ -157,6 +148,6 @@ export interface UserAppsQueryRequest extends Omit<Request, "query"> {
   query: UserAppsQuery;
 }
 
-export interface WebAppWithCategory extends WebAppDocument {
-  category: WebAppCategoryDocument | null;
+export interface WebAppWithCategories extends WebAppDocument {
+  categories: WebAppCategoryDocument[];
 }

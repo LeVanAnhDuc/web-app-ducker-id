@@ -2,7 +2,7 @@
 import type { RateLimiterMiddleware } from "@/middlewares";
 import type { FavoriteRepository } from "@/modules/favorite/repository/favorite.repository";
 // modules
-import { MongoWebAppRepository } from "@/modules/web-app/repositories/impl/mongo-web-app.repository";
+import { MongoWebAppRepository } from "@/modules/web-app/repository/impl/mongo-web-app.repository";
 // others
 import { MongoRecentAppRepository } from "./repository/impl/mongo-recent-app.repository";
 import { RecentAppService } from "./services";

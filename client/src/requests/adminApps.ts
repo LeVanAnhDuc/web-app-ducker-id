@@ -5,8 +5,7 @@ import type {
   AdminAppCreateResult,
   AdminAppUpdateInput,
   AppStatus,
-  WebApp,
-  WebAppCategory
+  WebApp
 } from "@/types/AdminApps";
 // others
 import axiosInstance from "@/libs/axios";
@@ -21,13 +20,6 @@ export const getAdminApps = async (
   const response = await axiosInstance.get<
     ResponsePattern<{ items: WebApp[] }>
   >(END_POINTS.ADMIN_APPS, { params });
-  return response.data.data;
-};
-
-export const getAdminAppCategories = async (): Promise<WebAppCategory[]> => {
-  const response = await axiosInstance.get<ResponsePattern<WebAppCategory[]>>(
-    END_POINTS.ADMIN_APP_CATEGORIES
-  );
   return response.data.data;
 };
 

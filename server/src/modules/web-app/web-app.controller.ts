@@ -1,5 +1,5 @@
 // types
-import type { Request, Response } from "express";
+import type { Response } from "express";
 import type { WebAppService } from "./services";
 import type {
   AdminAppsQueryRequest,
@@ -35,23 +35,6 @@ export class WebAppController {
     new OkSuccess({
       data,
       message: "webApp:success.listApps"
-    }).send(req, res);
-  };
-
-  listCategories = async (req: Request, res: Response): Promise<void> => {
-    const data = await this.service.listCategories();
-    new OkSuccess({
-      data,
-      message: "webApp:success.listCategories"
-    }).send(req, res);
-  };
-
-  listUserCategories = async (req: Request, res: Response): Promise<void> => {
-    const data = await this.service.listUserCategories();
-    res.set("Cache-Control", "public, max-age=300");
-    new OkSuccess({
-      data,
-      message: "webApp:success.listCategories"
     }).send(req, res);
   };
 

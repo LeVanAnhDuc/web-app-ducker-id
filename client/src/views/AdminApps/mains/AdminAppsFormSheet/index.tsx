@@ -2,7 +2,6 @@
 
 // libs
 import { FormProvider, useForm } from "react-hook-form";
-import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 // types
 import type { AxiosError } from "axios";
@@ -28,11 +27,14 @@ import FormResetEffect from "../../ghosts/FormResetEffect";
 // forms
 import { adminAppFormProps } from "@/forms/AdminApp";
 // hooks
-import { useAnnounce, useSubmitGuard } from "@/hooks";
+import {
+  useAdminCategories,
+  useAnnounce,
+  useInvalidateCategories,
+  useSubmitGuard
+} from "@/hooks";
 import useCreateAdminApp from "../../hooks/useCreateAdminApp";
 import useUpdateAdminApp from "../../hooks/useUpdateAdminApp";
-// requests
-import { getAdminAppCategories } from "@/requests/adminApps";
 // others
 import CONSTANTS from "@/constants";
 
@@ -53,16 +55,35 @@ const AdminAppsFormSheet = ({
   const { announce } = useAnnounce();
   const isEdit = editingApp !== null;
 
-  const { NAME } = CONSTANTS.FIELD_NAMES.ADMIN_APP_FIELD_NAMES;
-  const { WEB_APP_NAME_EXISTS } = CONSTANTS.ERROR_CODES;
+  const { NAME, CATEGORY_IDS } = CONSTANTS.FIELD_NAMES.ADMIN_APP_FIELD_NAMES;
+  const { WEB_APP_NAME_EXISTS, WEB_APP_CATEGORY_NOT_FOUND } =
+    CONSTANTS.ERROR_CODES;
 
   const methods = useForm<AdminAppFormValues>(adminAppFormProps);
 
-  const { data: categories = [] } = useQuery({
-    queryKey: [CONSTANTS.QUERY_KEYS.ADMIN_APP_CATEGORIES],
-    queryFn: getAdminAppCategories,
-    enabled: open
-  });
+  const { data: categories = [], refetch: refetchCategories } =
+    useAdminCategories({ enabled: open });
+  const invalidateCategories = useInvalidateCategories();
+
+  // A category deleted in another tab while this form was open: drop the
+  // stale id from the selection and say so on the field.
+  const handleSaveError = async (error: unknown) => {
+    const code = (error as AxiosError<ErrorResponsePattern>).response?.data
+      ?.code;
+    if (code === WEB_APP_NAME_EXISTS) {
+      methods.setError(NAME, { message: "exists" });
+      return;
+    }
+    if (code !== WEB_APP_CATEGORY_NOT_FOUND) return;
+    await invalidateCategories();
+    const { data: fresh = [] } = await refetchCategories();
+    const known = new Set(fresh.map((c) => c._id));
+    methods.setValue(
+      CATEGORY_IDS,
+      methods.getValues(CATEGORY_IDS).filter((id) => known.has(id))
+    );
+    methods.setError(CATEGORY_IDS, { message: "notFound" });
+  };
 
   const createMutation = useCreateAdminApp();
   const updateMutation = useUpdateAdminApp();
@@ -80,19 +101,14 @@ const AdminAppsFormSheet = ({
               announce(tAnnounce("updated", { name: updated.displayName }));
               onClose();
             },
-            onError: (error) => {
-              const code = (error as AxiosError<ErrorResponsePattern>).response
-                ?.data?.code;
-              if (code === WEB_APP_NAME_EXISTS) {
-                methods.setError(NAME, { message: "exists" });
-              }
-            }
+            onError: handleSaveError
           }
         );
         return;
       }
       createMutation.mutate(values, {
         onSettled: release,
+        onError: handleSaveError,
         onSuccess: (created) => {
           announce(tAnnounce("created", { name: created.displayName }));
           onClose();

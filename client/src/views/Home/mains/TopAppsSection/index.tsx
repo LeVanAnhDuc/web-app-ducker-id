@@ -10,6 +10,8 @@ import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import CountBarList from "../../components/CountBarList";
 import SectionLink from "../../components/SectionLink";
+// hooks
+import { useLocalizedName } from "@/hooks";
 // others
 import CONSTANTS from "@/constants";
 
@@ -28,6 +30,7 @@ const TopAppsSection = ({
   isLoading: boolean;
 }) => {
   const t = useTranslations("home.topApps");
+  const localize = useLocalizedName();
   const topApps = stats?.topApps ?? [];
 
   return (
@@ -55,7 +58,7 @@ const TopAppsSection = ({
           rows={topApps.map((app) => ({
             key: app.appId,
             label: app.displayName,
-            hint: app.category ?? undefined,
+            hint: app.category ? localize(app.category.name) : undefined,
             count: app.useCount,
             href: ROUTES.RECENTLY_USED
           }))}

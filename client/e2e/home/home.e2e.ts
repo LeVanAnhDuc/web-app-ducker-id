@@ -30,7 +30,10 @@ const envelope = (data: unknown, path: string) => ({
 });
 
 /** `days` buckets ending today, all zero unless `fill` says otherwise. */
-const buildDays = (count: number, fill: Record<number, [number, number]> = {}) =>
+const buildDays = (
+  count: number,
+  fill: Record<number, [number, number]> = {}
+) =>
   Array.from({ length: count }, (_, i) => {
     const date = new Date(Date.UTC(2026, 9, 4) - (count - 1 - i) * 86_400_000)
       .toISOString()
@@ -93,12 +96,25 @@ const appStats = (overrides: Partial<Record<string, unknown>> = {}) => ({
       displayName: "Blog",
       iconUrl: null,
       homeUrl: "https://blog.example.com",
-      category: "Content",
+      category: {
+        _id: "cat-content",
+        slug: "content",
+        name: { en: "Content", vi: "Nội dung" }
+      },
       useCount: 9,
       lastUsedAt: "2026-10-04T09:00:00.000Z"
     }
   ],
-  byCategory: [{ category: "Content", count: 3 }],
+  byCategory: [
+    {
+      category: {
+        _id: "cat-content",
+        slug: "content",
+        name: { en: "Content", vi: "Nội dung" }
+      },
+      count: 3
+    }
+  ],
   ...overrides
 });
 
@@ -323,7 +339,10 @@ test.describe("Home — drill-down", () => {
     await stubStats(page);
     await page.goto(HOME_PATH);
 
-    await page.getByRole("link", { name: /Mật khẩu/ }).first().click();
+    await page
+      .getByRole("link", { name: /Mật khẩu/ })
+      .first()
+      .click();
     await expect(page).toHaveURL(/\/login-history\?method=password$/);
   });
 
