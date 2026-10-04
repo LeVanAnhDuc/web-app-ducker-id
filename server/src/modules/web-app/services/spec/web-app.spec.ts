@@ -366,7 +366,8 @@ describe("WebAppService.listUserApps", () => {
     expect(limit).toBe(100);
     expect(skip).toBe(0);
     expect(result.meta.page).toBe(1);
-    expect(result.meta.totalPages).toBe(1);
+    // Empty result: zero pages, same as every other paginated endpoint.
+    expect(result.meta.totalPages).toBe(0);
   });
 
   it("passes categoryId into the filter when provided", async () => {

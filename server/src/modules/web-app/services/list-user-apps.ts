@@ -49,8 +49,6 @@ export const listUserApps = async (
 
   return {
     items: docs.map((d) => toUserAppDto(d, favoriteIds.has(d._id.toString()))),
-    // minTotalPages: 1 giữ nguyên hiện trạng của riêng endpoint này — sáu
-    // endpoint phân trang khác trả totalPages 0 khi rỗng. Xem toPageMeta.
-    meta: toPageMeta(total, page, limit, { minTotalPages: 1 })
+    meta: toPageMeta(total, page, limit)
   };
 };

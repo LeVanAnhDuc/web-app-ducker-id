@@ -97,7 +97,7 @@ Every module with code uses this layout; `entitlement` and `oauth-consent` are s
 
 Every paginated endpoint goes through `src/common/pagination/`: `resolvePaging(query)` turns a validated query into the `{ skip, limit, sort }` a repository takes plus the `page` the response needs, and `toPageMeta(total, page, limit)` builds the `meta`. `PaginatedResult<T>` and `PageMeta` live there too. Don't recompute `(page - 1) * limit` in a service, and don't clamp `page` — every paginated Joi schema already enforces `min(1)`.
 
-`web-app.listUserApps` is the one endpoint that reports `totalPages: 1` for an empty result; the other six report `0`. That is why `toPageMeta` takes `minTotalPages` — the divergence predates the helper and unifying it would change a live response.
+An empty result is `totalPages: 0` on every paginated endpoint. `web-app.listUserApps` used to answer `1`; that was unified away once the helper landed.
 
 Cross-cutting concerns deliberately live **outside** the modules:
 
