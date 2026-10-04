@@ -1,18 +1,15 @@
 // types
 import type { RedisClientType } from "redis";
-import type { AuthorizationCodeRecord, PendingAuthorizeRequest } from "./types";
+import type { OAuthRepository } from "../oauth.repository";
+import type {
+  AuthorizationCodeRecord,
+  PendingAuthorizeRequest
+} from "../../types";
 // others
 import { buildKey } from "@/utils/redis/key-builder";
 import { generateSecureToken } from "@/utils/crypto/secure-token";
 import { OAUTH } from "@/constants/redis/store";
-import { OAUTH_CONFIG } from "./constants";
-
-export type OAuthRepository = {
-  storeCode(record: AuthorizationCodeRecord): Promise<string>;
-  consumeCode(code: string): Promise<AuthorizationCodeRecord | null>;
-  storePendingRequest(request: PendingAuthorizeRequest): Promise<string>;
-  consumePendingRequest(id: string): Promise<PendingAuthorizeRequest | null>;
-};
+import { OAUTH_CONFIG } from "../../constants";
 
 export class RedisOAuthRepository implements OAuthRepository {
   constructor(private readonly client: RedisClientType) {}

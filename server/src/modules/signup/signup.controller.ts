@@ -7,7 +7,7 @@ import type {
   CompleteSignupRequest,
   CheckEmailRequest
 } from "./types";
-import type { SignupService } from "./signup.service";
+import type { SignupService } from "./service";
 // common
 import { OkSuccess, CreatedSuccess } from "@/common/responses";
 
