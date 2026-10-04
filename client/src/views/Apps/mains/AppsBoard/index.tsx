@@ -146,7 +146,7 @@ const AppsBoard = ({
         query={query}
         filterDefs={filterDefs}
         searchPlaceholder={t("search.placeholder")}
-        rightSlot={<ViewToggle view={view} onViewChange={setView} />}
+        filterSlot={<ViewToggle view={view} onViewChange={setView} />}
       />
       <PageContent
         isLoading={isLoading}

@@ -115,7 +115,7 @@ const FavoritesGrid = () => {
         query={query}
         filterDefs={filterDefs}
         searchPlaceholder={t("search.placeholder")}
-        rightSlot={SortDropdown}
+        filterSlot={SortDropdown}
       />
       <PageContent
         isLoading={isLoading}
