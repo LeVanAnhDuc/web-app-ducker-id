@@ -1,4 +1,6 @@
 // types
+import type { WebAppDocument } from "@/modules/web-app/types";
+import type { SessionRecord } from "@/modules/session/types";
 import type { Request } from "express";
 
 /** Tham số của một authorization request, sau khi đã validate. */
@@ -72,3 +74,15 @@ export type TokenRequest = Request<
   unknown,
   TokenRequestBody
 >;
+
+export interface AppSignInAudit {
+  client: WebAppDocument;
+  session: SessionRecord;
+  interactive: boolean;
+  req: Request;
+  denied: boolean;
+}
+
+export type AuthorizeOutcome =
+  | { kind: "redirect"; url: string }
+  | { kind: "login"; url: string };

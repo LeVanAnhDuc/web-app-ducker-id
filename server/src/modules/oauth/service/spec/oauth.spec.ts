@@ -6,14 +6,14 @@ import type { AuthenticationService } from "@/modules/authentication/service";
 import type { UserService } from "@/modules/user/service";
 import type { SessionService } from "@/modules/session/service";
 import type { SessionRecord } from "@/modules/session/types";
-import type { OAuthRepository } from "./oauth.repository";
-import type { AuthorizeParams } from "./types";
+import type { OAuthRepository } from "../../repository/oauth.repository";
+import type { AuthorizeParams } from "../../types";
 // module under test
-import { OAuthService } from "./oauth.service";
+import { OAuthService } from "../";
 // common
 import { OAuthError } from "@/common/exceptions";
 // mocks
-import { createLoginHistoryServiceMock } from "../../../test/mocks/login-history-service.mock";
+import { createLoginHistoryServiceMock } from "@test/mocks/login-history-service.mock";
 
 const CLIENT_ID = "match-cv";
 const REDIRECT_URI = "https://matchcv.example.com/callback";
@@ -88,16 +88,16 @@ const setup = ({
   } as unknown as UserService;
   const loginHistoryService = createLoginHistoryServiceMock();
 
-  const service = new OAuthService(
+  const service = new OAuthService({
     oauthRepo,
     webAppRepo,
     sessionService,
-    {} as AuthenticationService,
+    authService: {} as AuthenticationService,
     userService,
     loginHistoryService
-  );
+  });
 
-  return { service, loginHistoryService };
+  return { service, loginHistoryService, userService };
 };
 
 const reqWith = (query: Record<string, string>) =>
@@ -196,11 +196,8 @@ describe("OAuthService.authorize — app sign-in audit", () => {
   });
 
   it("still redirects when the audit lookup fails", async () => {
-    const { service, loginHistoryService } = setup();
-    const failingService = service as unknown as {
-      userService: { findByAuthId: jest.Mock };
-    };
-    failingService.userService.findByAuthId.mockRejectedValue(
+    const { service, loginHistoryService, userService } = setup();
+    (userService.findByAuthId as jest.Mock).mockRejectedValue(
       new Error("mongo down")
     );
 

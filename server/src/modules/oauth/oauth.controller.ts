@@ -1,7 +1,7 @@
 // types
 import type { Request, Response } from "express";
 import type { TokenRequest } from "./types";
-import type { OAuthService } from "./oauth.service";
+import type { OAuthService } from "./service";
 // common
 import { OAuthError } from "@/common/exceptions";
 // others

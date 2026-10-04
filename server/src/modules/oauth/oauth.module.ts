@@ -8,8 +8,8 @@ import type { LoginHistoryService } from "@/modules/login-history/login-history.
 // modules
 import { MongoWebAppRepository } from "@/modules/web-app/repositories/impl/mongo-web-app.repository";
 // others
-import { RedisOAuthRepository } from "./oauth.repository";
-import { OAuthService } from "./oauth.service";
+import { RedisOAuthRepository } from "./repository/impl/redis-oauth.repository";
+import { OAuthService } from "./service";
 import { OAuthController } from "./oauth.controller";
 import { createOAuthRoutes } from "./oauth.routes";
 
@@ -24,14 +24,14 @@ export const createOAuthModule = (
   const oauthRepo = new RedisOAuthRepository(redisClient);
   const webAppRepo = new MongoWebAppRepository();
 
-  const service = new OAuthService(
+  const service = new OAuthService({
     oauthRepo,
     webAppRepo,
     sessionService,
     authService,
     userService,
     loginHistoryService
-  );
+  });
 
   const controller = new OAuthController(service);
 
