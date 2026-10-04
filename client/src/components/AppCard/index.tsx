@@ -1,3 +1,4 @@
+"use client";
 // libs
 import { ArrowUpRight } from "lucide-react";
 // components
@@ -6,6 +7,8 @@ import CustomButton from "@/components/CustomButton";
 import CustomImage from "@/components/CustomImage";
 import FavoriteButton from "@/components/FavoriteButton";
 import { Card } from "@/components/ui/card";
+// hooks
+import { useOpenApp } from "@/hooks";
 
 const AppCard = ({
   id,
@@ -35,9 +38,8 @@ const AppCard = ({
   onToggleFavorite: () => void;
 }) => {
   const initial = displayName.charAt(0).toUpperCase();
-  const handleOpen = () => {
-    window.open(homeUrl, "_blank", "noopener,noreferrer");
-  };
+  const openApp = useOpenApp();
+  const handleOpen = () => openApp({ _id: id, homeUrl });
   const iconNode = iconUrl ? (
     <CustomImage
       src={iconUrl}

@@ -130,5 +130,15 @@ export const RATE_LIMIT_CONFIG = {
       MAX_REQUESTS: 100,
       WINDOW_SECONDS: 300
     }
+  },
+
+  RECENT_APP: {
+    RECORD: {
+      PER_USER: {
+        KEY: "rate-limit:recent-app-record:user:",
+        MAX_REQUESTS: 60,
+        WINDOW_SECONDS: 60
+      }
+    }
   }
 } as const;

@@ -128,8 +128,16 @@ const auditAppSignIn = async (
       req
     };
 
-    if (denied) deps.loginHistoryService.recordAppSignInDenied(payload);
-    else deps.loginHistoryService.recordAppSignIn(payload);
+    if (denied) {
+      deps.loginHistoryService.recordAppSignInDenied(payload);
+      return;
+    }
+
+    deps.loginHistoryService.recordAppSignIn(payload);
+    await deps.recentAppService.record(
+      user._id.toString(),
+      client._id.toString()
+    );
   } catch (error) {
     Logger.error("Failed to audit app sign-in", {
       error,

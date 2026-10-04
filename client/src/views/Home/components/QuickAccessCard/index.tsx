@@ -5,6 +5,8 @@ import type { ReactNode } from "react";
 import CustomButton from "@/components/CustomButton";
 import CustomImage from "@/components/CustomImage";
 import FavoriteButton from "@/components/FavoriteButton";
+// hooks
+import { useOpenApp } from "@/hooks";
 
 const QuickAccessCard = ({
   id,
@@ -30,9 +32,8 @@ const QuickAccessCard = ({
   onToggleFavorite: () => void;
 }) => {
   const initial = name.charAt(0).toUpperCase();
-  const handleOpen = () => {
-    window.open(homeUrl, "_blank", "noopener,noreferrer");
-  };
+  const openApp = useOpenApp();
+  const handleOpen = () => openApp({ _id: id, homeUrl });
   const icon: ReactNode = iconUrl ? (
     <CustomImage
       src={iconUrl}

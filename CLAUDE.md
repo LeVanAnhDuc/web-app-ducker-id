@@ -57,7 +57,7 @@ cd client && pnpm e2e e2e/home/home-page.e2e.ts --project=chromium
 cd client && pnpm e2e e2e/admin-apps/ --project=admin
 ```
 
-Jest picks up `src/**/*.spec.ts` plus `test/integration/**` and `test/e2e/**`; factories, helpers and mocks live in `server/test/`. Service tests sit in `services/spec/`, repository tests in `repository/spec/`. Current suite: **60 suites / 410 tests**, no database required.
+Jest picks up `src/**/*.spec.ts` plus `test/integration/**` and `test/e2e/**`; factories, helpers and mocks live in `server/test/`. Service tests sit in `services/spec/`, repository tests in `repository/spec/`. Current suite: **61 suites / 420 tests**, no database required.
 
 `jest.config.ts` sets `resetMocks: true`, which clears the *implementations* a `jest.mock` factory set up, not just the call history. A factory must therefore close over bare `jest.fn()`s and the implementations be rebuilt in `beforeEach`, or the mock works in the first test of a file and returns `undefined` in every one after it.
 
@@ -75,7 +75,7 @@ There is no DI container. Every module exports a `create<Name>Module(...)` facto
 - Adding an endpoint touches up to **three** places: the module's `*.routes.ts`, `modules.loader.ts` (only for a new module or router), and `src/libs/swagger/openapi.ts`, which imports each module's `swagger/` barrel and spreads it into `allSchemas` / `allPaths`. That registry is incomplete today — `login-history`, `notification` and `favorite` have no Swagger entry, so their routes are missing from `/api-docs`.
 - A module exposing both a user and an admin surface returns two routers (`userRouter` + `userAdminRouter`, `webAppUserRouter` + `webAppAdminRouter`, …) instead of branching inside one.
 
-Module anatomy: `<name>.module.ts` (factory), `<name>.routes.ts`, `<name>.controller.ts`, plus `dtos/`, `types/`, `constants/` and `swagger/` (`paths.ts` + `schemas.ts` + a Postman collection). 13 wired modules, ~50 route handlers.
+Module anatomy: `<name>.module.ts` (factory), `<name>.routes.ts`, `<name>.controller.ts`, plus `dtos/`, `types/`, `constants/` and `swagger/` (`paths.ts` + `schemas.ts` + a Postman collection). 14 wired modules, ~55 route handlers.
 
 Service and repository live in folders rather than single files (`docs/specs/module-struct-batch*/`) — those are the two that grow worst:
 
@@ -143,7 +143,7 @@ Feature work is spec-driven and worktree-isolated: branch from a fresh `origin/m
 
 ### Still mock-backed
 
-`docs/unfinished-features.md` is the backlog, but it was last audited 2026-07-09 and now overstates the gap — AdminUsers lock/unlock/reset and the entitlements matrix have since been wired to real endpoints. What still imports from `@/mocks` today: `AdminEntitlements` (`useUserGrants`, `useUpdateUserGrants`), `useForceLogoutAdminUser`, all three Billing cards, the Profile stat badges, and `RecentlyUsed`.
+`docs/unfinished-features.md` is the backlog, but it was last audited 2026-07-09 and now overstates the gap — AdminUsers lock/unlock/reset and the entitlements matrix have since been wired to real endpoints. What still imports from `@/mocks` today: `AdminEntitlements` (`useUserGrants`, `useUpdateUserGrants`), `useForceLogoutAdminUser`, all three Billing cards, and the Profile stat badges.
 
 ## README — keep `## Features` in sync
 

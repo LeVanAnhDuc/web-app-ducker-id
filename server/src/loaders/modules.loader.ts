@@ -21,6 +21,7 @@ import { createWebAppModule } from "@/modules/web-app/web-app.module";
 import { createUserModule } from "@/modules/user/user.module";
 import { createNotificationModule } from "@/modules/notification/notification.module";
 import { createFavoriteModule } from "@/modules/favorite/favorite.module";
+import { createRecentAppModule } from "@/modules/recent-app/recent-app.module";
 import { createSessionModule } from "@/modules/session/session.module";
 import { createOAuthModule } from "@/modules/oauth/oauth.module";
 // others
@@ -41,6 +42,7 @@ interface ModuleRoutes {
   loginHistoryAdmin: Router;
   notification: Router;
   favorite: Router;
+  recentApp: Router;
   contact: Router;
   contactAdmin: Router;
   myContacts: Router;
@@ -78,6 +80,7 @@ const mountRoutes = (app: Express, routes: ModuleRoutes): void => {
   v1Router.use(routes.loginHistoryAdmin);
   v1Router.use(routes.notification);
   v1Router.use(routes.favorite);
+  v1Router.use(routes.recentApp);
 
   // Contact
   v1Router.use(routes.contact);
@@ -169,7 +172,12 @@ export const loadModules = (
 
   const { notificationUserRouter } = createNotificationModule();
 
-  const { favoriteUserRouter } = createFavoriteModule();
+  const { favoriteRepository, favoriteUserRouter } = createFavoriteModule();
+
+  const { recentAppService, recentAppUserRouter } = createRecentAppModule(
+    favoriteRepository,
+    rateLimiter
+  );
 
   const { oauthRouter } = createOAuthModule(
     redisClient,
@@ -177,6 +185,7 @@ export const loadModules = (
     authService,
     userService,
     loginHistoryService,
+    recentAppService,
     rateLimiter
   );
 
@@ -197,6 +206,7 @@ export const loadModules = (
     loginHistoryAdmin: loginHistoryAdminRouter,
     notification: notificationUserRouter,
     favorite: favoriteUserRouter,
+    recentApp: recentAppUserRouter,
     contact: contactAdminRouter,
     contactAdmin: adminContactsRouter,
     myContacts: myContactsRouter,

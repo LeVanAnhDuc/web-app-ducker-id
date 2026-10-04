@@ -27,6 +27,7 @@ export { default as useDebouncedValue } from "./useDebouncedValue";
 export { default as useListQuery } from "./useListQuery";
 export { default as useSearchParamState } from "./useSearchParamState";
 export { default as useToggleFavorite } from "./useToggleFavorite";
+export { default as useOpenApp } from "./useOpenApp";
 export { default as useCopyToClipboard } from "./useCopyToClipboard";
 export { default as useHasMounted } from "./useHasMounted";
 export { default as useFormatTime } from "./useFormatTime";

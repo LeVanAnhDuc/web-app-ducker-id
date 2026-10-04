@@ -1,6 +1,7 @@
 "use client";
 // libs
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import type { InfiniteData } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 // types
 import type {
@@ -8,6 +9,7 @@ import type {
   FavoritesResponse,
   UserApp
 } from "@/types/Apps";
+import type { RecentAppsResponse } from "@/types/RecentlyUsed";
 // hooks
 import { useAnnounce } from "@/hooks";
 // requests
@@ -34,12 +36,16 @@ const useToggleFavorite = () => {
       const next = !isFavorite;
       await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.APPS] });
       await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.FAVORITES] });
+      await queryClient.cancelQueries({ queryKey: [QUERY_KEYS.RECENT_APPS] });
       const prevApps = queryClient.getQueriesData<PaginatedUserAppsResponse>({
         queryKey: [QUERY_KEYS.APPS]
       });
       const prevFavs = queryClient.getQueriesData<FavoritesResponse>({
         queryKey: [QUERY_KEYS.FAVORITES]
       });
+      const prevRecent = queryClient.getQueriesData<
+        InfiniteData<RecentAppsResponse>
+      >({ queryKey: [QUERY_KEYS.RECENT_APPS] });
       queryClient.setQueriesData<PaginatedUserAppsResponse>(
         { queryKey: [QUERY_KEYS.APPS] },
         (old) =>
@@ -59,13 +65,31 @@ const useToggleFavorite = () => {
             ? { items: old.items.filter((a: UserApp) => a._id !== appId) }
             : old
       );
-      return { prevApps, prevFavs };
+      queryClient.setQueriesData<InfiniteData<RecentAppsResponse>>(
+        { queryKey: [QUERY_KEYS.RECENT_APPS] },
+        (old) =>
+          old
+            ? {
+                ...old,
+                pages: old.pages.map((page) => ({
+                  ...page,
+                  items: page.items.map((a) =>
+                    a._id === appId ? { ...a, isFavorite: next } : a
+                  )
+                }))
+              }
+            : old
+      );
+      return { prevApps, prevFavs, prevRecent };
     },
     onError: (_err, _vars, context) => {
       context?.prevApps?.forEach(([key, data]) =>
         queryClient.setQueryData(key, data)
       );
       context?.prevFavs?.forEach(([key, data]) =>
+        queryClient.setQueryData(key, data)
+      );
+      context?.prevRecent?.forEach(([key, data]) =>
         queryClient.setQueryData(key, data)
       );
       announce(t("announce.error"));
@@ -76,6 +100,7 @@ const useToggleFavorite = () => {
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.APPS] });
       queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.FAVORITES] });
+      queryClient.invalidateQueries({ queryKey: [QUERY_KEYS.RECENT_APPS] });
     }
   });
 };

@@ -5,6 +5,7 @@ import type { WebAppRepository } from "@/modules/web-app/repositories/web-app.re
 import type { AuthenticationService } from "@/modules/authentication/services";
 import type { UserService } from "@/modules/user/services";
 import type { SessionService } from "@/modules/session/services";
+import type { RecentAppService } from "@/modules/recent-app/services";
 import type { SessionRecord } from "@/modules/session/types";
 import type { OAuthRepository } from "../../repository/oauth.repository";
 import type { AuthorizeParams } from "../../types";
@@ -66,10 +67,15 @@ const freshQuery = {
   code_challenge_method: "S256"
 };
 
+const USER_ID = "64b7f0c2f1a2b3c4d5e6f7d9";
+
 const setup = ({
   client = makeClient(),
   session = makeSession() as SessionRecord | null,
-  user = { email: "user@test.com" } as { email: string } | null
+  user = { _id: USER_ID, email: "user@test.com" } as {
+    _id: string;
+    email: string;
+  } | null
 } = {}) => {
   const oauthRepo = {
     storePendingRequest: jest.fn().mockResolvedValue("req-1"),
@@ -87,6 +93,9 @@ const setup = ({
     findByAuthId: jest.fn().mockResolvedValue(user)
   } as unknown as UserService;
   const loginHistoryService = createLoginHistoryServiceMock();
+  const recentAppService = {
+    record: jest.fn().mockResolvedValue(undefined)
+  } as unknown as RecentAppService;
 
   const service = new OAuthService({
     oauthRepo,
@@ -94,10 +103,11 @@ const setup = ({
     sessionService,
     authService: {} as AuthenticationService,
     userService,
-    loginHistoryService
+    loginHistoryService,
+    recentAppService
   });
 
-  return { service, loginHistoryService, userService };
+  return { service, loginHistoryService, userService, recentAppService };
 };
 
 const reqWith = (query: Record<string, string>) =>
@@ -206,5 +216,42 @@ describe("OAuthService.authorize — app sign-in audit", () => {
 
     expect(outcome.kind).toBe("redirect");
     expect(loginHistoryService.recordAppSignIn).not.toHaveBeenCalled();
+  });
+
+  it("records the app as recently used when a code is issued", async () => {
+    const { service, recentAppService } = setup();
+
+    await service.authorize(reqWith(freshQuery));
+    await flush();
+
+    expect(recentAppService.record).toHaveBeenCalledWith(
+      USER_ID,
+      "64b7f0c2f1a2b3c4d5e6f7c1"
+    );
+  });
+
+  it("does not record a recently used app for a denied sign-in", async () => {
+    const { service, recentAppService } = setup({
+      client: makeClient({ requiredRoles: ["admin"] } as never)
+    });
+
+    await expect(service.authorize(reqWith(freshQuery))).rejects.toBeInstanceOf(
+      OAuthError
+    );
+    await flush();
+
+    expect(recentAppService.record).not.toHaveBeenCalled();
+  });
+
+  it("still redirects when recording the recent app fails", async () => {
+    const { service, recentAppService } = setup();
+    (recentAppService.record as jest.Mock).mockRejectedValue(
+      new Error("mongo down")
+    );
+
+    const outcome = await service.authorize(reqWith(freshQuery));
+    await flush();
+
+    expect(outcome.kind).toBe("redirect");
   });
 });

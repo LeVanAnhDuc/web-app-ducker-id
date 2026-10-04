@@ -18,7 +18,7 @@ import ResultList from "./mains/ResultList";
 import ActiveIndexResetEffect from "./ghosts/ActiveIndexResetEffect";
 import SearchResultAnnouncer from "./ghosts/SearchResultAnnouncer";
 // hooks
-import { useAnnounce, useDebouncedValue } from "@/hooks";
+import { useAnnounce, useDebouncedValue, useOpenApp } from "@/hooks";
 import useApps from "@/views/Apps/hooks/useApps";
 // others
 import { useRouter } from "@/i18n/navigation";
@@ -28,6 +28,7 @@ const HeaderSearch = () => {
   const t = useTranslations("dashboard.header");
   const router = useRouter();
   const { announce } = useAnnounce();
+  const openApp = useOpenApp();
   const listId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -55,7 +56,7 @@ const HeaderSearch = () => {
 
   const handleSelectApp = (app: UserApp) => {
     announce(t("announce.opened", { name: app.displayName }));
-    window.open(app.homeUrl, "_blank", "noopener,noreferrer");
+    openApp(app);
     setOpen(false);
   };
 

@@ -1,15 +1,19 @@
 // types
-import type { LucideIcon } from "lucide-react";
+import type { UserApp } from "@/types/Apps";
+// others
+import type RECENT_GROUP from "@/constants/recentGroup";
 
-export type RecentGroupKey = "today" | "yesterday" | "thisWeek" | "earlier";
+export type RecentGroupKey = (typeof RECENT_GROUP)[keyof typeof RECENT_GROUP];
 
-export interface RecentApp {
-  id: string;
-  name: string;
-  category: string;
-  group: RecentGroupKey;
-  time: string;
-  icon: LucideIcon;
-  iconColor: string;
-  iconBg: string;
+export interface RecentApp extends UserApp {
+  lastUsedAt: string;
+  useCount: number;
+}
+
+export type RecentAppsResponse = Paginated<RecentApp>;
+
+export interface RecentAppsQueryParams {
+  page?: number;
+  limit?: number;
+  search?: string;
 }

@@ -11,7 +11,7 @@
 | Identity                       | `auths`, `refresh_tokens`, `login_histories`         |
 | Profile                        | `users`, `user_addresses`                            |
 | App Registry                   | `web_apps`, `web_app_categories`                     |
-| Entitlement & Personalization  | `entitlements` (grant + recently-used), `user_favorites` (favorite — tách riêng, xem DR-FAV)|
+| Entitlement & Personalization  | `entitlements` (grant), `user_favorites` (favorite — xem DR-FAV), `user_app_usages` (recently used — xem DR-RECENT)|
 | OAuth                          | `oauth_consents` (auth codes lưu Redis, không phải Mongo) |
 | Notification                   | `notifications`                                      |
 | Support                        | `contacts`                                           |
@@ -33,6 +33,8 @@ erDiagram
     USER ||--o{ NOTIFICATION : "receives"
     USER ||--o{ USER_FAVORITE : "favorites"
     WEB_APP ||--o{ USER_FAVORITE : "favorited-as"
+    USER ||--o{ USER_APP_USAGE : "uses"
+    WEB_APP ||--o{ USER_APP_USAGE : "used-as"
     WEB_APP |o--o{ LOGIN_HISTORY : "signed-into (nullable)"
     USER ||--o{ CONTACT : "submits (nullable — guest submit = no owner)"
 
@@ -157,8 +159,8 @@ erDiagram
         Date granted_at
         Date revoked_at "nullable — soft revoke, audit trail"
         Boolean is_favorite "default false — user star app"
-        Date last_launched_at "nullable — recently used tracking"
-        Number launch_count "default 0"
+        Date last_launched_at "nullable — superseded by USER_APP_USAGE (DR-RECENT)"
+        Number launch_count "default 0 — superseded by USER_APP_USAGE"
         Date created_at
         Date updated_at
     }
@@ -168,6 +170,16 @@ erDiagram
         ObjectId user_id FK,UK "→ USER"
         ObjectId web_app_id FK,UK "→ WEB_APP"
         Date created_at "append-only, no updated_at"
+    }
+
+    USER_APP_USAGE {
+        ObjectId _id PK
+        ObjectId user_id FK,UK "→ USER"
+        ObjectId web_app_id FK,UK "→ WEB_APP"
+        Date last_used_at "sort key"
+        Number use_count "≥ 1, reset to 1 on revive"
+        Date hidden_at "nullable — soft delete, TTL 30d"
+        Date created_at
     }
 
     OAUTH_CONSENT {
@@ -229,11 +241,12 @@ erDiagram
 ### Composite unique constraints
 - `entitlements`: `(user_id, web_app_id)` unique — 1 cặp user-app chỉ 1 entitlement record
 - `user_favorites`: `(user_id, web_app_id)` unique — 1 cặp user-app chỉ 1 favorite record (POST favorite idempotent qua index này)
+- `user_app_usages`: `(user_id, web_app_id)` unique — 1 cặp user-app chỉ 1 dòng usage (ghi lượt mở là upsert)
 - `oauth_consents`: `(user_id, web_app_id, scope_set_hash)` unique — phát hiện scope mới yêu cầu re-consent
 - `web_apps`: `client_id` unique (đã đánh dấu UK ở field)
 
 ### Single-collection patterns
-- **ENTITLEMENT** gộp 2 concern còn lại: (1) grant của admin, (2) recently-used tracking. 1 user × 1 app = 1 document duy nhất.
+- **ENTITLEMENT** chỉ còn concern grant của admin (favorite tách ở DR-FAV, recently-used tách ở DR-RECENT). 1 user × 1 app = 1 document duy nhất.
 
 ### DR-MYCONTACTS — CONTACT gắn owner `user_id` (2026-07)
 - **Quyết định**: `CONTACT.user_id` (ObjectId, nullable, ref `USER`, index `{user_id:1, created_at:-1}`) — gắn khi user đăng nhập lúc submit (`POST /contact/submit` dùng `optionalAuthGuard`), `null` khi guest submit.
@@ -245,6 +258,11 @@ erDiagram
 - **Lý do**: catalog `/apps` hiển thị app theo role (chưa gate theo entitlement), nên user thường favorite app **chưa có** entitlement record. Upsert vào `entitlements` sẽ buộc đặt `granted_by` (nghĩa "admin cấp") sai ngữ nghĩa. Collection riêng cho ngữ nghĩa sạch, không đụng grant lifecycle.
 - **Hệ quả**: field `entitlements.is_favorite` không còn được feature favorite dùng (giữ lại trong schema cũ nếu có, nhưng nguồn sự thật favorite là `user_favorites`). Annotate `isFavorite` trên `GET /apps` join từ `user_favorites`.
 - API: `POST/DELETE /users/me/favorites/:appId`, `GET /users/me/favorites`. Xem `specs/favorite-apps/`.
+
+### DR-RECENT — Recently used tách khỏi ENTITLEMENT (2026-10)
+- **Quyết định**: lượt dùng app lưu ở collection riêng `user_app_usages` `{user_id, web_app_id, last_used_at, use_count, hidden_at, created_at}`, KHÔNG dùng `entitlements.last_launched_at` / `launch_count`.
+- **Lý do**: giống DR-FAV — catalog `/apps` không gate theo entitlement, user mở app chưa có entitlement record; ghi vào `entitlements` buộc tạo grant giả. Ngoài ra "xoá lịch sử" của user phải là thao tác riêng, không được đụng grant hay audit log `login_histories`.
+- **Hệ quả**: xoá = soft delete (`hidden_at`), TTL index purge sau 30 ngày; mở lại app hồi sinh dòng với `use_count = 1`. Ghi từ hai nguồn: FE `POST /users/me/recent-apps/:appId` và `/oauth/authorize` khi cấp code. Xem `specs/recently-used/`.
 
 ### OAuth client pattern
 - `WEB_APP` đồng thời là **OAuth client metadata holder** — không tách entity riêng (1-1 quan hệ).

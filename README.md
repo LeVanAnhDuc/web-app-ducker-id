@@ -32,6 +32,9 @@ This repository is a monorepo: `client/` is the Next.js web UI, `server/` is the
 - **Favourites**
   - Star or unstar any app from its tile
   - `/favorites` shows just your starred apps
+- **Recently used**
+  - Every Open button records the launch, and so does signing in to a satellite app through Ducker ID; `/recently-used` lists each app once, newest first, grouped by Today / Yesterday / This Week / Earlier with the last-opened time and open count
+  - Search, infinite scroll, star an app from its row, remove one app with Undo, or clear the whole history after a confirmation
 - **Login history**
   - Your own sign-in attempts with method, success/failure and reason, IP, country and city, device type, OS and browser, and an anomaly flag
   - Each row shows where you signed in — Ducker ID itself or a satellite app over OIDC — and automatic SSO sign-ins from an existing session are recorded too, marked with an "Auto" badge; filter by app or by the SSO method
@@ -78,7 +81,6 @@ These have a user interface but no working backend, or are named in `docs/projec
 - **The rest of the OIDC surface** — `/oauth/introspect`, `/oauth/revoke` and refresh-token grants are not built, and there is no consent screen: an app a user is entitled to is authorized without being asked. `/oauth/logout` ends the identity-provider session but there is no back-channel logout, so an already-issued access token stays valid until it expires. The `oauth_consents` schema still has no routes.
 - **Per-user entitlements** — `/admin/entitlements` has a full user × app matrix with a multi-select user picker, role filter and edit mode, but it reads and writes mock data; the server's entitlement module is a schema only. App visibility today is by role, not per user.
 - **Admin force logout** — the dialog and success toast are wired to a mock; there is no endpoint. Signing out now destroys the server-side session, so satellite apps stop getting new tokens, but an admin still cannot end someone else's session.
-- **Recently used apps** — `/recently-used` groups apps by Today / Yesterday / This Week / Earlier with search and a clear button, but the list is hardcoded in the client and nothing is persisted.
 - **Billing** — `/billing` shows payment methods, invoices and usage from hardcoded data; the Add and Download buttons do nothing and there is no billing module on the server.
 - **Smaller gaps** — the three stat badges on the profile card are hardcoded, as is the weekly-activity chart on the home page; the profile Danger Zone "delete account" button has no handler; avatar upload has no endpoint.
 
@@ -88,7 +90,7 @@ These have a user interface but no working backend, or are named in `docs/projec
 | --------- | ------------------------------------------------------------------------------------------------------------------------ |
 | Client    | Next.js 15.3 (App Router) · React 19 · TypeScript 5 · Tailwind CSS v4 · shadcn/ui + Radix · TanStack Query 5 · Zustand 5 · React Hook Form 7 + Zod 4 · next-intl 4 · Axios · Framer Motion |
 | Server    | Node.js · Express 4 · TypeScript 5 · MongoDB with Mongoose 8 · Redis + BullMQ · JWT + bcrypt · Joi 17 · i18next · Nodemailer + React Email · Winston · Swagger UI |
-| Testing   | Jest 30 + ts-jest on the server — **44 suites / 302 tests, all passing**. Playwright 1.60 on the client — 30 E2E spec files under `client/e2e/` (require a running client, server, MongoDB and Redis, so they are not counted here) |
+| Testing   | Jest 30 + ts-jest on the server — **61 suites / 420 tests, all passing**. Playwright 1.60 on the client — 33 E2E spec files under `client/e2e/` (require a running client, server, MongoDB and Redis, so they are not counted here) |
 | Tooling   | pnpm · ESLint · Prettier · Husky pre-commit running lint-staged in both `client/` and `server/`                 |
 
 ## Running

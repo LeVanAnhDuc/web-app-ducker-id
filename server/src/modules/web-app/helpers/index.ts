@@ -8,6 +8,7 @@ import type {
 } from "../types";
 // modules
 import { WEB_APP_STATUSES, CLIENT_CREDENTIALS_CONFIG } from "../constants";
+import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 // others
 import { escapeRegex } from "@/utils/string/escape-regex";
 import { generateSecureToken } from "@/utils/crypto/secure-token";
@@ -47,3 +48,17 @@ export const generateClientId = (): string =>
 
 export const generateClientSecret = (): string =>
   generateSecureToken(CLIENT_CREDENTIALS_CONFIG.CLIENT_SECRET_RANDOM_BYTES);
+
+/**
+ * The launcher's visibility rule for a single app: it must exist and be
+ * active, and a non-admin only sees apps whose requiredRoles include `user`.
+ * Mirrors the filter `findActiveByIds` applies to a list.
+ */
+export const isAppVisibleTo = (
+  app: Pick<WebAppDocument, "status" | "requiredRoles"> | null,
+  role?: string
+): boolean =>
+  app !== null &&
+  app.status === WEB_APP_STATUSES.ACTIVE &&
+  (role === AUTHENTICATION_ROLES.ADMIN ||
+    app.requiredRoles.includes(AUTHENTICATION_ROLES.USER));

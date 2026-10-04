@@ -1,0 +1,15 @@
+{
+  "success": {
+    "list": "Recently used apps retrieved successfully."
+  },
+  "errors": {
+    "appNotFound": "App not found or not available.",
+    "rateLimitExceeded": "Too many requests. Please try again later"
+  },
+  "validation": {
+    "appId": {
+      "required": "App id is required.",
+      "invalid": "Invalid app id."
+    }
+  }
+}
