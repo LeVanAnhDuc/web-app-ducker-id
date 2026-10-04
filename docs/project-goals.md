@@ -263,3 +263,4 @@ Chi tiết version: `.claude/techstack/frontend.md`, `.claude/techstack/backend.
 | ---------- | ------------------------------------------------- |
 | 2026-05-23 | Initial — định vị Ducker ID, scope MVP-1..4, glossary. |
 | 2026-06-29 | Gỡ bỏ Team collaboration placeholder (FE + docs); Team thành Non-Goal dứt khoát (single-tenant). |
+| 2026-10-04 | Mật khẩu tạm của self-unlock chuyển từ Mongo sang Redis (TTL 15 phút, consume một lần); 3 field `auths.tempPassword*` bị gỡ khỏi schema và khỏi dữ liệu. |

@@ -26,12 +26,7 @@ import { generateTempPassword } from "@/utils/crypto/temp-password";
 import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
-import { hashValue } from "@/utils/crypto/bcrypt";
 import { withRetry } from "@/utils/resilience/retry";
-
-const TEMP_PASSWORD_EXPIRY_MINUTES = 15;
-const SECONDS_PER_MINUTE = 60;
-const MS_PER_SECOND = 1000;
 
 export class UnlockAccountService {
   constructor(
@@ -92,22 +87,13 @@ export class UnlockAccountService {
     }
 
     const tempPassword = generateTempPassword();
-    const tempPasswordHash = await hashValue(tempPassword);
-    const tempPasswordExpAt = new Date(
-      Date.now() +
-        TEMP_PASSWORD_EXPIRY_MINUTES * SECONDS_PER_MINUTE * MS_PER_SECOND
-    );
 
-    await this.authService.storeTempPassword(
-      auth._id.toString(),
-      tempPasswordHash,
-      tempPasswordExpAt
-    );
+    await this.unlockAccountRepo.storeTempPassword(email, tempPassword);
 
     Logger.info("Temporary password generated and saved", {
       email,
       authId: auth._id,
-      expiresAt: tempPasswordExpAt
+      expiresInSeconds: this.unlockAccountRepo.TEMP_PASSWORD_EXPIRY_SECONDS
     });
 
     this.emailDispatcher.send(EmailType.UNLOCK_TEMP_PASSWORD, {
@@ -136,7 +122,7 @@ export class UnlockAccountService {
 
     const { auth, user } = await this.authExistsGuard.assert(email);
 
-    await this.tempPasswordValidGuard.assert(auth, email, tempPassword);
+    await this.tempPasswordValidGuard.assert(email, tempPassword);
 
     Logger.info("Temp password verified successfully", {
       email,
@@ -148,9 +134,9 @@ export class UnlockAccountService {
       context: { email }
     });
 
-    await this.authService.markTempPasswordUsed(auth._id.toString());
+    await this.authService.requirePasswordChange(auth._id.toString());
 
-    Logger.info("Temp password marked as used", {
+    Logger.info("Password change required after unlock", {
       email,
       authId: auth._id
     });
@@ -176,7 +162,9 @@ export class UnlockAccountService {
         fullName: user.fullName,
         avatar: user.avatar ?? null,
         tokenVersion: auth.tokenVersion ?? 0,
-        mustChangePassword: auth.mustChangePassword ?? false
+        // `auth` được đọc trước khi requirePasswordChange() chạy nên cờ trong
+        // doc đó đã cũ — mở khoá xong thì bắt buộc đổi mật khẩu, luôn là true.
+        mustChangePassword: true
       })
     );
   }

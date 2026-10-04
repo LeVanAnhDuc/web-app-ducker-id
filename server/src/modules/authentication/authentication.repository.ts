@@ -18,12 +18,7 @@ export type AuthenticationRepository = {
     data: CreateAuthenticationData,
     session?: ClientSession
   ): Promise<AuthenticationRecord>;
-  storeTempPassword(
-    authId: string,
-    tempPasswordHash: string,
-    tempPasswordExpAt: Date
-  ): Promise<void>;
-  markTempPasswordUsed(authId: string): Promise<void>;
+  requirePasswordChange(authId: string): Promise<void>;
   updatePassword(
     authId: string,
     hashedPassword: string,
@@ -65,25 +60,9 @@ export class MongoAuthenticationRepository implements AuthenticationRepository {
     });
   }
 
-  async storeTempPassword(
-    authId: string,
-    tempPasswordHash: string,
-    tempPasswordExpAt: Date
-  ): Promise<void> {
-    await asyncDatabaseHandler("storeTempPassword", () =>
+  async requirePasswordChange(authId: string): Promise<void> {
+    await asyncDatabaseHandler("requirePasswordChange", () =>
       AuthenticationModel.findByIdAndUpdate(authId, {
-        tempPasswordHash,
-        tempPasswordExpAt,
-        tempPasswordUsed: false,
-        mustChangePassword: true
-      }).exec()
-    );
-  }
-
-  async markTempPasswordUsed(authId: string): Promise<void> {
-    await asyncDatabaseHandler("markTempPasswordUsed", () =>
-      AuthenticationModel.findByIdAndUpdate(authId, {
-        tempPasswordUsed: true,
         mustChangePassword: true
       }).exec()
     );
