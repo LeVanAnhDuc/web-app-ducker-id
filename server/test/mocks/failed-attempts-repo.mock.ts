@@ -1,5 +1,5 @@
 // types
-import type { FailedAttemptsRepository } from "@/modules/login/repositories";
+import type { FailedAttemptsRepository } from "@/modules/login/repositories/failed-attempts.repository";
 
 export function createFailedAttemptsRepoMock(): jest.Mocked<FailedAttemptsRepository> {
   return {

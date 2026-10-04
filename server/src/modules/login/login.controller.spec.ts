@@ -1,6 +1,6 @@
 // types
 import type { Request, Response } from "express";
-import type { LoginService } from "./services";
+import type { LoginService } from "./services/login";
 import type { SessionService } from "@/modules/session/services";
 // modules
 import {

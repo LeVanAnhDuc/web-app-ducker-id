@@ -1,5 +1,5 @@
 // types
-import type { ResetTokenRepository } from "../repositories";
+import type { ResetTokenRepository } from "../repositories/reset-token.repository";
 // common
 import { UnauthorizedError } from "@/common/exceptions";
 // others

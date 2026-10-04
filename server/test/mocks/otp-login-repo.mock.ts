@@ -1,5 +1,5 @@
 // types
-import type { OtpLoginRepository } from "@/modules/login/repositories";
+import type { OtpLoginRepository } from "@/modules/login/repositories/otp-login.repository";
 // modules
 import { LOGIN_OTP_CONFIG } from "@/modules/login/constants";
 // others

@@ -2,7 +2,7 @@
 import type { UserService } from "@/modules/user/services";
 import type { UserWithAuth } from "@/modules/user/types";
 import type { Request } from "express";
-import type { LoginAuditService } from "../services/login-audit.service";
+import type { LoginAuditService } from "../services/login-audit";
 // common
 import { UnauthorizedError } from "@/common/exceptions";
 // others

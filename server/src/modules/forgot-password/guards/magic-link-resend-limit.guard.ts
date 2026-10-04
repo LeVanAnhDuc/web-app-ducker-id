@@ -1,5 +1,5 @@
 // types
-import type { MagicLinkForgotPasswordRepository } from "../repositories";
+import type { MagicLinkForgotPasswordRepository } from "../repositories/magic-link-forgot-password.repository";
 // common
 import { BadRequestError } from "@/common/exceptions";
 // others
