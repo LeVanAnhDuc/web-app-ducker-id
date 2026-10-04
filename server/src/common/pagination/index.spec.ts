@@ -61,15 +61,7 @@ describe("toPageMeta", () => {
     expect(toPageMeta(21, 1, 20).totalPages).toBe(2);
   });
 
-  it("reports zero pages for an empty result by default", () => {
+  it("reports zero pages for an empty result", () => {
     expect(toPageMeta(0, 1, 20).totalPages).toBe(0);
-  });
-
-  it("reports one page for an empty result when minTotalPages is 1", () => {
-    expect(toPageMeta(0, 1, 20, { minTotalPages: 1 }).totalPages).toBe(1);
-  });
-
-  it("leaves a non-empty result alone whatever minTotalPages says", () => {
-    expect(toPageMeta(157, 1, 20, { minTotalPages: 1 }).totalPages).toBe(8);
   });
 });

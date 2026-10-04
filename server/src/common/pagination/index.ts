@@ -67,20 +67,13 @@ export const resolvePaging = (
   };
 };
 
-/**
- * `minTotalPages` tồn tại vì `web-app` trả `totalPages: 1` khi không có kết
- * quả, còn sáu endpoint phân trang kia trả `0`. Tham số này giữ nguyên hiện
- * trạng để đây vẫn là refactor thuần — thống nhất hai quy ước là một thay đổi
- * hợp đồng API, phải quyết riêng.
- */
 export const toPageMeta = (
   total: number,
   page: number,
-  limit: number,
-  { minTotalPages = 0 }: { minTotalPages?: number } = {}
+  limit: number
 ): PageMeta => ({
   total,
   page,
   limit,
-  totalPages: Math.max(minTotalPages, Math.ceil(total / limit))
+  totalPages: Math.ceil(total / limit)
 });
