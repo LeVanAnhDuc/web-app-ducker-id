@@ -18,6 +18,7 @@ import billing from "./billing.json";
 import admin from "./admin.json";
 import adminDashboard from "./adminDashboard.json";
 import adminApps from "./adminApps.json";
+import adminCategories from "./adminCategories.json";
 import adminEntitlements from "./adminEntitlements.json";
 import adminUsers from "./adminUsers.json";
 import list from "./list.json";
@@ -44,6 +45,7 @@ const messages = {
   admin,
   adminDashboard,
   adminApps,
+  adminCategories,
   adminEntitlements,
   adminUsers,
   list,

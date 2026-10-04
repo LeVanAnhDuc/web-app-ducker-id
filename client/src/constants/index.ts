@@ -16,6 +16,7 @@ import GENDER, { GENDER_VALUES } from "./gender";
 import PRIORITY from "./priority";
 import INVOICE_STATUS from "./invoiceStatus";
 import FAVORITES_SORT from "./favoritesSort";
+import { CATEGORY_MOVE_DIRECTION, CATEGORY_LIMITS } from "./category";
 import PAYMENT_BRAND from "./paymentBrand";
 import FORGOT_PASSWORD from "./pages/forgotPassword";
 import SUPPORT from "./pages/support";
@@ -45,6 +46,8 @@ const CONSTANTS = {
   PRIORITY,
   INVOICE_STATUS,
   FAVORITES_SORT,
+  CATEGORY_MOVE_DIRECTION,
+  CATEGORY_LIMITS,
   PAYMENT_BRAND,
   FORGOT_PASSWORD,
   SUPPORT,

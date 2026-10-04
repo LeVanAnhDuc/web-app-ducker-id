@@ -7,7 +7,8 @@ import {
   History,
   Inbox,
   LayoutGrid,
-  ShieldCheck
+  ShieldCheck,
+  Tags
 } from "lucide-react";
 // others
 import CONSTANTS from "@/constants";
@@ -33,6 +34,7 @@ export const ADMIN_NAV_GROUPS: readonly AdminNavGroup[] = [
     key: "apps",
     items: [
       { key: "apps", icon: LayoutGrid, href: ROUTES.ADMIN_APPS },
+      { key: "categories", icon: Tags, href: ROUTES.ADMIN_CATEGORIES },
       {
         key: "entitlements",
         icon: ShieldCheck,

@@ -1,0 +1,104 @@
+{
+  "title": "Categories",
+  "description": "Group apps in the launcher. This order is the order of every category filter and picker.",
+  "actions": {
+    "create": "New category",
+    "edit": "Edit {name}",
+    "delete": "Delete {name}",
+    "moveUp": "Move {name} up",
+    "moveDown": "Move {name} down",
+    "up": "Up",
+    "down": "Down",
+    "cancel": "Cancel",
+    "createSubmit": "Create",
+    "updateSubmit": "Save",
+    "confirmDelete": "Delete category",
+    "retry": "Try again",
+    "understood": "Got it"
+  },
+  "table": {
+    "order": "Order",
+    "name": "Name",
+    "slug": "Slug",
+    "apps": "Apps",
+    "actions": "Actions",
+    "appCount": "{count, plural, one {# app} other {# apps}}"
+  },
+  "empty": {
+    "title": "No categories yet",
+    "description": "Create the first category to group apps in the launcher."
+  },
+  "form": {
+    "createTitle": "New category",
+    "createDescription": "Enter the name in both languages.",
+    "editTitle": "Edit category",
+    "editDescription": "{count, plural, =0 {No app uses this category.} one {# app uses this category.} other {# apps use this category.}}",
+    "fields": {
+      "nameEn": {
+        "label": "Name (English)",
+        "placeholder": "Internal Tools"
+      },
+      "nameVi": {
+        "label": "Name (Vietnamese)",
+        "placeholder": "Công cụ nội bộ"
+      },
+      "slug": {
+        "label": "Slug",
+        "hintCreate": "Generated from the English name.",
+        "hintEdit": "Changes with the English name when you save.",
+        "empty": "—"
+      }
+    },
+    "validation": {
+      "nameEn": {
+        "required": "Enter an English name.",
+        "maxLength": "The English name must not exceed 100 characters.",
+        "noSlug": "The English name needs at least one letter or digit.",
+        "taken": "A category with this English name already exists."
+      },
+      "nameVi": {
+        "required": "Enter a Vietnamese name.",
+        "maxLength": "The Vietnamese name must not exceed 100 characters."
+      }
+    }
+  },
+  "quickCreate": {
+    "title": "New category",
+    "description": "It will be added to the app you are editing.",
+    "submit": "Create and select"
+  },
+  "delete": {
+    "title": "Delete \"{name}\"?",
+    "blockedTitle": "Can't delete \"{name}\"",
+    "noApps": "No app uses this category. This can't be undone.",
+    "total": "{count, plural, one {# app uses this category.} other {# apps use this category.}}",
+    "onlyRemoved": "{count, plural, one {It still has another category, so it only loses this one.} other {They all have another category, so they only lose this one.}}",
+    "keepOthers": "{count, plural, one {# app has another category → only removed.} other {# apps have another category → only removed.}}",
+    "orphansTitle": "{count, plural, one {# app only belongs to this category — choose a new one} other {# apps only belong to this category — choose a new one}}",
+    "bulkLabel": "Move all to",
+    "bulkHint": "Applies to every app not set individually.",
+    "perAppTitle": "Or choose for each app",
+    "progress": "{done}/{total} have a target",
+    "remaining": "{count, plural, one {# app still needs a new category.} other {# apps still need a new category.}}",
+    "complete": "Every app has a new category.",
+    "choose": "Choose a category…",
+    "shared": "{name} (shared)",
+    "override": "Set individually",
+    "rowLabel": "New category for {name}",
+    "lastCategory": "This is the only category, and {count, plural, one {# app has} other {# apps have}} nowhere else to go. Create another category first.",
+    "loadError": "Couldn't load the apps in this category.",
+    "disabledHint": "Choose a new category for every app first."
+  },
+  "announce": {
+    "created": "Category {name} created.",
+    "updated": "Category {name} saved.",
+    "deleted": "Category {name} deleted.",
+    "moved": "{name} moved to position {position}.",
+    "impactChanged": "The apps in this category changed. The list was reloaded."
+  },
+  "toast": {
+    "createSuccess": "Category created.",
+    "updateSuccess": "Category saved.",
+    "deleteSuccess": "Category deleted."
+  }
+}

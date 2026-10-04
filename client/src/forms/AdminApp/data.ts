@@ -11,7 +11,7 @@ export const initialAdminAppData: AdminAppFormValues = {
   description: "",
   iconUrl: "",
   homeUrl: "",
-  categoryId: "",
+  categoryIds: [],
   status: APP_STATUS.ACTIVE,
   requiredRoles: [AUTHENTICATION_ROLES.USER],
   redirectUris: [],

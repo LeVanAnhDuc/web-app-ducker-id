@@ -73,9 +73,18 @@
         "placeholder": "https://…",
         "hint": "Nơi người dùng được điều hướng khi click tile."
       },
-      "categoryId": {
+      "categoryIds": {
         "label": "Danh mục",
-        "placeholder": "Chọn danh mục"
+        "placeholder": "Chọn danh mục",
+        "searchPlaceholder": "Tìm danh mục…",
+        "hint": "Chọn 1–5 danh mục. Danh mục đầu tiên là danh mục chính, hiện trước khi card bị thu gọn.",
+        "primary": "Chính",
+        "remove": "Bỏ {name}",
+        "create": "Tạo danh mục mới",
+        "createNamed": "Tạo danh mục \"{name}\"",
+        "maxReached": "Tối đa 5 danh mục. Bỏ bớt một danh mục để chọn danh mục khác.",
+        "noMatch": "Không có danh mục khớp \"{query}\"",
+        "selected": "Đã chọn {count}"
       },
       "status": {
         "label": "Đang hoạt động"
@@ -121,8 +130,10 @@
         "maxLength": "URL quá dài.",
         "invalid": "Phải bắt đầu bằng http:// hoặc https://"
       },
-      "categoryId": {
-        "required": "Vui lòng chọn danh mục."
+      "categoryIds": {
+        "required": "Hãy chọn ít nhất một danh mục.",
+        "max": "Chỉ chọn tối đa 5 danh mục.",
+        "notFound": "Một danh mục đã chọn vừa bị xoá. Hãy xem lại danh sách."
       },
       "requiredRoles": {
         "required": "Chọn ít nhất một role."

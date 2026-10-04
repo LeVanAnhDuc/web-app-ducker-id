@@ -7,8 +7,8 @@ export interface UserApp {
   description: string | null;
   iconUrl: string | null;
   homeUrl: string;
-  category: string | null;
-  categorySlug: string | null;
+  /** In the order the admin chose; the first one is the primary category. */
+  categories: UserCategory[];
   isFavorite: boolean;
 }
 
@@ -21,10 +21,15 @@ export interface UserAppsQueryParams {
   categoryId?: string;
 }
 
+export interface CategoryName {
+  en: string;
+  vi: string;
+}
+
 export interface UserCategory {
   _id: string;
-  displayName: string;
   slug: string;
+  name: CategoryName;
 }
 
 export type FavoritesSortKey =

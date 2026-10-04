@@ -73,9 +73,18 @@
         "placeholder": "https://…",
         "hint": "Where users land when clicking the tile."
       },
-      "categoryId": {
-        "label": "Category",
-        "placeholder": "Select category"
+      "categoryIds": {
+        "label": "Categories",
+        "placeholder": "Select categories",
+        "searchPlaceholder": "Search categories…",
+        "hint": "Choose 1–5. The first one is the primary category, shown first when the card is compact.",
+        "primary": "Primary",
+        "remove": "Remove {name}",
+        "create": "Create category",
+        "createNamed": "Create category \"{name}\"",
+        "maxReached": "At most 5 categories. Remove one to choose another.",
+        "noMatch": "No category matches \"{query}\"",
+        "selected": "{count} selected"
       },
       "status": {
         "label": "Active"
@@ -121,8 +130,10 @@
         "maxLength": "URL is too long.",
         "invalid": "Must start with http:// or https://"
       },
-      "categoryId": {
-        "required": "Please select a category."
+      "categoryIds": {
+        "required": "Select at least one category.",
+        "max": "Select at most 5 categories.",
+        "notFound": "One of the selected categories was just deleted. Review the list."
       },
       "requiredRoles": {
         "required": "Select at least one role."

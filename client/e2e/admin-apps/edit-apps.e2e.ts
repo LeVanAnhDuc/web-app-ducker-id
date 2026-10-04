@@ -265,14 +265,15 @@ test.describe("Admin Apps — validation & boundaries", () => {
   });
 
   // E2E-4d — Select-reset regression guard (Gate A only — mutate).
-  // Guards the known shadcn-Select RHF reset bug: changing only Display Name must
-  // NOT wipe Category (CategorySelect guards `if (value) field.onChange(value)`).
+  // Changing only Display Name must NOT wipe the categories (originally a
+  // shadcn-Select RHF reset bug; category-management replaced the single select
+  // with CategoryMultiSelect and keeps this guard).
   test("preserves Category when only Display Name changes [ST regression]", async ({
     page
   }) => {
     await openEdit(page, TARGET_APP.displayName);
     await expect(
-      page.getByRole("combobox", { name: "Category" })
+      page.getByRole("dialog").getByRole("list", { name: "Categories" })
     ).toContainText("Content");
     await page
       .getByRole("textbox", { name: "Display Name" })
@@ -283,7 +284,7 @@ test.describe("Admin Apps — validation & boundaries", () => {
     // Reopen → Category must NOT have been wiped by the reset/onValueChange path.
     await openEdit(page, "Blog (select-reset e2e)");
     await expect(
-      page.getByRole("combobox", { name: "Category" })
+      page.getByRole("dialog").getByRole("list", { name: "Categories" })
     ).toContainText("Content");
 
     // Self-revert displayName so later serial tests (e.g. the full-prefill test)
@@ -392,9 +393,9 @@ test.describe("Admin Apps — validation & boundaries", () => {
     await expect(
       page.getByRole("textbox", { name: "Display Name" })
     ).toHaveValue("Blog");
-    // Category renders the human label (cat.name), NOT the ObjectId.
+    // Categories render the human label, NOT the ObjectId.
     await expect(
-      page.getByRole("combobox", { name: "Category" })
+      page.getByRole("dialog").getByRole("list", { name: "Categories" })
     ).toContainText("Content");
     // Home URL is prefilled (non-empty).
     await expect(

@@ -26,7 +26,7 @@ export default defineConfig({
       // AuthZ denial tests run here as a logged-in NON-admin — exactly what they
       // need to verify.
       testIgnore:
-        /(?:admin-apps|admin-users-list|admin-users-lock|admin-users-reset|admin-login-history|admin-entitlements|contact)\//,
+        /(?:admin-apps|admin-categories|admin-users-list|admin-users-lock|admin-users-reset|admin-login-history|admin-entitlements|contact)\//,
       use: {
         ...devices["Desktop Chrome"],
         storageState: "e2e/.auth/user.json"
@@ -37,7 +37,7 @@ export default defineConfig({
       name: "admin",
       // All admin-only suites run under the admin storageState.
       testMatch:
-        /(?:admin-apps|admin-users-list|admin-users-lock|admin-users-reset|admin-login-history|admin-entitlements|contact)\/.*\.e2e\.ts/,
+        /(?:admin-apps|admin-categories|admin-users-list|admin-users-lock|admin-users-reset|admin-login-history|admin-entitlements|contact)\/.*\.e2e\.ts/,
       use: {
         ...devices["Desktop Chrome"],
         storageState: "e2e/.auth/admin.json"

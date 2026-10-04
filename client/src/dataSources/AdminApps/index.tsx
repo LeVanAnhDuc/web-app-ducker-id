@@ -1,10 +1,12 @@
 // types
 import type { AppStatus, WebApp } from "@/types/AdminApps";
+import type { UserCategory } from "@/types/Apps";
 import type { AuthenticationRole } from "@/types/User";
 import type { CustomTableColumn } from "@/types/CustomTable";
 import type { ListFilterDef, ListFilterOption } from "@/types/List";
 import type { AdminAppsMessages, LeafKeyOf } from "@/types/libs";
 // components
+import CategoryChips from "@/components/CategoryChips";
 import FormatTime from "@/components/FormatTime";
 import AppStatusBadge from "@/views/AdminApps/components/AppStatusBadge";
 import RoleChip from "@/views/AdminApps/components/RoleChip";
@@ -45,7 +47,7 @@ export const buildAdminAppsFilterDefs = (
 
 export const buildAdminAppsColumns = (
   tTable: (key: LeafKeyOf<AdminAppsMessages["table"]>) => string,
-  categoryMap: Map<string, string>
+  categoryMap: Map<string, UserCategory>
 ): CustomTableColumn<WebApp>[] => [
   {
     id: "app",
@@ -65,7 +67,16 @@ export const buildAdminAppsColumns = (
     id: "category",
     header: tTable("category"),
     hideBelow: COLUMN_BREAKPOINT.SM,
-    cell: (app) => categoryMap.get(app.categoryId) ?? "—",
+    cell: (app) => {
+      const categories = app.categoryIds.flatMap(
+        (id) => categoryMap.get(id) ?? []
+      );
+      return categories.length > 0 ? (
+        <CategoryChips categories={categories} />
+      ) : (
+        "—"
+      );
+    },
     cellClassName: "text-muted-foreground text-sm"
   },
   {

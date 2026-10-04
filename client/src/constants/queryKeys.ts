@@ -1,7 +1,9 @@
 const QUERY_KEYS = {
   // App registry (admin) + user-facing catalog
   ADMIN_APPS: "adminApps",
-  ADMIN_APP_CATEGORIES: "adminAppCategories",
+  ADMIN_CATEGORIES: "adminCategories",
+  ADMIN_CATEGORY_DELETE_IMPACT: "adminCategoryDeleteImpact",
+  APP_CATEGORIES: "appCategories",
   APPS: "apps",
   FAVORITES: "favorites",
   RECENT_APPS: "recentApps",

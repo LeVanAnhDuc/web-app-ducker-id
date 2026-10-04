@@ -1,7 +1,10 @@
 "use client";
 // libs
 import { ArrowUpRight, Timer, X } from "lucide-react";
+// types
+import type { UserCategory } from "@/types/Apps";
 // components
+import CategoryChips from "@/components/CategoryChips";
 import CardItemTitle from "@/components/CardItemTitle";
 import CustomButton from "@/components/CustomButton";
 import CustomImage from "@/components/CustomImage";
@@ -11,7 +14,7 @@ import { Card } from "@/components/ui/card";
 const RecentAppRow = ({
   id,
   name,
-  category,
+  categories,
   iconUrl,
   lastOpened,
   openedCount,
@@ -25,7 +28,7 @@ const RecentAppRow = ({
 }: {
   id: string;
   name: string;
-  category: string | null;
+  categories: UserCategory[];
   iconUrl: string | null;
   lastOpened: string;
   openedCount: string;
@@ -67,9 +70,14 @@ const RecentAppRow = ({
       <CardItemTitle id={`recent-${id}-title`} className="truncate">
         {name}
       </CardItemTitle>
-      <span className="text-muted-foreground text-xs">
-        {[category, openedCount].filter(Boolean).join(" · ")}
-      </span>
+      <div className="flex min-w-0 items-center gap-2">
+        <CategoryChips categories={categories} className="min-w-0" />
+        {openedCount && (
+          <span className="text-muted-foreground shrink-0 text-xs">
+            {openedCount}
+          </span>
+        )}
+      </div>
     </div>
     <div className="text-info flex items-center gap-1.5">
       <Timer className="size-3.5" aria-hidden="true" />

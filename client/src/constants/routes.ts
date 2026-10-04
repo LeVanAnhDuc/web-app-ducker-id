@@ -23,6 +23,7 @@ const ROUTES = {
   NOTIFICATIONS: "/notifications",
   ADMIN_DASHBOARD: "/admin",
   ADMIN_APPS: "/admin/apps",
+  ADMIN_CATEGORIES: "/admin/categories",
   ADMIN_ENTITLEMENTS: "/admin/entitlements",
   ADMIN_USERS: "/admin/users",
   ADMIN_LOGIN_HISTORY: "/admin/login-history",

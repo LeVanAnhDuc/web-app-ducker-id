@@ -9,12 +9,6 @@ export type AppStatus = (typeof APP_STATUS)[keyof typeof APP_STATUS];
 export type TokenAuthMethod =
   (typeof TOKEN_AUTH_METHOD)[keyof typeof TOKEN_AUTH_METHOD];
 
-export interface WebAppCategory {
-  _id: string;
-  name: string;
-  slug: string;
-}
-
 export interface WebApp {
   _id: string;
   name: string;
@@ -22,7 +16,7 @@ export interface WebApp {
   description: string | null;
   iconUrl: string | null;
   homeUrl: string;
-  categoryId: string;
+  categoryIds: string[];
   status: AppStatus;
   requiredRoles: AuthenticationRole[];
   redirectUris: string[];
@@ -44,7 +38,7 @@ export interface AdminAppFormValues {
   description: string;
   iconUrl: string;
   homeUrl: string;
-  categoryId: string;
+  categoryIds: string[];
   status: AppStatus;
   requiredRoles: AuthenticationRole[];
   redirectUris: string[];

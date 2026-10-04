@@ -21,6 +21,7 @@ export type ContactAdminMessages = Messages["contactAdmin"];
 export type LoginHistoryMessages = Messages["loginHistory"];
 export type AdminUsersMessages = Messages["adminUsers"];
 export type AdminAppsMessages = Messages["adminApps"];
+export type AdminCategoriesMessages = Messages["adminCategories"];
 export type AdminEntitlementsMessages = Messages["adminEntitlements"];
 
 // Leaf-key union of a message object — matches exactly the keys a translator `t`
