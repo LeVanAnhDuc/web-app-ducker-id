@@ -1,7 +1,7 @@
 // types
 import type { RedisClientType } from "redis";
 import type { RateLimiterMiddleware } from "@/middlewares";
-import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { AuthenticationService } from "@/modules/authentication/service";
 import type { UserService } from "@/modules/user/user.service";
 import type { SessionService } from "@/modules/session/session.service";
 // modules

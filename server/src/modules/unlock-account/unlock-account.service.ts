@@ -1,6 +1,6 @@
 // types
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
-import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { AuthenticationService } from "@/modules/authentication/service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { LoginService } from "@/modules/login/services";
 import type { Request } from "express";

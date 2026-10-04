@@ -1,6 +1,6 @@
 // types
 import type { RateLimiterMiddleware } from "@/middlewares";
-import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { AuthenticationService } from "@/modules/authentication/service";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 // others
 import { MongoUserRepository } from "./user.repository";
