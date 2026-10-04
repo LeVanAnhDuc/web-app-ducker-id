@@ -6,7 +6,8 @@ import type { RecentAppController } from "./recent-app.controller";
 // validators
 import {
   listRecentAppsQuerySchema,
-  recentAppIdParamSchema
+  recentAppIdParamSchema,
+  recentAppsStatsQuerySchema
 } from "@/validators/schemas/recent-app";
 // others
 import { authGuard, paramsPipe, queryPipe } from "@/middlewares";
@@ -25,6 +26,12 @@ export const createRecentAppUserRoutes = (
     "/",
     queryPipe(listRecentAppsQuerySchema),
     asyncHandler(controller.list)
+  );
+  // Before "/:appId" so the literal segment is not read as an app id.
+  recentApps.get(
+    "/stats",
+    queryPipe(recentAppsStatsQuerySchema),
+    asyncHandler(controller.stats)
   );
   recentApps.delete("/", asyncHandler(controller.clear));
   recentApps.post(

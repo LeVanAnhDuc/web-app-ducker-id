@@ -37,14 +37,15 @@ const AdminLoginHistoryTable = () => {
   const tFilters = useTranslations("loginHistory.filters");
   const tLocation = useTranslations("loginHistory.location");
   const tApp = useTranslations("loginHistory.app");
+  const tDevice = useTranslations("loginHistory.deviceType");
   const appOptions = useLoginAppOptions();
 
   const filterDefs = useMemo(
     () => [
-      ...buildLoginHistoryFilterDefs(tStatus, tMethod, tFilters),
+      ...buildLoginHistoryFilterDefs(tStatus, tMethod, tFilters, tDevice),
       ...buildLoginAppFilterDefs(appOptions, tFilters, tApp)
     ],
-    [tStatus, tMethod, tFilters, tApp, appOptions]
+    [tStatus, tMethod, tFilters, tApp, tDevice, appOptions]
   );
 
   const columns = useMemo(

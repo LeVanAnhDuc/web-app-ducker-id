@@ -5,6 +5,7 @@ const QUERY_KEYS = {
   APPS: "apps",
   FAVORITES: "favorites",
   RECENT_APPS: "recentApps",
+  RECENT_APPS_STATS: "recentAppsStats",
   // Contact
   ADMIN_CONTACT_LIST: "adminContactList",
   ADMIN_CONTACT_DETAIL: "adminContactDetail",

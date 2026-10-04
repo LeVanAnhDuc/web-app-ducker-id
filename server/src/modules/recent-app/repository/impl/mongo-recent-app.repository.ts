@@ -90,6 +90,42 @@ export class MongoRecentAppRepository implements RecentAppRepository {
     });
   }
 
+  /**
+   * Every visible usage row for the given apps. The stats endpoint reads the
+   * whole set rather than a page: a user holds one row per app they have ever
+   * opened, which is bounded by the catalog, and totals, the ranking and the
+   * category split all come off the same rows.
+   */
+  async findUsages(
+    userId: string,
+    webAppIds: string[]
+  ): Promise<RecentAppUsage[]> {
+    return asyncDatabaseHandler("recentApp.findUsages", async () => {
+      if (webAppIds.length === 0) return [];
+
+      const docs = await UserAppUsageModel.find({
+        userId: oid(userId),
+        hiddenAt: null,
+        webAppId: { $in: webAppIds.map(oid) }
+      })
+        .select("webAppId lastUsedAt useCount")
+        .lean<
+          Pick<
+            UserAppUsageDocument,
+            "_id" | "webAppId" | "lastUsedAt" | "useCount"
+          >[]
+        >()
+        .exec();
+
+      return docs.map((d) => ({
+        id: d._id.toString(),
+        webAppId: d.webAppId.toString(),
+        lastUsedAt: d.lastUsedAt,
+        useCount: d.useCount
+      }));
+    });
+  }
+
   async findPage(
     userId: string,
     webAppIds: string[],

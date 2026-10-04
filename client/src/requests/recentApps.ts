@@ -1,7 +1,9 @@
 // types
 import type {
   RecentAppsQueryParams,
-  RecentAppsResponse
+  RecentAppsResponse,
+  RecentAppsStats,
+  RecentAppsStatsQueryParams
 } from "@/types/RecentlyUsed";
 // others
 import axiosInstance from "@/libs/axios";
@@ -15,6 +17,16 @@ export const getRecentApps = async (
 ): Promise<RecentAppsResponse> => {
   const response = await axiosInstance.get<ResponsePattern<RecentAppsResponse>>(
     END_POINTS.RECENT_APPS,
+    { params }
+  );
+  return response.data.data;
+};
+
+export const getRecentAppsStats = async (
+  params?: RecentAppsStatsQueryParams
+): Promise<RecentAppsStats> => {
+  const response = await axiosInstance.get<ResponsePattern<RecentAppsStats>>(
+    END_POINTS.RECENT_APPS_STATS,
     { params }
   );
   return response.data.data;

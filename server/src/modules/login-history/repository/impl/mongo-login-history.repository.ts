@@ -16,7 +16,8 @@ import LoginHistoryModel from "@/models/login-history";
 // modules
 import {
   LOGIN_METHODS,
-  LOGIN_SOURCES
+  LOGIN_SOURCES,
+  LOGIN_STATUSES
 } from "@/modules/login-history/constants";
 // others
 import { asyncDatabaseHandler } from "@/utils/async-handler";
@@ -88,22 +89,77 @@ export class MongoLoginHistoryRepository implements LoginHistoryRepository {
     range: LoginStatsRange
   ): Promise<LoginStatsAggregationResult> {
     return asyncDatabaseHandler("aggregateMyStats", async () => {
+      // Stats count logins; a silent SSO into an app is not one. The filter
+      // sits inside each facet rather than in the root $match so that byApp,
+      // which wants exactly those rows, can still reach them.
+      const excludeSso = { $match: { method: { $ne: LOGIN_METHODS.SSO } } };
+      const countStatus = (status: string) => ({
+        $sum: { $cond: [{ $eq: ["$status", status] }, 1, 0] }
+      });
+
       const [result] =
         await LoginHistoryModel.aggregate<LoginStatsAggregationResult>([
           {
             $match: {
               userId: new Types.ObjectId(range.userId),
-              // Stats count logins; a silent SSO into an app is not one.
-              method: { $ne: LOGIN_METHODS.SSO },
               createdAt: { $gte: range.from, $lte: range.to }
             }
           },
           {
             $facet: {
-              total: [{ $count: "count" }],
-              byStatus: [{ $group: { _id: "$status", count: { $sum: 1 } } }],
-              byMethod: [{ $group: { _id: "$method", count: { $sum: 1 } } }],
-              byDevice: [{ $group: { _id: "$deviceType", count: { $sum: 1 } } }]
+              total: [excludeSso, { $count: "count" }],
+              byStatus: [
+                excludeSso,
+                { $group: { _id: "$status", count: { $sum: 1 } } }
+              ],
+              byMethod: [
+                excludeSso,
+                { $group: { _id: "$method", count: { $sum: 1 } } }
+              ],
+              byDevice: [
+                excludeSso,
+                { $group: { _id: "$deviceType", count: { $sum: 1 } } }
+              ],
+              // Keyed by the local calendar day, not by UTC: a login at 00:30
+              // in Hanoi belongs to that day, not to the one before it.
+              byDay: [
+                excludeSso,
+                {
+                  $group: {
+                    _id: {
+                      $dateToString: {
+                        date: "$createdAt",
+                        format: "%Y-%m-%d",
+                        timezone: range.timezone
+                      }
+                    },
+                    total: { $sum: 1 },
+                    successful: countStatus(LOGIN_STATUSES.SUCCESS),
+                    failed: countStatus(LOGIN_STATUSES.FAILED)
+                  }
+                },
+                { $sort: { _id: 1 } }
+              ],
+              // The mirror image: only the SSO rows, which is what "signed in
+              // to which app" means. clientName is the snapshot taken at
+              // sign-in, so a renamed or deleted app still reads correctly.
+              byApp: [
+                {
+                  $match: {
+                    method: LOGIN_METHODS.SSO,
+                    webAppId: { $ne: null }
+                  }
+                },
+                {
+                  $group: {
+                    _id: { webAppId: "$webAppId", clientName: "$clientName" },
+                    count: { $sum: 1 }
+                  }
+                },
+                { $sort: { count: -1, "_id.clientName": 1 } },
+                { $limit: range.topAppsLimit }
+              ],
+              anomalies: [{ $match: { isAnomaly: true } }, { $count: "count" }]
             }
           }
         ]).exec();
@@ -113,7 +169,10 @@ export class MongoLoginHistoryRepository implements LoginHistoryRepository {
           total: [],
           byStatus: [],
           byMethod: [],
-          byDevice: []
+          byDevice: [],
+          byDay: [],
+          byApp: [],
+          anomalies: []
         }
       );
     });

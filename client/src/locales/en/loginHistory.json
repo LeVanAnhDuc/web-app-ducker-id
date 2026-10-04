@@ -44,6 +44,7 @@
     "title": "Filters",
     "status": "Status",
     "method": "Method",
+    "deviceType": "Device",
     "country": "Country",
     "city": "City",
     "fromDate": "From Date",

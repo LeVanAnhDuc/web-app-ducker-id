@@ -42,3 +42,11 @@ export interface RecentAppIdRequest extends Omit<Request, "params"> {
 export interface ListRecentAppsRequest extends Omit<Request, "query"> {
   query: ListRecentAppsQuery;
 }
+
+export interface RecentAppsStatsQuery {
+  limit?: number;
+}
+
+export interface RecentAppsStatsRequest extends Omit<Request, "query"> {
+  query: RecentAppsStatsQuery;
+}

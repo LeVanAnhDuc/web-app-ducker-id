@@ -180,9 +180,17 @@
   /* backdrop modal — ink ấm, không phải đen thuần (MASTER.md § Modals) */
   --overlay: oklch(0.216 0.006 56 / 0.6);
 
+  /* Categorical series only. A series that already means something — success
+     vs failure — uses the semantic token, not a slot from this ramp.
+     --chart-2 is brass, the signature fill (MASTER.md): reach for it only when
+     a fifth colour is unavoidable. */
   --chart-1: var(--prussian-700);
   --chart-2: var(--brass-600);
-  --chart-3: var(--prussian-300);
+  /* Was prussian-300 — the dark-mode brand blue — which lands near 2.5:1 on a
+     light surface and fails WCAG 1.4.11 for non-text graphics. The ramp has no
+     fifth distinct hue, so chart-3 stays the weak slot: prefer 1, 4, 5 and
+     then 2 for a categorical series, and give any fill a 1px separator. */
+  --chart-3: var(--prussian-500);
   --chart-4: var(--stone-600);
   --chart-5: var(--green-600);
 

@@ -2,7 +2,8 @@
 import type { Request, Response } from "express";
 import type {
   ListRecentAppsRequest,
-  RecentAppIdRequest
+  RecentAppIdRequest,
+  RecentAppsStatsRequest
 } from "@/modules/recent-app/types";
 import type { RecentAppService } from "./services";
 // commons
@@ -14,6 +15,11 @@ export class RecentAppController {
   list = async (req: ListRecentAppsRequest, res: Response): Promise<void> => {
     const data = await this.service.list(req.query);
     new OkSuccess({ data, message: "recentApp:success.list" }).send(req, res);
+  };
+
+  stats = async (req: RecentAppsStatsRequest, res: Response): Promise<void> => {
+    const data = await this.service.stats(req.query);
+    new OkSuccess({ data, message: "recentApp:success.stats" }).send(req, res);
   };
 
   record = async (req: RecentAppIdRequest, res: Response): Promise<void> => {

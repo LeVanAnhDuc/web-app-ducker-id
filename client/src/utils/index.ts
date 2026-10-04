@@ -7,7 +7,8 @@ import type { Locale } from "next-intl";
 import type { DateTimeVariant, DateTimeValue } from "@/types/DateTime";
 import type {
   LoginHistoryStatus,
-  LoginHistoryMethod
+  LoginHistoryMethod,
+  LoginHistoryDeviceType
 } from "@/types/LoginHistory";
 import type { ContactStatus } from "@/types/ContactAdmin";
 import type { AdminUser } from "@/types/AdminUsers";
@@ -210,6 +211,8 @@ const LOGIN_HISTORY_STATUSES: LoginHistoryStatus[] =
   CONSTANTS.LOGIN_HISTORY.STATUS_VALUES;
 const LOGIN_HISTORY_METHODS: LoginHistoryMethod[] =
   CONSTANTS.LOGIN_HISTORY.METHOD_VALUES;
+const LOGIN_HISTORY_DEVICE_TYPES: LoginHistoryDeviceType[] =
+  CONSTANTS.LOGIN_HISTORY.DEVICE_TYPE_VALUES;
 const CONTACT_STATUSES: ContactStatus[] = Object.values(
   CONSTANTS.CONTACT_STATUS
 );
@@ -223,6 +226,11 @@ export const isLoginHistoryMethod = (
   value: string | null
 ): value is LoginHistoryMethod =>
   value !== null && (LOGIN_HISTORY_METHODS as string[]).includes(value);
+
+export const isLoginHistoryDeviceType = (
+  value: string | null
+): value is LoginHistoryDeviceType =>
+  value !== null && (LOGIN_HISTORY_DEVICE_TYPES as string[]).includes(value);
 
 const { LOCATION_SENTINEL } = CONSTANTS.LOGIN_HISTORY;
 const LOGIN_LOCATION_SENTINELS: string[] = Object.values(LOCATION_SENTINEL);

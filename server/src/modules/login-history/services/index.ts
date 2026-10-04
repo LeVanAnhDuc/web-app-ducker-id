@@ -7,7 +7,8 @@ import type {
   LoginFailReason,
   LoginHistoryAdminQuery,
   LoginHistoryQuery,
-  LoginMethod
+  LoginMethod,
+  LoginStatsQuery
 } from "../types";
 import type {
   AllHistoryItemDto,
@@ -72,8 +73,8 @@ export class LoginHistoryService {
     return getMyLoginHistory(this.loginHistoryRepo, query);
   }
 
-  getMyLoginStats(): Promise<MyLoginStatsDto> {
-    return getMyLoginStats(this.loginHistoryRepo);
+  getMyLoginStats(query: LoginStatsQuery): Promise<MyLoginStatsDto> {
+    return getMyLoginStats(this.loginHistoryRepo, query);
   }
 
   getAllLoginHistory(

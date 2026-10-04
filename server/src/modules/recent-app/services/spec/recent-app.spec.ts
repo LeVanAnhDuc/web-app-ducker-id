@@ -40,6 +40,7 @@ const makeDeps = () => {
     record: jest.fn().mockResolvedValue(undefined),
     findVisibleWebAppIds: jest.fn().mockResolvedValue([]),
     findPage: jest.fn().mockResolvedValue({ data: [], total: 0 }),
+    findUsages: jest.fn().mockResolvedValue([]),
     hide: jest.fn().mockResolvedValue(undefined),
     hideAll: jest.fn().mockResolvedValue(undefined),
     restore: jest.fn().mockResolvedValue(undefined)
