@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Login History — App Source</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@600&display=swap" rel="stylesheet" />
+<style>
+  /* Tokens from docs/design-system/ducker-id/MASTER.md */
+  :root {
+    --primary: #143a5a; --on-primary: #fff; --accent: #b07d2b;
+    --bg: #fafaf9; --fg: #1c1917; --card: #fff; --muted: #f5f5f4;
+    --muted-fg: #57534e; --border: #e7e5e4; --success: #15803d; --destructive: #b42318;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.5 "IBM Plex Sans", sans-serif; padding: 24px 16px; }
+  main { max-width: 1100px; margin: 0 auto; }
+  h1 { font: 600 24px "Space Grotesk", sans-serif; margin: 0 0 4px; }
+  h2 { font: 600 16px "Space Grotesk", sans-serif; margin: 32px 0 8px; }
+  .lead { color: var(--muted-fg); margin: 0 0 16px; }
+  .note { border-left: 2px solid var(--accent); padding: 4px 12px; color: var(--muted-fg); margin: 8px 0 16px; }
+  .toolbar { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .select { height: 36px; border: 1px solid var(--border); border-radius: 6px; background: var(--card); padding: 0 12px; display: inline-flex; align-items: center; gap: 6px; color: var(--fg); }
+  .select b { font-weight: 500; color: var(--muted-fg); }
+  .select.active { border-color: var(--primary); }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; min-width: 760px; }
+  th { text-align: left; font-weight: 500; color: var(--muted-fg); font-size: 12px; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  tr:last-child td { border-bottom: 0; }
+  .app { display: inline-flex; align-items: center; gap: 8px; font-weight: 500; }
+  .icon { width: 20px; height: 20px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 600; background: rgba(20,58,90,.1); color: var(--primary); }
+  .icon.idp { background: var(--primary); color: var(--on-primary); }
+  .badge { font-size: 10px; padding: 1px 6px; border-radius: 999px; background: var(--muted); color: var(--muted-fg); border: 1px solid var(--border); font-weight: 500; }
+  .ok { color: var(--success); font-weight: 500; } .ko { color: var(--destructive); font-weight: 500; }
+  .mono { font-family: "IBM Plex Mono", monospace; color: var(--muted-fg); }
+  .sso { color: var(--primary); font-weight: 500; }
+  dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; padding: 24px; margin: 0; }
+  dt { font-size: 12px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted-fg); font-weight: 500; }
+  dd { margin: 4px 0 0; }
+  .new { outline: 2px dashed var(--accent); outline-offset: 2px; border-radius: 4px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Lịch sử đăng nhập — nguồn đăng nhập</h1>
+  <p class="lead">Mock cho <code>login-history-app-source</code>. Viền nét đứt màu brass = phần mới.</p>
+
+  <h2>1. Trang user — mặc định (ẩn SSO tự động)</h2>
+  <div class="note">Filter "Kiểu đăng nhập" để trống nghĩa là chỉ hiện đăng nhập thủ công (<code>interactive=true</code>). Danh sách lọc hiện có chỉ hỗ trợ select, nên toggle được thay bằng select có cùng ngữ nghĩa.</div>
+  <div class="toolbar">
+    <span class="select"><b>Trạng thái</b> Tất cả ▾</span>
+    <span class="select"><b>Phương thức</b> Tất cả ▾</span>
+    <span class="select"><b>Ngày</b> ▾</span>
+    <span class="select new"><b>Ứng dụng</b> Tất cả ▾</span>
+    <span class="select new"><b>Kiểu đăng nhập</b> Đăng nhập thủ công ▾</span>
+  </div>
+  <div class="card"><table>
+    <thead><tr><th>Ngày</th><th class="new">Ứng dụng</th><th>Phương thức</th><th>Trạng thái</th><th>Thiết bị</th><th>IP</th><th>Quốc gia</th></tr></thead>
+    <tbody>
+      <tr><td>04/10/2026 15:17</td><td><span class="app"><span class="icon">T</span>Tinh tien cau long</span></td><td class="sso">SSO</td><td class="ok">● Thành công</td><td>DESKTOP · Chrome</td><td class="mono">127.0.0.1</td><td>Nội bộ (Local)</td></tr>
+      <tr><td>04/10/2026 15:16</td><td><span class="app"><span class="icon idp">◆</span>Ducker ID</span></td><td>Mật khẩu</td><td class="ok">● Thành công</td><td>DESKTOP · Chrome</td><td class="mono">127.0.0.1</td><td>Nội bộ (Local)</td></tr>
+      <tr><td>03/10/2026 09:02</td><td><span class="app"><span class="icon idp">◆</span>Ducker ID</span></td><td>OTP</td><td class="ko">● Thất bại</td><td>MOBILE · Safari</td><td class="mono">14.161.*.*</td><td>VN</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>2. Trang user — "Gồm cả SSO tự động"</h2>
+  <div class="toolbar"><span class="select active new"><b>Kiểu đăng nhập</b> Gồm cả SSO tự động ▾</span></div>
+  <div class="card"><table>
+    <thead><tr><th>Ngày</th><th>Ứng dụng</th><th>Phương thức</th><th>Trạng thái</th></tr></thead>
+    <tbody>
+      <tr><td>04/10/2026 16:40</td><td><span class="app"><span class="icon">T</span>Tinh tien cau long <span class="badge new">Tự động</span></span></td><td class="sso">SSO</td><td class="ok">● Thành công</td></tr>
+      <tr><td>04/10/2026 16:05</td><td><span class="app"><span class="icon">M</span>Match CV <span class="badge new">Tự động</span></span></td><td class="sso">SSO</td><td class="ko">● Thất bại</td></tr>
+      <tr><td>04/10/2026 15:17</td><td><span class="app"><span class="icon">T</span>Tinh tien cau long</span></td><td class="sso">SSO</td><td class="ok">● Thành công</td></tr>
+    </tbody>
+  </table></div>
+
+  <h2>3. Admin — chi tiết một lần đăng nhập</h2>
+  <div class="card"><dl>
+    <div><dt>Phương thức</dt><dd>SSO</dd></div>
+    <div><dt>Trạng thái</dt><dd>Thành công</dd></div>
+    <div class="new"><dt>Nguồn</dt><dd>Ứng dụng vệ tinh (OIDC)</dd></div>
+    <div class="new"><dt>Ứng dụng</dt><dd><span class="app"><span class="icon">T</span>Tinh tien cau long</span></dd></div>
+    <div class="new"><dt>Kiểu đăng nhập</dt><dd>SSO tự động (phiên có sẵn)</dd></div>
+    <div><dt>Địa chỉ IP</dt><dd class="mono">127.0.0.1</dd></div>
+  </dl></div>
+</main>
+</body>
+</html>
