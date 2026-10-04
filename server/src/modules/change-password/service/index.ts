@@ -1,10 +1,10 @@
 // types
-import type { ChangePasswordRequest } from "./types";
+import type { ChangePasswordRequest } from "../types";
 import type { AuthenticationService } from "@/modules/authentication/service";
 import type { UserService } from "@/modules/user/user.service";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { AuthTokensResponse } from "@/modules/authentication/types";
-import type { WrongCurrentPasswordGuard, SamePasswordGuard } from "./guards";
+import type { WrongCurrentPasswordGuard, SamePasswordGuard } from "../guards";
 // common
 import { UnauthorizedError } from "@/common/exceptions";
 // modules

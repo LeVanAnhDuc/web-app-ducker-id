@@ -6,7 +6,7 @@ import type { RateLimiterMiddleware } from "@/middlewares";
 // guards
 import { WrongCurrentPasswordGuard, SamePasswordGuard } from "./guards";
 // others
-import { ChangePasswordService } from "./change-password.service";
+import { ChangePasswordService } from "./service";
 import { ChangePasswordController } from "./change-password.controller";
 import { createChangePasswordRoutes } from "./change-password.routes";
 

@@ -7,20 +7,11 @@ import type {
   NotificationFilter
 } from "@/modules/notification/types";
 import type { PaginationOptions } from "@/types/common";
+import type { NotificationRepository } from "../notification.repository";
 // models
 import NotificationModel from "@/models/notification";
 // others
 import { asyncDatabaseHandler } from "@/utils/async-handler";
-
-export type NotificationRepository = {
-  findByUser(
-    filter: NotificationFilter,
-    options: PaginationOptions
-  ): Promise<{ data: NotificationDocument[]; total: number }>;
-  countUnread(userId: string): Promise<number>;
-  markRead(id: string, userId: string): Promise<NotificationDocument | null>;
-  markAllRead(userId: string): Promise<number>;
-};
 
 export class MongoNotificationRepository implements NotificationRepository {
   async findByUser(

@@ -5,7 +5,7 @@ jest.mock("@/utils/request-context", () => ({
 }));
 
 // types
-import type { ChangePasswordRequest } from "./types";
+import type { ChangePasswordRequest } from "../../types";
 import type { AuthenticationService } from "@/modules/authentication/service";
 import type { UserService } from "@/modules/user/user.service";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
@@ -17,8 +17,8 @@ import { EmailType } from "@/types/services/email";
 // others
 import { hashValue, isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { RequestContext } from "@/utils/request-context";
-import { WrongCurrentPasswordGuard, SamePasswordGuard } from "./guards";
-import { ChangePasswordService } from "./change-password.service";
+import { WrongCurrentPasswordGuard, SamePasswordGuard } from "../../guards";
+import { ChangePasswordService } from "../";
 
 const mockedGenTokens = generateAuthTokensResponse as jest.MockedFunction<
   typeof generateAuthTokensResponse

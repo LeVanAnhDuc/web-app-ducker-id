@@ -1,6 +1,6 @@
 // types
 import type { Request, Response } from "express";
-import type { SessionService } from "@/modules/session/session.service";
+import type { SessionService } from "@/modules/session/service";
 // others
 import { Logger } from "@/libs/logger";
 import { RequestContext } from "@/utils/request-context";

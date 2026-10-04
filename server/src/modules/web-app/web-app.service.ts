@@ -11,7 +11,7 @@ import type {
   WebAppRepository,
   WebAppCategoryRepository
 } from "./repositories";
-import type { FavoriteRepository } from "@/modules/favorite/favorite.repository";
+import type { FavoriteRepository } from "@/modules/favorite/repository/favorite.repository";
 import type {
   AdminAppDto,
   AdminCategoryDto,

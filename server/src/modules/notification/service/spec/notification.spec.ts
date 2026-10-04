@@ -1,7 +1,7 @@
 // libs
 import { NotFoundError } from "@/common/exceptions";
 // modules
-import { NotificationService } from "./notification.service";
+import { NotificationService } from "../";
 import { RequestContext } from "@/utils/request-context";
 
 const baseDoc = {
