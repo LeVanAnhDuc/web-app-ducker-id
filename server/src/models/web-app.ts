@@ -188,6 +188,10 @@ const WebAppSchema = new Schema<WebAppDocument>(
   }
 );
 
+// /oauth/authorize và /oauth/token tra client theo clientId ở MỌI request —
+// không có index thì mỗi lần đăng nhập là một collection scan. unique cũng là
+// ràng buộc đúng về ngữ nghĩa: clientId là định danh client trong OAuth.
+WebAppSchema.index({ clientId: 1 }, { unique: true });
 WebAppSchema.index({ categoryId: 1, sortOrder: 1 });
 WebAppSchema.index({ status: 1, sortOrder: 1 });
 

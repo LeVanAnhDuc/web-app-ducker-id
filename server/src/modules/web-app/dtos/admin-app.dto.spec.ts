@@ -38,7 +38,14 @@ describe("toAdminAppDto", () => {
     expect(dto.clientSecretHash).toBeUndefined();
     expect(dto.grantTypes).toBeUndefined();
     expect(dto.scopes).toBeUndefined();
-    expect(dto.tokenEndpointAuthMethod).toBeUndefined();
+  });
+
+  it("exposes tokenEndpointAuthMethod so admin sees public vs confidential", () => {
+    // Không phải bí mật, và là thứ quyết định app có client_secret hay không —
+    // màn hình admin phải đọc được để hiển thị và sửa.
+    expect(toAdminAppDto(baseDoc).tokenEndpointAuthMethod).toBe(
+      baseDoc.tokenEndpointAuthMethod
+    );
   });
 
   it("converts ObjectIds and dates to strings", () => {
@@ -53,6 +60,12 @@ describe("toAdminAppCreatedDto", () => {
   it("includes the plaintext clientSecret", () => {
     const dto = toAdminAppCreatedDto(baseDoc, "plaintext-secret");
     expect(dto.clientSecret).toBe("plaintext-secret");
+  });
+
+  it("returns a null clientSecret for a public client", () => {
+    // Public client (tokenEndpointAuthMethod = "none") không có secret nào để
+    // trả về — null là kết quả đúng, không phải thiếu sót.
+    expect(toAdminAppCreatedDto(baseDoc, null).clientSecret).toBeNull();
   });
 
   it("carries all AdminAppDto fields and still excludes the hash", () => {

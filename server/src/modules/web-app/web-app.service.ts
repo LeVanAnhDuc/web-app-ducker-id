@@ -34,7 +34,11 @@ import {
   generateClientId,
   generateClientSecret
 } from "./helpers";
-import { WEB_APP_DEFAULT_SCOPES, WEB_APP_STATUS_PUBLIC } from "./constants";
+import {
+  TOKEN_ENDPOINT_AUTH_METHODS,
+  WEB_APP_DEFAULT_SCOPES,
+  WEB_APP_STATUS_PUBLIC
+} from "./constants";
 import { PAGINATION } from "@/common/pagination";
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 import { ConflictRequestError, NotFoundError } from "@/common/exceptions";
@@ -133,7 +137,15 @@ export class WebAppService {
     }
 
     const clientId = generateClientId();
-    const clientSecret = generateClientSecret();
+
+    // Public client không có secret — nhét secret vào bundle trình duyệt là
+    // công khai nó, và tệ hơn là tạo ảo giác đã xác thực client. PKCE + khớp
+    // redirect_uri tuyệt đối là thứ gánh vai trò bảo vệ ở nhánh này.
+    const authMethod =
+      body.tokenEndpointAuthMethod ??
+      TOKEN_ENDPOINT_AUTH_METHODS.CLIENT_SECRET_BASIC;
+    const isPublicClient = authMethod === TOKEN_ENDPOINT_AUTH_METHODS.NONE;
+    const clientSecret = isPublicClient ? null : generateClientSecret();
 
     const doc = await this.webAppRepo.create({
       name: body.name,
@@ -145,9 +157,11 @@ export class WebAppService {
       status: toInternalStatus(body.status),
       requiredRoles: body.requiredRoles,
       redirectUris: body.redirectUris,
+      postLogoutRedirectUris: body.postLogoutRedirectUris ?? [],
       clientId,
-      clientSecretHash: hashValue(clientSecret),
-      scopes: [...WEB_APP_DEFAULT_SCOPES]
+      clientSecretHash: clientSecret ? hashValue(clientSecret) : null,
+      tokenEndpointAuthMethod: authMethod,
+      scopes: body.scopes ?? [...WEB_APP_DEFAULT_SCOPES]
     });
 
     return toAdminAppCreatedDto(doc, clientSecret);
@@ -205,6 +219,11 @@ export class WebAppService {
       updateInput.requiredRoles = body.requiredRoles;
     if (body.redirectUris !== undefined)
       updateInput.redirectUris = body.redirectUris;
+    if (body.postLogoutRedirectUris !== undefined)
+      updateInput.postLogoutRedirectUris = body.postLogoutRedirectUris;
+    if (body.tokenEndpointAuthMethod !== undefined)
+      updateInput.tokenEndpointAuthMethod = body.tokenEndpointAuthMethod;
+    if (body.scopes !== undefined) updateInput.scopes = body.scopes;
 
     const updated = await this.webAppRepo.updateById(id, updateInput);
     if (!updated) {

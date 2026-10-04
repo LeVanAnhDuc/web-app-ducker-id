@@ -1,5 +1,5 @@
 // types
-import type { Response } from "express";
+import type { Request, Response } from "express";
 import type {
   PasswordLoginRequest,
   OtpSendRequest,
@@ -8,14 +8,40 @@ import type {
   MagicLinkVerifyRequest
 } from "./types";
 import type { LoginService } from "./services";
+import type { SessionService } from "@/modules/session/session.service";
 // common
 import { OkSuccess } from "@/common/responses";
 // modules
 import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/modules/token/constants";
 import { REFRESH_TOKEN } from "@/modules/token/constants";
+// others
+import { RequestContext } from "@/utils/request-context";
 
 export class LoginController {
-  constructor(private readonly service: LoginService) {}
+  constructor(
+    private readonly service: LoginService,
+    private readonly sessionService: SessionService
+  ) {}
+
+  /**
+   * Mở phiên IdP (cookie `sid`) sau khi đăng nhập thành công. Phiên này là thứ
+   * /oauth/authorize đọc để biết user đã đăng nhập — access token nằm trong bộ
+   * nhớ của tab nên một navigation từ app vệ tinh sang không thấy được nó.
+   *
+   * Danh tính lấy từ RequestContext do LoginCompletionService đặt vào.
+   */
+  private startSession = async (req: Request, res: Response): Promise<void> => {
+    const identity = RequestContext.getUser();
+    if (!identity) return;
+
+    await this.sessionService.start({
+      authId: identity.authId,
+      userId: identity.sub,
+      roles: identity.roles,
+      req,
+      res
+    });
+  };
 
   login = async (req: PasswordLoginRequest, res: Response): Promise<void> => {
     const data = await this.service.passwordLogin(req.body, req);
@@ -24,6 +50,8 @@ export class LoginController {
     if (refreshToken) {
       res.cookie(REFRESH_TOKEN, refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
     }
+
+    await this.startSession(req, res);
 
     new OkSuccess({
       data: responseData,
@@ -43,6 +71,8 @@ export class LoginController {
     if (refreshToken) {
       res.cookie(REFRESH_TOKEN, refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
     }
+
+    await this.startSession(req, res);
 
     new OkSuccess({
       data: responseData,
@@ -71,6 +101,8 @@ export class LoginController {
     if (refreshToken) {
       res.cookie(REFRESH_TOKEN, refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
     }
+
+    await this.startSession(req, res);
 
     new OkSuccess({
       data: responseData,

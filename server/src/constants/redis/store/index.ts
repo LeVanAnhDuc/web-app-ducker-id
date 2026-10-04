@@ -30,3 +30,12 @@ export const FORGOT_PASSWORD = {
   MAGIC_LINK_RESEND_COUNT: "ml-forgot-pw-resend",
   RESET_TOKEN: "reset-token"
 };
+
+export const SESSION = {
+  IDP: "idp-session"
+};
+
+export const OAUTH = {
+  CODE: "oauth-code",
+  PENDING_REQUEST: "oauth-req"
+};

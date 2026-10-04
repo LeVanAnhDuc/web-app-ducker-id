@@ -9,7 +9,11 @@ import type {
   UserAppsQuery
 } from "@/modules/web-app/types";
 // modules
-import { WEB_APP_STATUS_PUBLIC } from "@/modules/web-app/constants";
+import {
+  TOKEN_ENDPOINT_AUTH_METHODS,
+  WEB_APP_STATUS_PUBLIC
+} from "@/modules/web-app/constants";
+import { isValidRedirectUri } from "@/modules/oauth/helpers";
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 // common
 import { PAGINATION } from "@/common/pagination";
@@ -26,6 +30,20 @@ const DISPLAY_NAME = { MIN: 2, MAX: 80 };
 const DESCRIPTION_MAX = 500;
 const URL_MAX = 2000;
 const MAX_REDIRECT_URIS = 20;
+const AUTH_METHOD_VALUES = Object.values(TOKEN_ENDPOINT_AUTH_METHODS);
+
+/**
+ * redirect_uri phải chặt hơn "trông giống URL": /oauth/authorize so khớp tuyệt
+ * đối với danh sách này, nên nó chỉ an toàn bằng đúng chất lượng validate ở
+ * đây. Bắt buộc https (trừ localhost để dev), cấm fragment (RFC 6749 §3.1.2),
+ * cấm wildcard.
+ */
+const redirectUriItem = Joi.string()
+  .trim()
+  .max(URL_MAX)
+  .custom((value: string, helpers) =>
+    isValidRedirectUri(value) ? value : helpers.error("any.invalid")
+  );
 
 export const adminListAppsQuerySchema: Joi.ObjectSchema<AdminAppsQuery> =
   Joi.object({
@@ -148,7 +166,7 @@ export const adminCreateAppBodySchema: Joi.ObjectSchema<AdminAppCreateBody> =
         "any.only": "webApp:validation.requiredRoles.invalid"
       }),
     redirectUris: Joi.array()
-      .items(Joi.string().trim().max(URL_MAX).pattern(URL_PATTERN))
+      .items(redirectUriItem)
       .min(1)
       .max(MAX_REDIRECT_URIS)
       .required()
@@ -156,7 +174,22 @@ export const adminCreateAppBodySchema: Joi.ObjectSchema<AdminAppCreateBody> =
         "array.min": "webApp:validation.redirectUris.required",
         "array.max": "webApp:validation.redirectUris.maxItems",
         "any.required": "webApp:validation.redirectUris.required",
+        "any.invalid": "webApp:validation.redirectUris.invalid",
         "string.pattern.base": "webApp:validation.redirectUris.invalid"
+      }),
+    postLogoutRedirectUris: Joi.array()
+      .items(redirectUriItem)
+      .max(MAX_REDIRECT_URIS)
+      .optional()
+      .messages({
+        "array.max": "webApp:validation.redirectUris.maxItems",
+        "any.invalid": "webApp:validation.redirectUris.invalid"
+      }),
+    tokenEndpointAuthMethod: Joi.string()
+      .valid(...AUTH_METHOD_VALUES)
+      .optional()
+      .messages({
+        "any.only": "webApp:validation.tokenEndpointAuthMethod.invalid"
       })
   });
 
@@ -178,7 +211,9 @@ export const adminUpdateAppBodySchema = adminCreateAppBodySchema
       "categoryId",
       "status",
       "requiredRoles",
-      "redirectUris"
+      "redirectUris",
+      "postLogoutRedirectUris",
+      "tokenEndpointAuthMethod"
     ],
     (schema) => schema.optional()
   )

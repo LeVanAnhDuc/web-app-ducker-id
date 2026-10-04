@@ -21,6 +21,8 @@ import { createWebAppModule } from "@/modules/web-app/web-app.module";
 import { createUserModule } from "@/modules/user/user.module";
 import { createNotificationModule } from "@/modules/notification/notification.module";
 import { createFavoriteModule } from "@/modules/favorite/favorite.module";
+import { createSessionModule } from "@/modules/session/session.module";
+import { createOAuthModule } from "@/modules/oauth/oauth.module";
 // others
 import { RateLimiterMiddleware } from "@/middlewares";
 import { Logger } from "@/libs/logger";
@@ -45,6 +47,17 @@ interface ModuleRoutes {
   webAppAdmin: Router;
   webAppUser: Router;
 }
+
+/**
+ * Router OAuth mount THẲNG lên app, không qua `/api/v1`.
+ *
+ * OIDC Discovery bắt buộc `/.well-known/openid-configuration` nằm ở gốc
+ * origin, và `/oauth/*` là đường dẫn công khai mà app vệ tinh cấu hình cứng —
+ * đổi prefix là phá hợp đồng với mọi client đã đăng ký.
+ */
+const mountOAuthRoutes = (app: Express, oauthRouter: Router): void => {
+  app.use(oauthRouter);
+};
 
 const mountRoutes = (app: Express, routes: ModuleRoutes): void => {
   const v1Router = Router();
@@ -87,6 +100,7 @@ export const loadModules = (
   // --- Shared infrastructure ---
   const { authService } = createAuthenticationModule();
   const rateLimiter = new RateLimiterMiddleware(redisClient);
+  const { sessionService } = createSessionModule(redisClient);
 
   // --- Module creation ---
   const { userRouter, userAdminRouter, userService } = createUserModule(
@@ -106,7 +120,8 @@ export const loadModules = (
     userService,
     loginHistoryService,
     emailDispatcher,
-    rateLimiter
+    rateLimiter,
+    sessionService
   );
 
   const { signupRouter } = createSignupModule(
@@ -117,7 +132,7 @@ export const loadModules = (
     rateLimiter
   );
 
-  const { logoutRouter } = createLogoutModule();
+  const { logoutRouter } = createLogoutModule(sessionService);
   const { tokenRouter } = createTokenModule(authService, userService);
 
   const { unlockAccountRouter } = createUnlockAccountModule(
@@ -156,7 +171,17 @@ export const loadModules = (
 
   const { favoriteUserRouter } = createFavoriteModule();
 
+  const { oauthRouter } = createOAuthModule(
+    redisClient,
+    sessionService,
+    authService,
+    userService,
+    rateLimiter
+  );
+
   // --- Route mounting ---
+  mountOAuthRoutes(app, oauthRouter);
+
   mountRoutes(app, {
     signup: signupRouter,
     login: loginRouter,

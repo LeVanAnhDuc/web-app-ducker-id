@@ -24,6 +24,7 @@ import { ERROR_CODES } from "@/constants/error-code";
 export type WebAppRepository = {
   findAll(filter: FilterQuery<WebAppDocument>): Promise<WebAppDocument[]>;
   findById(id: string): Promise<WebAppDocument | null>;
+  findByClientId(clientId: string): Promise<WebAppDocument | null>;
   existsByName(name: string): Promise<boolean>;
   existsByNameExcludingId(name: string, excludeId: string): Promise<boolean>;
   create(data: WebAppCreateInput): Promise<WebAppDocument>;
@@ -112,6 +113,12 @@ export class MongoWebAppRepository implements WebAppRepository {
   async findById(id: string): Promise<WebAppDocument | null> {
     return asyncDatabaseHandler("findById", () =>
       WebAppModel.findById(id).lean<WebAppDocument>().exec()
+    );
+  }
+
+  async findByClientId(clientId: string): Promise<WebAppDocument | null> {
+    return asyncDatabaseHandler("findByClientId", () =>
+      WebAppModel.findOne({ clientId }).lean<WebAppDocument>().exec()
     );
   }
 

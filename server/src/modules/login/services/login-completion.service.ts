@@ -9,6 +9,8 @@ import type { LoginAuditService } from "./login-audit.service";
 import { generateAuthTokensResponse } from "@/modules/authentication/helpers";
 // dtos
 import { toLoginResponseDto } from "../dtos";
+// others
+import { RequestContext } from "@/utils/request-context";
 
 export class LoginCompletionService {
   constructor(private readonly audit: LoginAuditService) {}
@@ -22,6 +24,14 @@ export class LoginCompletionService {
     const { auth, user, method, req } = params;
 
     this.audit.recordSuccess({ auth, user, method, req });
+
+    // Đặt danh tính vào RequestContext để LoginController mở được phiên IdP
+    // (cookie `sid`) mà không phải đổi chữ ký của cả ba login strategy.
+    RequestContext.setUser({
+      sub: user._id.toString(),
+      authId: auth._id.toString(),
+      roles: auth.roles
+    });
 
     return toLoginResponseDto(
       generateAuthTokensResponse({

@@ -71,6 +71,13 @@ export interface AdminAppCreateBody {
   status: WebAppStatusPublic;
   requiredRoles: AuthenticationRole[];
   redirectUris: string[];
+  /**
+   * "none" = public client (SPA tĩnh, mobile) — KHÔNG sinh client_secret, vì
+   * không có chỗ nào trong trình duyệt giữ được bí mật. PKCE thay vai trò đó.
+   */
+  tokenEndpointAuthMethod?: TokenEndpointAuthMethod;
+  postLogoutRedirectUris?: string[];
+  scopes?: string[];
 }
 
 export interface AdminCreateAppRequest extends Omit<Request, "body"> {
@@ -87,8 +94,10 @@ export interface WebAppCreateInput {
   status: WebAppStatus;
   requiredRoles: AuthenticationRole[];
   redirectUris: string[];
+  postLogoutRedirectUris: string[];
   clientId: string;
-  clientSecretHash: string;
+  clientSecretHash: string | null;
+  tokenEndpointAuthMethod: TokenEndpointAuthMethod;
   scopes: string[];
 }
 
@@ -102,6 +111,9 @@ export interface AdminAppUpdateBody {
   status?: WebAppStatusPublic;
   requiredRoles?: AuthenticationRole[];
   redirectUris?: string[];
+  postLogoutRedirectUris?: string[];
+  tokenEndpointAuthMethod?: TokenEndpointAuthMethod;
+  scopes?: string[];
 }
 
 export interface AdminAppIdParams {
@@ -126,6 +138,9 @@ export interface WebAppUpdateInput {
   status?: WebAppStatus;
   requiredRoles?: AuthenticationRole[];
   redirectUris?: string[];
+  postLogoutRedirectUris?: string[];
+  tokenEndpointAuthMethod?: TokenEndpointAuthMethod;
+  scopes?: string[];
 }
 
 export interface PaginationParams {

@@ -4,6 +4,7 @@ import type { UserService } from "@/modules/user/user.service";
 import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { RateLimiterMiddleware } from "@/middlewares";
+import type { SessionService } from "@/modules/session/session.service";
 // repositories
 import {
   RedisOtpLoginRepository,
@@ -38,7 +39,8 @@ export const createLoginModule = (
   userService: UserService,
   loginHistorySvc: LoginHistoryService,
   emailDispatcher: EmailDispatcher,
-  rateLimiter: RateLimiterMiddleware
+  rateLimiter: RateLimiterMiddleware,
+  sessionService: SessionService
 ) => {
   // repositories
   const otpLoginRepo = new RedisOtpLoginRepository(redisClient);
@@ -97,7 +99,7 @@ export const createLoginModule = (
     magicLinkStrategy,
     failedAttemptsRepo
   );
-  const loginController = new LoginController(loginService);
+  const loginController = new LoginController(loginService, sessionService);
 
   return {
     loginRouter: createLoginRoutes(loginController, rateLimiter),

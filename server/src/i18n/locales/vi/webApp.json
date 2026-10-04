@@ -23,7 +23,9 @@
       "minLength": "Tên hiển thị tối thiểu 2 ký tự.",
       "maxLength": "Tên hiển thị tối đa 80 ký tự."
     },
-    "description": { "maxLength": "Mô tả tối đa 500 ký tự." },
+    "description": {
+      "maxLength": "Mô tả tối đa 500 ký tự."
+    },
     "iconUrl": {
       "maxLength": "URL icon quá dài.",
       "invalid": "URL icon phải bắt đầu bằng http:// hoặc https://."
@@ -37,7 +39,9 @@
       "required": "Vui lòng chọn danh mục.",
       "invalid": "Danh mục không hợp lệ."
     },
-    "status": { "invalid": "Trạng thái phải là active hoặc inactive." },
+    "status": {
+      "invalid": "Trạng thái phải là active hoặc inactive."
+    },
     "requiredRoles": {
       "required": "Chọn ít nhất một vai trò.",
       "invalid": "Giá trị vai trò không hợp lệ."
@@ -45,7 +49,10 @@
     "redirectUris": {
       "required": "Thêm ít nhất một redirect URI.",
       "maxItems": "Quá nhiều redirect URI (tối đa 20).",
-      "invalid": "Mỗi redirect URI phải bắt đầu bằng http:// hoặc https://."
+      "invalid": "Mỗi redirect URI phải dùng https (http chỉ chấp nhận với localhost), không chứa fragment hay ký tự đại diện."
+    },
+    "tokenEndpointAuthMethod": {
+      "invalid": "Phương thức xác thực token endpoint phải là client_secret_basic hoặc none."
     },
     "id": {
       "required": "Thiếu id ứng dụng.",
