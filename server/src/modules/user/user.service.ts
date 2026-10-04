@@ -13,7 +13,7 @@ import type {
 } from "@/modules/user/types";
 import type { ClientSession } from "mongoose";
 import type { UserRepository } from "./user.repository";
-import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { AuthenticationService } from "@/modules/authentication/service";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { MyProfileDto, PublicProfileDto, AdminUserDto } from "./dtos";
 // common

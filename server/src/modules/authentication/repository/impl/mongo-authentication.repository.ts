@@ -5,29 +5,13 @@ import type {
   CreateAuthenticationData
 } from "@/modules/authentication/types";
 import type { ClientSession } from "mongoose";
+import type { AuthenticationRepository } from "../authentication.repository";
 // models
 import AuthenticationModel from "@/models/authentication";
 // modules
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 // others
 import { asyncDatabaseHandler } from "@/utils/async-handler";
-
-export type AuthenticationRepository = {
-  findById(authId: string): Promise<AuthenticationDocument | null>;
-  create(
-    data: CreateAuthenticationData,
-    session?: ClientSession
-  ): Promise<AuthenticationRecord>;
-  requirePasswordChange(authId: string): Promise<void>;
-  updatePassword(
-    authId: string,
-    hashedPassword: string,
-    session?: ClientSession
-  ): Promise<number>;
-  adminResetPassword(authId: string, hashedPassword: string): Promise<void>;
-  setActive(authId: string, isActive: boolean): Promise<void>;
-  countActiveAdmins(): Promise<number>;
-};
 
 export class MongoAuthenticationRepository implements AuthenticationRepository {
   async findById(authId: string): Promise<AuthenticationDocument | null> {

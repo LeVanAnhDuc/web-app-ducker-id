@@ -2,7 +2,7 @@
 import type { Request, Response } from "express";
 import type { WebAppDocument } from "@/modules/web-app/types";
 import type { WebAppRepository } from "@/modules/web-app/repositories";
-import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { AuthenticationService } from "@/modules/authentication/service";
 import type { UserService } from "@/modules/user/user.service";
 import type { SessionService } from "@/modules/session/session.service";
 import type { SessionRecord } from "@/modules/session/types";
