@@ -1,8 +1,8 @@
 // types
-import type { ContactRepository } from "./contact-admin.repository";
+import type { ContactRepository } from "../../repository/contact-admin.repository";
 // modules
-import { ContactAdminService } from "./contact-admin.service";
-import { CONTACT_STATUSES, CONTACT_PRIORITIES } from "./constants";
+import { ContactAdminService } from "../";
+import { CONTACT_STATUSES, CONTACT_PRIORITIES } from "../../constants";
 import { NotFoundError } from "@/common/exceptions";
 import { RequestContext } from "@/utils/request-context";
 

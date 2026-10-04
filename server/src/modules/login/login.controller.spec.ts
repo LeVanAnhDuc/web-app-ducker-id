@@ -1,7 +1,7 @@
 // types
 import type { Request, Response } from "express";
 import type { LoginService } from "./services";
-import type { SessionService } from "@/modules/session/session.service";
+import type { SessionService } from "@/modules/session/service";
 // modules
 import {
   REFRESH_TOKEN,

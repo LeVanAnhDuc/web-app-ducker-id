@@ -10,7 +10,7 @@ import {
   UserExistsGuard
 } from "./guards";
 // others
-import { TokenService } from "./token.service";
+import { TokenService } from "./service";
 import { TokenController } from "./token.controller";
 import { createTokenRoutes } from "./token.routes";
 

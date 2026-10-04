@@ -2,20 +2,11 @@
 import { Types } from "mongoose";
 // types
 import type { UserFavoriteDocument } from "@/modules/favorite/types";
+import type { FavoriteRepository } from "../favorite.repository";
 // models
 import UserFavoriteModel from "@/models/user-favorite";
 // others
 import { asyncDatabaseHandler } from "@/utils/async-handler";
-
-export type FavoriteRepository = {
-  add(userId: string, webAppId: string): Promise<void>;
-  remove(userId: string, webAppId: string): Promise<void>;
-  findWebAppIdsByUser(userId: string): Promise<string[]>;
-  findFavoritedAppIds(
-    userId: string,
-    webAppIds: string[]
-  ): Promise<Set<string>>;
-};
 
 export class MongoFavoriteRepository implements FavoriteRepository {
   async add(userId: string, webAppId: string): Promise<void> {

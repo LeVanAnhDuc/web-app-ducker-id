@@ -1,11 +1,11 @@
 // types
-import type { FavoriteRepository } from "./favorite.repository";
+import type { FavoriteRepository } from "../../repository/favorite.repository";
 import type { WebAppRepository } from "@/modules/web-app/repositories";
-import type { AppFavoritableGuard } from "./guards";
+import type { AppFavoritableGuard } from "../../guards";
 // commons
 import { NotFoundError } from "@/common/exceptions";
 // modules
-import { FavoriteService } from "./favorite.service";
+import { FavoriteService } from "../";
 import { RequestContext } from "@/utils/request-context";
 
 const USER = "507f1f77bcf86cd799439011";
@@ -34,11 +34,11 @@ const makeDeps = () => {
     assert: jest.fn().mockResolvedValue(undefined)
   };
   const makeService = () =>
-    new FavoriteService(
-      favoriteRepo as unknown as FavoriteRepository,
-      webAppRepo as unknown as WebAppRepository,
-      guard as unknown as AppFavoritableGuard
-    );
+    new FavoriteService({
+      favoriteRepo: favoriteRepo as unknown as FavoriteRepository,
+      webAppRepo: webAppRepo as unknown as WebAppRepository,
+      favoritableGuard: guard as unknown as AppFavoritableGuard
+    });
   return { favoriteRepo, webAppRepo, guard, makeService };
 };
 

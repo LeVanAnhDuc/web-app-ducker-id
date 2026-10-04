@@ -1,5 +1,5 @@
 // types
-import type { RefreshTokenDto } from "./dtos";
+import type { RefreshTokenDto } from "../dtos";
 import type { AuthenticationService } from "@/modules/authentication/service";
 import type { UserService } from "@/modules/user/user.service";
 import type {
@@ -8,11 +8,11 @@ import type {
   AuthActiveGuard,
   PasswordNotChangedGuard,
   UserExistsGuard
-} from "./guards";
+} from "../guards";
 // modules
 import { generateAuthTokensResponse } from "@/modules/authentication/helpers";
 // dtos
-import { toRefreshTokenDto } from "./dtos";
+import { toRefreshTokenDto } from "../dtos";
 // others
 import { Logger } from "@/libs/logger";
 

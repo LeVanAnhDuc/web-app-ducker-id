@@ -82,7 +82,12 @@ Module anatomy: `<name>.module.ts` (factory), `<name>.routes.ts`, `<name>.contro
 - `repository/<name>.repository.ts` holds only `interface <Name>Repository` (type imports and nothing else); the Mongoose class moves to `repository/impl/mongo-<name>.repository.ts`. There is **deliberately no barrel** — the service imports the interface, and only the module factory is allowed to reach into `impl/`, which is what keeps the boundary real.
 - `service/` holds **one public method per file** (`update-password.ts` exports `updatePassword(authRepo, …)` — a plain function whose first argument is the dependency), with `service/index.ts` as a façade class whose methods are one-line delegates and `service/spec/` for the unit tests. Validation, logging and `try/catch` live in the method file, never in the façade.
 
-So far only `authentication/` has been converted; the other 18 modules are still on the layout above. They are not exceptions — they just have not been migrated. Full rules in `server/.claude/rules/modules.md`; design rationale in `docs/specs/authentication-module-structure/design.md`.
+Two shapes fall out of that:
+
+- A service with **one** public method keeps class and logic together in `service/index.ts` — splitting 23 lines across two files buys nothing the module name does not already give. The uniform `@/modules/<name>/service` import path is the part worth keeping.
+- A service with **two or more** dependencies declares them in `service/deps.ts` as `interface <Name>ServiceDeps`; method files take `deps` as their first argument and the façade constructor takes one object instead of a positional list. With seven dependencies, `refreshAccessToken(authService, userService, g1, g2, g3, g4, g5, token)` is not a signature anyone can read.
+
+Converted so far: `authentication`, `logout`, `token`, `change-password`, `session`, `favorite`, `notification`, `contact-admin`. Still on the old layout: `user`, `web-app`, `unlock-account`, `signup`, `oauth`, `forgot-password`, `login`, `login-history`. They are not exceptions — they just have not been migrated. (`entitlement` and `oauth-consent` are schema-only stubs with nothing to split.) Full rules in `server/.claude/rules/modules.md`; design rationale in `docs/specs/authentication-module-structure/design.md` and `docs/specs/module-struct-batch1/design.md`.
 
 Cross-cutting concerns deliberately live **outside** the modules:
 

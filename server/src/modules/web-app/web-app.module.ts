@@ -5,7 +5,7 @@ import {
   MongoWebAppRepository,
   MongoWebAppCategoryRepository
 } from "./repositories";
-import { MongoFavoriteRepository } from "@/modules/favorite/favorite.repository";
+import { MongoFavoriteRepository } from "@/modules/favorite/repository/impl/mongo-favorite.repository";
 import { WebAppService } from "./web-app.service";
 import { WebAppController } from "./web-app.controller";
 import {

@@ -1,8 +1,8 @@
 // types
 import type { RedisClientType } from "redis";
 // others
-import { RedisSessionRepository } from "./session.repository";
-import { SessionService } from "./session.service";
+import { RedisSessionRepository } from "./repository/impl/redis-session.repository";
+import { SessionService } from "./service";
 
 export const createSessionModule = (redisClient: RedisClientType) => {
   const sessionRepo = new RedisSessionRepository(redisClient);

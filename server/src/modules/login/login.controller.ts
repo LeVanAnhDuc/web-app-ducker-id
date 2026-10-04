@@ -8,7 +8,7 @@ import type {
   MagicLinkVerifyRequest
 } from "./types";
 import type { LoginService } from "./services";
-import type { SessionService } from "@/modules/session/session.service";
+import type { SessionService } from "@/modules/session/service";
 // common
 import { OkSuccess } from "@/common/responses";
 // modules

@@ -1,18 +1,12 @@
 // types
 import type { RedisClientType } from "redis";
-import type { CreateSessionInput, SessionRecord } from "./types";
+import type { CreateSessionInput, SessionRecord } from "../../types";
+import type { SessionRepository } from "../session.repository";
 // others
 import { buildKey } from "@/utils/redis/key-builder";
 import { generateSecureToken } from "@/utils/crypto/secure-token";
 import { SESSION } from "@/constants/redis/store";
-import { SESSION_CONFIG } from "./constants";
-
-export type SessionRepository = {
-  create(input: CreateSessionInput): Promise<SessionRecord>;
-  findBySid(sid: string): Promise<SessionRecord | null>;
-  addClient(sid: string, clientId: string): Promise<void>;
-  destroy(sid: string): Promise<void>;
-};
+import { SESSION_CONFIG } from "../../constants";
 
 export class RedisSessionRepository implements SessionRepository {
   constructor(private readonly client: RedisClientType) {}
