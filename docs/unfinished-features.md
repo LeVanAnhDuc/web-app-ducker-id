@@ -8,7 +8,7 @@
 
 | #   | Feature                | Mức độ            | FE UI          | FE API wiring                 | BE endpoint               | Ưu tiên    |
 | --- | ---------------------- | ----------------- | -------------- | ----------------------------- | ------------------------- | ---------- |
-| 1   | AdminEntitlements      | 🔴 Mock hoàn toàn | ✅ Đủ          | ❌ 5 hook dùng mock           | ❌ Chỉ có data model      | Cao        |
+| 1   | AdminEntitlements      | ✅ Xong (05.10.2026) | ✅ Đủ       | ✅ API thật                   | ✅ `/admin/entitlements`  | —          |
 | 2   | AdminUsers (mutations) | 🟡 Hybrid         | ✅ Đủ          | ⚠️ List thật, 4 mutation mock | ⚠️ List có, 4 action chưa | Cao        |
 | 3   | Profile stats          | 🟡 Hybrid         | ✅ Đủ          | ⚠️ Info thật, stats mock      | ❌ Chưa có stats          | Thấp (nhỏ) |
 | 4   | Billing                | 🔴 Mock hoàn toàn | ✅ Đủ          | ❌ Không có request           | ❌ Không có module        | Trung bình |
@@ -36,35 +36,21 @@ PKCE S256), `/oauth/userinfo`, `/.well-known/openid-configuration`,
 | `/oauth/introspect`, `/oauth/revoke` | Chỉ cần khi có endpoint nhạy cảm cần check revoke real-time; app vệ tinh đầu tiên (badminton) chưa có API nào |
 | Refresh-token grant | Public client không có chỗ cất refresh token an toàn. Sẽ cần khi có app vệ tinh **có** backend (Match CV, Shorten Link) |
 | Back-channel logout | Cần endpoint server phía client để nhận webhook. Badminton tĩnh nên không có. Hiện dựa vào TTL 15 phút của access token |
-| Entitlement per-user | Đang gate theo `requiredRoles`. Model `entitlements` vẫn chưa có route — xem mục 1 |
 
 ---
 
-## 1. 🔴 AdminEntitlements — Phân quyền app cho user
+## 1. ✅ AdminEntitlements — Phân quyền app cho user (xong 05.10.2026)
 
-**Vị trí FE**: `client/src/views/AdminEntitlements/`
-**Mock**: `client/src/mocks/AdminEntitlements.ts` (131 dòng, 11 entitlement) + `client/src/mocks/AdminUsers.ts`
-**BE**: Module `server/src/modules/entitlement/` **chỉ có** `EntitlementDocument` + `ENTITLEMENT_CONFIG` — KHÔNG có route/controller/service, **chưa wire vào** `src/loaders/modules.loader.ts`.
+Xong ở nhánh `feat/access-control` — xem `docs/specs/access-control/design.md`. Quyền = mặc định
+theo role + override per-user (`allow` / `deny`) do admin đặt ở `/admin/entitlements`; áp ở
+`/apps`, favorite, recent, thống kê home và `/oauth/authorize`.
 
-**UI hiện có**: Bảng ma trận app × user, trạng thái GRANTED / NOT_GRANTED / INSUFFICIENT_ROLE, nút grant/revoke.
+**Còn lại (follow-up)**:
 
-**5 hook đang dùng mock**:
-
-- `useAdminUsers.ts` → `@/mocks/AdminUsers`
-- `useAdminUserById.ts` → `@/mocks/AdminUsers`
-- `useEntitlementsByUser.ts` → `@/mocks/AdminEntitlements`
-- `useGrantEntitlement.ts` → `@/mocks/AdminEntitlements`
-- `useRevokeEntitlement.ts` → `@/mocks/AdminEntitlements`
-
-**Cần làm**:
-
-- [ ] BE: tạo `entitlement.routes.ts` + controller + service, wire vào modules loader
-  - `GET /admin/entitlements` (theo user) — list
-  - `POST /admin/entitlements/:userId/:appId` — grant
-  - `DELETE /admin/entitlements/:userId/:appId` — revoke
-- [ ] FE: tạo `client/src/requests/adminEntitlements.ts`, thêm endpoint vào `constants/endpoints.ts`
-- [ ] FE: thay 5 mock hook bằng call API thật
-- [ ] Seeder cho entitlement (idempotent)
+- Notification `ENTITLEMENT_GRANTED` / `ENTITLEMENT_REVOKED` khi admin đổi quyền — chờ
+  `feat/notification-events` merge rồi tích hợp (spec §9).
+- User đang ở trong app vệ tinh lúc bị revoke vẫn dùng được tới khi access token hết hạn (15 phút) —
+  cần `/oauth/revoke` hoặc back-channel logout (mục 7).
 
 ---
 
