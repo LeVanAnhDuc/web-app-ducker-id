@@ -1,12 +1,12 @@
 "use client";
 
+// libs
+import { useTranslations } from "next-intl";
 // types
 import type { ApiNotification, NotifGroup } from "@/types/Notification";
 // components
-import NotificationItem from "../NotificationItem";
+import NotificationItem from "@/components/NotificationItem";
 import GroupHeader from "../GroupHeader";
-// hooks
-import { useFormatTime } from "@/hooks";
 // others
 import CONSTANTS from "@/constants";
 import { groupOf } from "@/utils/notifications";
@@ -19,18 +19,16 @@ const GROUP_ORDER: NotifGroup[] = [
 
 const NotificationGroups = ({
   items,
-  groupLabels,
-  markReadLabel,
+  onOpen,
   onMarkRead,
   isMarking
 }: {
   items: ApiNotification[];
-  groupLabels: Record<NotifGroup, string>;
-  markReadLabel: string;
+  onOpen: (notification: ApiNotification) => void;
   onMarkRead: (id: string) => void;
   isMarking: boolean;
 }) => {
-  const ft = useFormatTime();
+  const t = useTranslations("notifications.groups");
   const now = Date.now();
   const grouped: Record<NotifGroup, ApiNotification[]> = {
     today: [],
@@ -38,27 +36,25 @@ const NotificationGroups = ({
     earlier: []
   };
   items.forEach((item) => grouped[groupOf(item.createdAt, now)].push(item));
-
   return (
     <>
       {GROUP_ORDER.map((group) =>
         grouped[group].length > 0 ? (
-          <div key={group}>
-            <GroupHeader label={groupLabels[group]} />
-            {grouped[group].map((n) => (
-              <NotificationItem
-                key={n.id}
-                type={n.type}
-                title={n.title}
-                message={n.message}
-                timestamp={ft("relative", n.createdAt)}
-                isRead={n.isRead}
-                markReadLabel={markReadLabel}
-                onMarkRead={() => onMarkRead(n.id)}
-                isMarking={isMarking}
-              />
-            ))}
-          </div>
+          <section key={group} aria-label={t(group)}>
+            <GroupHeader label={t(group)} />
+            <ul className="divide-border flex flex-col divide-y">
+              {grouped[group].map((n) => (
+                <li key={n.id}>
+                  <NotificationItem
+                    notification={n}
+                    onOpen={onOpen}
+                    onMarkRead={onMarkRead}
+                    isMarking={isMarking}
+                  />
+                </li>
+              ))}
+            </ul>
+          </section>
         ) : null
       )}
     </>

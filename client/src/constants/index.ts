@@ -8,6 +8,7 @@ import AUTHENTICATION_ROLES from "./roles";
 import APP_STATUS from "./appStatus";
 import TOKEN_AUTH_METHOD from "./tokenAuthMethod";
 import NOTIF_GROUP from "./notifGroup";
+import NOTIFICATION from "./notification";
 import RECENT_GROUP from "./recentGroup";
 import LOGIN_HISTORY from "./loginHistory";
 import CONTACT_STATUS from "./contactStatus";
@@ -37,6 +38,7 @@ const CONSTANTS = {
   APP_STATUS,
   TOKEN_AUTH_METHOD,
   NOTIF_GROUP,
+  NOTIFICATION,
   RECENT_GROUP,
   LOGIN_HISTORY,
   CONTACT_STATUS,
