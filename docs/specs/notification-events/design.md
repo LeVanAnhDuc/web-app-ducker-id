@@ -155,13 +155,37 @@ module nghiệp vụ ──notify()/broadcast()──▶ NotificationDispatcher 
   không throw), processor, `assessLoginAnomaly` (bảng quyết định), `recordSuccessfulLogin` (ghi cờ +
   notify), change-password / admin-reset / password-lockout phát đúng event, web-app create/update chỉ
   announce khi chuyển trạng thái + `markAnnounced` thắng, list lọc `category`, DTO mới.
-- **E2E (Playwright)**: viết lại `e2e/notifications/notifications.e2e.ts` theo shape mới; thêm kịch bản
-  bấm item → điều hướng + mark read, lọc nhóm gửi `category`, "Không phải tôi?", vi render template,
-  panel loading/empty/error, và một kịch bản **sự kiện thật**: đổi mật khẩu qua API (rồi đổi lại) →
-  notification `PASSWORD_CHANGED` xuất hiện. Chi tiết `e2e.md`.
-- `seed` viết lại theo shape mới; `pnpm seed:clear && pnpm seed` trước khi chạy E2E.
+- **E2E (Playwright)**: viết lại `e2e/notifications/notifications.e2e.ts` theo shape mới — ma trận ở §9,
+  chi tiết ở `e2e.md`. Sự kiện thật được E2E là `LOGIN_ANOMALY` (đăng nhập API với User-Agent chưa
+  thấy) vì nó không có tác dụng phụ lên session hay khoá tài khoản.
+- `seed` viết lại theo shape mới; `pnpm seed:clear` (xoá rồi seed lại) trước khi chạy E2E. Sửa luôn
+  thứ tự `--clear`: notification phải được xoá **trước** user, vì `clearNotifications` tìm theo email.
 
-## 9. Ngoài phạm vi
+## 9. E2E Scenario Matrix
+
+Bản chi tiết từng test: `e2e.md`. Gate `A only` = có mutation thật trên seed.
+
+| # | Nhóm | Kịch bản | Gate |
+| --- | --- | --- | --- |
+| 1 | Happy path | Trang mặc định tab Tất cả, nhóm theo ngày, thời gian tương đối, template seed hiển thị | A+B |
+| 2 | AuthN | Chưa đăng nhập vào `/notifications` → màn đăng nhập | A+B |
+| 3 | AuthZ | N/A ở FE — mỗi user chỉ đọc/sửa notification của mình, chặn ở BE theo `userId` của token (unit test + `notifications-api`); không có đường UI nào nhắm id người khác | — |
+| 4 | Validation | **[EP]** `category`: hợp lệ / `bogus` → 400. **[EP]** `link`: nội bộ → `<a href>`; `https://…` · `//host` · `/\host` → không render anchor | A+B |
+| 5 | Empty / null | Danh sách rỗng → empty state; tab Đã đọc rỗng riêng; type lạ → fallback tên type, không crash | A+B |
+| 6 | Boundary | **[BVA]** 20 dòng/1 trang → không có "Tải thêm"; 25 dòng → tải trang 2 rồi nút biến mất; panel xin đúng `limit=8` | A+B |
+| 7 | Filter | **[DT]** tab × nhóm gộp vào một request (`isRead=false&category=security`); mặc định không gửi cả hai. **[EP]** chip Bảo mật (thật) chỉ còn security, chip Ứng dụng chỉ còn app; tab Đã đọc chỉ còn dòng đã đọc | A+B |
+| 8 | Data rendering | **[DT]** `PASSWORD_CHANGED` actor `admin`/`self` ra hai câu khác nhau; `LOGIN_ANOMALY` reason `device`/`both`; mã quốc gia → tên nước; `ACCOUNT_LOCKED` nội suy số phút; không lộ enum/ISO | A+B |
+| 9 | i18n | vi: tab, nút, template (`Có ứng dụng mới`, `Có lượt đăng nhập mới…`), `trước`, tên nước `Việt Nam`; không lọt câu tiếng Anh | A+B |
+| 10 | Error / loading | List 500 → error state, "Thử lại" refetch thành công; panel lỗi; mark-read lỗi → toast riêng, **không** kèm toast 5xx chung; skeleton khi chờ | A+B |
+| 11 | Mutation | **[ST]** mark một dòng → biến khỏi Chưa đọc, unread −1; còn đã đọc sau reload; mở dòng chưa đọc → PATCH + điều hướng; mở dòng đã đọc → **không** PATCH (invalid transition); mark-all (intercept); double-click → 1 PATCH; **sự kiện thật**: đăng nhập từ thiết bị chưa thấy → `LOGIN_ANOMALY` xuất hiện | A only |
+| 12 | Accessibility | Enter/Space trên nút mark-read; `article` có tên = tiêu đề; link focus được; chip có `aria-pressed`; announcer cho đổi tab/nhóm/tải thêm | A+B |
+| 13 | Panel | Badge = số chưa đọc, ẩn khi 0; panel empty/error; mở item → đóng panel + điều hướng; "Xem tất cả" → `/notifications`; "Không phải bạn?" → `/profile` | A+B |
+
+Không chạy thật `ACCOUNT_LOCKED` (khoá `user@test.com` 30 phút, làm hỏng các suite khác),
+`APP_AVAILABLE` và `PASSWORD_CHANGED` (đổi mật khẩu tăng `tokenVersion`, giết session của storageState)
+trong E2E — ba sự kiện này có unit test ở server và đã kiểm tay qua API (`e2e.md` §3).
+
+## 10. Ngoài phạm vi
 
 Realtime push, admin broadcast, admin khoá/mở khoá, entitlement, tuỳ chọn tắt từng loại notification,
 xoá notification, retention/TTL.

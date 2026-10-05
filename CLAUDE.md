@@ -57,7 +57,7 @@ cd client && pnpm e2e e2e/home/home-page.e2e.ts --project=chromium
 cd client && pnpm e2e e2e/admin-apps/ --project=admin
 ```
 
-Jest picks up `src/**/*.spec.ts` plus `test/integration/**` and `test/e2e/**`; factories, helpers and mocks live in `server/test/`. Service tests sit in `services/spec/`, repository tests in `repository/spec/`. Current suite: **76 suites / 547 tests**, no database required.
+Jest picks up `src/**/*.spec.ts` plus `test/integration/**` and `test/e2e/**`; factories, helpers and mocks live in `server/test/`. Service tests sit in `services/spec/`, repository tests in `repository/spec/`. Current suite: **81 suites / 601 tests**, no database required.
 
 `jest.config.ts` sets `resetMocks: true`, which clears the *implementations* a `jest.mock` factory set up, not just the call history. A factory must therefore close over bare `jest.fn()`s and the implementations be rebuilt in `beforeEach`, or the mock works in the first test of a file and returns `undefined` in every one after it.
 
@@ -72,7 +72,7 @@ Playwright (`client/playwright.config.ts`) runs `*.e2e.ts` under `client/e2e/` w
 There is no DI container. Every module exports a `create<Name>Module(...)` factory that news up repository → service → controller → router and returns the routers plus any service other modules need. `loaders/modules.loader.ts` calls those factories **in dependency order by hand** (`userService` and `loginHistoryService` exist before `login`, which takes both) and `mountRoutes` mounts every router under `/api/v1`. Consequences:
 
 - **A new module is dead code until it is added to `modules.loader.ts`.** `modules/entitlement/` and `modules/oauth-consent/` are schema-only stubs (`constants/` + `types/`, no routes) and are intentionally unwired.
-- Adding an endpoint touches up to **three** places: the module's `*.routes.ts`, `modules.loader.ts` (only for a new module or router), and `src/libs/swagger/openapi.ts`, which imports each module's `swagger/` barrel and spreads it into `allSchemas` / `allPaths`. That registry is incomplete today — `login-history`, `notification` and `favorite` have no Swagger entry, so their routes are missing from `/api-docs`.
+- Adding an endpoint touches up to **three** places: the module's `*.routes.ts`, `modules.loader.ts` (only for a new module or router), and `src/libs/swagger/openapi.ts`, which imports each module's `swagger/` barrel and spreads it into `allSchemas` / `allPaths`. That registry is incomplete today — `login-history` and `favorite` have no Swagger entry, so their routes are missing from `/api-docs`.
 - A module exposing both a user and an admin surface returns two routers (`userRouter` + `userAdminRouter`, `webAppUserRouter` + `webAppAdminRouter`, …) instead of branching inside one.
 
 Module anatomy: `<name>.module.ts` (factory), `<name>.routes.ts`, `<name>.controller.ts`, plus `dtos/`, `types/`, `constants/` and `swagger/` (`paths.ts` + `schemas.ts` + a Postman collection). 15 wired modules, ~60 route handlers.
@@ -114,6 +114,8 @@ Cross-cutting concerns deliberately live **outside** the modules:
 | Messages | `src/i18n/` | error and success text is an i18next **key** translated per request (`req.t`), not a literal |
 
 Email is never sent inline: `EmailDispatcher` pushes onto the BullMQ `emailQueue` (templates are React Email components rendered server-side), with Bull Board at `/admin/queues`. `/health` reports MongoDB and Redis status.
+
+Notifications follow the same shape. A module that wants to tell a user something takes `NotificationDispatcher` (`src/services/notification/`) through its factory and calls `notify({ userId })`, `notifyByAuthId({ authId })` (login history only knows the auth id) or `broadcast({ roles, dedupeKey })`; the `notification` queue's worker writes the rows. The dispatcher **never throws** — a failed write must not fail the password change or sign-in that caused it. The writer lives in `src/services/`, not in `modules/notification/`, because queues are built before modules load. Rows hold `type + params + link`, never text: the client renders `notifications.types.<TYPE>` from its own catalogue, so a new type needs an entry in **both** `client/src/locales/{en,vi}/notifications.json`. Producers today: change-password, admin reset-password, password lockout, login-history (new device or country → `LOGIN_ANOMALY`, and the row's `isAnomaly`) and web-app (an app announced once, claimed through `webApp.announcedAt`).
 
 ### Client — thin routes, thick views
 
