@@ -5,7 +5,10 @@ import { FormProvider, useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
 // types
 import type { AdminUser } from "@/types/AdminUsers";
-import type { EntitlementMatrixFormValues } from "@/types/AdminEntitlements";
+import type {
+  EntitlementMatrixFormValues,
+  UserAccess
+} from "@/types/AdminEntitlements";
 // components
 import EntitlementMatrixSkeleton from "../../components/EntitlementMatrixSkeleton";
 import EntitlementMatrixEmpty from "../../components/EntitlementMatrixEmpty";
@@ -21,6 +24,9 @@ import useUserGrants from "../../hooks/useUserGrants";
 import useUpdateUserGrants from "../../hooks/useUpdateUserGrants";
 // others
 import { buildEntitlementDefaults, diffEntitlementGrants } from "@/utils";
+
+// Stable fallback: a fresh `{}` each render would re-run MatrixFormSyncEffect.
+const EMPTY_ACCESS: Record<string, UserAccess> = {};
 
 const AdminEntitlementsMatrix = ({
   selectedUsers,
@@ -40,12 +46,12 @@ const AdminEntitlementsMatrix = ({
 
   const userIds = selectedUsers.map((user) => user._id);
   const { data: apps = [], isLoading: isCatalogLoading } = useAppCatalog();
-  const { data: grantsByUser = {}, isLoading: isGrantsLoading } =
+  const { data: accessByUser = EMPTY_ACCESS, isLoading: isGrantsLoading } =
     useUserGrants(userIds);
   const updateMutation = useUpdateUserGrants();
 
   const buildDefaults = () =>
-    buildEntitlementDefaults(selectedUsers, apps, grantsByUser);
+    buildEntitlementDefaults(selectedUsers, apps, accessByUser);
 
   const handleEdit = () => {
     form.reset(buildDefaults());
@@ -71,10 +77,10 @@ const AdminEntitlementsMatrix = ({
 
   const handleCheckAllToggle = (
     user: AdminUser,
-    eligibleAppIds: string[],
+    appIds: string[],
     nextGranted: boolean
   ) => {
-    eligibleAppIds.forEach((appId) => {
+    appIds.forEach((appId) => {
       form.setValue<`grants.${string}.${string}`>(
         `grants.${user._id}.${appId}`,
         nextGranted,
@@ -96,7 +102,7 @@ const AdminEntitlementsMatrix = ({
       <MatrixFormSyncEffect
         users={selectedUsers}
         apps={apps}
-        grantsByUser={grantsByUser}
+        accessByUser={accessByUser}
         isEditing={isEditing}
       />
       <MatrixAnnouncer isEditing={isEditing} />
@@ -115,7 +121,7 @@ const AdminEntitlementsMatrix = ({
           users={selectedUsers}
           apps={apps}
           isEditing={isEditing}
-          grantsByUser={grantsByUser}
+          accessByUser={accessByUser}
           onCheckAllToggle={handleCheckAllToggle}
         />
       </form>

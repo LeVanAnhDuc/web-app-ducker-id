@@ -23,7 +23,7 @@ Playwright.
 - `GET /admin/entitlements?userIds=` 1–50 id, không trùng. `PATCH /admin/entitlements` `changes` 1–200, không trùng cặp; validate hết rồi mới ghi.
 - Override chỉ tồn tại khi khác mặc định (server chuẩn hoá khi PATCH).
 - Mọi chuỗi user-facing qua i18n en + vi; mã lỗi qua `ERROR_CODES`.
-- Không đụng `client/src/components/ui/*`; icon Lucide; chấm override dùng token `bg-accent` (brass).
+- Không đụng `client/src/components/ui/*`; icon Lucide; chấm override dùng `bg-keyline` (brass; `bg-accent` là hover surface của shadcn).
 - Convention server: `services/` một method một file, `repository/` không barrel, chỉ module factory import `impl/`.
 - Seed override chỉ trên `user2@test.com` (DR-9).
 
@@ -118,7 +118,7 @@ updateMatrix(deps, changes: EntitlementChange[], actorId: string): Promise<Entit
 **Files:** `constants/endpoints` (thêm `ADMIN_ENTITLEMENTS`), `requests/adminEntitlements.ts`, `types/AdminEntitlements`, `views/AdminEntitlements/{hooks,components/EntitlementCell,components/EntitlementUserRow,components/EntitlementMatrixTable,mains/AdminEntitlementsMatrix,ghosts/MatrixFormSyncEffect}`, `utils/index.ts` (`buildEntitlementDefaults`, bỏ `isAppEligibleForUser`), xoá `mocks/AdminEntitlements.ts`, locales en/vi `adminEntitlements`.
 
 - `useUserGrants(userIds)` → `Record<string, UserAccess>`.
-- Cell nhận `roleDefault: boolean`, `isOverridden: boolean` (non-edit) và tính `value !== roleDefault` khi edit; render chấm `span.size-1.5.rounded-full.bg-accent` bọc trong `CustomTooltip` với nhãn `cell.overrideGranted` / `cell.overrideRevoked`.
+- Cell nhận `roleDefault: boolean`, `isOverridden: boolean` (non-edit) và tính `value !== roleDefault` khi edit; render chấm `span.size-1.5.rounded-full.bg-keyline` bọc trong `CustomTooltip` với nhãn `cell.overrideGranted` / `cell.overrideRevoked`.
 - Check-all áp lên mọi app.
 - [ ] `pnpm format && pnpm lint:fix && pnpm lint && pnpm exec tsc --noEmit`.
 - [ ] Commit `feat(access-control): wire the entitlement matrix to the real API`.

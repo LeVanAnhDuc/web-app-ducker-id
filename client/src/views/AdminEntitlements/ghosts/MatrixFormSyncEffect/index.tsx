@@ -6,27 +6,30 @@ import { useFormContext } from "react-hook-form";
 // types
 import type { AdminUser } from "@/types/AdminUsers";
 import type { WebApp } from "@/types/AdminApps";
-import type { EntitlementMatrixFormValues } from "@/types/AdminEntitlements";
+import type {
+  EntitlementMatrixFormValues,
+  UserAccess
+} from "@/types/AdminEntitlements";
 // others
 import { buildEntitlementDefaults } from "@/utils";
 
 const MatrixFormSyncEffect = ({
   users,
   apps,
-  grantsByUser,
+  accessByUser,
   isEditing
 }: {
   users: AdminUser[];
   apps: WebApp[];
-  grantsByUser: Record<string, string[]>;
+  accessByUser: Record<string, UserAccess>;
   isEditing: boolean;
 }) => {
   const { reset } = useFormContext<EntitlementMatrixFormValues>();
 
   useEffect(() => {
     if (isEditing) return;
-    reset(buildEntitlementDefaults(users, apps, grantsByUser));
-  }, [users, apps, grantsByUser, isEditing, reset]);
+    reset(buildEntitlementDefaults(users, apps, accessByUser));
+  }, [users, apps, accessByUser, isEditing, reset]);
 
   return null;
 };

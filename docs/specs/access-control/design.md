@@ -168,7 +168,7 @@ validation cho `userIds` / `changes`.
   - Bỏ khái niệm "không đủ role": mọi ô đều chỉnh được; check-all áp lên **mọi** app của hàng.
     Xoá `isAppEligibleForUser`, icon `Minus` + i18n `cell.insufficientRole`,
     `matrix.insufficientRoleTooltip`.
-  - **Chấm override** (2 px keyline brass theo MASTER.md, `size-1.5 rounded-full bg-accent`) cạnh icon/
+  - **Chấm override** (màu brass của token `--keyline` theo MASTER.md, `size-1.5 rounded-full bg-keyline` — **không** `bg-accent`, vì `--accent` của shadcn là bề mặt hover) cạnh icon/
     checkbox khi ô là ngoại lệ. Non-edit: theo `overriddenAppIds`. Edit: tính live =
     `value !== roleDefault` với `roleDefault = granted XOR overridden` (server là nguồn quy tắc, client
     không tự tính role).
