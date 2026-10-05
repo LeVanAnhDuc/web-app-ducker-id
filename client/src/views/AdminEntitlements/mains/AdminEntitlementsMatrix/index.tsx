@@ -1,6 +1,7 @@
 "use client";
 
 // libs
+import { useRef } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslations } from "next-intl";
 // types
@@ -64,13 +65,22 @@ const AdminEntitlementsMatrix = ({
     announce(tAnnounce("canceled"));
   };
 
+  // `isSaving` disables Save only after a re-render; both clicks of a
+  // double-click land before it, so the guard has to be synchronous.
+  const isSubmittingRef = useRef(false);
+
   const handleSave = (values: EntitlementMatrixFormValues) => {
+    if (isSubmittingRef.current) return;
     const changes = diffEntitlementGrants(values, buildDefaults());
     if (changes.length === 0) return;
+    isSubmittingRef.current = true;
     updateMutation.mutate(changes, {
       onSuccess: () => {
         onEditingChange(false);
         announce(tAnnounce("saved"));
+      },
+      onSettled: () => {
+        isSubmittingRef.current = false;
       }
     });
   };
