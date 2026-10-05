@@ -71,7 +71,9 @@ const RecentAppRow = ({
         {name}
       </CardItemTitle>
       <div className="flex min-w-0 items-center gap-2">
-        <CategoryChips categories={categories} className="min-w-0" />
+        {/* `@container` has no intrinsic width, so in a flex row the chips
+            must be given the free space or they collapse under the count. */}
+        <CategoryChips categories={categories} className="min-w-0 flex-1" />
         {openedCount && (
           <span className="text-muted-foreground shrink-0 text-xs">
             {openedCount}
