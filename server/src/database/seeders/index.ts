@@ -17,10 +17,12 @@ const runSeeders = async (): Promise<void> => {
 
     if (shouldClear) {
       Logger.info("Clear flag detected, removing existing test data...");
+      // Notifications are found through their owners' emails — clear them
+      // while the users still exist, or nothing matches.
+      await clearNotifications();
       await clearUsers();
       await clearContacts();
       await clearWebApps();
-      await clearNotifications();
     }
 
     Logger.info("Running seeders...");
