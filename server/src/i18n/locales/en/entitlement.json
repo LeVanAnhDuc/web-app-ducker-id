@@ -1,0 +1,32 @@
+{
+  "success": {
+    "get": "App access retrieved successfully.",
+    "update": "App access updated successfully."
+  },
+  "errors": {
+    "userNotFound": "One or more users no longer exist.",
+    "appNotFound": "One or more apps no longer exist.",
+    "rateLimitExceeded": "Too many requests. Please try again later"
+  },
+  "validation": {
+    "userIds": {
+      "required": "Select at least one user.",
+      "tooMany": "You can load at most 50 users at a time.",
+      "duplicate": "Each user can only be listed once."
+    },
+    "userId": {
+      "invalid": "Invalid user id."
+    },
+    "appId": {
+      "invalid": "Invalid app id."
+    },
+    "granted": {
+      "invalid": "Access must be true or false."
+    },
+    "changes": {
+      "required": "Provide at least one change.",
+      "tooMany": "You can save at most 200 changes at a time.",
+      "duplicate": "Each user and app pair can only change once per save."
+    }
+  }
+}

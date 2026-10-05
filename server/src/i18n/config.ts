@@ -41,7 +41,8 @@ i18next.use(Backend).init({
     "webApp",
     "favorite",
     "recentApp",
-    "category"
+    "category",
+    "entitlement"
   ],
 
   // Preload all supported languages and namespaces on startup

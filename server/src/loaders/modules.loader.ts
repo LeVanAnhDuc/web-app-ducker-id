@@ -18,6 +18,7 @@ import { createForgotPasswordModule } from "@/modules/forgot-password/forgot-pas
 import { createChangePasswordModule } from "@/modules/change-password/change-password.module";
 import { createContactAdminModule } from "@/modules/contact-admin/contact-admin.module";
 import { createCategoryModule } from "@/modules/category/category.module";
+import { createEntitlementModule } from "@/modules/entitlement/entitlement.module";
 import { createWebAppModule } from "@/modules/web-app/web-app.module";
 import { createUserModule } from "@/modules/user/user.module";
 import { createNotificationModule } from "@/modules/notification/notification.module";
@@ -51,6 +52,7 @@ interface ModuleRoutes {
   webAppUser: Router;
   categoryAdmin: Router;
   categoryUser: Router;
+  entitlementAdmin: Router;
 }
 
 /**
@@ -95,6 +97,7 @@ const mountRoutes = (app: Express, routes: ModuleRoutes): void => {
   v1Router.use(routes.webAppUser);
   v1Router.use(routes.categoryAdmin);
   v1Router.use(routes.categoryUser);
+  v1Router.use(routes.entitlementAdmin);
 
   app.use("/api/v1", v1Router);
 };
@@ -175,15 +178,22 @@ export const loadModules = (
   const { categoryRepository, categoryAdminRouter, categoryUserRouter } =
     createCategoryModule(rateLimiter);
 
-  const { webAppAdminRouter, webAppUserRouter } =
-    createWebAppModule(categoryRepository);
+  const { accessPolicy, entitlementAdminRouter } =
+    createEntitlementModule(rateLimiter);
+
+  const { webAppAdminRouter, webAppUserRouter } = createWebAppModule(
+    categoryRepository,
+    accessPolicy
+  );
 
   const { notificationUserRouter } = createNotificationModule();
 
-  const { favoriteRepository, favoriteUserRouter } = createFavoriteModule();
+  const { favoriteRepository, favoriteUserRouter } =
+    createFavoriteModule(accessPolicy);
 
   const { recentAppService, recentAppUserRouter } = createRecentAppModule(
     favoriteRepository,
+    accessPolicy,
     rateLimiter
   );
 
@@ -194,6 +204,7 @@ export const loadModules = (
     userService,
     loginHistoryService,
     recentAppService,
+    accessPolicy,
     rateLimiter
   );
 
@@ -221,7 +232,8 @@ export const loadModules = (
     webAppAdmin: webAppAdminRouter,
     webAppUser: webAppUserRouter,
     categoryAdmin: categoryAdminRouter,
-    categoryUser: categoryUserRouter
+    categoryUser: categoryUserRouter,
+    entitlementAdmin: entitlementAdminRouter
   });
 
   Logger.info("Modules loaded and routes mounted successfully");

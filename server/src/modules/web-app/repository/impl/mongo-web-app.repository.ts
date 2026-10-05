@@ -13,6 +13,7 @@ import type {
   OrphanApp,
   WebAppCategoryDocument
 } from "@/modules/category/types";
+import type { AccessScope, AppAccessRule } from "@/modules/entitlement/types";
 import type { WebAppRepository } from "../web-app.repository";
 // models
 import WebAppModel from "@/models/web-app";
@@ -20,7 +21,7 @@ import WebAppModel from "@/models/web-app";
 import { ConflictRequestError } from "@/common/exceptions";
 // modules
 import { buildWebAppFilter } from "../../helpers";
-import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
+import { buildAccessFilter } from "@/modules/entitlement/entitlement.helper";
 // others
 import { asyncDatabaseHandler } from "@/utils/async-handler";
 import { isDuplicateKeyError, getDuplicatedField } from "@/utils/mongo-errors";
@@ -31,6 +32,18 @@ const onlyCategory = (categoryId: string) => ({
 });
 
 export class MongoWebAppRepository implements WebAppRepository {
+  async findAccessRules(ids?: string[]): Promise<AppAccessRule[]> {
+    return asyncDatabaseHandler("findAccessRules", () => {
+      const filter: FilterQuery<WebAppDocument> = ids
+        ? { _id: { $in: ids.map((id) => new Types.ObjectId(id)) } }
+        : {};
+      return WebAppModel.find(filter)
+        .select("_id requiredRoles")
+        .lean<AppAccessRule[]>()
+        .exec();
+    });
+  }
+
   async findAll(
     filter: FilterQuery<WebAppDocument>
   ): Promise<WebAppDocument[]> {
@@ -62,7 +75,7 @@ export class MongoWebAppRepository implements WebAppRepository {
 
   async findActiveByIds(
     ids: string[],
-    filter: { role?: string; search?: string; categoryId?: string }
+    filter: { access: AccessScope; search?: string; categoryId?: string }
   ): Promise<WebAppWithCategories[]> {
     return asyncDatabaseHandler("findActiveByIds", () => {
       const mongoFilter = buildWebAppFilter({
@@ -71,9 +84,8 @@ export class MongoWebAppRepository implements WebAppRepository {
         categoryId: filter.categoryId
       });
       mongoFilter._id = { $in: ids.map((id) => new Types.ObjectId(id)) };
-      if (filter.role !== AUTHENTICATION_ROLES.ADMIN) {
-        mongoFilter.requiredRoles = AUTHENTICATION_ROLES.USER;
-      }
+      const accessClauses = buildAccessFilter(filter.access);
+      if (accessClauses.length > 0) mongoFilter.$and = accessClauses;
       return WebAppModel.find(mongoFilter)
         .populate<{ categories: WebAppCategoryDocument[] }>({
           path: "categories",

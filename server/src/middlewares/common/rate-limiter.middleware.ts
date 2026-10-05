@@ -37,6 +37,7 @@ export class RateLimiterMiddleware {
   public readonly updateProfileByIp: RateLimitRequestHandler;
   public readonly categoriesByIp: RateLimitRequestHandler;
   public readonly categoryMutationByIpAndUser: RateLimitRequestHandler;
+  public readonly entitlementMutationByIpAndUser: RateLimitRequestHandler;
   public readonly adminUserMutationByIpAndUser: RateLimitRequestHandler;
   public readonly recordRecentAppByUser: RateLimitRequestHandler;
 
@@ -287,6 +288,23 @@ export class RateLimiterMiddleware {
         `${req.ip ?? "unknown"}:${RequestContext.requireAuthId()}`,
       handler: this.createRateLimitExceededHandler(
         "category:errors.rateLimitExceeded"
+      )
+    });
+
+    this.entitlementMutationByIpAndUser = rateLimit({
+      windowMs:
+        RATE_LIMIT_CONFIG.ENTITLEMENTS.MUTATION.PER_IP_USER.WINDOW_SECONDS *
+        1000,
+      max: RATE_LIMIT_CONFIG.ENTITLEMENTS.MUTATION.PER_IP_USER.MAX_REQUESTS,
+      store: this.createRedisStore(
+        RATE_LIMIT_CONFIG.ENTITLEMENTS.MUTATION.PER_IP_USER.KEY
+      ),
+      standardHeaders: true,
+      legacyHeaders: false,
+      keyGenerator: (req) =>
+        `${req.ip ?? "unknown"}:${RequestContext.requireAuthId()}`,
+      handler: this.createRateLimitExceededHandler(
+        "entitlement:errors.rateLimitExceeded"
       )
     });
 

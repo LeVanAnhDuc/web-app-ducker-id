@@ -18,8 +18,11 @@ export const recordLaunch = async (
   const userId = RequestContext.requireUserId();
   const role = RequestContext.getUser()?.roles;
 
-  const app = await deps.webAppRepo.findById(appId);
-  if (!isAppVisibleTo(app, role)) {
+  const [app, scope] = await Promise.all([
+    deps.webAppRepo.findById(appId),
+    deps.accessPolicy.resolveScope(userId, role)
+  ]);
+  if (!isAppVisibleTo(app, scope)) {
     throw new NotFoundError({
       i18nMessage: (t) => t("recentApp:errors.appNotFound"),
       code: ERROR_CODES.RECENT_APP_NOT_FOUND

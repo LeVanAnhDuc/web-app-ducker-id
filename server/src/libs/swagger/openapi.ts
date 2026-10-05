@@ -24,6 +24,10 @@ import {
   categoryPaths
 } from "@/modules/category/swagger";
 import {
+  entitlementSwaggerSchemas,
+  entitlementPaths
+} from "@/modules/entitlement/swagger";
+import {
   recentAppSwaggerSchemas,
   recentAppPaths
 } from "@/modules/recent-app/swagger";
@@ -45,6 +49,7 @@ const allSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   ...userSwaggerSchemas,
   ...webAppSwaggerSchemas,
   ...categorySwaggerSchemas,
+  ...entitlementSwaggerSchemas,
   ...recentAppSwaggerSchemas
 };
 
@@ -59,6 +64,7 @@ const allPaths: OpenAPIV3.PathsObject = {
   ...userPaths,
   ...webAppPaths,
   ...categoryPaths,
+  ...entitlementPaths,
   ...recentAppPaths
 };
 
@@ -113,6 +119,11 @@ export const openApiSpec: OpenAPIV3.Document = {
       name: "Categories Admin",
       description:
         "Admin endpoints for creating, renaming, ordering and deleting categories"
+    },
+    {
+      name: "Entitlements Admin",
+      description:
+        "Admin endpoints for granting or revoking a user's access to an app beyond the role default"
     }
   ],
   paths: allPaths,

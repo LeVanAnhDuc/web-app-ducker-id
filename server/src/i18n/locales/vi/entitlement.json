@@ -1,0 +1,32 @@
+{
+  "success": {
+    "get": "Đã tải quyền truy cập ứng dụng.",
+    "update": "Đã cập nhật quyền truy cập ứng dụng."
+  },
+  "errors": {
+    "userNotFound": "Một hoặc nhiều người dùng không còn tồn tại.",
+    "appNotFound": "Một hoặc nhiều ứng dụng không còn tồn tại.",
+    "rateLimitExceeded": "Quá nhiều yêu cầu. Vui lòng thử lại sau"
+  },
+  "validation": {
+    "userIds": {
+      "required": "Hãy chọn ít nhất một người dùng.",
+      "tooMany": "Chỉ tải được tối đa 50 người dùng mỗi lần.",
+      "duplicate": "Mỗi người dùng chỉ được liệt kê một lần."
+    },
+    "userId": {
+      "invalid": "Mã người dùng không hợp lệ."
+    },
+    "appId": {
+      "invalid": "Mã ứng dụng không hợp lệ."
+    },
+    "granted": {
+      "invalid": "Quyền truy cập phải là true hoặc false."
+    },
+    "changes": {
+      "required": "Cần ít nhất một thay đổi.",
+      "tooMany": "Chỉ lưu được tối đa 200 thay đổi mỗi lần.",
+      "duplicate": "Mỗi cặp người dùng và ứng dụng chỉ được đổi một lần mỗi lần lưu."
+    }
+  }
+}

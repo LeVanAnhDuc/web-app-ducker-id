@@ -6,6 +6,7 @@ import type { UserService } from "@/modules/user/services";
 import type { SessionService } from "@/modules/session/services";
 import type { LoginHistoryService } from "@/modules/login-history/services";
 import type { RecentAppService } from "@/modules/recent-app/services";
+import type { AccessPolicy } from "@/modules/entitlement/services/access-policy";
 // modules
 import { MongoWebAppRepository } from "@/modules/web-app/repository/impl/mongo-web-app.repository";
 // others
@@ -21,6 +22,7 @@ export const createOAuthModule = (
   userService: UserService,
   loginHistoryService: LoginHistoryService,
   recentAppService: RecentAppService,
+  accessPolicy: AccessPolicy,
   rateLimiter: RateLimiterMiddleware
 ) => {
   const oauthRepo = new RedisOAuthRepository(redisClient);
@@ -33,7 +35,8 @@ export const createOAuthModule = (
     authService,
     userService,
     loginHistoryService,
-    recentAppService
+    recentAppService,
+    accessPolicy
   });
 
   const controller = new OAuthController(service);

@@ -1,5 +1,6 @@
 // types
 import type { CategoryRepository } from "@/modules/category/repository/category.repository";
+import type { AccessPolicy } from "@/modules/entitlement/services/access-policy";
 // others
 import { MongoWebAppRepository } from "./repository/impl/mongo-web-app.repository";
 import { MongoFavoriteRepository } from "@/modules/favorite/repository/impl/mongo-favorite.repository";
@@ -10,13 +11,17 @@ import {
   createUserWebAppRoutes
 } from "./web-app.routes";
 
-export const createWebAppModule = (categoryRepo: CategoryRepository) => {
+export const createWebAppModule = (
+  categoryRepo: CategoryRepository,
+  accessPolicy: AccessPolicy
+) => {
   const webAppRepo = new MongoWebAppRepository();
   const favoriteRepo = new MongoFavoriteRepository();
   const service = new WebAppService({
     webAppRepo,
     categoryRepo,
-    favoriteRepo
+    favoriteRepo,
+    accessPolicy
   });
   const controller = new WebAppController(service);
 

@@ -28,9 +28,10 @@ export const list = async (
   );
 
   const usedIds = await deps.recentAppRepo.findVisibleWebAppIds(userId);
+  const access = await deps.accessPolicy.resolveScope(userId, role);
   const apps = usedIds.length
     ? await deps.webAppRepo.findActiveByIds(usedIds, {
-        role,
+        access,
         search: query.search
       })
     : [];

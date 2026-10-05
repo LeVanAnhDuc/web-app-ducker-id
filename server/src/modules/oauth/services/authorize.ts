@@ -28,6 +28,7 @@ import {
   resolveGrantedScopes
 } from "../helpers";
 import { resolveClient } from "./shared/resolve-client";
+import { canAccessApp } from "@/modules/entitlement/entitlement.helper";
 
 const assertRedirectUri = (
   client: WebAppDocument,
@@ -147,15 +148,19 @@ const auditAppSignIn = async (
   }
 };
 
-const assertEntitled = (
+/** Same rule as the launcher: the role default plus the user's overrides. */
+const assertEntitled = async (
   deps: OAuthServiceDeps,
   client: WebAppDocument,
   session: SessionRecord,
   params: AuthorizeParams,
   audit: AppSignInAudit
-): void => {
-  if (client.requiredRoles.length === 0) return;
-  if (client.requiredRoles.includes(session.roles as never)) return;
+): Promise<void> => {
+  const scope = await deps.accessPolicy.resolveScope(
+    session.userId,
+    session.roles
+  );
+  if (canAccessApp(client, scope)) return;
 
   void auditAppSignIn(deps, { ...audit, denied: true });
 
@@ -291,7 +296,7 @@ export const authorize = async (
     denied: false
   };
 
-  assertEntitled(deps, client, session, params, audit);
+  await assertEntitled(deps, client, session, params, audit);
 
   const code = await issueCode(deps, session, params);
 
