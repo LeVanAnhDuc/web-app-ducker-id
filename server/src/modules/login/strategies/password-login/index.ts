@@ -1,5 +1,7 @@
 // types
 import type { AuthenticationDocument } from "@/modules/authentication/types";
+import type { UserDocument } from "@/modules/user/types";
+import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 import type { Request } from "express";
 import type { PasswordLoginBody } from "../../types";
 import type { FailedAttemptsRepository } from "../../repositories/failed-attempts.repository";
@@ -16,6 +18,10 @@ import type { LoginCompletionService } from "../../services/login-completion";
 import { TooManyRequestsError, UnauthorizedError } from "@/common/exceptions";
 // modules
 import { LOGIN_METHODS } from "@/modules/login-history/constants";
+import {
+  NOTIFICATION_LINKS,
+  NOTIFICATION_TYPES
+} from "@/modules/notification/constants";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger, LogMethod } from "@/libs/logger";
@@ -31,7 +37,8 @@ export class PasswordLoginStrategy {
     private readonly passwordLockoutGuard: PasswordLockoutGuard,
     private readonly failedAttemptsRepo: FailedAttemptsRepository,
     private readonly audit: LoginAuditService,
-    private readonly completion: LoginCompletionService
+    private readonly completion: LoginCompletionService,
+    private readonly notifications: NotificationDispatcher
   ) {}
 
   @LogMethod({ name: "Password login" })
@@ -59,7 +66,7 @@ export class PasswordLoginStrategy {
       req
     );
 
-    await this.verifyPasswordOrFail(auth, password, email, req);
+    await this.verifyPasswordOrFail(auth, user, password, email, req);
 
     withRetry(() => this.failedAttemptsRepo.resetAll(email), {
       operationName: "resetFailedLoginAttempts",
@@ -78,6 +85,7 @@ export class PasswordLoginStrategy {
 
   private async verifyPasswordOrFail(
     auth: AuthenticationDocument,
+    user: UserDocument,
     password: string,
     email: string,
     req: Request
@@ -89,6 +97,15 @@ export class PasswordLoginStrategy {
     this.audit.recordInvalidPassword({ auth, email, attemptCount, req });
 
     if (attemptCount >= LOGIN_LOCKOUT.MAX_ATTEMPTS && lockoutSeconds > 0) {
+      // The owner cannot sign in while locked; the notification is there for
+      // them to find once they are back in (the email is the immediate alert).
+      this.notifications.notify({
+        userId: user._id.toString(),
+        type: NOTIFICATION_TYPES.ACCOUNT_LOCKED,
+        params: { minutes: Math.ceil(lockoutSeconds / 60) },
+        link: NOTIFICATION_LINKS.LOGIN_HISTORY
+      });
+
       throw new TooManyRequestsError({
         i18nMessage: (t) =>
           t("login:errors.accountLocked", {

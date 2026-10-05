@@ -7,7 +7,8 @@ import type {
   LoginHistoryDocument,
   LoginHistoryFilter,
   LoginStatsAggregationResult,
-  LoginStatsRange
+  LoginStatsRange,
+  SignInTraits
 } from "@/modules/login-history/types";
 import type { PaginationOptions } from "@/types/common";
 import type { LoginHistoryRepository } from "../login-history.repository";
@@ -30,6 +31,39 @@ export class MongoLoginHistoryRepository implements LoginHistoryRepository {
     return asyncDatabaseHandler("create", async () => {
       const doc = await LoginHistoryModel.create(data);
       return doc as unknown as LoginHistoryDocument;
+    });
+  }
+
+  async findSignInTraits(userId: string, since: Date): Promise<SignInTraits> {
+    return asyncDatabaseHandler("findSignInTraits", async () => {
+      const [row] = await LoginHistoryModel.aggregate<{
+        devices: string[];
+        countries: string[];
+      }>([
+        {
+          $match: {
+            userId: new Types.ObjectId(userId),
+            status: LOGIN_STATUSES.SUCCESS,
+            source: LOGIN_SOURCES.IDP,
+            createdAt: { $gte: since }
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            devices: {
+              $addToSet: {
+                $concat: ["$browser", "|", "$os", "|", "$deviceType"]
+              }
+            },
+            countries: { $addToSet: "$country" }
+          }
+        }
+      ]).exec();
+
+      return row
+        ? { hasHistory: true, devices: row.devices, countries: row.countries }
+        : { hasHistory: false, devices: [], countries: [] };
     });
   }
 

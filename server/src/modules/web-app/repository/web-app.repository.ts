@@ -42,4 +42,9 @@ export interface WebAppRepository {
     session: ClientSession
   ): Promise<void>;
   pullCategory(categoryId: string, session: ClientSession): Promise<void>;
+  /**
+   * Stamps `announcedAt` only if it is still unset. Returns whether this call
+   * did it — exactly one caller wins, however many race.
+   */
+  markAnnounced(id: string): Promise<boolean>;
 }

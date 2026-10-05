@@ -3,6 +3,12 @@ import type { AdminResetPasswordResult } from "@/modules/user/types";
 import type { UserServiceDeps } from "./deps";
 // common
 import { ForbiddenError, NotFoundError } from "@/common/exceptions";
+// modules
+import {
+  NOTIFICATION_LINKS,
+  NOTIFICATION_TYPES,
+  PASSWORD_CHANGE_ACTORS
+} from "@/modules/notification/constants";
 // validators
 import { validateObjectId } from "@/validators/utils";
 // others
@@ -46,6 +52,13 @@ export const adminResetPassword = async (
       tempPassword,
       loginUrl: ENV.CLIENT_URL || "http://localhost:3000/login"
     }
+  });
+
+  deps.notificationDispatcher.notify({
+    userId: id,
+    type: NOTIFICATION_TYPES.PASSWORD_CHANGED,
+    params: { actor: PASSWORD_CHANGE_ACTORS.ADMIN },
+    link: NOTIFICATION_LINKS.PROFILE
   });
 
   Logger.info("Password reset by admin", {

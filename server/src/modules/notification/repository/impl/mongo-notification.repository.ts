@@ -79,6 +79,7 @@ export class MongoNotificationRepository implements NotificationRepository {
     };
 
     if (filter.isRead !== undefined) mongo.isRead = filter.isRead;
+    if (filter.category !== undefined) mongo.category = filter.category;
 
     return mongo;
   }

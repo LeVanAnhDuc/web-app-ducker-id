@@ -4,6 +4,7 @@ import { Router } from "express";
 import type { Express } from "express";
 import type { RedisClientType } from "redis";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
+import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 // database
 import { instanceRedis } from "@/database/redis";
 // modules
@@ -101,7 +102,8 @@ const mountRoutes = (app: Express, routes: ModuleRoutes): void => {
 
 export const loadModules = (
   app: Express,
-  emailDispatcher: EmailDispatcher
+  emailDispatcher: EmailDispatcher,
+  notificationDispatcher: NotificationDispatcher
 ): void => {
   const redisClient = instanceRedis.getClient() as RedisClientType;
 
@@ -114,14 +116,15 @@ export const loadModules = (
   const { userRouter, userAdminRouter, userService } = createUserModule(
     rateLimiter,
     authService,
-    emailDispatcher
+    emailDispatcher,
+    notificationDispatcher
   );
 
   const {
     loginHistoryService,
     loginHistoryUserRouter,
     loginHistoryAdminRouter
-  } = createLoginHistoryModule();
+  } = createLoginHistoryModule(notificationDispatcher);
 
   const { loginRouter, loginService } = createLoginModule(
     redisClient,
@@ -129,7 +132,8 @@ export const loadModules = (
     loginHistoryService,
     emailDispatcher,
     rateLimiter,
-    sessionService
+    sessionService,
+    notificationDispatcher
   );
 
   const { signupRouter } = createSignupModule(
@@ -166,6 +170,7 @@ export const loadModules = (
     authService,
     userService,
     emailDispatcher,
+    notificationDispatcher,
     rateLimiter
   );
 
@@ -175,8 +180,10 @@ export const loadModules = (
   const { categoryRepository, categoryAdminRouter, categoryUserRouter } =
     createCategoryModule(rateLimiter);
 
-  const { webAppAdminRouter, webAppUserRouter } =
-    createWebAppModule(categoryRepository);
+  const { webAppAdminRouter, webAppUserRouter } = createWebAppModule(
+    categoryRepository,
+    notificationDispatcher
+  );
 
   const { notificationUserRouter } = createNotificationModule();
 

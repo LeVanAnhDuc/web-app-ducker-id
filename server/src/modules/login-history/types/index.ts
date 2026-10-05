@@ -9,7 +9,8 @@ import type {
   DEVICE_TYPES,
   CLIENT_TYPES,
   LOGIN_HISTORY_SORT_BY_USER,
-  LOGIN_HISTORY_SORT_BY_ADMIN
+  LOGIN_HISTORY_SORT_BY_ADMIN,
+  LOGIN_ANOMALY_REASONS
 } from "@/modules/login-history/constants";
 // common
 import type { SortOrder } from "@/common/sort";
@@ -136,6 +137,22 @@ export interface LoginEventApp {
   webAppId: Schema.Types.ObjectId | string;
   clientName: string;
   interactive: boolean;
+}
+
+export type LoginAnomalyReason =
+  (typeof LOGIN_ANOMALY_REASONS)[keyof typeof LOGIN_ANOMALY_REASONS];
+
+/** What a user's previous successful IdP sign-ins looked like. */
+export interface SignInTraits {
+  hasHistory: boolean;
+  /** `browser|os|deviceType` of each distinct device. */
+  devices: string[];
+  countries: string[];
+}
+
+export interface LoginAnomalyAssessment {
+  isAnomaly: boolean;
+  reasons: LoginAnomalyReason[];
 }
 
 export interface LoginEventPayload {

@@ -2,7 +2,7 @@
 import type { Schema } from "mongoose";
 import type { Request } from "express";
 import type { LoginEventApp } from "../types";
-import type { LoginHistoryRepository } from "../repository/login-history.repository";
+import type { LoginHistoryServiceDeps } from "./deps";
 // modules
 import {
   LOGIN_STATUSES,
@@ -13,7 +13,7 @@ import {
 import { logLoginAttempt } from "./shared/log-login-attempt";
 
 export const recordAppSignInDenied = (
-  loginHistoryRepo: LoginHistoryRepository,
+  deps: LoginHistoryServiceDeps,
   {
     userId,
     usernameAttempted,
@@ -26,7 +26,7 @@ export const recordAppSignInDenied = (
     req: Request;
   }
 ): void => {
-  void logLoginAttempt(loginHistoryRepo, {
+  void logLoginAttempt(deps.loginHistoryRepo, {
     userId: userId.toString(),
     usernameAttempted,
     status: LOGIN_STATUSES.FAILED,

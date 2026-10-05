@@ -1,21 +1,14 @@
 // types
-import type { ClientType, LoginEventPayload } from "../../types";
+import type { LoginEventPayload } from "../../types";
 import type { LoginHistoryRepository } from "../../repository/login-history.repository";
-// modules
-import { LOGIN_SOURCES, HTTP_HEADERS } from "@/modules/login-history/constants";
 // others
 import { Logger } from "@/libs/logger";
-import {
-  extractIp,
-  parseUserAgent,
-  geoipLookup,
-  determineClientType
-} from "../../helpers";
+import { buildLoginHistoryData } from "../../helpers";
 
 /**
- * Bốn method `record*` đều đổ về đây. Chạm Mongo nên không phải helper, và
- * dùng chung bởi nhiều method nên nằm ở `shared/` thay vì trong một file
- * method cụ thể.
+ * Ba method `record*` không cần đánh giá bất thường đổ về đây (đăng nhập
+ * thành công tự ghi trong `record-successful-login.ts`). Chạm Mongo nên không
+ * phải helper, và dùng chung bởi nhiều method nên nằm ở `shared/`.
  *
  * Không bao giờ throw: ghi lịch sử hỏng không được làm hỏng lần đăng nhập.
  */
@@ -24,53 +17,9 @@ export const logLoginAttempt = async (
   payload: LoginEventPayload
 ): Promise<void> => {
   try {
-    const {
-      userId,
-      usernameAttempted,
-      status,
-      failReason,
-      loginMethod,
-      req,
-      timezoneOffset,
-      app
-    } = payload;
+    const { userId, usernameAttempted, status, loginMethod } = payload;
 
-    const ip = extractIp(req);
-    const userAgent = req.headers[HTTP_HEADERS.USER_AGENT] || "";
-    const clientTypeHeader = req.headers[HTTP_HEADERS.CLIENT_TYPE] as
-      | string
-      | undefined;
-
-    const clientType: ClientType = determineClientType(clientTypeHeader);
-
-    const { deviceType, os, browser } = parseUserAgent(userAgent);
-
-    const { country, city } = geoipLookup(ip);
-
-    const loginHistoryData = {
-      userId,
-      usernameAttempted,
-      method: loginMethod,
-      status,
-      failReason,
-      ip,
-      country,
-      city,
-      deviceType,
-      os,
-      browser,
-      userAgent,
-      clientType,
-      timezoneOffset: timezoneOffset || null,
-      isAnomaly: false,
-      anomalyReasons: [],
-      source: app ? LOGIN_SOURCES.OAUTH : LOGIN_SOURCES.IDP,
-      webAppId: app?.webAppId ?? null,
-      clientName: app?.clientName ?? null,
-      interactive: app?.interactive ?? true
-    };
-
-    await loginHistoryRepo.create(loginHistoryData);
+    await loginHistoryRepo.create(buildLoginHistoryData(payload));
 
     Logger.info("Login history logged successfully", {
       userId,

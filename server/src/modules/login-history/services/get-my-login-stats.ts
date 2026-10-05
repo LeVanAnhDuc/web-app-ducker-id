@@ -1,7 +1,7 @@
 // types
 import type { MyLoginStatsDto } from "../dtos";
 import type { LoginStatsQuery } from "@/modules/login-history/types";
-import type { LoginHistoryRepository } from "../repository/login-history.repository";
+import type { LoginHistoryServiceDeps } from "./deps";
 // modules
 import { LOGIN_HISTORY_STATS } from "@/modules/login-history/constants";
 // dtos
@@ -31,7 +31,7 @@ const resolveOptions = (
 };
 
 export const getMyLoginStats = async (
-  loginHistoryRepo: LoginHistoryRepository,
+  deps: LoginHistoryServiceDeps,
   query: LoginStatsQuery = {}
 ): Promise<MyLoginStatsDto> => {
   const userId = RequestContext.requireAuthId();
@@ -46,7 +46,7 @@ export const getMyLoginStats = async (
     timezone
   );
 
-  const aggregation = await loginHistoryRepo.aggregateMyStats({
+  const aggregation = await deps.loginHistoryRepo.aggregateMyStats({
     userId,
     from,
     to,

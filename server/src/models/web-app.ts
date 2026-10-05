@@ -186,6 +186,12 @@ const WebAppSchema = new Schema<WebAppDocument>(
     sortOrder: {
       type: Number,
       default: 0
+    },
+    // Set the first time the app is announced to users (APP_AVAILABLE).
+    // Toggling an app off and on again must not notify everyone twice.
+    announcedAt: {
+      type: Date,
+      default: null
     }
   },
   {

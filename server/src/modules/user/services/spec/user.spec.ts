@@ -16,6 +16,7 @@ import { RequestContext } from "@/utils/request-context";
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { generateTempPassword } from "@/utils/crypto/temp-password";
 import { createEmailDispatcherMock } from "@test/mocks/email-dispatcher.mock";
+import { createNotificationDispatcherMock } from "@test/mocks/notification-dispatcher.mock";
 import { UserService } from "../";
 
 const mockedHash = hashValue as jest.MockedFunction<typeof hashValue>;
@@ -60,7 +61,8 @@ describe("UserService.getAdminUsers", () => {
     const service = new UserService({
       userRepo: buildRepo({ findAdminUsers }),
       authService: buildAuthService(),
-      emailDispatcher: createEmailDispatcherMock()
+      emailDispatcher: createEmailDispatcherMock(),
+      notificationDispatcher: createNotificationDispatcherMock()
     });
 
     const result = await service.getAdminUsers({ page: 2, limit: 10 });
@@ -84,7 +86,8 @@ describe("UserService.getAdminUsers", () => {
     const service = new UserService({
       userRepo: buildRepo({ findAdminUsers }),
       authService: buildAuthService(),
-      emailDispatcher: createEmailDispatcherMock()
+      emailDispatcher: createEmailDispatcherMock(),
+      notificationDispatcher: createNotificationDispatcherMock()
     });
 
     await service.getAdminUsers({
@@ -121,7 +124,8 @@ describe("UserService.setUserActive", () => {
     const service = new UserService({
       userRepo: buildRepo({ findAuthIdById }),
       authService: buildAuthService({ setActive, findById, countActiveAdmins }),
-      emailDispatcher: createEmailDispatcherMock()
+      emailDispatcher: createEmailDispatcherMock(),
+      notificationDispatcher: createNotificationDispatcherMock()
     });
 
     const result = await service.setUserActive(targetUserId, false);
@@ -142,7 +146,8 @@ describe("UserService.setUserActive", () => {
     const service = new UserService({
       userRepo: buildRepo({ findAuthIdById }),
       authService: buildAuthService({ setActive, findById, countActiveAdmins }),
-      emailDispatcher: createEmailDispatcherMock()
+      emailDispatcher: createEmailDispatcherMock(),
+      notificationDispatcher: createNotificationDispatcherMock()
     });
 
     const result = await service.setUserActive(targetUserId, false);
@@ -163,7 +168,8 @@ describe("UserService.setUserActive", () => {
     const service = new UserService({
       userRepo: buildRepo({ findAuthIdById }),
       authService: buildAuthService({ setActive, findById, countActiveAdmins }),
-      emailDispatcher: createEmailDispatcherMock()
+      emailDispatcher: createEmailDispatcherMock(),
+      notificationDispatcher: createNotificationDispatcherMock()
     });
 
     await expect(service.setUserActive(targetUserId, false)).rejects.toThrow(
@@ -184,7 +190,8 @@ describe("UserService.setUserActive", () => {
     const service = new UserService({
       userRepo: buildRepo({ findAuthIdById }),
       authService: buildAuthService({ setActive, findById, countActiveAdmins }),
-      emailDispatcher: createEmailDispatcherMock()
+      emailDispatcher: createEmailDispatcherMock(),
+      notificationDispatcher: createNotificationDispatcherMock()
     });
 
     const result = await service.setUserActive(targetUserId, false);
@@ -202,7 +209,8 @@ describe("UserService.setUserActive", () => {
     const service = new UserService({
       userRepo: buildRepo({ findAuthIdById }),
       authService: buildAuthService({ setActive }),
-      emailDispatcher: createEmailDispatcherMock()
+      emailDispatcher: createEmailDispatcherMock(),
+      notificationDispatcher: createNotificationDispatcherMock()
     });
 
     const result = await service.setUserActive(targetUserId, true);
@@ -217,7 +225,8 @@ describe("UserService.setUserActive", () => {
     const service = new UserService({
       userRepo: buildRepo({ findAuthIdById }),
       authService: buildAuthService({ setActive }),
-      emailDispatcher: createEmailDispatcherMock()
+      emailDispatcher: createEmailDispatcherMock(),
+      notificationDispatcher: createNotificationDispatcherMock()
     });
 
     await expect(service.setUserActive(targetUserId, false)).rejects.toThrow(
@@ -232,7 +241,8 @@ describe("UserService.setUserActive", () => {
     const service = new UserService({
       userRepo: buildRepo({ findAuthIdById }),
       authService: buildAuthService({ setActive }),
-      emailDispatcher: createEmailDispatcherMock()
+      emailDispatcher: createEmailDispatcherMock(),
+      notificationDispatcher: createNotificationDispatcherMock()
     });
 
     await expect(service.setUserActive(targetUserId, false)).rejects.toThrow(
@@ -247,7 +257,8 @@ describe("UserService.setUserActive", () => {
     const service = new UserService({
       userRepo: buildRepo({ findAuthIdById }),
       authService: buildAuthService({ setActive }),
-      emailDispatcher: createEmailDispatcherMock()
+      emailDispatcher: createEmailDispatcherMock(),
+      notificationDispatcher: createNotificationDispatcherMock()
     });
 
     const result = await service.setUserActive(targetUserId, true);
@@ -264,7 +275,8 @@ describe("UserService.setUserActive", () => {
     const service = new UserService({
       userRepo: buildRepo({ findAuthIdById }),
       authService: buildAuthService({ setActive }),
-      emailDispatcher: createEmailDispatcherMock()
+      emailDispatcher: createEmailDispatcherMock(),
+      notificationDispatcher: createNotificationDispatcherMock()
     });
 
     await service.setUserActive(targetUserId, false);
@@ -287,7 +299,8 @@ describe("UserService.setUserActive", () => {
     const service = new UserService({
       userRepo: buildRepo({ findAuthIdById }),
       authService: buildAuthService({ setActive, findById, countActiveAdmins }),
-      emailDispatcher: createEmailDispatcherMock()
+      emailDispatcher: createEmailDispatcherMock(),
+      notificationDispatcher: createNotificationDispatcherMock()
     });
 
     const result = await service.setUserActive(targetUserId, true);
@@ -318,10 +331,12 @@ describe("UserService.adminResetPassword", () => {
     });
     const adminResetPassword = jest.fn().mockResolvedValue(undefined);
     const emailDispatcher = createEmailDispatcherMock();
+    const notificationDispatcher = createNotificationDispatcherMock();
     const service = new UserService({
       userRepo: buildRepo({ findAuthIdById }),
       authService: buildAuthService({ adminResetPassword }),
-      emailDispatcher
+      emailDispatcher,
+      notificationDispatcher
     });
 
     const result = await service.adminResetPassword(targetUserId);
@@ -335,6 +350,12 @@ describe("UserService.adminResetPassword", () => {
         data: expect.objectContaining({ tempPassword: "Temp1234!@" })
       })
     );
+    expect(notificationDispatcher.notify).toHaveBeenCalledWith({
+      userId: targetUserId,
+      type: "PASSWORD_CHANGED",
+      params: { actor: "admin" },
+      link: "/profile"
+    });
     expect(result).toEqual({ _id: targetUserId, email: "target@e.vn" });
   });
 
@@ -344,10 +365,12 @@ describe("UserService.adminResetPassword", () => {
       .mockResolvedValue({ authId: adminAuthId, email: "admin@e.vn" });
     const adminResetPassword = jest.fn();
     const emailDispatcher = createEmailDispatcherMock();
+    const notificationDispatcher = createNotificationDispatcherMock();
     const service = new UserService({
       userRepo: buildRepo({ findAuthIdById }),
       authService: buildAuthService({ adminResetPassword }),
-      emailDispatcher
+      emailDispatcher,
+      notificationDispatcher
     });
 
     await expect(service.adminResetPassword(targetUserId)).rejects.toThrow(
@@ -355,16 +378,19 @@ describe("UserService.adminResetPassword", () => {
     );
     expect(adminResetPassword).not.toHaveBeenCalled();
     expect(emailDispatcher.send).not.toHaveBeenCalled();
+    expect(notificationDispatcher.notify).not.toHaveBeenCalled();
   });
 
   it("throws NotFoundError with USER_NOT_FOUND when the target does not exist", async () => {
     const findAuthIdById = jest.fn().mockResolvedValue(null);
     const adminResetPassword = jest.fn();
     const emailDispatcher = createEmailDispatcherMock();
+    const notificationDispatcher = createNotificationDispatcherMock();
     const service = new UserService({
       userRepo: buildRepo({ findAuthIdById }),
       authService: buildAuthService({ adminResetPassword }),
-      emailDispatcher
+      emailDispatcher,
+      notificationDispatcher
     });
 
     await expect(service.adminResetPassword(targetUserId)).rejects.toThrow(
@@ -372,5 +398,6 @@ describe("UserService.adminResetPassword", () => {
     );
     expect(adminResetPassword).not.toHaveBeenCalled();
     expect(emailDispatcher.send).not.toHaveBeenCalled();
+    expect(notificationDispatcher.notify).not.toHaveBeenCalled();
   });
 });

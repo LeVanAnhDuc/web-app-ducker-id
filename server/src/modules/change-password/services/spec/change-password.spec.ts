@@ -9,6 +9,7 @@ import type { ChangePasswordRequest } from "../../types";
 import type { AuthenticationService } from "@/modules/authentication/services";
 import type { UserService } from "@/modules/user/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
+import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 // common
 import { BadRequestError, UnauthorizedError } from "@/common/exceptions";
 // modules
@@ -65,14 +66,24 @@ const makeService = () => {
   const emailDispatcher = {
     send: jest.fn()
   } as unknown as jest.Mocked<EmailDispatcher>;
+  const notificationDispatcher = {
+    notify: jest.fn()
+  } as unknown as jest.Mocked<NotificationDispatcher>;
   const service = new ChangePasswordService(
     authService,
     userService,
     emailDispatcher,
+    notificationDispatcher,
     new WrongCurrentPasswordGuard(),
     new SamePasswordGuard()
   );
-  return { service, authService, userService, emailDispatcher };
+  return {
+    service,
+    authService,
+    userService,
+    emailDispatcher,
+    notificationDispatcher
+  };
 };
 
 describe("ChangePasswordService", () => {
@@ -113,6 +124,17 @@ describe("ChangePasswordService", () => {
     expect(emailDispatcher.send).not.toHaveBeenCalled();
   });
 
+  it("does not notify when the current password is wrong", async () => {
+    const { service, authService, notificationDispatcher } = makeService();
+    mockedIsValid.mockReturnValue(false);
+    authService.findById.mockResolvedValue(AUTH as never);
+
+    await expect(service.changePassword(buildReq())).rejects.toThrow(
+      BadRequestError
+    );
+    expect(notificationDispatcher.notify).not.toHaveBeenCalled();
+  });
+
   it("throws when current password is wrong", async () => {
     const { service, authService } = makeService();
     mockedIsValid.mockReturnValue(false);
@@ -125,8 +147,13 @@ describe("ChangePasswordService", () => {
   });
 
   it("updates password, issues new tokens after update, sends alert", async () => {
-    const { service, authService, userService, emailDispatcher } =
-      makeService();
+    const {
+      service,
+      authService,
+      userService,
+      emailDispatcher,
+      notificationDispatcher
+    } = makeService();
     mockedIsValid.mockReturnValue(true);
     authService.findById.mockResolvedValue(AUTH as never);
     userService.findByAuthId.mockResolvedValue(USER as never);
@@ -147,6 +174,12 @@ describe("ChangePasswordService", () => {
       EmailType.PASSWORD_CHANGED,
       expect.objectContaining({ email: "u@e.vn" })
     );
+    expect(notificationDispatcher.notify).toHaveBeenCalledWith({
+      userId: "user1",
+      type: "PASSWORD_CHANGED",
+      params: { actor: "self" },
+      link: "/profile"
+    });
     expect(result).toEqual({
       accessToken: "a",
       refreshToken: "r",

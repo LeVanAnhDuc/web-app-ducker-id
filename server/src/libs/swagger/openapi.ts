@@ -27,6 +27,10 @@ import {
   recentAppSwaggerSchemas,
   recentAppPaths
 } from "@/modules/recent-app/swagger";
+import {
+  notificationSwaggerSchemas,
+  notificationPaths
+} from "@/modules/notification/swagger";
 // others
 import ENV from "@/constants/env";
 import { commonSchemas, commonResponses } from "./common.schemas";
@@ -45,7 +49,8 @@ const allSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   ...userSwaggerSchemas,
   ...webAppSwaggerSchemas,
   ...categorySwaggerSchemas,
-  ...recentAppSwaggerSchemas
+  ...recentAppSwaggerSchemas,
+  ...notificationSwaggerSchemas
 };
 
 const allPaths: OpenAPIV3.PathsObject = {
@@ -59,7 +64,8 @@ const allPaths: OpenAPIV3.PathsObject = {
   ...userPaths,
   ...webAppPaths,
   ...categoryPaths,
-  ...recentAppPaths
+  ...recentAppPaths,
+  ...notificationPaths
 };
 
 export const openApiSpec: OpenAPIV3.Document = {
@@ -108,6 +114,11 @@ export const openApiSpec: OpenAPIV3.Document = {
     {
       name: "Categories",
       description: "Public category list for the launcher filter"
+    },
+    {
+      name: "Notifications",
+      description:
+        "The signed-in user's inbox — written by domain events, rendered by the client in the reader's locale"
     },
     {
       name: "Categories Admin",

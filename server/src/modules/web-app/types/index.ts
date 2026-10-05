@@ -35,6 +35,7 @@ export interface WebAppDocument {
   requiredRoles: AuthenticationRole[];
   status: WebAppStatus;
   sortOrder: number;
+  announcedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }
