@@ -57,7 +57,7 @@
     "securityList3": "Change your password immediately after logging in",
     "securityList4": "Use a strong, unique password",
     "footerNote": "This is an automated message. Please do not reply to this email.",
-    "copyright": "© 2025 Apartment Management System. All rights reserved."
+    "copyright": "© 2025 Ducker ID. All rights reserved."
   },
   "passwordChanged": {
     "title": "Your Password Was Changed",
@@ -75,6 +75,6 @@
     "securityTitle": "Security Notice",
     "securityWarning": "If you did not expect this, please contact support immediately.",
     "footerNote": "This is an automated message. Please do not reply to this email.",
-    "copyright": "© 2025 Apartment Management System. All rights reserved."
+    "copyright": "© 2025 Ducker ID. All rights reserved."
   }
 }

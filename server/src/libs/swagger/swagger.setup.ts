@@ -69,7 +69,7 @@ export const setupSwagger = (app: Application): void => {
     swaggerUi.setup(openApiSpec, {
       explorer: true,
       customCss,
-      customSiteTitle: "Apartment Web API Documentation",
+      customSiteTitle: "Ducker ID API Documentation",
       swaggerOptions: {
         persistAuthorization: true,
         docExpansion: "list",
