@@ -183,8 +183,10 @@ export const loadModules = (
   const { categoryRepository, categoryAdminRouter, categoryUserRouter } =
     createCategoryModule(rateLimiter);
 
-  const { accessPolicy, entitlementAdminRouter } =
-    createEntitlementModule(rateLimiter);
+  const { accessPolicy, entitlementAdminRouter } = createEntitlementModule(
+    rateLimiter,
+    notificationDispatcher
+  );
 
   const { webAppAdminRouter, webAppUserRouter } = createWebAppModule(
     categoryRepository,

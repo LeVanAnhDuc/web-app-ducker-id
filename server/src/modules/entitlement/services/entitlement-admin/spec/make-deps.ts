@@ -1,5 +1,7 @@
 // types
 import type { EntitlementAdminServiceDeps } from "../deps";
+// others
+import { createNotificationDispatcherMock } from "@test/mocks/notification-dispatcher.mock";
 
 export const USER_ID = "64b2f0c2f1a2b3c4d5e6f7d1";
 export const ADMIN_ID = "64b2f0c2f1a2b3c4d5e6f7d2";
@@ -26,11 +28,19 @@ export const makeDeps = () => {
     applyChanges: jest.fn()
   };
   const userRepo = { findRolesByIds: jest.fn() };
-  const webAppRepo = { findAccessRules: jest.fn() };
+  const webAppRepo = { findAccessRules: jest.fn(), findAll: jest.fn() };
+  const notificationDispatcher = createNotificationDispatcherMock();
   const deps = {
     entitlementRepo,
     userRepo,
-    webAppRepo
+    webAppRepo,
+    notificationDispatcher
   } as unknown as EntitlementAdminServiceDeps;
-  return { deps, entitlementRepo, userRepo, webAppRepo };
+  return {
+    deps,
+    entitlementRepo,
+    userRepo,
+    webAppRepo,
+    notificationDispatcher
+  };
 };

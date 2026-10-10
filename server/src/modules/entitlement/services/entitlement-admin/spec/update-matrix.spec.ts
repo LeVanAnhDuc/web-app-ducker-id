@@ -135,3 +135,138 @@ describe("EntitlementAdminService.updateMatrix", () => {
     expect(entitlementRepo.applyChanges).not.toHaveBeenCalled();
   });
 });
+
+describe("EntitlementAdminService.updateMatrix — access notifications", () => {
+  const APPS = [
+    { _id: BLOG_ID, displayName: "Blog", status: "ACTIVE" },
+    { _id: OPS_ID, displayName: "Operations Console", status: "ACTIVE" }
+  ];
+
+  const setup = (overridesBefore: object[] = []) => {
+    const ctx = makeDeps();
+    ctx.userRepo.findRolesByIds.mockResolvedValue([
+      { userId: USER_ID, role: "user" },
+      { userId: ADMIN_ID, role: "admin" }
+    ]);
+    ctx.webAppRepo.findAccessRules.mockImplementation(async (ids?: string[]) =>
+      ids ? CATALOG.filter((app) => ids.includes(app._id.toString())) : CATALOG
+    );
+    ctx.webAppRepo.findAll.mockResolvedValue(APPS);
+    // First read is the state before the write, the second rebuilds the matrix.
+    ctx.entitlementRepo.findByUsers
+      .mockResolvedValueOnce(overridesBefore)
+      .mockResolvedValue([]);
+    ctx.entitlementRepo.applyChanges.mockResolvedValue(undefined);
+    return { ...ctx, service: new EntitlementAdminService(ctx.deps) };
+  };
+
+  it("tells a user they lost an app the role gave them, with no link", async () => {
+    const { service, notificationDispatcher } = setup();
+
+    await service.updateMatrix(
+      [{ userId: USER_ID, appId: BLOG_ID, granted: false }],
+      ACTOR_ID
+    );
+
+    expect(notificationDispatcher.notify).toHaveBeenCalledWith({
+      userId: USER_ID,
+      type: "ENTITLEMENT_REVOKED",
+      params: { appName: "Blog" },
+      link: null
+    });
+  });
+
+  it("tells a user they gained an app beyond their role, linking to it", async () => {
+    const { service, notificationDispatcher } = setup();
+
+    await service.updateMatrix(
+      [{ userId: USER_ID, appId: OPS_ID, granted: true }],
+      ACTOR_ID
+    );
+
+    expect(notificationDispatcher.notify).toHaveBeenCalledWith({
+      userId: USER_ID,
+      type: "ENTITLEMENT_GRANTED",
+      params: { appName: "Operations Console" },
+      link: "/apps?search=Operations%20Console"
+    });
+  });
+
+  it("tells a user an app is back when a deny override is removed", async () => {
+    const { service, notificationDispatcher } = setup([
+      { userId: USER_ID, webAppId: BLOG_ID, effect: "deny" }
+    ]);
+
+    await service.updateMatrix(
+      [{ userId: USER_ID, appId: BLOG_ID, granted: true }],
+      ACTOR_ID
+    );
+
+    expect(notificationDispatcher.notify).toHaveBeenCalledTimes(1);
+    expect(notificationDispatcher.notify.mock.calls[0][0].type).toBe(
+      "ENTITLEMENT_GRANTED"
+    );
+  });
+
+  // Decision table: the pairs whose effective access does not move.
+  it.each([
+    ["re-granting an app the role already gives", [], USER_ID, BLOG_ID, true],
+    [
+      "re-saving an allow override as granted",
+      [{ userId: USER_ID, webAppId: OPS_ID, effect: "allow" }],
+      USER_ID,
+      OPS_ID,
+      true
+    ],
+    ["granting an admin anything", [], ADMIN_ID, OPS_ID, true]
+  ])("stays silent when %s", async (_label, before, userId, appId, granted) => {
+    const { service, notificationDispatcher, webAppRepo } = setup(before);
+
+    await service.updateMatrix([{ userId, appId, granted }], ACTOR_ID);
+
+    expect(notificationDispatcher.notify).not.toHaveBeenCalled();
+    expect(webAppRepo.findAll).not.toHaveBeenCalled();
+  });
+
+  it("stays silent about an app that is not active", async () => {
+    const { service, notificationDispatcher, webAppRepo } = setup();
+    webAppRepo.findAll.mockResolvedValue([
+      { _id: BLOG_ID, displayName: "Blog", status: "INACTIVE" }
+    ]);
+
+    await service.updateMatrix(
+      [{ userId: USER_ID, appId: BLOG_ID, granted: false }],
+      ACTOR_ID
+    );
+
+    expect(notificationDispatcher.notify).not.toHaveBeenCalled();
+  });
+
+  it("notifies only after the write, and a failed name lookup keeps the save", async () => {
+    const { service, notificationDispatcher, webAppRepo, entitlementRepo } =
+      setup();
+    webAppRepo.findAll.mockRejectedValue(new Error("db down"));
+
+    await expect(
+      service.updateMatrix(
+        [{ userId: USER_ID, appId: BLOG_ID, granted: false }],
+        ACTOR_ID
+      )
+    ).resolves.toBeDefined();
+    expect(entitlementRepo.applyChanges).toHaveBeenCalled();
+    expect(notificationDispatcher.notify).not.toHaveBeenCalled();
+  });
+
+  it("does not notify when the write fails", async () => {
+    const { service, notificationDispatcher, entitlementRepo } = setup();
+    entitlementRepo.applyChanges.mockRejectedValue(new Error("write failed"));
+
+    await expect(
+      service.updateMatrix(
+        [{ userId: USER_ID, appId: BLOG_ID, granted: false }],
+        ACTOR_ID
+      )
+    ).rejects.toThrow("write failed");
+    expect(notificationDispatcher.notify).not.toHaveBeenCalled();
+  });
+});

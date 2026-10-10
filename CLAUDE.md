@@ -57,7 +57,7 @@ cd client && pnpm e2e e2e/home/home-page.e2e.ts --project=chromium
 cd client && pnpm e2e e2e/admin-apps/ --project=admin
 ```
 
-Jest picks up `src/**/*.spec.ts` plus `test/integration/**` and `test/e2e/**`; factories, helpers and mocks live in `server/test/`. Service tests sit in `services/spec/`, repository tests in `repository/spec/`. Current suite: **81 suites / 609 tests**, no database required.
+Jest picks up `src/**/*.spec.ts` plus `test/integration/**` and `test/e2e/**`; factories, helpers and mocks live in `server/test/`. Service tests sit in `services/spec/`, repository tests in `repository/spec/`. Current suite: **86 suites / 672 tests**, no database required.
 
 `jest.config.ts` sets `resetMocks: true`, which clears the *implementations* a `jest.mock` factory set up, not just the call history. A factory must therefore close over bare `jest.fn()`s and the implementations be rebuilt in `beforeEach`, or the mock works in the first test of a file and returns `undefined` in every one after it.
 
@@ -117,7 +117,7 @@ Cross-cutting concerns deliberately live **outside** the modules:
 
 Email is never sent inline: `EmailDispatcher` pushes onto the BullMQ `emailQueue` (templates are React Email components rendered server-side), with Bull Board at `/admin/queues`. `/health` reports MongoDB and Redis status.
 
-Notifications follow the same shape. A module that wants to tell a user something takes `NotificationDispatcher` (`src/services/notification/`) through its factory and calls `notify({ userId })`, `notifyByAuthId({ authId })` (login history only knows the auth id) or `broadcast({ roles, dedupeKey })`; the `notification` queue's worker writes the rows. The dispatcher **never throws** — a failed write must not fail the password change or sign-in that caused it. The writer lives in `src/services/`, not in `modules/notification/`, because queues are built before modules load. Rows hold `type + params + link`, never text: the client renders `notifications.types.<TYPE>` from its own catalogue, so a new type needs an entry in **both** `client/src/locales/{en,vi}/notifications.json`. Producers today: change-password, admin reset-password, password lockout, login-history (new device or country → `LOGIN_ANOMALY`, and the row's `isAnomaly`) and web-app (an app announced once, claimed through `webApp.announcedAt`).
+Notifications follow the same shape. A module that wants to tell a user something takes `NotificationDispatcher` (`src/services/notification/`) through its factory and calls `notify({ userId })`, `notifyByAuthId({ authId })` (login history only knows the auth id) or `broadcast({ roles, dedupeKey })`; the `notification` queue's worker writes the rows. The dispatcher **never throws** — a failed write must not fail the password change or sign-in that caused it. The writer lives in `src/services/`, not in `modules/notification/`, because queues are built before modules load. Rows hold `type + params + link`, never text: the client renders `notifications.types.<TYPE>` from its own catalogue, so a new type needs an entry in **both** `client/src/locales/{en,vi}/notifications.json`. Producers today: change-password, admin reset-password, password lockout, login-history (new device or country → `LOGIN_ANOMALY`, and the row's `isAnomaly`), web-app (an app announced once, claimed through `webApp.announcedAt`) and entitlement (`ENTITLEMENT_GRANTED` / `_REVOKED`, only for pairs whose effective access flipped, active apps only).
 
 ### Client — thin routes, thick views
 

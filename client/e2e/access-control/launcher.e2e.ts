@@ -9,6 +9,7 @@ import {
   userToken
 } from "../helpers/entitlements";
 import { getFavoriteIds, setFavorites } from "../helpers/favorites";
+import { fetchNotifications } from "../helpers/notifications";
 
 // Access control seen by a regular user (`chromium` project, user@test.com,
 // role `user`). Overrides are written through the admin API in each test and
@@ -147,6 +148,57 @@ test.describe("Access control — grant beyond the role", () => {
     expect(await authorizeLocation(page, OPS)).toContain(
       `${OPS.redirectUri}?code=`
     );
+  });
+});
+
+// Design §9: a flip of effective access writes ENTITLEMENT_GRANTED / _REVOKED
+// for the user, through the notification queue — so rows are polled for.
+test.describe("Access control — notifications", () => {
+  // Only the entitlement rows: the helper's own first API login may still be
+  // delivering an "unusual sign-in" row of its own.
+  const newRows = async (before: Set<string>) =>
+    (await fetchNotifications()).filter(
+      (row) => !before.has(row.id) && row.type.startsWith("ENTITLEMENT_")
+    );
+
+  const rowIds = async () =>
+    new Set((await fetchNotifications()).map((row) => row.id));
+
+  test("revoking and restoring an app tells the user both times", async ({
+    page
+  }) => {
+    const before = await rowIds();
+
+    await setAccess([{ userId, appId: appIds[NOTES.name], granted: false }]);
+    await expect
+      .poll(async () => (await newRows(before)).map((row) => row.type))
+      .toEqual(["ENTITLEMENT_REVOKED"]);
+
+    await clearOverrides(userId);
+    await expect
+      .poll(async () => (await newRows(before)).map((row) => row.type))
+      .toEqual(["ENTITLEMENT_GRANTED", "ENTITLEMENT_REVOKED"]);
+
+    await page.goto("/notifications");
+    await expect(
+      page.getByText(`You no longer have access to ${NOTES.name}.`).first()
+    ).toBeVisible();
+    const granted = page
+      .getByRole("link")
+      .filter({ hasText: `You can now open ${NOTES.name}.` })
+      .first();
+    await expect(granted).toHaveAttribute("href", `/apps?search=${NOTES.name}`);
+  });
+
+  test("saving the value the user already has sends nothing", async () => {
+    const before = await rowIds();
+
+    await setAccess([{ userId, appId: appIds[NOTES.name], granted: true }]);
+    await setAccess([{ userId, appId: appIds[OPS.name], granted: false }]);
+    // Give the queue the time a real row would have taken to land.
+    await new Promise((resolve) => setTimeout(resolve, 2_000));
+
+    expect(await newRows(before)).toEqual([]);
   });
 });
 

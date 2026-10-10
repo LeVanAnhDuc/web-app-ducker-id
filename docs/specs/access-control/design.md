@@ -195,6 +195,21 @@ Sau khi `feat/notification-events` merge vào `main`: merge `origin/main` vào b
 `params: { appName }`, `link` tới `/apps` khi grant). Gửi sau khi `bulkWrite` thành công, không chặn
 response. Chi tiết shape theo code đã merge — bổ sung vào spec này lúc tích hợp.
 
+**Đã tích hợp (10.10.2026):**
+
+- `updateMatrix` đọc override hiện có của các user (`findByUsers`) **trước** khi ghi, dựng
+  `AccessScope` cũ bằng `toAccessScope` và so `canAccessApp(app, before)` với giá trị admin gửi.
+  Chỉ cặp khác nhau mới vào danh sách `flipped` — lưu lại đúng giá trị đang có, đổi `allow` thành
+  mặc định role tương đương, hay grant cho admin đều **không** gửi gì.
+- Sau `applyChanges`, `notifyAccessChanges` lấy `displayName` + `status` qua `webAppRepo.findAll`
+  (chỉ khi có cặp flipped) rồi gọi `notificationDispatcher.notify({ userId, type, params: { appName },
+  link })`. `link` = `/apps?search=<appName>` khi grant, `null` khi revoke (app không còn mở được).
+- App không `ACTIVE` thì không gửi: launcher không hiện app đó, câu "Giờ bạn đã có thể mở X" sẽ sai.
+- Không throw: lỗi đọc tên app chỉ ghi log, lưu của admin vẫn thành công. Ghi lỗi thì không gửi.
+- Dispatcher đi vào `createEntitlementModule(rateLimiter, notificationDispatcher)` →
+  `EntitlementAdminServiceDeps.notificationDispatcher`. Client không đổi: type, icon và câu en/vi
+  đã có sẵn từ `feat/notification-events`.
+
 ## 10. E2E Scenario Matrix
 
 Hai file: `e2e/admin-entitlements/matrix.e2e.ts` (project `admin`, **reconcile** suite cũ) và

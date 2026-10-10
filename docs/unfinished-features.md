@@ -47,8 +47,6 @@ theo role + override per-user (`allow` / `deny`) do admin đặt ở `/admin/ent
 
 **Còn lại (follow-up)**:
 
-- Notification `ENTITLEMENT_GRANTED` / `ENTITLEMENT_REVOKED` khi admin đổi quyền — chờ
-  `feat/notification-events` merge rồi tích hợp (spec §9).
 - User đang ở trong app vệ tinh lúc bị revoke vẫn dùng được tới khi access token hết hạn (15 phút) —
   cần `/oauth/revoke` hoặc back-channel logout (mục 7).
 

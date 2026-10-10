@@ -40,9 +40,10 @@ Mọi test ghi DB chạy `serial` và gọi `clearOverrides(user@test.com)` ở 
 | 11 | [DT] persist deny / xoá override / allow; [ST] reload; double-submit | `matrix` › save (4 test), check-all |
 | 11b | [DT] override × điểm áp | `launcher` › revoke (4 test), grant beyond the role |
 | 11c | Admin SSO app `[user]` | `admin-sso.e2e.ts` |
+| §9 | [ST] revoke → `ENTITLEMENT_REVOKED`, xoá override → `ENTITLEMENT_GRANTED` có link `/apps?search=Notes`, hiện ở `/notifications` | `launcher` › notifications › "revoking and restoring an app tells the user both times" |
+| §9 | [DT] lưu đúng giá trị đang có (grant app role đã cho, revoke app role không cho) → không có notification | `launcher` › notifications › "saving the value the user already has sends nothing". Phần còn lại của bảng quyết định (allow → mặc định role, admin, app inactive, lỗi đọc tên, lỗi ghi): Jest `update-matrix.spec.ts` |
 | 12 | A11y | `matrix` › accessibility (4 test) |
 
 ## Follow-up
 
-- Notification khi đổi quyền — spec §9, chờ `feat/notification-events`.
 - 51 E2E đang đỏ sẵn trên `main` (danh sách ở trên) — ngoài phạm vi feature này.

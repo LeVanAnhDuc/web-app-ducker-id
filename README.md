@@ -63,6 +63,7 @@ This repository is a monorepo: `client/` is the Next.js web UI, `server/` is the
   - `/admin/entitlements` shows a user × app matrix for the users you pick: each user gets the apps their role allows by default
   - Edit any cell to grant an app beyond the role or revoke one despite it; exceptions carry a brass marker that says which way they go, and setting a cell back to the role default removes the exception
   - A revoked app disappears from the user's launcher, favourites and recently used, and signing in to it through Ducker ID is refused
+  - The user is notified whenever their access to an app actually changes — granted (with a link to the app) or revoked
 - **Admin — categories**
   - `/admin/categories` creates, renames and reorders categories, each named in English and Vietnamese; the slug follows the English name
   - Deleting a category moves apps that only belonged to it to one shared category or to a category chosen per app
@@ -91,7 +92,7 @@ This repository is a monorepo: `client/` is the Next.js web UI, `server/` is the
 These have a user interface but no working backend, or are named in `docs/project-goals.md` and not started. See `docs/unfinished-features.md`.
 
 - **The rest of the OIDC surface** — `/oauth/introspect`, `/oauth/revoke` and refresh-token grants are not built, and there is no consent screen: an app a user is entitled to is authorized without being asked. `/oauth/logout` ends the identity-provider session but there is no back-channel logout, so an already-issued access token stays valid until it expires. The `oauth_consents` schema still has no routes.
-- **Access-change notifications** — granting or revoking an app does not notify the user yet, and a user already inside a satellite app keeps it until their access token expires (15 minutes).
+- **Revocation inside a satellite app** — a user already inside a satellite app keeps it after being revoked until their access token expires (15 minutes).
 - **Admin force logout** — the dialog and success toast are wired to a mock; there is no endpoint. Signing out now destroys the server-side session, so satellite apps stop getting new tokens, but an admin still cannot end someone else's session.
 - **Billing** — `/billing` shows payment methods, invoices and usage from hardcoded data; the Add and Download buttons do nothing and there is no billing module on the server.
 - **Smaller gaps** — the three stat badges on the profile card are hardcoded, as is the weekly-activity chart on the home page; the profile Danger Zone "delete account" button has no handler; avatar upload has no endpoint.
@@ -102,7 +103,7 @@ These have a user interface but no working backend, or are named in `docs/projec
 | --------- | ------------------------------------------------------------------------------------------------------------------------ |
 | Client    | Next.js 15.3 (App Router) · React 19 · TypeScript 5 · Tailwind CSS v4 · shadcn/ui + Radix · TanStack Query 5 · Zustand 5 · React Hook Form 7 + Zod 4 · next-intl 4 · Axios · Framer Motion |
 | Server    | Node.js · Express 4 · TypeScript 5 · MongoDB with Mongoose 8 · Redis + BullMQ · JWT + bcrypt · Joi 17 · i18next · Nodemailer + React Email · Winston · Swagger UI |
-| Testing   | Jest 30 + ts-jest on the server — **81 suites / 609 tests, all passing**. Playwright 1.60 on the client — 41 E2E spec files under `client/e2e/` (require a running client, server, MongoDB and Redis, so they are not counted here) |
+| Testing   | Jest 30 + ts-jest on the server — **86 suites / 672 tests, all passing**. Playwright 1.60 on the client — 41 E2E spec files under `client/e2e/` (require a running client, server, MongoDB and Redis, so they are not counted here) |
 | Tooling   | pnpm · ESLint · Prettier · Husky pre-commit running lint-staged in both `client/` and `server/`                 |
 
 ## Running
