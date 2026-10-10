@@ -165,11 +165,15 @@ test.describe("Notifications page — rendering", () => {
   test("[DT] fills each template from its params", async ({ page }) => {
     await gotoNotifications(page);
     // LOGIN_ANOMALY reason=device: browser + os, country code → no raw "VN".
+    // On a freshly seeded DB the suite's own Chrome-on-Windows sign-in is a
+    // new device too, so the seeded sentence may appear twice.
     await expect(page.getByText(EN.anomalyTitle).first()).toBeVisible();
     await expect(
-      page.getByText(
-        "Chrome on Windows — a device we haven't seen on your account before."
-      )
+      page
+        .getByText(
+          "Chrome on Windows — a device we haven't seen on your account before."
+        )
+        .first()
     ).toBeVisible();
     // PASSWORD_CHANGED: actor=admin and actor=self pick different sentences.
     await expect(page.getByText(EN.adminResetTitle)).toBeVisible();
