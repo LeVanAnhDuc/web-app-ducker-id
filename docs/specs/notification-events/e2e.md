@@ -80,3 +80,18 @@ delta unread.
 ## 5. Kết quả
 
 Xem cuối file — cập nhật sau mỗi lần chạy gate.
+
+### 10.10.2026 — Gate A, toàn bộ suite
+
+Worktree: server `:5100` (DB riêng `ducker-id-notification-events`, `pnpm seed`), client **production**
+(`next build` + `next start -p 3100` — `next dev` từng làm máy hết RAM ở test 166/496),
+`E2E_BASE_URL=http://127.0.0.1:3100`. Server Jest 81 suite / 601 test, lint + tsc hai phía sạch.
+
+| | Kết quả |
+| --- | --- |
+| Toàn bộ (496) | 396 passed, 46 failed, 8 skipped, 46 did not run — 14,1 phút |
+| So baseline `origin/main` (52 failed, dựng 05.10 trong phiên access-control) | 41 lỗi trùng baseline. 5 lỗi mới đều là môi trường, không phải code: |
+| — `admin-entitlements/matrix` × 3 | app `Smoke Notify` sót trong DB riêng từ lần kiểm tay bật/tắt app → thêm một cột. `seed:clear` không xoá app ngoài seed; đã xoá tay |
+| — `admin-users-reset/reset-action` × 1 | `POST /auth/login` → **429**: suite production chạy nhanh hơn 3 lần nên chạm rate limit đăng nhập 30 / 15 phút |
+| — `notifications` › [DT] fills each template | lần đăng nhập đầu của trình duyệt E2E trên DB mới seed cũng là thiết bị Chrome/Windows lạ → câu trùng câu seed, `getByText` strict thấy 2 phần tử. Sửa test bằng `.first()` (`c0c4d54b`) |
+| Chạy lại `notifications/`, `admin-entitlements/`, `admin-users-reset/reset-action` sau 15 phút | **85 passed, 3 skipped, 0 failed** |
