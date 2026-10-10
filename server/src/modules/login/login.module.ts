@@ -5,6 +5,7 @@ import type { LoginHistoryService } from "@/modules/login-history/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { RateLimiterMiddleware } from "@/middlewares";
 import type { SessionService } from "@/modules/session/services";
+import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 // repositories
 import { RedisOtpLoginRepository } from "./repositories/impl/redis-otp-login.repository";
 import { RedisMagicLinkLoginRepository } from "./repositories/impl/redis-magic-link-login.repository";
@@ -34,7 +35,8 @@ export const createLoginModule = (
   loginHistorySvc: LoginHistoryService,
   emailDispatcher: EmailDispatcher,
   rateLimiter: RateLimiterMiddleware,
-  sessionService: SessionService
+  sessionService: SessionService,
+  notificationDispatcher: NotificationDispatcher
 ) => {
   // repositories
   const otpLoginRepo = new RedisOtpLoginRepository(redisClient);
@@ -62,7 +64,8 @@ export const createLoginModule = (
     passwordLockoutGuard,
     failedAttemptsRepo,
     auditService,
-    completionService
+    completionService,
+    notificationDispatcher
   );
   const otpStrategy = new OtpLoginStrategy({
     accountExistsGuard,

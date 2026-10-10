@@ -16,7 +16,7 @@ import type {
   MyHistoryItemDto,
   MyLoginStatsDto
 } from "../dtos";
-import type { LoginHistoryRepository } from "../repository/login-history.repository";
+import type { LoginHistoryServiceDeps } from "./deps";
 // others
 import { getAllLoginHistory } from "./get-all-login-history";
 import { getLoginHistoryDetail } from "./get-login-history-detail";
@@ -28,7 +28,7 @@ import { recordFailedLogin } from "./record-failed-login";
 import { recordSuccessfulLogin } from "./record-successful-login";
 
 export class LoginHistoryService {
-  constructor(private readonly loginHistoryRepo: LoginHistoryRepository) {}
+  constructor(private readonly deps: LoginHistoryServiceDeps) {}
 
   recordSuccessfulLogin(params: {
     userId: Schema.Types.ObjectId | string;
@@ -36,7 +36,7 @@ export class LoginHistoryService {
     loginMethod: LoginMethod;
     req: Request;
   }): void {
-    recordSuccessfulLogin(this.loginHistoryRepo, params);
+    recordSuccessfulLogin(this.deps, params);
   }
 
   recordFailedLogin(params: {
@@ -46,7 +46,7 @@ export class LoginHistoryService {
     failReason: LoginFailReason;
     req: Request;
   }): void {
-    recordFailedLogin(this.loginHistoryRepo, params);
+    recordFailedLogin(this.deps, params);
   }
 
   recordAppSignIn(params: {
@@ -55,7 +55,7 @@ export class LoginHistoryService {
     app: LoginEventApp;
     req: Request;
   }): void {
-    recordAppSignIn(this.loginHistoryRepo, params);
+    recordAppSignIn(this.deps, params);
   }
 
   recordAppSignInDenied(params: {
@@ -64,26 +64,26 @@ export class LoginHistoryService {
     app: LoginEventApp;
     req: Request;
   }): void {
-    recordAppSignInDenied(this.loginHistoryRepo, params);
+    recordAppSignInDenied(this.deps, params);
   }
 
   getMyLoginHistory(
     query: LoginHistoryQuery
   ): Promise<PaginatedResult<MyHistoryItemDto>> {
-    return getMyLoginHistory(this.loginHistoryRepo, query);
+    return getMyLoginHistory(this.deps, query);
   }
 
   getMyLoginStats(query: LoginStatsQuery): Promise<MyLoginStatsDto> {
-    return getMyLoginStats(this.loginHistoryRepo, query);
+    return getMyLoginStats(this.deps, query);
   }
 
   getAllLoginHistory(
     query: LoginHistoryAdminQuery
   ): Promise<PaginatedResult<AllHistoryItemDto>> {
-    return getAllLoginHistory(this.loginHistoryRepo, query);
+    return getAllLoginHistory(this.deps, query);
   }
 
   getLoginHistoryDetail(id: string): Promise<HistoryDetailItemDto> {
-    return getLoginHistoryDetail(this.loginHistoryRepo, id);
+    return getLoginHistoryDetail(this.deps, id);
   }
 }

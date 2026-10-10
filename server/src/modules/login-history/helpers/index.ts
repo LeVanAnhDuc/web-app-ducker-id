@@ -5,15 +5,24 @@ import geoip from "geoip-lite";
 import type { Request } from "express";
 import type {
   ClientType,
+  CreateLoginHistoryData,
   DeviceType,
+  LoginAnomalyAssessment,
+  LoginAnomalyReason,
+  LoginEventPayload,
   LoginHistoryAdminQuery,
-  LoginHistoryFilter
+  LoginHistoryFilter,
+  SignInTraits
 } from "@/modules/login-history/types";
 // modules
 import {
   CLIENT_TYPES,
   DEVICE_TYPES,
   GEO_DEFAULTS,
+  HTTP_HEADERS,
+  LOGIN_ANOMALY_CONFIG,
+  LOGIN_ANOMALY_REASONS,
+  LOGIN_SOURCES,
   USER_AGENT_DEFAULTS,
   LOCALHOST_VALUES,
   PRIVATE_IP_PATTERNS
@@ -249,4 +258,112 @@ export const buildLoginHistoryFilter = (
   if (query.toDate) filter.toDate = endOfDayIfDateOnly(query.toDate);
 
   return filter;
+};
+
+// ──────────────────────────────────────────────
+// buildLoginHistoryData
+// ──────────────────────────────────────────────
+
+/** Turns a login event into the row to store — UA parsing and geoip included. */
+export const buildLoginHistoryData = (
+  payload: LoginEventPayload
+): CreateLoginHistoryData => {
+  const {
+    userId,
+    usernameAttempted,
+    status,
+    failReason,
+    loginMethod,
+    req,
+    timezoneOffset,
+    app
+  } = payload;
+
+  const ip = extractIp(req);
+  const userAgent = req.headers[HTTP_HEADERS.USER_AGENT] || "";
+  const clientTypeHeader = req.headers[HTTP_HEADERS.CLIENT_TYPE] as
+    | string
+    | undefined;
+  const { deviceType, os, browser } = parseUserAgent(userAgent);
+  const { country, city } = geoipLookup(ip);
+
+  return {
+    userId,
+    usernameAttempted,
+    method: loginMethod,
+    status,
+    failReason,
+    ip,
+    country,
+    city,
+    deviceType,
+    os,
+    browser,
+    userAgent,
+    clientType: determineClientType(clientTypeHeader),
+    timezoneOffset: timezoneOffset || null,
+    isAnomaly: false,
+    anomalyReasons: [],
+    source: app ? LOGIN_SOURCES.OAUTH : LOGIN_SOURCES.IDP,
+    webAppId: app?.webAppId ?? null,
+    clientName: app?.clientName ?? null,
+    interactive: app?.interactive ?? true
+  };
+};
+
+// ──────────────────────────────────────────────
+// Login anomaly
+// ──────────────────────────────────────────────
+
+/**
+ * `parseUserAgent` keeps versions (`Chrome 126.0.0.0`, `Windows 10`). An
+ * auto-update must not turn a known device into a "new" one, so comparisons
+ * and the user-facing text use the name alone.
+ */
+export const stripVersion = (value: string): string =>
+  value.replace(/(\s+v?[\d._]+)+$/i, "").trim() || value;
+
+export const deviceFingerprint = (
+  data: Pick<CreateLoginHistoryData, "browser" | "os" | "deviceType">
+): string =>
+  [stripVersion(data.browser), stripVersion(data.os), data.deviceType].join(
+    "|"
+  );
+
+// The repository returns stored `browser|os|deviceType` strings verbatim.
+const normalizeFingerprint = (raw: string): string => {
+  const [browser = "", os = "", deviceType = ""] = raw.split("|");
+  return [stripVersion(browser), stripVersion(os), deviceType].join("|");
+};
+
+const isPlace = (country: string): boolean =>
+  !!country &&
+  !(LOGIN_ANOMALY_CONFIG.IGNORED_COUNTRIES as readonly string[]).includes(
+    country
+  );
+
+/**
+ * A sign-in is anomalous when its device or its country never appeared in the
+ * user's earlier successful sign-ins. The very first sign-in has nothing to
+ * compare against and is never flagged.
+ */
+export const assessLoginAnomaly = (
+  current: Pick<
+    CreateLoginHistoryData,
+    "browser" | "os" | "deviceType" | "country"
+  >,
+  traits: SignInTraits
+): LoginAnomalyAssessment => {
+  if (!traits.hasHistory) return { isAnomaly: false, reasons: [] };
+
+  const reasons: LoginAnomalyReason[] = [];
+  const knownDevices = traits.devices.map(normalizeFingerprint);
+  if (!knownDevices.includes(deviceFingerprint(current))) {
+    reasons.push(LOGIN_ANOMALY_REASONS.NEW_DEVICE);
+  }
+  if (isPlace(current.country) && !traits.countries.includes(current.country)) {
+    reasons.push(LOGIN_ANOMALY_REASONS.NEW_COUNTRY);
+  }
+
+  return { isAnomaly: reasons.length > 0, reasons };
 };

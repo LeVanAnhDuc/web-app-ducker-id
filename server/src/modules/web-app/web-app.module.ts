@@ -1,5 +1,6 @@
 // types
 import type { CategoryRepository } from "@/modules/category/repository/category.repository";
+import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 // others
 import { MongoWebAppRepository } from "./repository/impl/mongo-web-app.repository";
 import { MongoFavoriteRepository } from "@/modules/favorite/repository/impl/mongo-favorite.repository";
@@ -10,13 +11,17 @@ import {
   createUserWebAppRoutes
 } from "./web-app.routes";
 
-export const createWebAppModule = (categoryRepo: CategoryRepository) => {
+export const createWebAppModule = (
+  categoryRepo: CategoryRepository,
+  notificationDispatcher: NotificationDispatcher
+) => {
   const webAppRepo = new MongoWebAppRepository();
   const favoriteRepo = new MongoFavoriteRepository();
   const service = new WebAppService({
     webAppRepo,
     categoryRepo,
-    favoriteRepo
+    favoriteRepo,
+    notificationDispatcher
   });
   const controller = new WebAppController(service);
 

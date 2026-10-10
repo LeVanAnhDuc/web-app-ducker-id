@@ -1,6 +1,8 @@
 // models
 import NotificationModel from "@/models/notification";
 import UserModel from "@/models/user";
+// modules
+import { NOTIFICATION_CATEGORY_BY_TYPE } from "@/modules/notification/constants";
 // others
 import {
   buildSeedNotifications,
@@ -29,9 +31,9 @@ export const seedNotifications = async (): Promise<void> => {
     const docs = buildSeedNotifications().map((n) => ({
       userId: user._id,
       type: n.type,
-      title: n.title,
-      message: n.message,
-      meta: null,
+      category: NOTIFICATION_CATEGORY_BY_TYPE[n.type],
+      params: n.params,
+      link: n.link,
       isRead: n.isRead,
       readAt: n.isRead ? new Date(now - n.ageMs) : null,
       createdAt: new Date(now - n.ageMs)

@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Notification Events — mock</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet" />
+<style>
+  /* Tokens mirror docs/design-system/ducker-id/MASTER.md (light). */
+  :root {
+    --bg: #FAFAF9; --fg: #1C1917; --card: #FFFFFF; --muted: #F5F5F4; --muted-fg: #57534E;
+    --border: #E7E5E4; --primary: #143A5A; --keyline: #B07D2B; --destructive: #B42318;
+    --info: #2A5F8F;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.5 "IBM Plex Sans", sans-serif; }
+  h1, h2 { font-family: "Space Grotesk", sans-serif; margin: 0; }
+  .note { max-width: 1120px; margin: 24px auto 0; padding: 0 16px; color: var(--muted-fg); }
+  .stage { max-width: 1120px; margin: 16px auto 48px; padding: 0 16px; display: grid; grid-template-columns: 380px 1fr; gap: 32px; align-items: start; }
+  @media (max-width: 900px) { .stage { grid-template-columns: 1fr; } }
+  .label { font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: .06em; color: var(--muted-fg); margin-bottom: 8px; }
+  .surface { background: var(--card); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 10px 15px rgba(0,0,0,.1); overflow: hidden; }
+  .panel-head { padding: 12px 16px; display: flex; align-items: center; gap: 8px; }
+  .panel-head h2 { font-size: 16px; }
+  .count { background: var(--primary); color: #fff; border-radius: 999px; font-size: 12px; padding: 0 8px; line-height: 20px; }
+  .spacer { flex: 1; }
+  .link-btn { background: none; border: 0; color: var(--primary); font: 500 13px "IBM Plex Sans"; cursor: pointer; padding: 0; }
+  .tabs { display: flex; gap: 4px; padding: 0 16px; border-bottom: 1px solid var(--border); }
+  .tab { padding: 8px 12px; font-weight: 500; color: var(--muted-fg); border-bottom: 2px solid transparent; }
+  .tab.on { color: var(--fg); border-color: var(--keyline); }
+  .list { max-height: 420px; overflow: auto; padding: 4px 0; }
+  .item { position: relative; display: flex; gap: 12px; padding: 12px 16px 12px 18px; border-left: 2px solid transparent; }
+  .item:hover { background: var(--muted); }
+  .item.unread { border-left-color: var(--keyline); }
+  .icon { flex: 0 0 36px; height: 36px; border-radius: 999px; display: grid; place-items: center; font-size: 16px; }
+  .icon.security { background: rgba(180,35,24,.1); color: var(--destructive); }
+  .icon.app { background: rgba(42,95,143,.12); color: var(--info); }
+  .body { flex: 1; min-width: 0; }
+  .row { display: flex; justify-content: space-between; gap: 8px; }
+  .title { font-weight: 400; }
+  .unread .title { font-weight: 600; }
+  .time { color: var(--muted-fg); font-size: 12px; white-space: nowrap; }
+  .msg { color: var(--muted-fg); margin-top: 2px; }
+  .secondary { margin-top: 6px; font-size: 13px; color: var(--destructive); font-weight: 500; text-decoration: underline; }
+  .mark { flex: 0 0 32px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); cursor: pointer; align-self: center; }
+  .foot { border-top: 1px solid var(--border); padding: 12px; text-align: center; }
+  .page-head { display: flex; align-items: end; justify-content: space-between; margin-bottom: 16px; }
+  .page-head h1 { font-size: 25px; }
+  .btn { height: 36px; padding: 0 16px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--primary); font: 500 14px "IBM Plex Sans"; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+  .chip { height: 32px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--border); display: inline-flex; align-items: center; font-weight: 500; color: var(--muted-fg); }
+  .chip.on { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .group { padding: 12px 16px 4px; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: .06em; color: var(--muted-fg); }
+  .states { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
+  .state { padding: 24px 16px; text-align: center; color: var(--muted-fg); }
+  .state strong { display: block; font-family: "Space Grotesk"; color: var(--fg); margin-bottom: 4px; }
+  .skel { height: 12px; border-radius: 6px; background: var(--muted); margin: 8px 0; }
+</style>
+</head>
+<body>
+<p class="note">Mock for <code>docs/specs/notification-events/design.md</code> §6. Icons are drawn as glyph placeholders — the build uses Lucide (<code>ShieldAlert</code>, <code>Lock</code>, <code>KeyRound</code>, <code>Sparkles</code>, <code>Check</code>). Unread = 2px brass keyline + weight 600; read = weight 400, never reduced opacity.</p>
+
+<div class="stage">
+  <div>
+    <div class="label">Header panel (Popover)</div>
+    <div class="surface" role="dialog" aria-label="Notifications">
+      <div class="panel-head"><h2>Notifications</h2><span class="count">3</span><span class="spacer"></span><button class="link-btn">Mark all as read</button></div>
+      <div class="tabs"><span class="tab on">All</span><span class="tab">Unread</span></div>
+      <div class="list">
+        <div class="item unread">
+          <div class="icon security">⚠</div>
+          <div class="body">
+            <div class="row"><span class="title">New sign-in to your account</span><span class="time">2 min ago</span></div>
+            <div class="msg">Chrome on Windows, from Vietnam — a device and country we haven't seen before.</div>
+            <div class="secondary">Not you? Change your password</div>
+          </div>
+          <button class="mark" aria-label="Mark as read">✓</button>
+        </div>
+        <div class="item unread">
+          <div class="icon app">✦</div>
+          <div class="body">
+            <div class="row"><span class="title">New app available</span><span class="time">1 h ago</span></div>
+            <div class="msg">Atlas Imagery is now in your launcher.</div>
+          </div>
+          <button class="mark" aria-label="Mark as read">✓</button>
+        </div>
+        <div class="item unread">
+          <div class="icon security">🔑</div>
+          <div class="body">
+            <div class="row"><span class="title">Your password was reset by an administrator</span><span class="time">Yesterday</span></div>
+            <div class="msg">Sign in with the temporary password from your email, then choose a new one.</div>
+          </div>
+          <button class="mark" aria-label="Mark as read">✓</button>
+        </div>
+        <div class="item">
+          <div class="icon security">🔒</div>
+          <div class="body">
+            <div class="row"><span class="title">Account temporarily locked</span><span class="time">3 days ago</span></div>
+            <div class="msg">Too many wrong passwords. Sign-in was blocked for 30 minutes.</div>
+          </div>
+        </div>
+      </div>
+      <div class="foot"><button class="link-btn">View all notifications</button></div>
+    </div>
+  </div>
+
+  <div>
+    <div class="label">/notifications page</div>
+    <div class="page-head"><div><h1>Notifications</h1><div style="color:var(--muted-fg)">Security alerts, account changes and new apps.</div></div><button class="btn">Mark all as read</button></div>
+    <div class="surface" style="box-shadow:0 1px 2px rgba(0,0,0,.05)">
+      <div class="tabs"><span class="tab on">All</span><span class="tab">Unread</span><span class="tab">Read</span></div>
+      <div class="chips"><span class="chip on">All types</span><span class="chip">Security</span><span class="chip">Account</span><span class="chip">Apps</span><span class="chip">System</span></div>
+      <div class="group">Today</div>
+      <div class="item unread">
+        <div class="icon security">⚠</div>
+        <div class="body">
+          <div class="row"><span class="title">New sign-in to your account</span><span class="time">2 min ago</span></div>
+          <div class="msg">Chrome on Windows, from Vietnam — a device and country we haven't seen before.</div>
+          <div class="secondary">Not you? Change your password</div>
+        </div>
+        <button class="mark" aria-label="Mark as read">✓</button>
+      </div>
+      <div class="item unread">
+        <div class="icon app">✦</div>
+        <div class="body"><div class="row"><span class="title">New app available</span><span class="time">1 h ago</span></div><div class="msg">Atlas Imagery is now in your launcher.</div></div>
+        <button class="mark" aria-label="Mark as read">✓</button>
+      </div>
+      <div class="group">Earlier</div>
+      <div class="item">
+        <div class="icon security">🔑</div>
+        <div class="body"><div class="row"><span class="title">Your password was changed</span><span class="time">5 days ago</span></div><div class="msg">If this wasn't you, reset your password right away.</div></div>
+      </div>
+      <div class="foot"><button class="btn">Load more notifications</button></div>
+    </div>
+
+    <div class="states">
+      <div class="surface state"><div class="skel"></div><div class="skel" style="width:70%"></div><div class="skel" style="width:85%"></div>Loading</div>
+      <div class="surface state"><strong>You're all caught up</strong>No notifications here.</div>
+      <div class="surface state"><strong>Couldn't load notifications</strong><button class="btn" style="margin-top:8px">Try again</button></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

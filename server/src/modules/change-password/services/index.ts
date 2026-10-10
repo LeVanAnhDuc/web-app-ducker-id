@@ -3,12 +3,18 @@ import type { ChangePasswordRequest } from "../types";
 import type { AuthenticationService } from "@/modules/authentication/services";
 import type { UserService } from "@/modules/user/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
+import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 import type { AuthTokensResponse } from "@/modules/authentication/types";
 import type { WrongCurrentPasswordGuard, SamePasswordGuard } from "../guards";
 // common
 import { UnauthorizedError } from "@/common/exceptions";
 // modules
 import { generateAuthTokensResponse } from "@/modules/authentication/helpers";
+import {
+  NOTIFICATION_LINKS,
+  NOTIFICATION_TYPES,
+  PASSWORD_CHANGE_ACTORS
+} from "@/modules/notification/constants";
 import { EmailType } from "@/types/services/email";
 // others
 import { RequestContext } from "@/utils/request-context";
@@ -21,6 +27,7 @@ export class ChangePasswordService {
     private readonly authService: AuthenticationService,
     private readonly userService: UserService,
     private readonly emailDispatcher: EmailDispatcher,
+    private readonly notificationDispatcher: NotificationDispatcher,
     private readonly wrongCurrentPasswordGuard: WrongCurrentPasswordGuard,
     private readonly samePasswordGuard: SamePasswordGuard
   ) {}
@@ -78,6 +85,13 @@ export class ChangePasswordService {
         changedAt: new Date().toISOString(),
         ipAddress: req.ip ?? "unknown"
       }
+    });
+
+    this.notificationDispatcher.notify({
+      userId: user._id.toString(),
+      type: NOTIFICATION_TYPES.PASSWORD_CHANGED,
+      params: { actor: PASSWORD_CHANGE_ACTORS.SELF },
+      link: NOTIFICATION_LINKS.PROFILE
     });
 
     Logger.info("Password changed", {

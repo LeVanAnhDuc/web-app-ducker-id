@@ -1,19 +1,32 @@
 {
   "title": "Notifications",
-  "description": "Updates, alerts, and activity from your store",
+  "description": "Security alerts, account changes and new apps.",
   "actions": {
     "markAllRead": "Mark all as read",
     "markRead": "Mark as read",
-    "loadMore": "Load more notifications"
+    "loadMore": "Load more notifications",
+    "notMe": "Not you? Change your password",
+    "retry": "Try again"
   },
   "states": {
+    "emptyTitle": "You're all caught up",
     "empty": "No notifications here.",
     "loading": "Loading notifications...",
+    "errorTitle": "Something went wrong",
     "error": "Couldn't load notifications."
   },
   "tabs": {
+    "all": "All",
     "unread": "Unread",
     "read": "Read"
+  },
+  "categories": {
+    "label": "Filter by type",
+    "all": "All types",
+    "security": "Security",
+    "account": "Account",
+    "app": "Apps",
+    "system": "System"
   },
   "groups": {
     "today": "Today",
@@ -22,8 +35,42 @@
   },
   "announce": {
     "tabChanged": "Showing {tab} notifications.",
+    "categoryChanged": "Showing {category} notifications.",
     "markedRead": "Notification marked as read.",
     "markedAllRead": "All notifications marked as read.",
     "loadingMore": "Loading more notifications..."
+  },
+  "toast": {
+    "markReadError": "Could not mark as read."
+  },
+  "types": {
+    "LOGIN_ANOMALY": {
+      "title": "New sign-in to your account",
+      "body": "{reason, select, country {A sign-in from {country}, where you haven't signed in before.} both {{browser} on {os}, from {country} — a device and a country we haven't seen before.} other {{browser} on {os} — a device we haven't seen on your account before.}}"
+    },
+    "ACCOUNT_LOCKED": {
+      "title": "Account temporarily locked",
+      "body": "Too many wrong passwords. Sign-in was blocked for {minutes} minutes."
+    },
+    "PASSWORD_CHANGED": {
+      "title": "{actor, select, admin {Your password was reset by an administrator} other {Your password was changed}}",
+      "body": "{actor, select, admin {Sign in with the temporary password from your email, then choose a new one.} other {If this wasn't you, reset your password right away.}}"
+    },
+    "APP_AVAILABLE": {
+      "title": "New app available",
+      "body": "{appName} is now in your launcher."
+    },
+    "ENTITLEMENT_GRANTED": {
+      "title": "Access granted",
+      "body": "You can now open {appName}."
+    },
+    "ENTITLEMENT_REVOKED": {
+      "title": "Access removed",
+      "body": "You no longer have access to {appName}."
+    },
+    "SYSTEM_ANNOUNCEMENT": {
+      "title": "Announcement",
+      "body": "There is a new announcement from Ducker ID."
+    }
   }
 }

@@ -5,8 +5,10 @@ import type { NotificationDocument } from "@/modules/notification/types";
 // modules
 import {
   NOTIFICATION_TYPES,
+  NOTIFICATION_CATEGORIES,
   NOTIFICATION_CONFIG
 } from "@/modules/notification/constants";
+import { isInternalLink } from "@/modules/notification/helpers";
 // others
 import { MODEL_NAMES } from "@/constants/models";
 
@@ -24,26 +26,32 @@ const NotificationSchema = new Schema<NotificationDocument>(
       enum: Object.values(NOTIFICATION_TYPES),
       required: [true, "Notification type is required"]
     },
-    title: {
+    category: {
       type: String,
-      required: [true, "Title is required"],
-      trim: true,
-      maxlength: [
-        NOTIFICATION_CONFIG.TITLE_MAX_LENGTH,
-        `Title must not exceed ${NOTIFICATION_CONFIG.TITLE_MAX_LENGTH} characters`
-      ]
+      enum: Object.values(NOTIFICATION_CATEGORIES),
+      required: [true, "Notification category is required"]
     },
-    message: {
-      type: String,
-      required: [true, "Message is required"],
-      trim: true,
-      maxlength: [
-        NOTIFICATION_CONFIG.MESSAGE_MAX_LENGTH,
-        `Message must not exceed ${NOTIFICATION_CONFIG.MESSAGE_MAX_LENGTH} characters`
-      ]
-    },
-    meta: {
+    // Text is not stored: the client renders `notifications.types.<type>` in
+    // the reader's locale and interpolates these values.
+    params: {
       type: Schema.Types.Mixed,
+      default: {}
+    },
+    link: {
+      type: String,
+      default: null,
+      maxlength: [
+        NOTIFICATION_CONFIG.LINK_MAX_LENGTH,
+        `Link must not exceed ${NOTIFICATION_CONFIG.LINK_MAX_LENGTH} characters`
+      ],
+      validate: {
+        validator: (value: string | null) =>
+          value === null || isInternalLink(value),
+        message: "Link must be an internal path"
+      }
+    },
+    dedupeKey: {
+      type: String,
       default: null
     },
     isRead: {
@@ -64,6 +72,11 @@ const NotificationSchema = new Schema<NotificationDocument>(
 NotificationSchema.index({ userId: 1, createdAt: -1 });
 NotificationSchema.index({ userId: 1, isRead: 1, createdAt: -1 });
 NotificationSchema.index({ userId: 1, type: 1, createdAt: -1 });
+NotificationSchema.index({ userId: 1, category: 1, createdAt: -1 });
+NotificationSchema.index(
+  { userId: 1, dedupeKey: 1 },
+  { unique: true, partialFilterExpression: { dedupeKey: { $type: "string" } } }
+);
 
 const NotificationModel: Model<NotificationDocument> =
   model<NotificationDocument>(NOTIFICATION, NotificationSchema);

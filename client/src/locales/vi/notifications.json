@@ -1,19 +1,32 @@
 {
   "title": "Thông báo",
-  "description": "Cập nhật, cảnh báo và hoạt động của cửa hàng",
+  "description": "Cảnh báo bảo mật, thay đổi tài khoản và ứng dụng mới.",
   "actions": {
     "markAllRead": "Đánh dấu tất cả đã đọc",
     "markRead": "Đánh dấu đã đọc",
-    "loadMore": "Tải thêm thông báo"
+    "loadMore": "Tải thêm thông báo",
+    "notMe": "Không phải bạn? Đổi mật khẩu",
+    "retry": "Thử lại"
   },
   "states": {
+    "emptyTitle": "Bạn đã xem hết",
     "empty": "Không có thông báo nào ở đây.",
     "loading": "Đang tải thông báo...",
+    "errorTitle": "Đã có lỗi xảy ra",
     "error": "Không thể tải thông báo."
   },
   "tabs": {
+    "all": "Tất cả",
     "unread": "Chưa đọc",
     "read": "Đã đọc"
+  },
+  "categories": {
+    "label": "Lọc theo loại",
+    "all": "Mọi loại",
+    "security": "Bảo mật",
+    "account": "Tài khoản",
+    "app": "Ứng dụng",
+    "system": "Hệ thống"
   },
   "groups": {
     "today": "Hôm nay",
@@ -22,8 +35,42 @@
   },
   "announce": {
     "tabChanged": "Đang hiển thị thông báo {tab}.",
+    "categoryChanged": "Đang hiển thị thông báo {category}.",
     "markedRead": "Đã đánh dấu thông báo là đã đọc.",
     "markedAllRead": "Đã đánh dấu tất cả thông báo là đã đọc.",
     "loadingMore": "Đang tải thêm thông báo..."
+  },
+  "toast": {
+    "markReadError": "Không thể đánh dấu đã đọc."
+  },
+  "types": {
+    "LOGIN_ANOMALY": {
+      "title": "Có lượt đăng nhập mới vào tài khoản",
+      "body": "{reason, select, country {Một lượt đăng nhập từ {country}, nơi bạn chưa từng đăng nhập.} both {{browser} trên {os}, từ {country} — thiết bị và quốc gia chưa từng thấy.} other {{browser} trên {os} — thiết bị chưa từng đăng nhập vào tài khoản của bạn.}}"
+    },
+    "ACCOUNT_LOCKED": {
+      "title": "Tài khoản tạm thời bị khoá",
+      "body": "Nhập sai mật khẩu quá nhiều lần. Đăng nhập bị chặn trong {minutes} phút."
+    },
+    "PASSWORD_CHANGED": {
+      "title": "{actor, select, admin {Quản trị viên đã đặt lại mật khẩu của bạn} other {Mật khẩu của bạn đã được đổi}}",
+      "body": "{actor, select, admin {Đăng nhập bằng mật khẩu tạm trong email, rồi chọn mật khẩu mới.} other {Nếu không phải bạn, hãy đặt lại mật khẩu ngay.}}"
+    },
+    "APP_AVAILABLE": {
+      "title": "Có ứng dụng mới",
+      "body": "{appName} đã có trong launcher của bạn."
+    },
+    "ENTITLEMENT_GRANTED": {
+      "title": "Đã được cấp quyền",
+      "body": "Giờ bạn đã có thể mở {appName}."
+    },
+    "ENTITLEMENT_REVOKED": {
+      "title": "Đã bị thu hồi quyền",
+      "body": "Bạn không còn quyền truy cập {appName}."
+    },
+    "SYSTEM_ANNOUNCEMENT": {
+      "title": "Thông báo chung",
+      "body": "Ducker ID có một thông báo mới."
+    }
   }
 }
