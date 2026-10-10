@@ -91,10 +91,10 @@ async getMyContactDetail(id, userId) {
 ## PHẦN C — E2E (`client/`)
 
 ### Task C1: Suite `my-contacts` (expand matrix)
-**Files:** `client/e2e/my-contacts/{list.e2e.ts, detail.e2e.ts}`, `docs/specs/my-contacts/e2e.md`
+**Files:** `automation-test/tests/e2e/support/{list.e2e.ts, detail.e2e.ts}`, `automation-test/test-cases/support.md`
 - [ ] Expand từng row Applicable (design.md matrix) thành test; row `A only` (submit) gate A own mutation. BE contract cases (owner-scope, submit owner) ghi ở e2e.md là BE test.
 - [ ] Reuse helpers/auth (user project). Seed user-owned contacts (Task A4) là tiền đề.
-- [ ] `e2e.md` scenario final + follow-up. Commit (client + docs).
+- [ ] `automation-test/test-cases/support.md` scenario final + follow-up. Commit (client + docs).
 
 ## Self-Review (đã chạy)
 - Spec coverage: §2 owner → A1/A2; §3 endpoints → A3; seed → A4; §4 FE → B1–B3; matrix → C1. ✅

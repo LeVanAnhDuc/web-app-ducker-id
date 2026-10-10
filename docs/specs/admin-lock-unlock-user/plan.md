@@ -42,8 +42,8 @@
 - Modify `src/types/AdminUsers/index.ts` — `SetAdminUserActiveResult`.
 - Modify `src/views/AdminUsers/hooks/useLockAdminUser.ts` + `useUnlockAdminUser.ts` — swap import.
 - Modify `src/mocks/AdminUsers.ts` — remove `lockAdminUser`/`unlockAdminUser`.
-- Create `e2e/admin-users-lock/lock-unlock.e2e.ts`.
-- Modify `e2e/admin-authz/admin-authz.e2e.ts` — add lock/unlock denial rows.
+- Create `automation-test/tests/e2e/admin-users/lock-unlock.e2e.ts`.
+- Modify `automation-test/tests/e2e/authz/admin-routes-denied.e2e.ts` — add lock/unlock denial rows.
 - Modify `playwright.config.ts` — route `admin-users-lock` to admin project + ignore in chromium.
 
 **docs/** — `specs/admin-lock-unlock-user/e2e.md` (execution), `security-report.md`, `e2e-bugs.md` (if needed).
@@ -344,7 +344,7 @@ export const unlockAdminUser = async (
 ## Task E2E-1: admin-users-lock suite (gate A)
 
 **Files:**
-- Create: `e2e/admin-users-lock/lock-unlock.e2e.ts`
+- Create: `automation-test/tests/e2e/admin-users/lock-unlock.e2e.ts`
 - Modify: `playwright.config.ts`
 
 **Interfaces:** consumes seeded users `admin@test.com` (actor), `user2@test.com` (lock target, revert), `inactive@test.com` (already locked → unlock target, re-lock in afterAll).
@@ -365,7 +365,7 @@ export const unlockAdminUser = async (
   - **a11y (row 12)**: open menu via keyboard (focus trigger, Enter); dialog focus trap; ESC closes dialog and fires 0 PATCH; Cancel closes with 0 PATCH; keyboard Enter on confirm fires exactly 1.
   - **Validation via API (row 4, admin session)**: with admin bearer via `page.request`: PATCH `/admin/users/zzz/lock` → 400; `/admin/users/<valid-but-missing-24hex>/lock` → 404; PATCH lock on the admin's OWN id → 403 `ADMIN_CANNOT_LOCK_SELF` (fetch own id from `/api/v1/users/me` then map to admin-users list `_id`).
   - `test.afterAll`: ensure `user2@test.com` unlocked and `inactive@test.com` locked (idempotent PATCH via admin request context) to restore seed state.
-- [ ] **Step 3:** Note in `docs/specs/admin-lock-unlock-user/e2e.md`: rate-limit awareness — keep real logins minimal (login guard 30/15min); the login-after-lock case does ≤3 logins.
+- [ ] **Step 3:** Note in `automation-test/test-cases/admin-users.md`: rate-limit awareness — keep real logins minimal (login guard 30/15min); the login-after-lock case does ≤3 logins.
 - [ ] **Step 4:** (App must be running — see §4.3 preflight.) Run the suite: `cd client && pnpm exec playwright test admin-users-lock` → PASS.
 - [ ] **Step 5:** Commit: `git add -A && git commit -m "test(admin-users-lock): e2e for lock/unlock (gate A)"`.
 
@@ -374,7 +374,7 @@ export const unlockAdminUser = async (
 ## Task E2E-2: AuthN + AuthZ denial
 
 **Files:**
-- Modify: `e2e/admin-authz/admin-authz.e2e.ts`
+- Modify: `automation-test/tests/e2e/authz/admin-routes-denied.e2e.ts`
 
 **Interfaces:** runs under chromium (non-admin storageState) + a token-less request context for AuthN.
 
@@ -388,7 +388,7 @@ export const unlockAdminUser = async (
 ## Task DOCS-1: Write e2e.md
 
 **Files:**
-- Create: `docs/specs/admin-lock-unlock-user/e2e.md`
+- Create: `automation-test/test-cases/admin-users.md`
 
 - [ ] **Step 1:** Record the final scenario list (mirror design.md matrix rows with their gate tags), which seeded users each uses, and the two deferred cases (§design "Deferred / N/A"). Note gate-B (MCP walk) verifies render/i18n/a11y only, no mutation.
 - [ ] **Step 2:** Commit (docs worktree): `git add -A && git commit -m "docs(admin-lock-unlock-user): e2e scenario execution notes"`.

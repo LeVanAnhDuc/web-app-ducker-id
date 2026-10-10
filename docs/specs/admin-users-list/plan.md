@@ -1117,8 +1117,8 @@ git add src/views/AdminUsers/mains/AdminUsersTable/index.tsx src/locales/en/admi
 ### Task 13: E2E (Playwright) — fixed verification step (CLAUDE.md §4.3)
 
 **Files:**
-- Create: `client/e2e/admin-users-list/admin-users-list.e2e.ts`
-- Create: `docs/specs/admin-users-list/e2e.md`
+- Create: `automation-test/tests/e2e/admin-users/admin-users-list.e2e.ts`
+- Create: `automation-test/test-cases/admin-users.md`
 
 - [ ] **Step 1: App-running pre-check**
 
@@ -1126,15 +1126,15 @@ Verify BE :5000, FE :3000, Mongo, Redis are up and DB seeded (with ≥ a few use
 
 - [ ] **Step 2: Write the E2E scenario doc**
 
-`docs/specs/admin-users-list/e2e.md`: document scenarios — (1) admin loads `/admin/users`, sees a non-empty table; (2) filter by role=admin narrows rows; (3) search by email narrows rows; (4) pagination control navigates pages when total > limit. Read-only (no mutations) — no data revert needed.
+`automation-test/test-cases/admin-users.md`: document scenarios — (1) admin loads `/admin/users`, sees a non-empty table; (2) filter by role=admin narrows rows; (3) search by email narrows rows; (4) pagination control navigates pages when total > limit. Read-only (no mutations) — no data revert needed.
 
 - [ ] **Step 3: Write the test**
 
-`client/e2e/admin-users-list/admin-users-list.e2e.ts` — reuse `client/e2e/helpers/` + global `auth.setup.ts` (admin storageState). Selectors: role/label first; fall back to `input[name=...]`/`data-testid` if DOM lacks associations. Do NOT modify app code from the test — flag any a11y/DOM gap as follow-up.
+`automation-test/tests/e2e/admin-users/admin-users-list.e2e.ts` — reuse `automation-test/helpers/` + global `auth.setup.ts` (admin storageState). Selectors: role/label first; fall back to `input[name=...]`/`data-testid` if DOM lacks associations. Do NOT modify app code from the test — flag any a11y/DOM gap as follow-up.
 
 - [ ] **Step 4: Run E2E**
 
-Run: `cd client && pnpm e2e` (against the running app — worktree FE on :3100 via `E2E_BASE_URL` if applicable)
+Run: `cd automation-test && pnpm test` (against the running app — worktree FE on :3100 via `E2E_BASE_URL` if applicable)
 Expected: all admin-users-list specs green.
 
 - [ ] **Step 5: Teardown (only if agent started services)**
@@ -1145,7 +1145,7 @@ Stop only the ports/processes the agent started for the test. Leave anything the
 
 ```bash
 # in client worktree
-git add e2e/admin-users-list/admin-users-list.e2e.ts
+git add automation-test/tests/e2e/admin-users/admin-users-list.e2e.ts
 # in docs worktree
 git add specs/admin-users-list/e2e.md
 ```
@@ -1189,11 +1189,11 @@ Per project rule, implementer subagents **stage but do NOT commit per-task** (Re
 
 ## E2E Backfill Plan
 
-> **Mục tiêu:** backfill suite `admin-users-list` E2E để cover toàn bộ `## 9. E2E Scenario Matrix` của `design.md`. File hiện có (`client/e2e/admin-users-list/admin-users-list.e2e.ts`) đã có 5 test (`[EXISTS]` rows 1, 6-partial, 7-partial); phần dưới expand các row `[NEW]` còn thiếu thành từng task TDD bite-sized.
+> **Mục tiêu:** backfill suite `admin-users-list` E2E để cover toàn bộ `## 9. E2E Scenario Matrix` của `design.md`. File hiện có (`automation-test/tests/e2e/admin-users/admin-users-list.e2e.ts`) đã có 5 test (`[EXISTS]` rows 1, 6-partial, 7-partial); phần dưới expand các row `[NEW]` còn thiếu thành từng task TDD bite-sized.
 >
-> **Phương pháp (TDD):** với mỗi task — viết test ASSERT trước → chạy `pnpm e2e` (đỏ nếu app chưa đủ behavior) → nếu đỏ do thiếu code-fix prereq (CF-*) thì task đó **BLOCKED** cho tới khi CF tương ứng landed (xem dependency tag). Test chỉ pass khi behavior thật của app khớp; KHÔNG nới lỏng assertion để ép xanh.
+> **Phương pháp (TDD):** với mỗi task — viết test ASSERT trước → chạy `pnpm test` (đỏ nếu app chưa đủ behavior) → nếu đỏ do thiếu code-fix prereq (CF-*) thì task đó **BLOCKED** cho tới khi CF tương ứng landed (xem dependency tag). Test chỉ pass khi behavior thật của app khớp; KHÔNG nới lỏng assertion để ép xanh.
 >
-> **Test file target (extend):** `client/e2e/admin-users-list/admin-users-list.e2e.ts` — suite này chạy dưới project `admin` (admin `storageState`) sau khi **CF-1** đổi config (xem Task E0). Tài liệu kịch bản đồng bộ ở `docs/specs/admin-users-list/e2e.md`.
+> **Test file target (extend):** `automation-test/tests/e2e/admin-users/admin-users-list.e2e.ts` — suite này chạy dưới project `admin` (admin `storageState`) sau khi **CF-1** đổi config (xem Task E0). Tài liệu kịch bản đồng bộ ở `automation-test/test-cases/admin-users.md`.
 >
 > **Selectors (đã verify từ FE source — đừng đoán lại):**
 > - Cell email: `page.getByText(email, { exact: true })` (helper `cell` đã có).
@@ -1210,21 +1210,21 @@ Per project rule, implementer subagents **stage but do NOT commit per-task** (Re
 
 ### Dependencies (code-fix prereq từ design.md §10)
 
-- **CF-1** (config routing) → blocks Task E0 (config) + Task E3 (AuthZ deny). Suite chạy dưới project `admin` chỉ sau khi CF-1 thêm config; AuthZ deny test sống ở `client/e2e/admin-authz/` (user storageState trên route admin).
+- **CF-1** (config routing) → blocks Task E0 (config) + Task E3 (AuthZ deny). Suite chạy dưới project `admin` chỉ sau khi CF-1 thêm config; AuthZ deny test sống ở `automation-test/tests/e2e/authz/` (user storageState trên route admin).
 - **CF-2** (`isError` branch) → blocks Task E10 (error UI 500).
 - **CF-4** (`useAnnounce` wiring) → blocks phần announce của Task E11b (a11y `#announcer`).
 
 ---
 
 ### Task E0 — [CF-1] Đưa suite `admin-users-list` vào project `admin` + tách project `admin-authz`
-**Depends: CF-1.** File: `client/playwright.config.ts` (FE repo — không thuộc docs scope; ghi ở đây để implement FE pick up).
+**Depends: CF-1.** File: `automation-test/playwright.config.ts` (FE repo — không thuộc docs scope; ghi ở đây để implement FE pick up).
 
 - [ ] Config hiện `admin` project `testMatch: /admin-apps\/.*\.e2e\.ts/` chỉ match `admin-apps/`. Mở rộng để suite `admin-users-list/` cũng chạy admin storageState:
   ```ts
   {
     name: "admin",
     testMatch: /(admin-apps|admin-users-list|admin-login-history)\/.*\.e2e\.ts/,
-    use: { ...devices["Desktop Chrome"], storageState: "e2e/.auth/admin.json" },
+    use: { ...devices["Desktop Chrome"], storageState: "automation-test/.auth/admin.json" },
     dependencies: ["admin-setup"]
   }
   ```
@@ -1237,7 +1237,7 @@ Per project rule, implementer subagents **stage but do NOT commit per-task** (Re
   {
     name: "admin-authz",
     testMatch: /admin-authz\/.*\.e2e\.ts/,
-    use: { ...devices["Desktop Chrome"], storageState: "e2e/.auth/user.json" },
+    use: { ...devices["Desktop Chrome"], storageState: "automation-test/.auth/user.json" },
     dependencies: ["setup"]
   }
   ```
@@ -1297,9 +1297,9 @@ Per project rule, implementer subagents **stage but do NOT commit per-task** (Re
   });
   ```
 
-- [ ] **E3** `3` AuthZ deny — role=user trên route admin → BE `adminGuard` 403 → FE chặn `[DT]`. **Depends: CF-1.** **Lives in `client/e2e/admin-authz/admin-authz.e2e.ts`** (project `admin-authz`, user storageState) — KHÔNG trong file admin-users-list (file đó dưới admin storageState, không cover deny). Cross-reference từ đây. Code (non-obvious — chạy dưới user storageState):
+- [ ] **E3** `3` AuthZ deny — role=user trên route admin → BE `adminGuard` 403 → FE chặn `[DT]`. **Depends: CF-1.** **Lives in `automation-test/tests/e2e/authz/admin-routes-denied.e2e.ts`** (project `admin-authz`, user storageState) — KHÔNG trong file admin-users-list (file đó dưới admin storageState, không cover deny). Cross-reference từ đây. Code (non-obvious — chạy dưới user storageState):
   ```ts
-  // client/e2e/admin-authz/admin-authz.e2e.ts  (project: admin-authz, user storageState)
+  // automation-test/tests/e2e/authz/admin-routes-denied.e2e.ts  (project: admin-authz, user storageState)
   import { test, expect } from "@playwright/test";
 
   test.describe("Admin route authorization", () => {
@@ -1404,7 +1404,7 @@ Per project rule, implementer subagents **stage but do NOT commit per-task** (Re
 
 - [ ] **E6b** `6` `[BVA]` beyond-range page — **(EXISTS, keep)** `?page=2` của dataset 1-trang → empty. *(đã có test "page param is wired to the API".)*
 
-- [ ] **E6c — DEFER (seed-gated):** visible pager click-through (next/prev đổi `?page=` qua `router.push`). **Lý do defer:** `TablePagination` return `null` khi `totalPages <= 1`; seed hiện <20 user + default `limit=20` → luôn 1 trang → pager ẩn by design. Click-through cần seed **>20 user** (persistent DB mutation, tránh cho feature read-only). **Không silent cap** — verify thay thế: E6a (limit boundaries via API meta) + E6b (`?page=2` empty). **Follow-up:** seed >20-user fixture rồi assert next/prev. *(Đồng bộ "Known caveat" trong `e2e.md`.)*
+- [ ] **E6c — DEFER (seed-gated):** visible pager click-through (next/prev đổi `?page=` qua `router.push`). **Lý do defer:** `TablePagination` return `null` khi `totalPages <= 1`; seed hiện <20 user + default `limit=20` → luôn 1 trang → pager ẩn by design. Click-through cần seed **>20 user** (persistent DB mutation, tránh cho feature read-only). **Không silent cap** — verify thay thế: E6a (limit boundaries via API meta) + E6b (`?page=2` empty). **Follow-up:** seed >20-user fixture rồi assert next/prev. *(Đồng bộ "Known caveat" trong `automation-test/test-cases/admin-users.md`.)*
 
 - [ ] **E6d — N/A (flag follow-up):** sort toggle UI. **Lý do N/A:** bảng chưa có control sort (`sortBy/order` chỉ ở contract, header không clickable). Cũng liên quan param-name drift `order` ↔ `sortOrder` (design.md §10) chưa reconcile. Khi UI sort landed → thêm `[ST]` sort toggle test.
 
@@ -1556,5 +1556,5 @@ Per project rule, implementer subagents **stage but do NOT commit per-task** (Re
 
 ---
 
-### Task E-DOC — Reconcile `docs/specs/admin-users-list/e2e.md`
-- [ ] CREATE/UPDATE `docs/specs/admin-users-list/e2e.md` để khớp suite sau backfill: **ADD** scenario mới (E1b, E2 AuthN, E3 AuthZ cross-ref tới `admin-authz/`, E4a-c validation, E5a-b empty/null, E6a limit-boundary, E7a-b combined+persist, E9 i18n, E10/E10b error+loading, E11a-c a11y); **UPDATE** "Known caveat" giữ nội dung pager defer (E6c) + thêm note CF-1/CF-2/CF-4 dependencies; giữ matrix (design.md §9) ↔ e2e.md ↔ test file đồng bộ (no drift). Ghi rõ scenario nào BLOCKED bởi CF-* và scenario nào DEFER (E6c) / N/A (E6d, row 11).
+### Task E-DOC — Reconcile `automation-test/test-cases/admin-users.md`
+- [ ] CREATE/UPDATE `automation-test/test-cases/admin-users.md` để khớp suite sau backfill: **ADD** scenario mới (E1b, E2 AuthN, E3 AuthZ cross-ref tới `admin-authz/`, E4a-c validation, E5a-b empty/null, E6a limit-boundary, E7a-b combined+persist, E9 i18n, E10/E10b error+loading, E11a-c a11y); **UPDATE** "Known caveat" giữ nội dung pager defer (E6c) + thêm note CF-1/CF-2/CF-4 dependencies; giữ matrix (design.md §9) ↔ e2e.md ↔ test file đồng bộ (no drift). Ghi rõ scenario nào BLOCKED bởi CF-* và scenario nào DEFER (E6c) / N/A (E6d, row 11).

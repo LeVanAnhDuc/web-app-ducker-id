@@ -175,11 +175,11 @@ git commit -m "fix(contact): remove Files (attachments) column from contact list
 
 ---
 
-### Task 4: E2E reconcile — cập nhật suite `e2e/contact/`
+### Task 4: E2E reconcile — cập nhật suite `automation-test/tests/e2e/admin-contact/`
 
 **Files:**
-- Modify: `client/e2e/contact/contact-display.e2e.ts`
-- Modify (docs, reconcile): `docs/specs/contact-ticket-id-display/e2e.md` (append delta note trỏ tới design mới)
+- Modify: `automation-test/tests/e2e/admin-contact/display.e2e.ts`
+- Modify (docs, reconcile): `automation-test/test-cases/support.md` + `automation-test/test-cases/admin-contact.md` (append delta note trỏ tới design mới)
 
 **Interfaces:** app chạy :3100 (worktree runner), admin project.
 
@@ -201,17 +201,17 @@ Lặp assert breadcrumb-id + no-Files-column ở cả `/admin/contact(/id)` (en)
 
 - [ ] **Step 5: Reconcile e2e.md**
 
-Append vào `docs/specs/contact-ticket-id-display/e2e.md` một mục "Delta (contact-detail-fullid-cleanup)" tóm tắt: detail full id, breadcrumb id, bỏ cột Tệp; trỏ tới `contact-detail-fullid-cleanup/design.md`.
+Append vào `automation-test/test-cases/support.md` + `automation-test/test-cases/admin-contact.md` một mục "Delta (contact-detail-fullid-cleanup)" tóm tắt: detail full id, breadcrumb id, bỏ cột Tệp; trỏ tới `contact-detail-fullid-cleanup/design.md`.
 
 - [ ] **Step 6: Gate A**
 
-Bring up worktree FE (`worktree.mjs up contact-detail-fullid-cleanup`, verify đúng owner :3100 + curl), rồi `pnpm e2e contact/`. Tất cả pass. Gate B (MCP) nếu môi trường có; không thì flag skip.
+Bring up worktree FE (`worktree.mjs up contact-detail-fullid-cleanup`, verify đúng owner :3100 + curl), rồi `pnpm test contact/`. Tất cả pass. Gate B (MCP) nếu môi trường có; không thì flag skip.
 
 - [ ] **Step 7: Commit (2 repo)**
 
 ```bash
 # client worktree
-git add e2e/contact && git commit -m "test(contact): reconcile e2e for full detail id + no Files column"
+git add automation-test/tests/e2e/admin-contact && git commit -m "test(contact): reconcile e2e for full detail id + no Files column"
 # docs worktree
 git -C <docs-worktree> add specs/contact-ticket-id-display/e2e.md && git commit -m "docs(contact): e2e delta for detail full id + Files column removal"
 ```

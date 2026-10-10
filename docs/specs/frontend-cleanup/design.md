@@ -113,7 +113,7 @@ Most groups are **pure refactors → no observable behavior change → no E2E**.
 | 13 | i18n (en+vi) | New `common.json` keys (pagination/empty/coming-soon) render correctly in both locales `[EP: locale en, vi]` | A+B |
 | 14 | a11y | Copy button: `aria-label` updates on copied; check icon not the sole signal (label too) | B |
 
-**Notes:** Scenarios touching mutations (#3) are `A only` (deterministic suite, avoid double-mutation in MCP walk). Copy/clipboard scenarios are MCP-walk friendly (`browser_*`). Defer rationale for N/A rows is recorded above; `writing-plans` expands ✅ rows into concrete tests in `e2e.md`.
+**Notes:** Scenarios touching mutations (#3) are `A only` (deterministic suite, avoid double-mutation in MCP walk). Copy/clipboard scenarios are MCP-walk friendly (`browser_*`). Defer rationale for N/A rows is recorded above; `writing-plans` expands ✅ rows into concrete tests in `automation-test/test-cases/notifications.md` + `automation-test/test-cases/admin-apps.md`.
 
 ## 8. Deferred (separate follow-up feature)
 
@@ -122,3 +122,5 @@ Most groups are **pure refactors → no observable behavior change → no E2E**.
 - Gather first-fetch APIs (e.g. `useUnreadCount`) into a shared loader.
 
 These are architectural; they change the data-fetching layer and warrant their own design + broader E2E.
+
+> **Test cases** for this feature now live in `automation-test/test-cases/notifications.md` + `automation-test/test-cases/admin-apps.md` (merged from the former `e2e.md` on 2026-10-10).

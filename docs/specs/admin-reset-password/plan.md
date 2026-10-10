@@ -213,15 +213,15 @@ export const resetAdminUserPassword = async (id: string): Promise<{ _id: string;
 ### Task C1: E2E suite `admin-users-reset` (expand matrix)
 
 **Files:**
-- Create: `client/e2e/admin-users-reset/reset-action.e2e.ts` (S1, project admin)
-- Create: `client/e2e/admin-users-reset/force-change.e2e.ts` (S2, context user thường + temp pw)
-- Create: `docs/specs/admin-reset-password/e2e.md`
-- Reuse: helpers `client/e2e/helpers/`, auth setup
+- Create: `automation-test/tests/e2e/admin-users/reset-password.e2e.ts` (S1, project admin)
+- Create: `automation-test/tests/e2e/password/force-change.e2e.ts` (S2, context user thường + temp pw)
+- Create: `automation-test/test-cases/admin-users.md` + `automation-test/test-cases/password.md`
+- Reuse: helpers `automation-test/helpers/`, auth setup
 
 - [ ] Expand từng row Applicable trong Scenario Matrix (design.md) thành test. Row `A only` = gate A own mutation. Defer `test.fixme` cho non-admin authz (ghi lý do).
 - [ ] Seed: user thường dành riêng reset (revert mật khẩu ở `afterAll` idempotent).
 - [ ] Chạy completeness-critic (1 subagent) trước khi chốt (feature auth-sensitive).
-- [ ] `e2e.md`: liệt kê scenario final + follow-up gaps.
+- [ ] `automation-test/test-cases/admin-users.md` + `automation-test/test-cases/password.md`: liệt kê scenario final + follow-up gaps.
 - [ ] Commit (docs + client): `test(e2e): admin reset-password + force-change scenarios`.
 
 ---

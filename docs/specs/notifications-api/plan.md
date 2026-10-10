@@ -51,7 +51,7 @@
 - Rewrite `layouts/AppHeader/components/NotificationPanel/index.tsx` + modify `layouts/AppHeader/index.tsx`.
 - Modify `locales/en/notifications.json` + `locales/vi/notifications.json` — add `actions.markRead`, `states.*`, `announce.*`.
 - Remove `NOTIFICATIONS_MOCK` from `mocks/Dashboard/index.ts` (and `mocks/Notifications/index.ts` if unused).
-- E2E: `e2e/notifications/notifications.e2e.ts` + helper `e2e/helpers/notifications.ts`.
+- E2E: `automation-test/tests/e2e/notifications/notifications.e2e.ts` + helper `automation-test/helpers/notifications.ts`.
 
 ---
 
@@ -1328,11 +1328,11 @@ Render each item: `<NotificationItem type={n.type} title={n.title} message={n.me
 
 ### Task C1: E2E helper + spec scaffolding
 
-**Files:** Create `e2e/helpers/notifications.ts`, `e2e/notifications/notifications.e2e.ts`
+**Files:** Create `automation-test/helpers/notifications.ts`, `automation-test/tests/e2e/notifications/notifications.e2e.ts`
 
-- [ ] **Step 1: Helper** — a reseed/teardown utility (mark-read mutations are destructive and there is no mark-unread API, so `afterAll` must restore state). The cleanest restore is to call the BE seeder's clear+seed. Since E2E can't run `pnpm seed` mid-suite easily, the helper logs in as `user@test.com` and, in `afterAll`, leaves a note; the durable fix is to **re-run `pnpm seed` (clear+seed) between E2E runs**. Document this in `e2e.md`. (If a programmatic reset is wanted, add a test-only reseed step that deletes + re-inserts via a seeded admin endpoint — out of scope here; flagged.)
+- [ ] **Step 1: Helper** — a reseed/teardown utility (mark-read mutations are destructive and there is no mark-unread API, so `afterAll` must restore state). The cleanest restore is to call the BE seeder's clear+seed. Since E2E can't run `pnpm seed` mid-suite easily, the helper logs in as `user@test.com` and, in `afterAll`, leaves a note; the durable fix is to **re-run `pnpm seed` (clear+seed) between E2E runs**. Document this in `automation-test/test-cases/notifications.md`. (If a programmatic reset is wanted, add a test-only reseed step that deletes + re-inserts via a seeded admin endpoint — out of scope here; flagged.)
 
-> **Mutation-safety teardown decision (record in `e2e.md`):** the suite reseeds notifications by running `pnpm seed --clear` + `pnpm seed` before the run; within the run, mark-read/mark-all tests assert state transitions but the suite is ordered so read-state assertions tolerate prior mutations (query unread count deltas rather than absolute counts where possible).
+> **Mutation-safety teardown decision (record in `automation-test/test-cases/notifications.md`):** the suite reseeds notifications by running `pnpm seed --clear` + `pnpm seed` before the run; within the run, mark-read/mark-all tests assert state transitions but the suite is ordered so read-state assertions tolerate prior mutations (query unread count deltas rather than absolute counts where possible).
 
 - [ ] **Step 2: Spec file** — implement one test per ✅ scenario from the design matrix (§6). Use the global `auth.setup.ts` storageState (logged in as `user@test.com`). Selectors prefer role/label.
 
@@ -1350,7 +1350,7 @@ Render each item: `<NotificationItem type={n.type} title={n.title} message={n.me
 - [ ] **Mutation: mark all** — click Mark all as read → unread tab empties; badge → 0. `afterAll`: trigger reseed (documented).
 - [ ] **A11y** — mark-read button has accessible name (`getByRole("button", { name: <markRead label> })`); keyboard `Tab` reaches it; Load more reachable by keyboard.
 
-- [ ] **Step: Run** — `cd client && pnpm e2e` (against the running, seeded app) → all green before code review. Reseed afterward if mutations ran.
+- [ ] **Step: Run** — `cd automation-test && pnpm test` (against the running, seeded app) → all green before code review. Reseed afterward if mutations ran.
 
 > AuthZ-FE-UI and validation-FE-form scenarios are **N/A** (no UI path to a foreign id; no manual page/limit input) — covered by the BE service spec (Task A9) instead. Recorded in the matrix; do not author empty FE tests for them.
 
@@ -1379,9 +1379,9 @@ Render each item: `<NotificationItem type={n.type} title={n.title} message={n.me
 
 ## E2E Backfill Plan
 
-> **Mục đích**: backfill các scenario `NEW` trong Scenario Matrix (`design.md` §6) mà suite hiện tại (13 `test(...)` blocks trong `client/e2e/notifications/notifications.e2e.ts`) chưa cover. Đây là **reconcile**, KHÔNG rebuild: chỉ ADD/extend test cho behavior chưa được assert; không xóa test cũ. Mỗi task = 1 checkbox = 1 scenario `NEW`/extended. Code đầy đủ cho case NON-OBVIOUS (header bell, intercept-per-tab, mutation-failure, idempotency, persistence, vi relative-time, announcer, keyboard). TDD: viết test → chạy `pnpm e2e` (chỉ file này) → đỏ nếu app chưa đúng → xanh.
+> **Mục đích**: backfill các scenario `NEW` trong Scenario Matrix (`design.md` §6) mà suite hiện tại (13 `test(...)` blocks trong `automation-test/tests/e2e/notifications/notifications.e2e.ts`) chưa cover. Đây là **reconcile**, KHÔNG rebuild: chỉ ADD/extend test cho behavior chưa được assert; không xóa test cũ. Mỗi task = 1 checkbox = 1 scenario `NEW`/extended. Code đầy đủ cho case NON-OBVIOUS (header bell, intercept-per-tab, mutation-failure, idempotency, persistence, vi relative-time, announcer, keyboard). TDD: viết test → chạy `pnpm test` (chỉ file này) → đỏ nếu app chưa đúng → xanh.
 >
-> **File mục tiêu (extend, không tạo mới)**: `client/e2e/notifications/notifications.e2e.ts`. Tất cả test chạy dưới project `chromium` (user storageState từ `auth.setup.ts`, login `user@test.com`).
+> **File mục tiêu (extend, không tạo mới)**: `automation-test/tests/e2e/notifications/notifications.e2e.ts`. Tất cả test chạy dưới project `chromium` (user storageState từ `auth.setup.ts`, login `user@test.com`).
 >
 > **Drift đã chốt (bám sát code thật — KHÔNG optimistic UI)**: `useMarkNotificationRead` / `useMarkAllRead` chỉ `invalidateQueries` trong `onSuccess` (KHÔNG `onMutate`, KHÔNG rollback). Mutation **fail** → cache giữ nguyên → item ở lại unread + toast từ `onError`. Mark-read button `disabled={isMarking}` với `isMarking = markRead.isPending` **dùng chung cho mọi item** (1 mutation hook cho cả list) → trong lúc pending, **TẤT CẢ** nút mark-read bị disabled (quan trọng cho test idempotency).
 >
@@ -1951,18 +1951,18 @@ test.describe("Notifications — keyboard activation", () => {
 });
 ```
 
-### Task D12: Reconcile `docs/specs/notifications-api/e2e.md`
+### Task D12: Reconcile `automation-test/test-cases/notifications.md`
 
-- [ ] **Cập nhật `docs/specs/notifications-api/e2e.md`** — reconcile tài liệu kịch bản với 13 test cũ + các test backfill mới (D1–D11). Cụ thể:
+- [ ] **Cập nhật `automation-test/test-cases/notifications.md`** — reconcile tài liệu kịch bản với 13 test cũ + các test backfill mới (D1–D11). Cụ thể:
   - **§3 bảng Scenarios**: ADD rows cho: 1b header bell/panel (Real+intercept, A only), 5a per-tab empty Read (Intercept), 5c null-readAt (Intercept), 6b single-full-page no-load-more (Intercept), 7 read-tab content (Real), 9 vi `/trước/` (Real), 10c mark-read failure (Intercept), 11c mark-all no-op (Intercept), 11d double-click idempotent (Intercept, A only), 11e persistence-after-reload (**Real mutates**, A only), 12 announcer tab-change/load-more (Real/Intercept), 12 keyboard Enter/Space (Intercept, A only). Cập nhật cột Gate (`A+B` vs `A only`) cho khớp matrix.
   - **§5 Teardown/reseed**: bổ sung **test 11e (persistence)** vào danh sách test mutate seed thật cần reseed thủ công (hiện chỉ liệt kê test 9). Nêu rõ: 2 test mutate thật = mark-single (cũ) + persistence-reload (mới); tất cả còn lại dùng intercept.
   - **§6 Follow-ups**: ghi các assertion **DEFER** + lý do: (a) `announce.markedRead`/`markedAllRead` live-region không test riêng (mutate-only, đã cover qua tab-change/load-more + optional piggyback trên D9); (b) auto-revert mark-single/persistence DEFER vì no mark-unread API.
-  - **Verified-run note (§2)**: KHÔNG sửa số "14/14" cũ — thêm dòng mới ghi rằng suite mở rộng cần re-run + cập nhật test-count thực tế sau khi chạy `pnpm e2e` (đừng claim con số chưa verify).
-  - Giữ matrix (`design.md` §6) ↔ `e2e.md` ↔ test file đồng bộ: mỗi `NEW` trong matrix có đúng 1 test + 1 row e2e.md.
+  - **Verified-run note (§2)**: KHÔNG sửa số "14/14" cũ — thêm dòng mới ghi rằng suite mở rộng cần re-run + cập nhật test-count thực tế sau khi chạy `pnpm test` (đừng claim con số chưa verify).
+  - Giữ matrix (`design.md` §6) ↔ `automation-test/test-cases/notifications.md` ↔ test file đồng bộ: mỗi `NEW` trong matrix có đúng 1 test + 1 row e2e.md.
 
 ### Step cuối: chạy & verify (TDD green)
 
-- [ ] **Run** — `cd client && pnpm e2e e2e/notifications/notifications.e2e.ts` trên app thật đã seed (worktree FE riêng port + `E2E_BASE_URL` nếu chạy trong worktree — [[reference_e2e_worktree_devserver]], [[reference_worktree_missing_env]]). Tất cả xanh trước khi sang `requesting-code-review`. **Reseed sau khi chạy** nếu test mutate thật (D9 + mark-single cũ) đã fire: `cd server && pnpm seed --clear && pnpm seed`.
+- [ ] **Run** — `cd automation-test && pnpm test automation-test/tests/e2e/notifications/notifications.e2e.ts` trên app thật đã seed (worktree FE riêng port + `E2E_BASE_URL` nếu chạy trong worktree — [[reference_e2e_worktree_devserver]], [[reference_worktree_missing_env]]). Tất cả xanh trước khi sang `requesting-code-review`. **Reseed sau khi chạy** nếu test mutate thật (D9 + mark-single cũ) đã fire: `cd server && pnpm seed --clear && pnpm seed`.
 
 ### Deferred (ghi rõ lý do — KHÔNG để gap im lặng)
 

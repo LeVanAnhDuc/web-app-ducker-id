@@ -170,9 +170,9 @@ Mirror đúng login: refresh token vào cookie `REFRESH_TOKEN`, access token + u
 
 ## 10.5. E2E Scenario Matrix
 
-> **Backfill [2026-06-14]** — matrix soạn theo skill `e2e-scenario-coverage` (rubric 12 nhóm — mỗi nhóm ✅ ≥1 scenario hoặc N/A có lý do; depth dùng test-design `[EP]`/`[BVA]`/`[DT]`/`[ST]`/error-guessing với giá trị cụ thể). Feature **đã có suite** ở `client/e2e/change-password/change-password.e2e.ts` (4 case) → đây là backfill mở rộng coverage, KHÔNG rebuild. `e2e.md` (tài liệu kịch bản chi tiết per-scenario) sẽ được tạo ở bước §4.3 implementation; matrix này là source breadth/depth cho `writing-plans` expand.
+> **Backfill [2026-06-14]** — matrix soạn theo skill `e2e-scenario-coverage` (rubric 12 nhóm — mỗi nhóm ✅ ≥1 scenario hoặc N/A có lý do; depth dùng test-design `[EP]`/`[BVA]`/`[DT]`/`[ST]`/error-guessing với giá trị cụ thể). Feature **đã có suite** ở `automation-test/tests/e2e/password/change-password.e2e.ts` (4 case) → đây là backfill mở rộng coverage, KHÔNG rebuild. `automation-test/test-cases/password.md` (tài liệu kịch bản chi tiết per-scenario) sẽ được tạo ở bước §4.3 implementation; matrix này là source breadth/depth cho `writing-plans` expand.
 >
-> **Cột `Gate`**: `A+B` = chạy cả gate A (`pnpm e2e`) lẫn gate B (MCP walk). `A only` = mutation-heavy / network-level / rate-limit → chỉ gate A (gate B chỉ verify read/render, không mutate song song — tránh session contamination, xem [[reference_e2e_suite_session_contamination]]). `B` = visual/UX/keyboard → lean gate B.
+> **Cột `Gate`**: `A+B` = chạy cả gate A (`pnpm test`) lẫn gate B (MCP walk). `A only` = mutation-heavy / network-level / rate-limit → chỉ gate A (gate B chỉ verify read/render, không mutate song song — tránh session contamination, xem [[reference_e2e_suite_session_contamination]]). `B` = visual/UX/keyboard → lean gate B.
 > **Nhãn `[EXISTS]`** = đã có trong suite hiện tại; **`[NEW]`** = cần thêm khi implement §4.3.
 > **Selector thực tế** (từ card): label `Current Password` / `New Password` / `Confirm New Password`; button `Update Password` (Save) + `Cancel`; toast success `Password updated successfully`; inline error qua `aria-invalid="true"`; Save disabled khi `!isDirty` + tooltip `noChanges`; a11y qua `#announcer` (`aria-live=polite`).
 
@@ -191,7 +191,7 @@ Mirror đúng login: refresh token vào cookie `REFRESH_TOKEN`, access token + u
 | 11 | **Mutation safety** | ✅ **[NEW]** | **[ST] valid**: sau đổi, authed request với **token mới** → 200 (phiên hiện tại sống). **[ST] invalid — MANDATORY**: lấy **refresh token từ context #2** (login trước khi đổi) → sau khi context #1 đổi mật khẩu → `POST /auth/token/refresh` với cookie cũ → `401/403` (`PasswordNotChangedGuard` kick thiết bị khác). **Double-submit**: click `Update Password` 2 lần nhanh → **đúng 1 PATCH** (nút disabled khi `isPending`). **Rate-limit [BVA]**: 5 lần trong window OK / lần thứ **6** → `429` (config `MAX_REQUESTS=5`). **Revert**: `afterAll` `ensureDefaultPassword(NEW_PASSWORD)` đưa mật khẩu về default — idempotent **[EXISTS]**. | A only |
 | 12 | **Accessibility (a11y)** | ✅ **[NEW]** (+role/label EXISTS) | **[EXISTS-partial]**: selector dùng role/label (`getByLabel("Current Password", exact)`, `getByRole("heading"/"button")`) — chứng tỏ label↔input liên kết. **[NEW]** keyboard tab order: Tab đi `Current → New → Confirm → Update Password` đúng thứ tự DOM. **[NEW]** `#announcer` (aria-live) announce `announce.saving` (vd "Updating password...") lúc submit + `announce.saved` (vd "Password updated.") khi success. | B |
 
-**Error-Guessing note (cross-cutting)**: dán giá trị có **trailing space** vào `new` + `confirm` (vd `"NewPass@123 "` cả 2 field) — document hành vi: confirm có khớp không (zod compare nguyên văn → khớp nếu cả 2 cùng trailing space), policy có pass không, BE trim hay reject. Ghi kết quả quan sát vào `e2e.md`, KHÔNG sửa app code (gặp behavior bất ngờ → flag follow-up).
+**Error-Guessing note (cross-cutting)**: dán giá trị có **trailing space** vào `new` + `confirm` (vd `"NewPass@123 "` cả 2 field) — document hành vi: confirm có khớp không (zod compare nguyên văn → khớp nếu cả 2 cùng trailing space), policy có pass không, BE trim hay reject. Ghi kết quả quan sát vào `automation-test/test-cases/password.md`, KHÔNG sửa app code (gặp behavior bất ngờ → flag follow-up).
 
 **Contamination guard**: gate B login bằng auth context **riêng** (KHÔNG share storageState với gate A — cookie localhost không scope theo port). Mọi row `Gate = A only` (case 11 mutation/refresh-revoke/rate-limit, case 4 rows có PATCH thật) gate B **chỉ verify read/render**, không mutate song song.
 
@@ -210,3 +210,5 @@ Mirror đúng login: refresh token vào cookie `REFRESH_TOKEN`, access token + u
 1. `superpowers:writing-plans` → chia task theo side (BE / FE), đặt tên rõ side; plan tham chiếu trực tiếp design doc này (gồm API Contract Sync §9).
 2. Code theo `subagent-driven-development` + convention theo side (BE đọc `server/.claude/CLAUDE.md`, FE đọc `client/.claude/CLAUDE.md`).
 3. `security-auditor` (feature đụng auth) → `specs/change-password/security-report.md`; `readme-maintainer` khi finishing branch (chỉ nếu đổi setup/config/deps).
+
+> **Test cases** for this feature now live in `automation-test/test-cases/password.md` (merged from the former `e2e.md` on 2026-10-10).

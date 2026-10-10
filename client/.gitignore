@@ -41,8 +41,3 @@ next-env.d.ts
 # Worktrees (superpowers isolation)
 .worktrees/
 
-# Playwright e2e
-/e2e/.auth/
-/test-results/
-/playwright-report/
-/playwright/.cache/

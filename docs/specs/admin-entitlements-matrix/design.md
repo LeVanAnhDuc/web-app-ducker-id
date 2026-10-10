@@ -130,7 +130,7 @@ BE thật/persist/seeder; ADR-006; check-all theo cột (1 app cho tất cả us
 
 ## E2E Scenario Matrix
 
-Test file: `client/e2e/admin-entitlements/matrix.e2e.ts` (project `admin`, storageState `admin.json`). Entitlement = **mock in-memory per browser context** → không mutate server, không cần revert. User search = REAL `/admin/users` (để chọn user tạo row). Cột `Gate`: `A+B` = cả 2 gate chạy; `A only` = mutation-heavy, gate B chỉ verify read/render.
+Test file: `automation-test/tests/e2e/admin-entitlements/matrix.e2e.ts` (project `admin`, storageState `admin.json`). Entitlement = **mock in-memory per browser context** → không mutate server, không cần revert. User search = REAL `/admin/users` (để chọn user tạo row). Cột `Gate`: `A+B` = cả 2 gate chạy; `A only` = mutation-heavy, gate B chỉ verify read/render.
 
 | # | Nhóm | Scenario + expected | Kỹ thuật | Gate |
 | - | ---- | ------------------- | -------- | ---- |
@@ -155,6 +155,8 @@ Test file: `client/e2e/admin-entitlements/matrix.e2e.ts` (project `admin`, stora
 
 ### Dual-gate (§4.3)
 
-- **Gate A** — `cd client && pnpm e2e --project=admin -g "Admin Entitlements Matrix"` trên app thật.
+- **Gate A** — `cd automation-test && pnpm test -g "Admin Entitlements Matrix"` trên app thật.
 - **Gate B** — MCP browser walk cùng matrix (auth context riêng); walk mọi row `A+B`, SKIP mutation của row `A only` (#11) — chỉ verify read/render.
 - Fail → `systematic-debugging` → `e2e-bugs.md` → fix → re-run (max 3 vòng).
+
+> **Test cases** for this feature now live in `automation-test/test-cases/admin-entitlements.md` (merged from the former `e2e.md` on 2026-10-10).

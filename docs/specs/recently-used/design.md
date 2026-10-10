@@ -134,3 +134,5 @@ Xoá `mocks/RecentlyUsed`, type `RecentApp` cũ (`icon`/`iconColor`/`iconBg`/`gr
 
 `docs/erd.md` (DR-11), `docs/unfinished-features.md` §5 (đánh dấu xong, sửa path), `docs/project-goals.md` (bảng endpoint Favorites/Recent →
 ✅), README `## Features` (bullet Recently used), Swagger.
+
+> **Test cases** for this feature now live in `automation-test/test-cases/recently-used.md` (merged from the former `e2e.md` on 2026-10-10).

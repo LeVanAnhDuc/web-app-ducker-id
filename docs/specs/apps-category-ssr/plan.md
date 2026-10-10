@@ -455,8 +455,8 @@ git commit -m "feat(apps): render categories from Server Component with client f
 ### Task 6 (E2E): Reconcile `web-app-user-list` suite (add/update/remove)
 
 **Files:**
-- Modify: `docs/specs/web-app-user-list/e2e.md` (reconcile scenario doc)
-- Modify: `client/e2e/web-app-user-list/*.e2e.ts` (add/update tests)
+- Modify: `automation-test/test-cases/apps.md` (reconcile scenario doc)
+- Modify: `automation-test/tests/e2e/apps/*.e2e.ts` (add/update tests)
 
 **Reconcile rule (e2e-scenario-coverage):** do NOT rebuild the suite. ADD new-behavior cases, UPDATE changed-expectation cases, REMOVE obsolete ones. Keep design.md matrix ↔ e2e.md ↔ test files in sync.
 
@@ -476,13 +476,13 @@ Find the existing scenario asserting `/apps/categories` behavior without a token
 
 - [ ] **Step 3: Sync e2e.md + matrix**
 
-Ensure every added/updated test has a matching row in `docs/specs/web-app-user-list/e2e.md`, and that `design.md` matrix (this feature) stays the source. Note deferrals explicitly.
+Ensure every added/updated test has a matching row in `automation-test/test-cases/apps.md`, and that `design.md` matrix (this feature) stays the source. Note deferrals explicitly.
 
 - [ ] **Step 4: Commit**
 
 ```bash
 cd client && pnpm lint
-git add e2e/web-app-user-list/
+git add automation-test/tests/e2e/apps/
 git commit -m "test(apps): E2E for public categories + SSR hybrid (reconcile web-app-user-list)"
 # docs commit happens in the docs repo/worktree
 ```
@@ -491,7 +491,7 @@ git commit -m "test(apps): E2E for public categories + SSR hybrid (reconcile web
 
 ## §4.3 E2E Dual-Gate (execution step, after Task 6)
 
-Run gate A (`cd client && pnpm e2e` scoped to web-app-user-list) + gate B (Playwright MCP walk of the matrix) in parallel; both must pass. Precondition: check BE :5000 / FE :3000 / Mongo / Redis running (agent self-checks once; if down, ask user run vs agent run — CLAUDE.md §4.3). Mutation-heavy rows are `A only`; gate B verifies read/render only. Fail → systematic-debugging → `e2e-bugs.md` → fix → re-run (max 3 rounds).
+Run gate A (`cd automation-test && pnpm test` scoped to web-app-user-list) + gate B (Playwright MCP walk of the matrix) in parallel; both must pass. Precondition: check BE :5000 / FE :3000 / Mongo / Redis running (agent self-checks once; if down, ask user run vs agent run — CLAUDE.md §4.3). Mutation-heavy rows are `A only`; gate B verifies read/render only. Fail → systematic-debugging → `e2e-bugs.md` → fix → re-run (max 3 rounds).
 
 ## Post-implementation gates (CLAUDE.md §4.5–4.8)
 

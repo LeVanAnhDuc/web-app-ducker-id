@@ -304,22 +304,22 @@ git commit -m "fix(contact): ticket=_id via ShortId, remove category + ticket/ca
 
 ---
 
-### Task 4: E2E — reconcile matrix → `e2e.md` + tests + dual-gate
+### Task 4: E2E — reconcile matrix → `automation-test/test-cases/support.md` + `automation-test/test-cases/admin-contact.md` + tests + dual-gate
 
 **Files:**
-- Create: `docs/specs/contact-ticket-id-display/e2e.md`
-- Create: `client/e2e/contact/contact-display.e2e.ts`
+- Create: `automation-test/test-cases/support.md` + `automation-test/test-cases/admin-contact.md`
+- Create: `automation-test/tests/e2e/admin-contact/display.e2e.ts`
 
 **Interfaces:**
 - Consumes: app đang chạy (BE :5000, FE :3000/worktree port), admin auth (`admin.setup.ts`).
 
-- [ ] **Step 1: Viết `e2e.md`**
+- [ ] **Step 1: Viết `automation-test/test-cases/support.md` + `automation-test/test-cases/admin-contact.md`**
 
 Chuyển E2E Scenario Matrix trong `design.md` thành danh sách scenario cụ thể (mỗi ✅ row → ≥1 test; N/A giữ lý do). Ghi rõ scenario mutation-heavy `A only`.
 
 - [ ] **Step 2: Viết test Playwright**
 
-`client/e2e/contact/contact-display.e2e.ts` (admin project — theo `admin.setup.ts`), cover:
+`automation-test/tests/e2e/admin-contact/display.e2e.ts` (admin project — theo `admin.setup.ts`), cover:
 - Admin list: mỗi row cột ticket có text khớp `^.{1,6}\.\.\.$` (ShortId), KHÔNG rỗng.
 - Admin list: KHÔNG có header "Category"/"Danh mục"; KHÔNG có filter "Danh mục"/"Mã ticket"; KHÔNG có chuỗi rò rỉ key `contactAdmin.form.category`.
 - Admin detail: header ticket là ShortId; KHÔNG có field "Danh mục".
@@ -331,7 +331,7 @@ Chuyển E2E Scenario Matrix trong `design.md` thành danh sách scenario cụ t
 - [ ] **Step 3: Dual-gate (§4.3)**
 
 Tiền đề app-running: agent tự check BE/FE/Mongo/Redis; chưa chạy → hỏi user (a) tự run / (b) agent run. Dispatch song song:
-- Gate A: `cd client && pnpm e2e` scope contact.
+- Gate A: `cd automation-test && pnpm test` scope contact.
 - Gate B: MCP walk matrix (auth context riêng; scenario mutation `A only` chỉ verify read/render).
 
 Fail ≥1 gate → systematic-debugging → `e2e-bugs.md` → fix → chạy lại (max 3 vòng).
@@ -342,7 +342,7 @@ Fail ≥1 gate → systematic-debugging → `e2e-bugs.md` → fix → chạy l�
 # docs repo
 git -C <docs-worktree> add specs/contact-ticket-id-display/e2e.md && git commit -m "docs(contact): e2e scenarios"
 # client repo
-git add client/e2e/contact && git commit -m "test(contact): e2e for ShortId ticket + category removal"
+git add automation-test/tests/e2e/admin-contact && git commit -m "test(contact): e2e for ShortId ticket + category removal"
 ```
 
 ---

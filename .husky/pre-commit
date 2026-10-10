@@ -1,2 +1,3 @@
 cd client && pnpm exec lint-staged
 cd ../server && pnpm exec lint-staged
+cd ../automation-test && pnpm exec lint-staged

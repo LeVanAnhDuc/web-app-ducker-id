@@ -4,7 +4,7 @@
 
 **Goal:** Một orchestrator `node .claude/scripts/worktree.mjs <up|down> <feature>` dựng/dọn một feature worktree để chạy E2E độc lập — cấp port không-đụng, copy/patch/xóa env tạm, start/stop BE+FE.
 
-**Architecture:** Zero-dep Node ESM script ở `.claude/scripts/`, tách thành các lib thuần (`ports`, `env`, `state`, `worktree`, `process`) + CLI entry wiring. Pure functions TDD bằng `node --test`; phần spawn/health/kill verify bằng manual smoke. Thêm 1 thay đổi config FE (`playwright.config.ts`) để `pnpm e2e` tự target port worktree.
+**Architecture:** Zero-dep Node ESM script ở `.claude/scripts/`, tách thành các lib thuần (`ports`, `env`, `state`, `worktree`, `process`) + CLI entry wiring. Pure functions TDD bằng `node --test`; phần spawn/health/kill verify bằng manual smoke. Thêm 1 thay đổi config FE (`playwright.config.ts`) để `pnpm test` tự target port worktree.
 
 **Tech Stack:** Node ≥18 built-ins (`node:net`, `node:http`, `node:fs`, `node:child_process`, `node:test`); Playwright config (TS).
 
@@ -582,7 +582,7 @@ async function up(root, feature) {
 
   setFeature(root, feature, { serverPort, clientPort, serverPid, clientPid });
   console.log(`\n✅ up "${feature}" — server :${serverPort ?? "-"}  client :${clientPort ?? "-"}`);
-  if (clientPort) console.log(`   E2E: cd client/.worktrees/${feature} && pnpm e2e  (auto-targets :${clientPort})`);
+  if (clientPort) console.log(`   E2E: cd automation-test && pnpm test  (auto-targets :${clientPort})`);
 }
 
 function down(root, feature) {
@@ -638,7 +638,7 @@ git -C .claude add .worktrees/worktree-e2e-runner/scripts/worktree.mjs
 
 ---
 
-### Task 7: Patch `client/playwright.config.ts` — worktree-aware BASE_URL
+### Task 7: Patch `automation-test/playwright.config.ts` — worktree-aware BASE_URL
 
 **Files:**
 - Modify: `client/.worktrees/worktree-e2e-runner/playwright.config.ts:1-3`
@@ -703,7 +703,7 @@ git -C client add .worktrees/worktree-e2e-runner/playwright.config.ts
 
 ---
 
-### Task 8: Manual smoke — `up → pnpm e2e → down` trên worktree thật
+### Task 8: Manual smoke — `up → pnpm test → down` trên worktree thật
 
 **Files:** không sửa code; chạy verify thật (chốt phần spawn/health/kill/junction/env mà unit test không phủ).
 
@@ -720,7 +720,7 @@ Expected: in `[server] healthy on :51xx` (nếu có server wt), `[client] health
 - [ ] **Step 2: Chạy E2E target port worktree**
 
 ```bash
-cd client/.worktrees/<smoke-feature> && pnpm e2e --project=chromium 2>&1 | tail -20
+cd automation-test && pnpm test 2>&1 | tail -20
 ```
 Expected: Playwright dùng `http://localhost:31xx` (không phải :3000); test chạy (pass/fail theo feature — điểm cần verify là nó nối đúng app worktree).
 

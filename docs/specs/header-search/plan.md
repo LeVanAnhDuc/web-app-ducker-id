@@ -167,12 +167,12 @@ Render (wrapper `role="listbox" id={listId}` `flex flex-col gap-0.5`):
 ### Task 6: E2E — expand Scenario Matrix
 
 **Files:**
-- Create: `client/e2e/header-search/header-search.e2e.ts`
-- Create: `docs/specs/header-search/e2e.md` (copy scenarios từ design matrix + follow-up)
+- Create: `automation-test/tests/e2e/apps/header-search.e2e.ts`
+- Create: `automation-test/test-cases/apps.md` (copy scenarios từ design matrix + follow-up)
 
-**Interfaces:** dùng helper `client/e2e/helpers/` + `auth.setup.ts` (storageState). Selector ưu tiên role/label (`getByRole("combobox")`, `getByRole("option")`, `getByRole("listbox")`).
+**Interfaces:** dùng helper `automation-test/helpers/` + `auth.setup.ts` (storageState). Selector ưu tiên role/label (`getByRole("combobox")`, `getByRole("option")`, `getByRole("listbox")`).
 
-- [ ] **Step 1:** Viết `e2e.md` liệt kê scenario theo matrix (1–12), đánh dấu case defer (nếu có) + lý do.
+- [ ] **Step 1:** Viết `automation-test/test-cases/apps.md` liệt kê scenario theo matrix (1–12), đánh dấu case defer (nếu có) + lý do.
 - [ ] **Step 2:** Viết test file — 1 test/scenario applicable:
   - open popover on focus → suggested apps visible (`listbox` có `option`).
   - type "a" (hoặc seed term) → debounce → results; assert ≥1 option.
@@ -184,7 +184,7 @@ Render (wrapper `role="listbox" id={listId}` `flex flex-col gap-0.5`):
   - Mutation-heavy: N/A.
 - [ ] **Step 3:** Commit `test(header-search): e2e scenarios + e2e.md`.
 
-> Chạy thật (dual-gate §4.3) do main loop điều phối sau khi các task code xong: gate A `pnpm e2e` (scope header-search) + gate B Playwright MCP walk. App phải chạy (BE:5000/FE:3000/Mongo/Redis) — main loop tự check trước.
+> Chạy thật (dual-gate §4.3) do main loop điều phối sau khi các task code xong: gate A `pnpm test` (scope header-search) + gate B Playwright MCP walk. App phải chạy (BE:5000/FE:3000/Mongo/Redis) — main loop tự check trước.
 
 ## Self-Review
 

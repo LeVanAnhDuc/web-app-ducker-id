@@ -112,13 +112,13 @@ Tuân `standard-react`, `standard-react-yourself`, `standard-nextjs`, `standard-
 - map status `inactive`→INACTIVE (hide), `active`→ACTIVE (unhide).
 - body chỉ `{status}` → chỉ update status, field khác giữ nguyên.
 
-### FE E2E — `client/e2e/admin-apps/edit-apps.e2e.ts` (CLAUDE.md §4.3, có chạm FE)
+### FE E2E — `automation-test/tests/e2e/admin-apps/edit-app.e2e.ts` (CLAUDE.md §4.3, có chạm FE)
 - Đăng nhập admin (qua `auth.setup.ts` storageState).
 - Sửa 1 field (vd displayName) của 1 app seed → verify toast + giá trị mới trong bảng.
 - Ẩn app (active→tạm dừng) → verify badge "Tạm dừng"; Bỏ ẩn → verify badge "Active".
 - **`afterAll` revert**: khôi phục displayName gốc + status gốc (idempotent), không để lại side-effect lên DB seed.
 - Selector ưu tiên role/label; KHÔNG sửa app code trong test (gặp a11y/DOM issue → flag follow-up).
-- Doc kịch bản: `docs/specs/edit-apps/e2e.md`.
+- Doc kịch bản: `automation-test/test-cases/admin-apps.md`.
 
 ## 8. Đơn vị & ranh giới (isolation)
 
@@ -136,15 +136,15 @@ Tuân `standard-react`, `standard-react-yourself`, `standard-nextjs`, `standard-
 - **FE-2**: hooks `useUpdateAdminApp`, `useSetAdminAppStatus`.
 - **FE-3**: FormSheet rewire; RowActions Hide/Unhide; DeleteDialog→HideDialog; index state; status label "Tạm dừng".
 - **FE-4**: i18n keys (en+vi); xoá `mocks/AdminApps.ts`.
-- **E2E**: `edit-apps.e2e.ts` + `docs/specs/edit-apps/e2e.md`.
+- **E2E**: `edit-apps.e2e.ts` + `automation-test/test-cases/admin-apps.md`.
 
 Task BE chỉ chạm `server/src/**`, FE chỉ chạm `client/src/**`, độc lập qua API contract ở §3.
 
 ## E2E Scenario Matrix
 
 > Backfill coverage cho **edit-apps** (admin sửa app + hide/unhide) theo skill `e2e-scenario-coverage` — rubric 12 nhóm, mỗi nhóm ✅ scenario hoặc N/A (no silent gaps).
-> **Hiện trạng (audit)**: suite `client/e2e/admin-apps/edit-apps.e2e.ts` mới có **T1** (sửa Display Name → toast + giá trị mới) + **T2** (hide/unhide status toggle), `afterAll` `restoreApp` idempotent. 10/12 nhóm còn thiếu hoặc chỉ partial.
-> **Cột `Gate`**: `A+B` = chạy cả gate A (`pnpm e2e`) lẫn gate B (MCP walk); `A only` = mutation-heavy / không xác định bằng MCP read-only (xem §4.3 dual-gate). Case `[technique]` mang tag test-design + giá trị cụ thể inline (forcing-function cấp case).
+> **Hiện trạng (audit)**: suite `automation-test/tests/e2e/admin-apps/edit-app.e2e.ts` mới có **T1** (sửa Display Name → toast + giá trị mới) + **T2** (hide/unhide status toggle), `afterAll` `restoreApp` idempotent. 10/12 nhóm còn thiếu hoặc chỉ partial.
+> **Cột `Gate`**: `A+B` = chạy cả gate A (`pnpm test`) lẫn gate B (MCP walk); `A only` = mutation-heavy / không xác định bằng MCP read-only (xem §4.3 dual-gate). Case `[technique]` mang tag test-design + giá trị cụ thể inline (forcing-function cấp case).
 
 | #   | Category               | Status | Scenario(s) + expected + [technique] + values                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          | Gate                       |
 | --- | ---------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
@@ -165,3 +165,5 @@ Task BE chỉ chạm `server/src/**`, FE chỉ chạm `client/src/**`, độc l�
 
 - **CF-3 (cho row #6 — redirectUris boundary)**: FE validation chưa có `.max(20)` cho `redirectUris` (hiện chỉ `.min(1)` ở `client/src/forms/AdminApp/validations.ts`). Để case `21` URI fail ở **FE inline error** (thay vì rơi xuống BE `400` generic), cần: (1) thêm `.max(20, { message: "max" })` vào schema `redirectUris`; (2) thêm locale key `adminApps.form.validation.redirectUris.max` (en + vi). Trước khi fix CF-3, case `21` chỉ assert được BE `400` → toast generic (gate A only). Sau CF-3 → assert inline error tại field (gate A+B).
 - **Drift note (cosmetic, không test)**: có **FE↔BE drift** về `redirectUris` max (BE cap vs FE chưa cap — cần xác nhận BE limit thật khi làm CF-3). Ngoài ra `AppStatusBadge` variant (màu badge `inactive`) thuần cosmetic → KHÔNG có scenario E2E (theo §4.3 skip cosmetic-only).
+
+> **Test cases** for this feature now live in `automation-test/test-cases/admin-apps.md` (merged from the former `e2e.md` on 2026-10-10).

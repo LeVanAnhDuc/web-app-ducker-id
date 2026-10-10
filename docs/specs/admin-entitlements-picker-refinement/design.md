@@ -63,7 +63,7 @@ GET /api/v1/admin/users?search=<q>&role=<user|admin>&limit=<6|20>   (authGuard +
 
 ## 7. E2E Scenario Matrix
 
-> Slice gốc hoãn E2E (chưa có `e2e.md`/test). Slice này thêm behavior picker THẬT (search/role/default-6/layout) → §4.3 áp dụng. Entitlement grant/revoke vẫn **mock** (in-memory, mỗi browser context tách biệt → không contamination) nên toàn bộ chạy được cả 2 gate. Bulk mutation là mock → không persist BE → không cần `afterAll` revert phía server. Test author + dual-gate ở §4.3 sau implement.
+> Slice gốc hoãn E2E (chưa có `automation-test/test-cases/admin-entitlements.md`/test). Slice này thêm behavior picker THẬT (search/role/default-6/layout) → §4.3 áp dụng. Entitlement grant/revoke vẫn **mock** (in-memory, mỗi browser context tách biệt → không contamination) nên toàn bộ chạy được cả 2 gate. Bulk mutation là mock → không persist BE → không cần `afterAll` revert phía server. Test author + dual-gate ở §4.3 sau implement.
 
 | #  | Nhóm | Scenario / kỹ thuật | Expected | Gate |
 | -- | ---- | ------------------- | -------- | ---- |
@@ -87,3 +87,5 @@ GET /api/v1/admin/users?search=<q>&role=<user|admin>&limit=<6|20>   (authGuard +
 - **Step 1.5 SuperDesign**: sửa lớn UI (layout + toolbar + filter) → reconcile mock `docs/ui-designs/admin-entitlements-user-options/` (hoặc tạo folder slice mới) qua `iterate-design-draft`, xuất light+dark, **user review gate** trước `writing-plans`.
 - **writing-plans**: chia task FE (layout, toolbar+filter, hook, i18n) + task E2E (expand matrix §7 thành test); task defer ghi lý do.
 - **Isolation**: worktree `client/` + `docs/` branch `feat/admin-entitlements-picker-refinement` (đã tạo từ `origin/main`).
+
+> **Test cases** for this feature now live in `automation-test/test-cases/admin-entitlements.md` (merged from the former `e2e.md` on 2026-10-10).

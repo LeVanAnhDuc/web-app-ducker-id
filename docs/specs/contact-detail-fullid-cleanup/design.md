@@ -27,9 +27,9 @@ FE-only, BE không đổi (BE trả `_id`/route param `id` sẵn có).
 - `CustomBreadcrumb` được mở rộng generic (`label?` override) — backward-compatible, mọi breadcrumb hiện tại chạy nguyên; dùng lại được cho breadcrumb động khác (vd login-history detail sau này).
 - Header detail thành client-independent về data: nhận `id` từ route param (luôn có, không cần chờ fetch contact).
 
-## E2E Scenario Matrix (delta — reconcile suite `e2e/contact/`)
+## E2E Scenario Matrix (delta — reconcile suite `automation-test/tests/e2e/admin-contact/`)
 
-Đây là **sửa feature đã có** (`e2e/contact/contact-display.e2e.ts` + `contact-ticket-id-display/e2e.md`) → **reconcile**: ADD case mới, UPDATE case đổi expected, không rebuild.
+Đây là **sửa feature đã có** (`automation-test/tests/e2e/admin-contact/display.e2e.ts` + `contact-ticket-id-display/e2e.md`) → **reconcile**: ADD case mới, UPDATE case đổi expected, không rebuild.
 
 Cột `Gate`: `A+B` (gate B = MCP walk, chạy khi môi trường có Playwright MCP — hiện có thể thiếu, flag skip).
 

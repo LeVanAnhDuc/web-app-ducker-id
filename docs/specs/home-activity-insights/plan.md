@@ -64,4 +64,4 @@ Thứ tự thực hiện (mỗi bước xanh `tsc` + lint + test trước khi sa
 `docs/adr/0003-charting-library.md` (recharts + DR-14/DR-15) · `docs/design-system/ducker-id/MASTER.md` một dòng ghi nhận
 lớp chart · `docs/unfinished-features.md` (mục Home mới; đóng dòng "Weekly Activity vẫn mock" ở §5; tách mục
 "lượt mở app theo ngày / streak" cần bảng bucket) · `docs/project-goals.md` bảng endpoint · README `## Features` ·
-`e2e.md` (chạy skill `e2e-scenario-coverage` — thay đổi hành vi user quan sát được của feature có UI).
+`automation-test/test-cases/home.md` (chạy skill `e2e-scenario-coverage` — thay đổi hành vi user quan sát được của feature có UI).

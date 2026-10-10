@@ -59,7 +59,7 @@ Trong lịch sử đăng nhập (`login_histories`), người dùng thấy `coun
 
 ## E2E Scenario Matrix
 
-**Loại thay đổi**: sửa feature đã có → **reconcile** delta (không rebuild). Delta = cách render **IP** + **country/location** ở 3 view login-history. E2E hiện có: `client/e2e/admin-login-history/admin-login-history-detail.e2e.ts` (view LoginHistory của user chưa có e2e riêng → bổ sung tối thiểu cho delta). Trên môi trường local, gate assert giá trị LOCAL + IP `127.0.0.1`.
+**Loại thay đổi**: sửa feature đã có → **reconcile** delta (không rebuild). Delta = cách render **IP** + **country/location** ở 3 view login-history. E2E hiện có: `automation-test/tests/e2e/admin-login-history/detail.e2e.ts` (view LoginHistory của user chưa có e2e riêng → bổ sung tối thiểu cho delta). Trên môi trường local, gate assert giá trị LOCAL + IP `127.0.0.1`.
 
 **Lưu ý phân tầng test**: bản chất bug `maskIp`/`extractIp`/`geoipLookup` là **pure function** → cover sâu bằng **BE unit test** (`helpers` spec) với EP/BVA đầy đủ; E2E chỉ assert **kết quả render** cuối (nhãn + IP đã normalize) trên UI.
 
@@ -84,3 +84,5 @@ Trong lịch sử đăng nhập (`login_histories`), người dùng thấy `coun
 
 - **BE**: `cd server && pnpm lint && pnpm type-check && pnpm test && pnpm build`
 - **FE**: `cd client && pnpm lint && pnpm build` + E2E dual-gate (§4.3)
+
+> **Test cases** for this feature now live in `automation-test/test-cases/login-history.md` (merged from the former `e2e.md` on 2026-10-10).

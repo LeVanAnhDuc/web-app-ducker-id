@@ -143,4 +143,6 @@ useSearchParams → query object → React Query (useUsers/useApps/…) → API 
 
 **Completeness critic**: sẽ chạy ở `writing-plans` (1 subagent tìm case thiếu) nếu user yêu cầu "thorough/đủ". Common gotchas cần soi: paste search có khoảng trắng đầu/cuối, autofill, emoji trong search, session hết hạn giữa lúc đổi filter, mở 2 tab đổi filter song song, URL share giữa user khác locale.
 
-**Mutation-heavy `A only`**: không có ở concept này (read-heavy). Nếu khi migration phát sinh case đụng mutation thật → tag `A only` lúc viết `e2e.md`.
+**Mutation-heavy `A only`**: không có ở concept này (read-heavy). Nếu khi migration phát sinh case đụng mutation thật → tag `A only` lúc viết `automation-test/test-cases/admin-users.md` + `automation-test/test-cases/apps.md`.
+
+> **Test cases** for this feature now live in `automation-test/test-cases/admin-users.md` + `automation-test/test-cases/apps.md` (merged from the former `e2e.md` on 2026-10-10).

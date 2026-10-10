@@ -40,9 +40,9 @@
 - Delete `mocks/AdminApps.ts`.
 
 **E2E** (`client/.worktrees/edit-apps/`)
-- Create `e2e/admin.setup.ts`, `e2e/admin-apps/edit-apps.e2e.ts`, `e2e/helpers/adminApps.ts`.
+- Create `automation-test/tests/setup/admin.setup.ts`, `automation-test/tests/e2e/admin-apps/edit-app.e2e.ts`, `automation-test/helpers/adminApps.ts`.
 - Modify `playwright.config.ts` — admin storageState project.
-- Create `docs/specs/edit-apps/e2e.md`.
+- Create `automation-test/test-cases/admin-apps.md`.
 
 ---
 
@@ -1276,7 +1276,7 @@ git commit -m "feat(admin-apps): FE i18n paused/hide labels + drop AdminApps moc
 
 ## Task 12: E2E — edit + hide/unhide (FE verification gate)
 
-> Precondition (CLAUDE.md §4.3): BE on :5000, FE on :3000 (worktree dev server, see [[reference_e2e_worktree_devserver]]), Mongo + Redis up, DB seeded with **an admin account** and the seed apps. The admin-apps page requires `ADMIN` role, so this suite needs an admin storageState distinct from the existing user one. Self-check app-running before `pnpm e2e`; if not running, ask the user (run themselves vs. agent starts it), and tear down only what the agent started.
+> Precondition (CLAUDE.md §4.3): BE on :5000, FE on :3000 (worktree dev server, see [[reference_e2e_worktree_devserver]]), Mongo + Redis up, DB seeded with **an admin account** and the seed apps. The admin-apps page requires `ADMIN` role, so this suite needs an admin storageState distinct from the existing user one. Self-check app-running before `pnpm test`; if not running, ask the user (run themselves vs. agent starts it), and tear down only what the agent started.
 
 **Files:**
 - Create: `client/.worktrees/edit-apps/e2e/admin.setup.ts`
@@ -1290,7 +1290,7 @@ git commit -m "feat(admin-apps): FE i18n paused/hide labels + drop AdminApps moc
 ```ts
 import { test as setup, expect } from "@playwright/test";
 
-const AUTH_FILE = "e2e/.auth/admin.json";
+const AUTH_FILE = "automation-test/.auth/admin.json";
 const EMAIL = process.env.E2E_ADMIN_EMAIL ?? "admin@test.com";
 const PASSWORD = process.env.E2E_ADMIN_PASSWORD ?? "Admin@123";
 
@@ -1316,7 +1316,7 @@ setup("authenticate admin", async ({ page }) => {
       testIgnore: /admin-apps\//,
       use: {
         ...devices["Desktop Chrome"],
-        storageState: "e2e/.auth/user.json"
+        storageState: "automation-test/.auth/user.json"
       },
       dependencies: ["setup"]
     },
@@ -1325,14 +1325,14 @@ setup("authenticate admin", async ({ page }) => {
       testMatch: /admin-apps\/.*\.e2e\.ts/,
       use: {
         ...devices["Desktop Chrome"],
-        storageState: "e2e/.auth/admin.json"
+        storageState: "automation-test/.auth/admin.json"
       },
       dependencies: ["admin-setup"]
     }
   ]
 ```
 
-- [ ] **Step 3: Add a revert helper `e2e/helpers/adminApps.ts`** — logs in as admin via API and restores an app's displayName + status by name (idempotent, used in `afterAll`):
+- [ ] **Step 3: Add a revert helper `automation-test/helpers/adminApps.ts`** — logs in as admin via API and restores an app's displayName + status by name (idempotent, used in `afterAll`):
 
 ```ts
 import type { APIRequestContext } from "@playwright/test";
@@ -1384,7 +1384,7 @@ export async function restoreApp(
 }
 ```
 
-- [ ] **Step 4: Write the spec `e2e/admin-apps/edit-apps.e2e.ts`.** Adjust `TARGET_APP` to a seeded active app (confirm its `name`/`displayName` from the seed before running).
+- [ ] **Step 4: Write the spec `automation-test/tests/e2e/admin-apps/edit-app.e2e.ts`.** Adjust `TARGET_APP` to a seeded active app (confirm its `name`/`displayName` from the seed before running).
 
 ```ts
 import { test, expect } from "@playwright/test";
@@ -1442,11 +1442,11 @@ test.describe("Admin Apps — edit + hide/unhide", () => {
 });
 ```
 
-- [ ] **Step 5: Write the scenario doc `docs/specs/edit-apps/e2e.md`** — document: preconditions (app running, seeded admin + apps, worktree dev server on an alt port with `E2E_BASE_URL`), the admin storageState project, the two scenarios (edit display name; hide→unhide), and the `afterAll` revert contract (idempotent restore by app name).
+- [ ] **Step 5: Write the scenario doc `automation-test/test-cases/admin-apps.md`** — document: preconditions (app running, seeded admin + apps, worktree dev server on an alt port with `E2E_BASE_URL`), the admin storageState project, the two scenarios (edit display name; hide→unhide), and the `afterAll` revert contract (idempotent restore by app name).
 
 - [ ] **Step 6: Run the E2E suite** (after the app-running self-check / user coordination):
 
-Run: `cd client/.worktrees/edit-apps && pnpm e2e --project=admin-setup --project=admin`
+Run: `cd automation-test && pnpm test-setup`
 Expected: PASS (edit + hide/unhide green), DB left as seeded after revert.
 
 - [ ] **Step 7: Commit** (two repos — client + docs):
@@ -1477,11 +1477,11 @@ git commit -m "docs(edit-apps): E2E scenario doc"
 
 ## E2E Backfill Plan
 
-> **Mục đích**: backfill coverage E2E cho **edit-apps** — expand toàn bộ `## E2E Scenario Matrix` (design.md §matrix, 12 nhóm) thành từng Playwright test cụ thể. Đây là backfill cho feature **đã có** suite (T1 edit display name + T2 hide/unhide đã ở `client/e2e/admin-apps/edit-apps.e2e.ts`); theo CLAUDE.md §4.3 "sửa/fix feature đã có" → **reconcile** (ADD case mới, giữ T1/T2 có sẵn, UPDATE T1 mở rộng full-prefill), KHÔNG rebuild suite.
+> **Mục đích**: backfill coverage E2E cho **edit-apps** — expand toàn bộ `## E2E Scenario Matrix` (design.md §matrix, 12 nhóm) thành từng Playwright test cụ thể. Đây là backfill cho feature **đã có** suite (T1 edit display name + T2 hide/unhide đã ở `automation-test/tests/e2e/admin-apps/edit-app.e2e.ts`); theo CLAUDE.md §4.3 "sửa/fix feature đã có" → **reconcile** (ADD case mới, giữ T1/T2 có sẵn, UPDATE T1 mở rộng full-prefill), KHÔNG rebuild suite.
 >
-> **Quy ước thực thi (TDD)**: mỗi task = 1 test (hoặc 1 nhóm `[BVA]`/`[EP]` chung field). Theo `superpowers:test-driven-development`: viết test → chạy `cd client && pnpm e2e --project=admin -g "<test title>"` → đỏ vì assertion sai/feature chưa đúng → khi feature đã implement (Tasks 1–12 ở trên) → xanh. Backfill chạy **sau** khi feature code đã merge nên hầu hết phải xanh ngay; test nào đỏ → `superpowers:systematic-debugging` (ghi `e2e-bugs.md`), KHÔNG sửa app code trong test.
+> **Quy ước thực thi (TDD)**: mỗi task = 1 test (hoặc 1 nhóm `[BVA]`/`[EP]` chung field). Theo `superpowers:test-driven-development`: viết test → chạy `cd automation-test && pnpm test -g "<test title>"` → đỏ vì assertion sai/feature chưa đúng → khi feature đã implement (Tasks 1–12 ở trên) → xanh. Backfill chạy **sau** khi feature code đã merge nên hầu hết phải xanh ngay; test nào đỏ → `superpowers:systematic-debugging` (ghi `e2e-bugs.md`), KHÔNG sửa app code trong test.
 >
-> **File đích duy nhất**: `client/e2e/admin-apps/edit-apps.e2e.ts` (EXTEND — không tạo file mới). Chạy dưới project `admin` (playwright.config.ts `testMatch: /admin-apps\/.*\.e2e\.ts/`, storageState `e2e/.auth/admin.json`).
+> **File đích duy nhất**: `automation-test/tests/e2e/admin-apps/edit-app.e2e.ts` (EXTEND — không tạo file mới). Chạy dưới project `admin` (playwright.config.ts `testMatch: /admin-apps\/.*\.e2e\.ts/`, storageState `automation-test/.auth/admin.json`).
 >
 > **Selector contract** (đã verify từ source — KHÔNG đoán):
 > - Row menu: `page.getByRole("row", { name: <displayName> }).getByRole("button", { name: "App actions" })` (aria-label = `actions.rowMenuLabel`).
@@ -1497,7 +1497,7 @@ git commit -m "docs(edit-apps): E2E scenario doc"
 >
 > **Mutation revert**: mọi test mutate phải idempotent revert qua `restoreApp(name, displayName, status)` (helper có sẵn) ở `afterAll` (mode `serial` đã set). Test mutate ngoài `blog` → thêm restore tương ứng.
 >
-> **Gate**: `A+B` = gate A (`pnpm e2e`) + gate B (MCP walk read/render). `A only` = mutation-heavy hoặc không verify được bằng MCP read-only (double-submit, trailing-space, 409 conflict, redirectUris boundary) — gate B chỉ render-verify, KHÔNG mutate song song (chống session contamination, [[reference_e2e_suite_session_contamination]]).
+> **Gate**: `A+B` = gate A (`pnpm test`) + gate B (MCP walk read/render). `A only` = mutation-heavy hoặc không verify được bằng MCP read-only (double-submit, trailing-space, 409 conflict, redirectUris boundary) — gate B chỉ render-verify, KHÔNG mutate song song (chống session contamination, [[reference_e2e_suite_session_contamination]]).
 
 ### Tasks (1 test / scenario áp dụng được)
 
@@ -1537,15 +1537,15 @@ test("blocks unauthenticated access (UI redirect + API 401)", async ({ browser }
 
 #### Nhóm 3 — AuthZ (NEW, non-obvious — full code)
 
-- [ ] **E2E-3 — AuthZ: non-admin API 403 + admin route unreachable [Error Guessing]** — user role storageState (`e2e/.auth/user.json`) → `PATCH` body `{displayName:"x"}` → 403; UI `/admin/apps` không thấy heading + không thấy row action menu. **Gate A+B.**
+- [ ] **E2E-3 — AuthZ: non-admin API 403 + admin route unreachable [Error Guessing]** — user role storageState (`automation-test/.auth/user.json`) → `PATCH` body `{displayName:"x"}` → 403; UI `/admin/apps` không thấy heading + không thấy row action menu. **Gate A+B.**
 
 ```ts
-// non-admin auth context: tái dùng storageState của user-role (auth.setup → e2e/.auth/user.json)
+// non-admin auth context: tái dùng storageState của user-role (auth.setup → automation-test/.auth/user.json)
 test("forbids non-admin from updating apps (API 403 + UI unreachable)", async ({
   browser
 }) => {
   const ctx = await browser.newContext({
-    storageState: "e2e/.auth/user.json"
+    storageState: "automation-test/.auth/user.json"
   });
   const page = await ctx.newPage();
   try {
@@ -1569,7 +1569,7 @@ test("forbids non-admin from updating apps (API 403 + UI unreachable)", async ({
 });
 ```
 
-> **Lưu ý setup**: project `admin` mặc định inject admin storageState; E2E-2/E2E-3 override bằng `browser.newContext({ storageState })` riêng nên KHÔNG bị admin cookie nhiễm. Cần `e2e/.auth/user.json` tồn tại (setup `auth.setup.ts` đã tạo) — nếu project admin không chạy `setup` dependency, thêm comment yêu cầu chạy `--project=setup --project=admin-setup` trước. Xác nhận lúc viết.
+> **Lưu ý setup**: project `admin` mặc định inject admin storageState; E2E-2/E2E-3 override bằng `browser.newContext({ storageState })` riêng nên KHÔNG bị admin cookie nhiễm. Cần `automation-test/.auth/user.json` tồn tại (setup `auth.setup.ts` đã tạo) — nếu project admin không chạy `setup` dependency, thêm comment yêu cầu chạy `--project=setup-setup` trước. Xác nhận lúc viết.
 
 #### Nhóm 4 — Validation (NEW — biggest gap, non-obvious — full code)
 
@@ -1953,7 +1953,7 @@ test("manages focus on validation and announces success [Error Guessing]", async
 
 #### Task cuối — documentation
 
-- [ ] **E2E-final — CREATE/UPDATE `docs/specs/edit-apps/e2e.md`** — reconcile doc kịch bản với 12 nhóm + per-test mapping (test title ↔ row matrix ↔ Gate ↔ technique). Ghi rõ: defer cases (E2E-5 seed null, E2E-6c CF-3, E2E-12a focus) + lý do; mutation-revert strategy (restoreApp chỉ revert displayName/status → name-changing tests tự revert); N/A nhóm 7. Giữ matrix (design.md) ↔ e2e.md ↔ `edit-apps.e2e.ts` đồng bộ (CLAUDE.md §4.3 reconcile-3-artifact). KHÔNG sửa client code.
+- [ ] **E2E-final — CREATE/UPDATE `automation-test/test-cases/admin-apps.md`** — reconcile doc kịch bản với 12 nhóm + per-test mapping (test title ↔ row matrix ↔ Gate ↔ technique). Ghi rõ: defer cases (E2E-5 seed null, E2E-6c CF-3, E2E-12a focus) + lý do; mutation-revert strategy (restoreApp chỉ revert displayName/status → name-changing tests tự revert); N/A nhóm 7. Giữ matrix (design.md) ↔ e2e.md ↔ `edit-apps.e2e.ts` đồng bộ (CLAUDE.md §4.3 reconcile-3-artifact). KHÔNG sửa client code.
 
 ### Coverage check (matrix ↔ task)
 

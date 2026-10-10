@@ -42,7 +42,7 @@ Lúc `up`, script probe (bind socket thật) để tìm cặp port **đang rản
 - **Server**: scan từ `5100` tăng dần (step 2).
 - **Client**: scan từ `3100` tăng dần (step 2).
 - Tránh port của main (BE `:5000`, FE `:3000`).
-- Cặp port + PID ghi vào file state gitignored (§3.6) → `down`, và `pnpm e2e` standalone, đọc lại được.
+- Cặp port + PID ghi vào file state gitignored (§3.6) → `down`, và `pnpm test` standalone, đọc lại được.
 
 > Đánh đổi đã chấp nhận: port **có thể đổi** giữa các lần `up` (không deterministic). Bù lại: **đảm bảo tuyệt đối không đụng** bất kỳ process nào đang giữ port.
 
@@ -60,7 +60,7 @@ Lúc `up`, script probe (bind socket thật) để tìm cặp port **đang rản
 
 ### 3.4 Vòng đời process
 
-- `up` spawn **detached** BE + FE, poll HTTP từng port đến khi server phản hồi (≤60s, coi mọi HTTP status < 600 là "đã sống"; không có health route riêng nên không phụ thuộc route cụ thể), ghi PID, in cặp port ra stdout, rồi **exit** — để server tiếp tục chạy nền cho agent chạy gate A (`pnpm e2e`) + gate B (MCP walk).
+- `up` spawn **detached** BE + FE, poll HTTP từng port đến khi server phản hồi (≤60s, coi mọi HTTP status < 600 là "đã sống"; không có health route riêng nên không phụ thuộc route cụ thể), ghi PID, in cặp port ra stdout, rồi **exit** — để server tiếp tục chạy nền cho agent chạy gate A (`pnpm test`) + gate B (MCP walk).
 - **FE chạy `next dev --port <p>` (webpack), KHÔNG `--turbopack`** — turbopack crash khi node_modules là junction tới main (xem `reference_worktree_node_modules_junction`). Script bypass package-script `dev` để gọi trực tiếp.
 - `down` kill cây process theo PID (`taskkill /PID <pid> /T /F` trên win32), xóa env copy + file state, báo kết quả.
 
@@ -82,7 +82,7 @@ Lúc `up`, script probe (bind socket thật) để tìm cặp port **đang rản
 - **Chỉ client** → start FE, proxy về main BE (giữ `API_SERVER_URL` của main — main BE phải đang chạy).
 - **Chỉ server** → start BE only.
 
-### 3.8 Sửa `client/playwright.config.ts`
+### 3.8 Sửa `automation-test/playwright.config.ts`
 
 `BASE_URL` thành worktree-aware:
 
@@ -90,7 +90,7 @@ Lúc `up`, script probe (bind socket thật) để tìm cặp port **đang rản
 process.env.E2E_BASE_URL ?? (<clientPort> đọc từ .worktree-state.json theo feature) ?? "http://localhost:3000"
 ```
 
-→ `pnpm e2e` trong worktree tự target đúng port FE, không cần flag. (Thay đổi config FE nhỏ, commit; **không đổi behavior user-facing** → không cần E2E Scenario Matrix.)
+→ `pnpm test` trong worktree tự target đúng port FE, không cần flag. (Thay đổi config FE nhỏ, commit; **không đổi behavior user-facing** → không cần E2E Scenario Matrix.)
 
 ## 4. Vì sao không cần E2E Scenario Matrix
 
@@ -99,7 +99,7 @@ Theo CLAUDE.md §4.3, E2E/matrix chỉ chạy khi thay đổi **behavior user th
 ## 5. Cách verify chính script
 
 - **Unit test** phần thuần (không I/O mạng/disk thật): hàm scan free-port, hàm transform patch-env (in → out), đọc/ghi state.
-- **Manual smoke** một lần trên worktree thật: `up <feature>` → thấy cặp port + BE/FE healthy → `cd client/.worktrees/<feature> && pnpm e2e` chạy được → `down <feature>` → env copy + state đã xóa, process đã tắt, port nhả ra.
+- **Manual smoke** một lần trên worktree thật: `up <feature>` → thấy cặp port + BE/FE healthy → `cd automation-test && pnpm test` chạy được → `down <feature>` → env copy + state đã xóa, process đã tắt, port nhả ra.
 
 ## 6. Quyết định đã chốt (từ brainstorm)
 

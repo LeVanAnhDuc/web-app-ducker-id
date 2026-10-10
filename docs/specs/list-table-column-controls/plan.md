@@ -454,18 +454,18 @@ Và truyền sort props cho `<ListTable>`:
 
 ---
 
-### Task 7: E2E — expand matrix → `e2e.md` + test file
+### Task 7: E2E — expand matrix → `automation-test/test-cases/admin-apps.md` + test file
 
 **Files:**
-- Create: `docs/specs/list-table-column-controls/e2e.md`
-- Create: `client/e2e/admin-apps-sort/admin-apps-sort.e2e.ts`
+- Create: `automation-test/test-cases/admin-apps.md`
+- Create: `automation-test/tests/e2e/admin-apps/admin-apps-sort.e2e.ts`
 
 **Interfaces:**
-- Consumes: helpers `client/e2e/helpers/`, admin auth (project `admin`).
+- Consumes: helpers `automation-test/helpers/`, admin auth (project `admin`).
 
-- [ ] **Step 1: Viết `e2e.md`** — copy Scenario Matrix từ design.md, đánh dấu scenario nào thành test, scenario defer + lý do.
+- [ ] **Step 1: Viết `automation-test/test-cases/admin-apps.md`** — copy Scenario Matrix từ design.md, đánh dấu scenario nào thành test, scenario defer + lý do.
 
-- [ ] **Step 2: Viết test** `client/e2e/admin-apps-sort/admin-apps-sort.e2e.ts` (project admin) cover các scenario `A`:
+- [ ] **Step 2: Viết test** `automation-test/tests/e2e/admin-apps/admin-apps-sort.e2e.ts` (project admin) cover các scenario `A`:
   - happy: click header "App" → rows theo displayName asc (so sánh text cột đầu tăng dần) + `th[aria-sort="ascending"]`; click lại → descending.
   - toggle state: asc→desc→asc; switch sang "Updated" → App mất aria-sort, Updated=ascending.
   - URL persist: sau sort, `page.url()` chứa `sortBy=app&sortOrder=asc`; `page.reload()` giữ aria-sort.
@@ -477,7 +477,7 @@ Và truyền sort props cho `<ListTable>`:
 
   (deferred nếu seed apps < 2: ghi lý do trong e2e.md — cần ≥2 app để assert thứ tự.)
 
-- [ ] **Step 3: Dual-gate §4.3** — self-check app running; dispatch gate A (`pnpm e2e` scope admin-apps-sort) + gate B (MCP walk matrix, auth context riêng). Cả 2 PASS mới qua.
+- [ ] **Step 3: Dual-gate §4.3** — self-check app running; dispatch gate A (`pnpm test` scope admin-apps-sort) + gate B (MCP walk matrix, auth context riêng). Cả 2 PASS mới qua.
 
 ---
 

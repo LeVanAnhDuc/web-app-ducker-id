@@ -163,11 +163,11 @@ cd docs && git add project-goals.md
 
 ---
 
-### Task 3: E2E — negative-assertion suite + `e2e.md`
+### Task 3: E2E — negative-assertion suite + `automation-test/test-cases/settings.md`
 
 **Files:**
-- Create: `client/e2e/team-removal/team-removal.e2e.ts`
-- Create: `docs/specs/remove-team-feature/e2e.md`
+- Create: `automation-test/tests/e2e/settings/team-removal.e2e.ts`
+- Create: `automation-test/test-cases/settings.md`
 
 **Interfaces:**
 - Consumes: Task 1 removal must be applied (suite asserts absence). Runs under the `chromium` project (logged-in regular user via `auth.setup.ts` storageState).
@@ -266,18 +266,18 @@ test.describe("Team placeholder removal", () => {
 - [ ] **Step 2: Run the suite (gate A)**
 
 ```bash
-cd client && pnpm e2e --grep "Team placeholder removal"
+cd automation-test && pnpm test --grep "Team placeholder removal"
 ```
 Expected: all tests PASS (requires the app running — BE :5000, FE :3000 — and Task 1 applied). If `/team` returns a status other than 404, confirm Next.js not-found behavior for the locale.
 
-- [ ] **Step 3: Write `e2e.md` (scenario doc mirroring the matrix)**
+- [ ] **Step 3: Write `automation-test/test-cases/settings.md` (scenario doc mirroring the matrix)**
 
-Create `docs/specs/remove-team-feature/e2e.md` with the final scenario list (rows 1, 4, 9, 10, 12, no-dangling-link), each mapped to a test name above, plus the `A only` note (none here — all `A+B`) and any follow-up gaps.
+Create `automation-test/test-cases/settings.md` with the final scenario list (rows 1, 4, 9, 10, 12, no-dangling-link), each mapped to a test name above, plus the `A only` note (none here — all `A+B`) and any follow-up gaps.
 
 - [ ] **Step 4: Stage (no commit)**
 
 ```bash
-cd client && git add e2e/team-removal/team-removal.e2e.ts
+cd client && git add automation-test/tests/e2e/settings/team-removal.e2e.ts
 cd ../docs && git add specs/remove-team-feature/e2e.md
 ```
 

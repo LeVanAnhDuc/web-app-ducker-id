@@ -194,7 +194,7 @@ Thêm nhóm `activity.*`, `topApps.*`, `range.*`.
 
 ## 4.6 E2E Scenario Matrix
 
-Home đã có suite sẵn (`client/e2e/home/home.e2e.ts`) viết cho bản mock, nên đây là một lượt
+Home đã có suite sẵn (`automation-test/tests/e2e/home/home.e2e.ts`) viết cho bản mock, nên đây là một lượt
 **reconcile**: thêm hành vi mới, **sửa** assertion đã sai, **xoá** phần không còn tồn tại.
 Gate mặc định `A+B`; không có dòng nào `A only` vì Home chỉ đọc.
 
@@ -210,10 +210,10 @@ Gate mặc định `A+B`; không có dòng nào `A only` vì Home chỉ đọc.
 | 8 | Data rendering | ✅ Nhãn người đọc được chứ không phải enum thô: `Mật khẩu` không phải `password`, `Máy tính` không phải `DESKTOP`; trục ngày là `dd/MM`, không phải chuỗi ISO |
 | 9 | i18n | ✅ Chạy nhóm khoá chính ở **cả hai** locale: nhãn 4 thẻ, tiêu đề biểu đồ, nút range, câu empty |
 | 10 | Error / loading | ✅ `/login-history/stats` trả 500 → thẻ hoạt động hiện `role="alert"`, phần còn lại của trang vẫn dựng (lỗi không kéo sập cả Home) |
-| 11 | Mutation safety | **N/A** — Home chỉ đọc. Nút tim là mutation duy nhất và đã nằm trong `e2e/favorite-apps/` |
+| 11 | Mutation safety | **N/A** — Home chỉ đọc. Nút tim là mutation duy nhất và đã nằm trong `automation-test/tests/e2e/favorites/` |
 | 12 | Accessibility | ✅ 4 thẻ là `link` thật (không phải div bắt click), tên gồm cả con số; biểu đồ có `role="img"` + `aria-label` tóm tắt; bảng `sr-only` chứa đúng dữ liệu; cụm range là `group` có `aria-pressed` |
 | 13 | Timezone (riêng feature) | ✅ Với `timezoneId: "Asia/Ho_Chi_Minh"`, request stats phải kèm `tz=Asia/Ho_Chi_Minh` — bắt được trường hợp `useBrowserTimeZone` thoái hoá về `undefined` và server âm thầm cắt ngày theo UTC |
-| 14 | Lỗi bộ lọc ngày (DR-16) | ✅ ở tầng unit (`login-history-filter.spec.ts`: date-only phủ trọn ngày, và Joi `.raw()` không viết lại chuỗi). **Không** khẳng định ở E2E vì cần seed có bản ghi đúng ngày chạy test — ghi lại ở `e2e.md` như phụ thuộc seed |
+| 14 | Lỗi bộ lọc ngày (DR-16) | ✅ ở tầng unit (`login-history-filter.spec.ts`: date-only phủ trọn ngày, và Joi `.raw()` không viết lại chuỗi). **Không** khẳng định ở E2E vì cần seed có bản ghi đúng ngày chạy test — ghi lại ở `automation-test/test-cases/home.md` như phụ thuộc seed |
 
 ## 5. Bảo mật
 
@@ -249,3 +249,5 @@ Gate mặc định `A+B`; không có dòng nào `A only` vì Home chỉ đọc.
 - `docs/adr/0003-charting-library.md` — ADR cho recharts (MASTER.md trước nay chỉ chốt Lucide + Framer Motion)
 - `docs/design-system/ducker-id/MASTER.md` — một dòng ghi nhận lớp chart + `--chart-*`
 - `docs/specs/home-activity-insights/{plan.md, e2e.md}` — sau khi design được duyệt
+
+> **Test cases** for this feature now live in `automation-test/test-cases/home.md` (merged from the former `e2e.md` on 2026-10-10).

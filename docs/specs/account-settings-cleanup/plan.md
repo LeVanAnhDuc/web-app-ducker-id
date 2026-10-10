@@ -8,7 +8,7 @@
 
 **Tech Stack:** Next.js 15 App Router, next-intl (en/vi), Playwright E2E. Làm trong worktree `client/.worktrees/account-settings-cleanup`.
 
-> **Worktree paths:** mọi path `src/**`, `e2e/**` dưới đây nằm trong `client/.worktrees/account-settings-cleanup/`. Spec/e2e doc nằm trong `docs/.worktrees/account-settings-cleanup/specs/account-settings-cleanup/`.
+> **Worktree paths:** mọi path `src/**`, `automation-test/tests/e2e/**` dưới đây nằm trong `client/.worktrees/account-settings-cleanup/`. Spec/e2e doc nằm trong `docs/.worktrees/account-settings-cleanup/specs/account-settings-cleanup/`.
 
 ---
 
@@ -325,15 +325,15 @@ git commit -m "chore(client): format & lint fixes for account-settings cleanup" 
 
 ---
 
-## Task 5 (E2E): Viết test cho Scenario Matrix + `e2e.md`
+## Task 5 (E2E): Viết test cho Scenario Matrix + `automation-test/test-cases/profile.md`
 
 **Files:**
-- Create: `client/e2e/account-settings-cleanup/cleanup.e2e.ts`
+- Create: `automation-test/tests/e2e/profile/cleanup.e2e.ts`
 - Create: `docs/.worktrees/account-settings-cleanup/specs/account-settings-cleanup/e2e.md`
 
-- [ ] **Step 1: Học convention E2E hiện có** — đọc `client/playwright.config.ts`, `client/e2e/auth.setup.ts`, `client/e2e/helpers/`, và 1 spec mẫu (vd `client/e2e/login-history/*.e2e.ts`) để biết: project nào dùng storageState, cách set locale (en/vi), base URL, helper điều hướng.
+- [ ] **Step 1: Học convention E2E hiện có** — đọc `automation-test/playwright.config.ts`, `automation-test/tests/setup/user.setup.ts`, `automation-test/helpers/`, và 1 spec mẫu (vd `automation-test/tests/e2e/login-history/*.e2e.ts`) để biết: project nào dùng storageState, cách set locale (en/vi), base URL, helper điều hướng.
 
-- [ ] **Step 2: Viết `client/e2e/account-settings-cleanup/cleanup.e2e.ts`** phủ các scenario (mirror import/auth theo Step 1). Phủ:
+- [ ] **Step 2: Viết `automation-test/tests/e2e/profile/cleanup.e2e.ts`** phủ các scenario (mirror import/auth theo Step 1). Phủ:
   - **F1 Route removal**: `goto('/security')` và `goto('/vi/security')` → trang `not-found` (assert dùng dấu hiệu not-found của app: heading 404 / text not-found — xác định từ `app/[locale]/not-found.tsx`).
   - **F2 Nav integrity**: ở `/account-settings`, sidebar nhóm settings KHÔNG có link "Security"; vẫn có Profile / Account Settings / Billing / Team; click 1 link còn lại điều hướng đúng.
   - **#1 Happy path**: `/account-settings` render heading Change Password; KHÔNG render "Active Sessions" / "Two-Factor" / "Danger Zone". `/profile` render Danger Zone heading.
@@ -342,13 +342,13 @@ git commit -m "chore(client): format & lint fixes for account-settings cleanup" 
 
   Selector ưu tiên role/label (`getByRole('heading', { name: ... })`, `getByRole('navigation')`). KHÔNG sửa app code để chiều test (gặp lỗi a11y → flag follow-up).
 
-- [ ] **Step 3: Viết `e2e.md`** — copy Scenario Matrix từ `design.md` §6 + ghi rõ scenario nào đã thành test, scenario N/A, và follow-up nếu có.
+- [ ] **Step 3: Viết `automation-test/test-cases/profile.md`** — copy Scenario Matrix từ `design.md` §6 + ghi rõ scenario nào đã thành test, scenario N/A, và follow-up nếu có.
 
 - [ ] **Step 4: Chạy gate A**
 
 ```bash
 cd client/.worktrees/account-settings-cleanup
-pnpm e2e account-settings-cleanup
+pnpm test account-settings-cleanup
 ```
 Expected: PASS. (Tiền đề app-running + gate B MCP walk theo CLAUDE.md §4.3 do main loop điều phối ở bước E2E.)
 
@@ -356,7 +356,7 @@ Expected: PASS. (Tiền đề app-running + gate B MCP walk theo CLAUDE.md §4.3
 
 ```bash
 # client repo
-git add e2e/account-settings-cleanup
+git add automation-test/tests/e2e/profile
 git commit -m "test(client): e2e for account-settings cleanup (route removal, nav, i18n)"
 # docs repo
 cd docs/.worktrees/account-settings-cleanup

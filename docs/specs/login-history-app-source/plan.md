@@ -41,6 +41,6 @@ Design: `design.md`. Mock: `docs/ui-designs/login-history-app-source/login-histo
 
 ## Task 6 — E2E + verify
 
-- [x] `e2e/login-history/login-history-app-source.e2e.ts`, `e2e/admin-login-history/admin-login-history-app-source.e2e.ts`. Stub cũ thêm 3 trường mới
+- [x] `automation-test/tests/e2e/login-history/app-source.e2e.ts`, `automation-test/tests/e2e/admin-login-history/app-source.e2e.ts`. Stub cũ thêm 3 trường mới
 - [x] BE: lint, type-check, test, build. FE: lint, `tsc --noEmit`, build
-- [ ] E2E real-SSO (2 case) cần DB đã seed. Xem `e2e.md`
+- [ ] E2E real-SSO (2 case) cần DB đã seed. Xem `automation-test/test-cases/login-history.md` + `automation-test/test-cases/admin-login-history.md`

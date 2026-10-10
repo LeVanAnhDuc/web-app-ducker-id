@@ -236,12 +236,12 @@ const EntitlementMatrixToolbar = ({ isEditing, isDirty, isSaving, onEdit, onCanc
 ### Task 11: E2E — matrix suite + e2e.md
 
 **Files:**
-- Create: `client/e2e/admin-entitlements/matrix.e2e.ts`
-- Create: `docs/specs/admin-entitlements-matrix/e2e.md`
-- Verify: `client/playwright.config.ts` đã include `admin-entitlements/` trong project `admin` (slice 1.1 đã thêm — chỉ cần confirm, không sửa nếu đã có).
+- Create: `automation-test/tests/e2e/admin-entitlements/matrix.e2e.ts`
+- Create: `automation-test/test-cases/admin-entitlements.md`
+- Verify: `automation-test/playwright.config.ts` đã include `admin-entitlements/` trong project `admin` (slice 1.1 đã thêm — chỉ cần confirm, không sửa nếu đã có).
 
-- [ ] **Step 1:** Viết `e2e.md` = expand E2E Scenario Matrix từ `design.md` (rubric 12 nhóm, cột Gate, follow-up/defer). Reuse format `admin-entitlements-picker-refinement/e2e.md`.
-- [ ] **Step 2:** Viết `matrix.e2e.ts` (project `admin`): 1 test/scenario Applicable. Reuse helper `client/e2e/helpers/` + storageState admin. Chọn user thật qua picker (search REAL) để tạo row. Case chính:
+- [ ] **Step 1:** Viết `automation-test/test-cases/admin-entitlements.md` = expand E2E Scenario Matrix từ `design.md` (rubric 12 nhóm, cột Gate, follow-up/defer). Reuse format `admin-entitlements-picker-refinement/e2e.md`.
+- [ ] **Step 2:** Viết `matrix.e2e.ts` (project `admin`): 1 test/scenario Applicable. Reuse helper `automation-test/helpers/` + storageState admin. Chọn user thật qua picker (search REAL) để tạo row. Case chính:
   - Happy: chọn user → bảng render, header "App access", non-edit không có checkbox (chỉ icon).
   - Edit toggle: click Edit → checkbox xuất hiện + Save/Cancel; Save disabled ban đầu (chưa dirty) + tooltip.
   - Dirty: toggle 1 checkbox eligible → Save enabled; Cancel → về non-edit, icon như cũ.

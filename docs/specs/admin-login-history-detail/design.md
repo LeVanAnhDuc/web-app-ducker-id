@@ -87,7 +87,7 @@ hooks/useAdminLoginHistoryDetail.ts        # useQuery, QUERY_KEYS.ADMIN_LOGIN_HI
 
 ## E2E Scenario Matrix (admin login-history list + detail)
 
-Trạng thái phản ánh **coverage thực tế** trong `client/e2e/admin-login-history/admin-login-history-detail.e2e.ts` (đã reconcile — một số cell trước đây overstate so với assertion thật trong test). `✅` = đã có test assert; `✅ NEW` = scenario hợp lệ nhưng test hiện **chưa** cover (cần ADD); `N/A` = không áp dụng + lý do.
+Trạng thái phản ánh **coverage thực tế** trong `automation-test/tests/e2e/admin-login-history/detail.e2e.ts` (đã reconcile — một số cell trước đây overstate so với assertion thật trong test). `✅` = đã có test assert; `✅ NEW` = scenario hợp lệ nhưng test hiện **chưa** cover (cần ADD); `N/A` = không áp dụng + lý do.
 
 | # | Category | Status | Scenario + expected + [technique] + values | Gate |
 | --- | --- | --- | --- | --- |
@@ -119,3 +119,5 @@ Hai scenario ✅ NEW phụ thuộc code-fix/fixture chưa có — phải close t
 - Swagger/OpenAPI doc cho module (follow-up tùy chọn).
 - Thay đổi list filter / pagination hiện có.
 - User-side login-history page (`/login-history`) — chỉ đụng admin side.
+
+> **Test cases** for this feature now live in `automation-test/test-cases/admin-login-history.md` (merged from the former `e2e.md` on 2026-10-10).

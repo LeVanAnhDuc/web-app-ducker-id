@@ -127,13 +127,17 @@ pnpm install
 pnpm dev              # http://localhost:3000
 ```
 
-`client/.env.example` covers `NEXT_PUBLIC_API_PREFIX`, `API_SERVER_URL` (the backend origin that `next.config.ts` rewrites the API prefix to), `NEXT_PUBLIC_SITE_URL`, and the `E2E_*` variables used by Playwright.
+`client/.env.example` covers `NEXT_PUBLIC_API_PREFIX`, `API_SERVER_URL` (the backend origin that `next.config.ts` rewrites the API prefix to), and `NEXT_PUBLIC_SITE_URL`.
 
 **4. Tests**
 
 ```bash
 cd server && pnpm test     # Jest unit tests — no database needed
-cd client && pnpm e2e      # Playwright — needs client, server, MongoDB and Redis up and the DB seeded
+
+cd automation-test         # Playwright regression suite — needs client, server, MongoDB and Redis up and the DB seeded
+pnpm install && pnpm exec playwright install chromium
+cp .env.example .env       # REDIS_URL / MONGO_URL = the server's
+pnpm test                  # or test:smoke, test:e2e, test:api — see automation-test/README.md
 ```
 
 ## Project structure
@@ -154,7 +158,6 @@ cd client && pnpm e2e      # Playwright — needs client, server, MongoDB and Re
 │   │   ├── ghosts/             # Headless side-effect components (e.g. TokenRefresher)
 │   │   ├── dataSources/ constants/ contexts/ i18n/ libs/ types/ utils/
 │   │   └── middleware.ts       # Locale routing
-│   ├── e2e/                    # Playwright specs and setup projects
 │   └── public/
 ├── server/                     # Express REST API, mounted under /api/v1
 │   ├── src/
@@ -174,13 +177,19 @@ cd client && pnpm e2e      # Playwright — needs client, server, MongoDB and Re
 │   │   ├── libs/ i18n/ common/ constants/ types/ utils/
 │   ├── test/                   # Jest factories, helpers and mocks
 │   └── postman-collection.json
+├── automation-test/            # Playwright regression suite: UI e2e + API, run on request
+│   ├── docs/                   # Test strategy, plan, requirements, traceability, conventions
+│   ├── test-cases/             # Test cases per module (TC-<MODULE>-NNN)
+│   ├── tests/{setup,e2e,api}/  # Specs
+│   ├── fixtures/ helpers/      # Role fixtures; Redis/Mongo test-data helpers
+│   └── defects/ reports/       # Bug log; run summaries
 ├── docs/
 │   ├── project-goals.md        # Scope, goals, non-goals, MVP roadmap
 │   ├── erd.md                  # Target MongoDB schema
 │   ├── unfinished-features.md  # Backlog of UI-without-API features
-│   ├── specs/<feature>/        # Per-feature design, plan, e2e and security notes
+│   ├── specs/<feature>/        # Per-feature design, plan and security notes
 │   ├── adr/                    # Architecture decision records
 │   └── ui-designs/
-├── .husky/pre-commit           # Runs lint-staged in client/ then server/
+├── .husky/pre-commit           # Runs lint-staged in client/, server/ and automation-test/
 └── package.json                # Root: husky only
 ```

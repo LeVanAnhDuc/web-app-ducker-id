@@ -1297,12 +1297,12 @@ import ChangePasswordCard from "./mains/ChangePasswordCard";
 
 # PART D — E2E Backfill Plan
 
-> **Backfill [2026-06-14]** — expand `## 10.5. E2E Scenario Matrix` (design.md) thành các E2E task TDD bite-sized. Nguồn sự thật về scenario + `[technique]` + giá trị cụ thể + cột `Gate` là matrix đó. Đây là **backfill mở rộng** suite hiện có ở `client/e2e/change-password/change-password.e2e.ts` (4 case `[EXISTS]`) — **KHÔNG rebuild**, chỉ ADD case mới + UPDATE case có expected đổi (reconcile cả 3 artifact: matrix ↔ e2e.md ↔ test file).
+> **Backfill [2026-06-14]** — expand `## 10.5. E2E Scenario Matrix` (design.md) thành các E2E task TDD bite-sized. Nguồn sự thật về scenario + `[technique]` + giá trị cụ thể + cột `Gate` là matrix đó. Đây là **backfill mở rộng** suite hiện có ở `automation-test/tests/e2e/password/change-password.e2e.ts` (4 case `[EXISTS]`) — **KHÔNG rebuild**, chỉ ADD case mới + UPDATE case có expected đổi (reconcile cả 3 artifact: matrix ↔ e2e.md ↔ test file).
 >
-> **File đích test**: `client/e2e/change-password/change-password.e2e.ts` (extend) + helper mới nếu cần ở `client/e2e/helpers/`.
+> **File đích test**: `automation-test/tests/e2e/password/change-password.e2e.ts` (extend) + helper mới nếu cần ở `automation-test/helpers/`.
 > **Selector thực tế** (xác nhận từ `views/AccountSettings/mains/ChangePasswordCard/index.tsx`): label `Current Password` / `New Password` / `Confirm New Password` (programmatically associated → `getByLabel(..., { exact: true })`); button Save có accessible name = `buttons.save` i18n (en `Update Password`); heading `getByRole("heading", { name: "Change Password" })`; inline error qua `aria-invalid="true"`; Save/Cancel `disabled` khi `!isDirty || isPending`; loading qua `loading={isPending}` (3 input `disabled={isPending}`); a11y announce qua `#announcer` (`aria-live="polite"`) với `announce.saving` + `announce.saved`.
 >
-> **Convention TDD (`superpowers:test-driven-development`)**: app đã implement xong → đây là test backfill, không phải red-first cho code mới. Mỗi task = 1 `test(...)`, chạy được ngay sau khi thêm; verify PASS thật trước khi tick. KHÔNG sửa app code trong test (gặp a11y/DOM/behavior bất ngờ → flag follow-up vào `e2e.md`).
+> **Convention TDD (`superpowers:test-driven-development`)**: app đã implement xong → đây là test backfill, không phải red-first cho code mới. Mỗi task = 1 `test(...)`, chạy được ngay sau khi thêm; verify PASS thật trước khi tick. KHÔNG sửa app code trong test (gặp a11y/DOM/behavior bất ngờ → flag follow-up vào `automation-test/test-cases/password.md`).
 >
 > **Hằng số dùng chung (đã có ở đầu file test)**: `DEFAULT_PASSWORD = process.env.E2E_USER_PASSWORD ?? "User@123"`, `NEW_PASSWORD = "NewPass@123"`, `currentPassword/newPassword/confirmPassword` locator helpers, `test.describe.configure({ mode: "serial" })`, `afterAll → ensureDefaultPassword(NEW_PASSWORD)`.
 
@@ -1385,7 +1385,7 @@ test("rejects change-password API call without a bearer token (401)", async () =
 
 > Import bổ sung đầu file: `import { request } from "@playwright/test";`. 2b là `A only` (network-level) → đặt describe 1; **không mutate** (401 trước khi chạm DB) nên describe 1 OK.
 
-- [ ] **Row 3 AuthZ — DEFER (N/A)**: endpoint chỉ có `authGuard`, self-service, `authId` lấy từ JWT (không tin body) → không có role/ownership surface để escalate. Không viết test. Ghi N/A + lý do vào `e2e.md`.
+- [ ] **Row 3 AuthZ — DEFER (N/A)**: endpoint chỉ có `authGuard`, self-service, `authId` lấy từ JWT (không tin body) → không có role/ownership surface để escalate. Không viết test. Ghi N/A + lý do vào `automation-test/test-cases/password.md`.
 
 ---
 
@@ -1425,7 +1425,7 @@ test("rejects new password missing an uppercase letter (no API call)", async ({
   - no-special `NewPass123`
   - (=current `User@123` đã cover bởi `4-new-equals-current` [EXISTS])
   - **currentPassword empty** `""` (+ new/confirm valid) → required trên `currentPassword`, no PATCH
-- [ ] **4-DT row ii currentOK+newInvalid [NEW]** [DT] — `current=User@123` + `new=newpass@123` (invalid) → client policy thắng → `aria-invalid` trên `newPassword`, **no PATCH** (đã ngầm cover bởi worked example vì worked example dùng `current` đúng). KHÔNG cần test riêng — ghi mapping vào `e2e.md`.
+- [ ] **4-DT row ii currentOK+newInvalid [NEW]** [DT] — `current=User@123` + `new=newpass@123` (invalid) → client policy thắng → `aria-invalid` trên `newPassword`, **no PATCH** (đã ngầm cover bởi worked example vì worked example dùng `current` đúng). KHÔNG cần test riêng — ghi mapping vào `automation-test/test-cases/password.md`.
 - [ ] **4-DT row iii currentWrong+newInvalid [NEW]** [DT] — `current=WrongPass@123` + `new=newpass@123` → client policy chặn `newPassword` trước → **no PATCH** (BE chưa gọi, dù current cũng sai). Test code (describe 1):
 
 ```ts
@@ -1472,7 +1472,7 @@ test("disables actions and blocks submit when the form is pristine", async ({
 });
 ```
 
-> Tooltip `noChanges`: cần hover (Radix tooltip render on hover). DEFER assertion text tooltip sang gate B MCP walk (visual) — gate A chỉ assert `disabled` (đủ chứng minh forcing-function). Ghi vào `e2e.md`.
+> Tooltip `noChanges`: cần hover (Radix tooltip render on hover). DEFER assertion text tooltip sang gate B MCP walk (visual) — gate A chỉ assert `disabled` (đủ chứng minh forcing-function). Ghi vào `automation-test/test-cases/password.md`.
 
 ---
 
@@ -1481,13 +1481,13 @@ test("disables actions and blocks submit when the form is pristine", async ({
 - [ ] **6-BVA-7chars reject [NEW]** [BVA] — `new=Ab@3xyz` (7 ký tự, < min 8) → `aria-invalid` trên `newPassword`, no PATCH. (describe 1, dùng worked-example pattern.)
 - [ ] **6-BVA-129chars reject [NEW]** [BVA] — `new` = 129 ký tự (> max, vd `"Ab@3" + "x".repeat(125)`) → `aria-invalid`, no PATCH. (describe 1.)
 - [ ] **6-BVA-8chars accept [NEW]** [BVA] — `new=Ab@3xyzz` (đúng 8 ký tự, hợp lệ) + `current=User@123` → PATCH `200`, toast success. **Mutate thật** → describe 2 (Gate A only). **Mitigation**: helper `ensureDefaultPassword` chỉ thử `DEFAULT_PASSWORD` + 1 `currentGuess` → vì test này đặt mật khẩu thứ 3 (`Ab@3xyzz` ≠ `NEW_PASSWORD`), **phải tự revert trong chính test** (gọi `ensureDefaultPassword("Ab@3xyzz")` cuối test, hoặc đổi tiếp về `NEW_PASSWORD`) trước khi describe kết thúc.
-- [ ] **Password-history depth — DEFER (N/A)**: không có reuse-history policy ngoài `new != current`. Pagination N/A (không list). Ghi N/A vào `e2e.md`.
+- [ ] **Password-history depth — DEFER (N/A)**: không có reuse-history policy ngoài `new != current`. Pagination N/A (không list). Ghi N/A vào `automation-test/test-cases/password.md`.
 
 ---
 
 ## Group 6 — Filter / search (matrix row 7) — DEFER (N/A)
 
-- [ ] **Row 7 — N/A**: feature là form 3-field, không có list/table/filter/search. Không test. Ghi N/A + lý do vào `e2e.md`.
+- [ ] **Row 7 — N/A**: feature là form 3-field, không có list/table/filter/search. Không test. Ghi N/A + lý do vào `automation-test/test-cases/password.md`.
 
 ---
 
@@ -1594,7 +1594,7 @@ test("disables inputs while the change-password request is in flight", async ({
 });
 ```
 
-> Route mock fulfill nên không mutate DB → describe 1. Nếu fake token-pair shape làm `setTokens` lỗi/store bẩn ảnh hưởng test kế → **mitigation**: chạy ở describe riêng hoặc reload sau test. Ghi follow-up vào `e2e.md` nếu observe được store contamination.
+> Route mock fulfill nên không mutate DB → describe 1. Nếu fake token-pair shape làm `setTokens` lỗi/store bẩn ảnh hưởng test kế → **mitigation**: chạy ở describe riêng hoặc reload sau test. Ghi follow-up vào `automation-test/test-cases/password.md` nếu observe được store contamination.
 
 ---
 
@@ -1602,7 +1602,7 @@ test("disables inputs while the change-password request is in flight", async ({
 
 > **Toàn bộ group 10 đặt ở describe 3 (isolated, serial)** — KHÔNG chạy song song với read scenario chia session (token-revoke + rate-limit làm hỏng session/window). Gate B chỉ verify read/render, không mutate.
 
-- [ ] **11-ST-valid [NEW]** [ST] — đã cover bởi **1b** (phiên sống sót với token mới). Ghi mapping 11-ST-valid → 1b vào `e2e.md`, không lặp test.
+- [ ] **11-ST-valid [NEW]** [ST] — đã cover bởi **1b** (phiên sống sót với token mới). Ghi mapping 11-ST-valid → 1b vào `automation-test/test-cases/password.md`, không lặp test.
 - [ ] **11-ST-invalid revoke other device [NEW] — MANDATORY** [ST] — capture refresh token từ **context #2** (login trước khi đổi), context #1 đổi mật khẩu, reuse cookie cũ của context #2 → `POST /auth/token/refresh` → `401/403` (`PasswordNotChangedGuard`). **Gate A only**. Test code (describe 3):
 
 ```ts
@@ -1714,7 +1714,7 @@ test("rate-limits change-password after 5 attempts in the window (6th -> 429)", 
 });
 ```
 
-> **DEFER risk + mitigation**: rate-limit phụ thuộc **config window + key (IP+user)** và **state Redis** giữa các lần chạy. Nếu một run trước đã tiêu bucket → run này có thể 429 sớm hơn (flaky). **Mitigation**: (a) chạy isolated cuối cùng trong describe 3; (b) nếu window dài (vd 15ph) → test không reset được trong 1 run → **DEFER với lý do**: cần env test có window ngắn hoặc Redis-flush hook trước test. Ghi rõ điều kiện chạy + cách reset bucket vào `e2e.md`; nếu CI không cấp được → đánh dấu `test.skip` kèm lý do, KHÔNG xóa.
+> **DEFER risk + mitigation**: rate-limit phụ thuộc **config window + key (IP+user)** và **state Redis** giữa các lần chạy. Nếu một run trước đã tiêu bucket → run này có thể 429 sớm hơn (flaky). **Mitigation**: (a) chạy isolated cuối cùng trong describe 3; (b) nếu window dài (vd 15ph) → test không reset được trong 1 run → **DEFER với lý do**: cần env test có window ngắn hoặc Redis-flush hook trước test. Ghi rõ điều kiện chạy + cách reset bucket vào `automation-test/test-cases/password.md`; nếu CI không cấp được → đánh dấu `test.skip` kèm lý do, KHÔNG xóa.
 
 - [ ] **11-revert [EXISTS]** — `afterAll ensureDefaultPassword(NEW_PASSWORD)` (idempotent). Áp cho describe 2 + 3 (mọi describe mutate password thật).
 
@@ -1740,22 +1740,22 @@ test("tabs through fields in DOM order: current -> new -> confirm -> save", asyn
 });
 ```
 
-> **Lưu ý**: `PasswordInput` có thể có nút toggle hiện/ẩn mật khẩu trong tab order giữa input và nút Save → engineer kiểm DOM thật để chỉnh số lần `Tab` (đừng giả định). Nếu toggle phá thứ tự kỳ vọng → flag follow-up vào `e2e.md`, KHÔNG sửa app.
+> **Lưu ý**: `PasswordInput` có thể có nút toggle hiện/ẩn mật khẩu trong tab order giữa input và nút Save → engineer kiểm DOM thật để chỉnh số lần `Tab` (đừng giả định). Nếu toggle phá thứ tự kỳ vọng → flag follow-up vào `automation-test/test-cases/password.md`, KHÔNG sửa app.
 
-- [ ] **12-announce [NEW]** [a11y] — `#announcer` (`aria-live=polite`) announce `announce.saving` lúc submit + `announce.saved` khi success. **Lean gate B** (timing aria-live khó deterministic ở gate A vì `announce.saving` → `announce.saved` ghi đè nhanh). Gate A có thể assert text cuối (`announce.saved`) sau success. DEFER assertion `announce.saving` (transient) sang gate B MCP walk (`browser_snapshot` bắt aria-live). Ghi vào `e2e.md`.
+- [ ] **12-announce [NEW]** [a11y] — `#announcer` (`aria-live=polite`) announce `announce.saving` lúc submit + `announce.saved` khi success. **Lean gate B** (timing aria-live khó deterministic ở gate A vì `announce.saving` → `announce.saved` ghi đè nhanh). Gate A có thể assert text cuối (`announce.saved`) sau success. DEFER assertion `announce.saving` (transient) sang gate B MCP walk (`browser_snapshot` bắt aria-live). Ghi vào `automation-test/test-cases/password.md`.
 
 ---
 
 ## Group 12 — Error-Guessing cross-cutting (matrix note) — A+B
 
-- [ ] **EG-trailing-space [NEW]** [error-guessing] — dán `"NewPass@123 "` (trailing space) vào cả `new` + `confirm` → **document hành vi quan sát được** (KHÔNG assert cứng kết quả vì là exploratory): zod compare nguyên văn → confirm khớp nếu cả 2 cùng trailing space; policy có pass không; BE trim hay reject. Ghi kết quả thật vào `e2e.md`. Nếu thấy behavior bất ngờ (vd space lọt vào hash) → flag follow-up, KHÔNG sửa app. (describe 1 — nếu mutate thật thì describe 2 + revert.)
+- [ ] **EG-trailing-space [NEW]** [error-guessing] — dán `"NewPass@123 "` (trailing space) vào cả `new` + `confirm` → **document hành vi quan sát được** (KHÔNG assert cứng kết quả vì là exploratory): zod compare nguyên văn → confirm khớp nếu cả 2 cùng trailing space; policy có pass không; BE trim hay reject. Ghi kết quả thật vào `automation-test/test-cases/password.md`. Nếu thấy behavior bất ngờ (vd space lọt vào hash) → flag follow-up, KHÔNG sửa app. (describe 1 — nếu mutate thật thì describe 2 + revert.)
 
 ---
 
-## Group 13 — Tạo `docs/specs/change-password/e2e.md` (bước §4.3 implementation)
+## Group 13 — Tạo `automation-test/test-cases/password.md` (bước §4.3 implementation)
 
-- [ ] **E2E-DOC tạo `docs/specs/change-password/e2e.md`** — tài liệu kịch bản per-scenario (source-of-truth runtime cho dual-gate §4.3). Nội dung bắt buộc:
-  - **Header**: feature, ngày, link tới `design.md §10.5` (matrix) + file test `client/e2e/change-password/change-password.e2e.ts`.
+- [ ] **E2E-DOC tạo `automation-test/test-cases/password.md`** — tài liệu kịch bản per-scenario (source-of-truth runtime cho dual-gate §4.3). Nội dung bắt buộc:
+  - **Header**: feature, ngày, link tới `design.md §10.5` (matrix) + file test `automation-test/tests/e2e/password/change-password.e2e.ts`.
   - **Bảng scenario per-row** (1 row matrix → 1+ entry): `# | scenario | input cụ thể | expected | technique | Gate | trạng thái ([EXISTS]/[NEW]) | test name`.
   - **N/A registry**: rows 3 (AuthZ), 7 (Filter/search), password-history/pagination (row 6) — mỗi cái lý do N/A (no silent gaps).
   - **DEFER registry**: 11-rate-limit-429 (điều kiện window/Redis-flush + cách reset bucket; nếu CI không cấp → `test.skip` + lý do); 12-announce `announce.saving` (transient → gate B); 5-tooltip-text + 10-loading-spinner (visual → gate B). Mỗi defer có **lý do + mitigation/điều kiện chạy lại**.

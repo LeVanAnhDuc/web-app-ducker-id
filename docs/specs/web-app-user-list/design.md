@@ -124,7 +124,7 @@ Pagination is **embedded in `data`** (mirrors `login-history` user-facing patter
 - **BE tests**: `web-app.service.spec.ts` (+ cases): active-only filter, search filter, pagination math (skip/limit, totalPages); `user-app.dto` spec: secret/OAuth-field exclusion.
 - **BE quality gate**: `pnpm format && pnpm lint && pnpm exec tsc` (+ `pnpm test`).
 - **FE quality gate**: `pnpm format && pnpm lint && pnpm exec tsc`.
-- **E2E (FE)**: per CLAUDE.md §4.3 — after implement + TDD, before code-review. **Scenario coverage chuẩn ở §6 `## E2E Scenario Matrix`** (12 nhóm rubric, hợp nhất cả category-filter + EN-locale từ `apps-api-integration`). Scenario doc in `docs/specs/web-app-user-list/e2e.md` (cần reconcile — xem §6), test in `client/e2e/web-app-user-list/`. Verify `/vi/apps` renders seeded active apps, search + pagination hit the API, Open launches `homeUrl`.
+- **E2E (FE)**: per CLAUDE.md §4.3 — after implement + TDD, before code-review. **Scenario coverage chuẩn ở §6 `## E2E Scenario Matrix`** (12 nhóm rubric, hợp nhất cả category-filter + EN-locale từ `apps-api-integration`). Scenario doc in `automation-test/test-cases/apps.md` (cần reconcile — xem §6), test in `automation-test/tests/e2e/apps/`. Verify `/vi/apps` renders seeded active apps, search + pagination hit the API, Open launches `homeUrl`.
 - **Manual verify**: `pnpm seed` (existing web-app seeder already seeds active apps) → log in → `/vi/apps` shows seeded apps; search + paginate; Open opens `homeUrl`.
 
 ---
@@ -146,9 +146,9 @@ Pagination is **embedded in `data`** (mirrors `login-history` user-facing patter
 
 > **Phạm vi**: catalog `/apps` (user-facing). Áp dụng vì feature thêm behavior user quan sát/tương tác được (grid app thật, search server-side, Open → `homeUrl`, category pills, render đa locale).
 >
-> **Lưu ý hợp nhất (cross-feature)**: feature `apps-api-integration` (xem `docs/specs/apps-api-integration/design.md §6`) đã bổ sung 2 vùng vào CHÍNH trang `/apps` này: **category-filter** (panel pills `GET /apps/categories` + query `categoryId`) và **i18n EN-locale render**. 2 vùng đó được hợp nhất vào matrix dưới đây (rows 7, 9, 12) để `web-app-user-list` giữ 1 matrix duy nhất, đầy đủ cho catalog `/apps`. Test hiện có ở `client/e2e/web-app-user-list/apps-list.e2e.ts` đã cover: render role-scoped active apps, search server-side + clear, Open launches `homeUrl` tab mới, **category pills filter**, **EN-locale render**.
+> **Lưu ý hợp nhất (cross-feature)**: feature `apps-api-integration` (xem `docs/specs/apps-api-integration/design.md §6`) đã bổ sung 2 vùng vào CHÍNH trang `/apps` này: **category-filter** (panel pills `GET /apps/categories` + query `categoryId`) và **i18n EN-locale render**. 2 vùng đó được hợp nhất vào matrix dưới đây (rows 7, 9, 12) để `web-app-user-list` giữ 1 matrix duy nhất, đầy đủ cho catalog `/apps`. Test hiện có ở `automation-test/tests/e2e/apps/apps-list.e2e.ts` đã cover: render role-scoped active apps, search server-side + clear, Open launches `homeUrl` tab mới, **category pills filter**, **EN-locale render**.
 >
-> **Legend**: ✅ = scenario bắt buộc · N/A = không áp dụng (kèm lý do). Cột `Gate`: `A+B` = chạy cả gate A (`pnpm e2e`) lẫn gate B (MCP walk); `A only` = chỉ gate A (thường API/contract hoặc mutation-heavy); `B` = thiên về gate B (visual/UX/console). Technique tag inline theo skill `e2e-scenario-coverage`: `[EP]` equivalence-partition · `[BVA]` boundary-value · `[DT]` decision-table.
+> **Legend**: ✅ = scenario bắt buộc · N/A = không áp dụng (kèm lý do). Cột `Gate`: `A+B` = chạy cả gate A (`pnpm test`) lẫn gate B (MCP walk); `A only` = chỉ gate A (thường API/contract hoặc mutation-heavy); `B` = thiên về gate B (visual/UX/console). Technique tag inline theo skill `e2e-scenario-coverage`: `[EP]` equivalence-partition · `[BVA]` boundary-value · `[DT]` decision-table.
 
 | # | Category | Status | Scenario + Expected + [technique] + values | Gate |
 |---|----------|--------|---------------------------------------------|------|
@@ -167,11 +167,11 @@ Pagination is **embedded in `data`** (mirrors `login-history` user-facing patter
 
 ### Artifact reconcile (BẮT BUỘC ở implementation)
 
-`docs/specs/web-app-user-list/e2e.md` hiện **stale** (chỉ 3 scenario: render / search / Open) — thiếu **category-pills** + **EN-locale** vốn ĐÃ tồn tại trong `client/e2e/web-app-user-list/apps-list.e2e.ts`. Khi implement phải **reconcile cả 3 artifact** (matrix ↔ `e2e.md` ↔ test file) theo CLAUDE.md §4.3:
+`automation-test/test-cases/apps.md` hiện **stale** (chỉ 3 scenario: render / search / Open) — thiếu **category-pills** + **EN-locale** vốn ĐÃ tồn tại trong `automation-test/tests/e2e/apps/apps-list.e2e.ts`. Khi implement phải **reconcile cả 3 artifact** (matrix ↔ `automation-test/test-cases/apps.md` ↔ test file) theo CLAUDE.md §4.3:
 
-- **ADD** vào `e2e.md`: scenario category-pills filter (row 7) + EN-locale render (row 9) cho khớp test file đang có.
+- **ADD** vào `automation-test/test-cases/apps.md`: scenario category-pills filter (row 7) + EN-locale render (row 9) cho khớp test file đang có.
 - **ADD** (chưa có test): rows 2 (AuthN), 4 (Validation API), 5 (Empty/null), 6 (Boundary/pagination — seed-gated), 10 (Error/loading), 12 (Accessibility keyboard/announcer).
-- Giữ matrix (file này) ↔ `e2e.md` ↔ `*.e2e.ts` đồng bộ; không update 1 cái mà bỏ 2 cái còn lại.
+- Giữ matrix (file này) ↔ `automation-test/test-cases/apps.md` ↔ `*.e2e.ts` đồng bộ; không update 1 cái mà bỏ 2 cái còn lại.
 
 ---
 
@@ -180,3 +180,5 @@ Pagination is **embedded in `data`** (mirrors `login-history` user-facing patter
 - Per-user **entitlement** launch-gating + entitlement seeder (currently empty collection).
 - ~~Category **filter** dropdown (the inert "Filter" button).~~ → Đã giao cho feature `apps-api-integration` (panel pills + `categoryId` filter); hợp nhất vào matrix §6 row 7.
 - Favorites / Recently-used wiring on this page.
+
+> **Test cases** for this feature now live in `automation-test/test-cases/apps.md` (merged from the former `e2e.md` on 2026-10-10).

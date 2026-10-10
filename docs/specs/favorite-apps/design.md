@@ -135,8 +135,8 @@ Phạm vi: **Apps catalog** (nút tim) + **Home** (nút tim) + **Favorites page*
 | 13 | **Cross-page consistency** (feature-specific) | ✅ | **[ST]** Favorite app X ở `/apps` → sang `/favorites` thấy X (React Query invalidate). Bỏ fav X ở `/favorites` → quay lại `/apps` tim X về outline. Home phản ánh đồng bộ. | A only |
 
 **Artifact E2E (writing-plans expand):**
-- `client/e2e/favorite-apps/*.e2e.ts` — toggle catalog, favorites list+remove, empty, filter/search, i18n en+vi, error/loading, a11y, cross-page, idempotency.
-- Tài liệu kịch bản: `docs/specs/favorite-apps/e2e.md`.
+- `automation-test/tests/e2e/favorites/*.e2e.ts` — toggle catalog, favorites list+remove, empty, filter/search, i18n en+vi, error/loading, a11y, cross-page, idempotency.
+- Tài liệu kịch bản: `automation-test/test-cases/favorites.md`.
 - **Completeness critic** (nếu user yêu cầu "thorough/đủ"): dispatch 1 subagent tìm case thiếu (double-submit, session expiry giữa toggle, back-button, concurrent tab) trước khi chốt.
 
 ## 7. Testing (BE)
@@ -165,3 +165,5 @@ Phạm vi: **Apps catalog** (nút tim) + **Home** (nút tim) + **Favorites page*
 - `server/.worktrees/favorite-apps`
 - `client/.worktrees/favorite-apps`
 - `docs/.worktrees/favorite-apps`
+
+> **Test cases** for this feature now live in `automation-test/test-cases/favorites.md` (merged from the former `e2e.md` on 2026-10-10).
