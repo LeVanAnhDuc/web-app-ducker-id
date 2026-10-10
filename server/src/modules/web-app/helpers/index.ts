@@ -8,9 +8,10 @@ import type {
   WebAppWithCategories
 } from "../types";
 import type { WebAppCategoryDocument } from "@/modules/category/types";
+import type { AccessScope } from "@/modules/entitlement/types";
 // modules
 import { WEB_APP_STATUSES, CLIENT_CREDENTIALS_CONFIG } from "../constants";
-import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
+import { canAccessApp } from "@/modules/entitlement/entitlement.helper";
 // others
 import { escapeRegex } from "@/utils/string/escape-regex";
 import { generateSecureToken } from "@/utils/crypto/secure-token";
@@ -52,18 +53,17 @@ export const generateClientSecret = (): string =>
   generateSecureToken(CLIENT_CREDENTIALS_CONFIG.CLIENT_SECRET_RANDOM_BYTES);
 
 /**
- * The launcher's visibility rule for a single app: it must exist and be
- * active, and a non-admin only sees apps whose requiredRoles include `user`.
- * Mirrors the filter `findActiveByIds` applies to a list.
+ * The launcher's visibility rule for a single app: it must exist, be active,
+ * and the user must have access to it — role default or override. Mirrors the
+ * filter `findActiveByIds` applies to a list.
  */
 export const isAppVisibleTo = (
-  app: Pick<WebAppDocument, "status" | "requiredRoles"> | null,
-  role?: string
+  app: Pick<WebAppDocument, "_id" | "status" | "requiredRoles"> | null,
+  scope: AccessScope
 ): boolean =>
   app !== null &&
   app.status === WEB_APP_STATUSES.ACTIVE &&
-  (role === AUTHENTICATION_ROLES.ADMIN ||
-    app.requiredRoles.includes(AUTHENTICATION_ROLES.USER));
+  canAccessApp(app, scope);
 
 /**
  * Virtual populate returns categories in query order; the admin's order lives

@@ -1,37 +1,35 @@
 import { test, expect } from "@playwright/test";
 import type { Page } from "@playwright/test";
 import { USER_EMAIL } from "../helpers/env";
+import {
+  clearOverrides,
+  getAccess,
+  getUserIdByEmail
+} from "../helpers/entitlements";
 
-// Admin Entitlements — user×app matrix (rows = user, cols = app) E2E.
-// Auth: `admin` project storageState (admin.json → admin@test.com session).
+// Admin Entitlements — user×app matrix (rows = user, cols = app) E2E, on the
+// REAL /admin/entitlements API. Auth: `admin` project (admin@test.com).
+// Design: docs/specs/access-control/design.md §10.
 //
-// Data sources (all REAL backend, seeded — see server/src/database/seeders/data/):
-//   - users.ts: "user@test.com" → fullName "Test User", role "user".
-//   - web-apps.ts: 6 seeded apps (no status filter applied by /admin/apps for admin):
-//       Blog [user], Analytics Dashboard [admin], IDMS Portal [user,admin],
-//       Team Calendar [user] (status inactive but still listed), Notes [user],
-//       Operations Console [admin].
-//     eligible(user,app) = app.requiredRoles.includes(user.role) (exact match,
-//     NOT hierarchical) → for "Test User" (role=user):
-//       eligible   = Blog, IDMS Portal, Team Calendar, Notes
-//       ineligible = Analytics Dashboard, Operations Console
+// Seed (server/src/database/seeders/data/):
+//   - users.ts: user@test.com "Test User" (role user) — no overrides;
+//     user2@test.com "John Doe" (role user) — entitlements.ts gives it
+//     `deny` Notes and `allow` Operations Console.
+//   - web-apps.ts: Blog [user], Analytics Dashboard [admin], IDMS Portal
+//     [user,admin], Team Calendar [user] (inactive — still a column),
+//     Notes [user], Operations Console [admin].
+//   Role default for a `user`: Blog, IDMS Portal, Team Calendar, Notes granted;
+//   Analytics Dashboard and Operations Console not granted.
 //
-// Entitlement GRANTS are mock (in-memory JS module state, reset on full page
-// reload/new test) keyed by the mock's own fake ids ("user_alice", "app_blog",
-// ...) which never match real backend ids. Consequence: every real selected
-// user starts with ALL eligible cells "not granted" — deterministic baseline,
-// no seed/revert needed. Saving a change persists only for the lifetime of
-// the page (mock store), so tests are isolated by Playwright's per-test page.
-//
-// i18n strings sourced from:
-//   src/locales/en/adminEntitlements.json → matrix.edit "Edit", matrix.save
-//     "Save", matrix.cancel "Cancel", matrix.userColumn "User",
-//     matrix.saveDisabledTooltip, matrix.checkAll/uncheckAll,
-//     cell.granted/notGranted/insufficientRole/grantAria, announce.editStart/saved
-//   src/locales/vi/adminEntitlements.json → matrix.edit "Chỉnh sửa",
-//     matrix.userColumn "Người dùng"
+// Saves write the shared database, so the suite runs serially and every test
+// that saves is followed by `clearOverrides(Test User)` in afterEach — Test
+// User is back on the role default for the next suite. user2 is only read.
+
+test.describe.configure({ mode: "serial" });
 
 const TEST_USER_FULLNAME = "Test User";
+const USER2_EMAIL = "user2@test.com";
+const USER2_FULLNAME = "John Doe";
 
 const APP_NAMES = [
   "Blog",
@@ -41,8 +39,11 @@ const APP_NAMES = [
   "Notes",
   "Operations Console"
 ];
-const ELIGIBLE_APPS = ["Blog", "IDMS Portal", "Team Calendar", "Notes"];
-const INELIGIBLE_APPS = ["Analytics Dashboard", "Operations Console"];
+const ROLE_GRANTED = ["Blog", "IDMS Portal", "Team Calendar", "Notes"];
+const ROLE_WITHHELD = ["Analytics Dashboard", "Operations Console"];
+
+const REVOKED_LABEL = "Exception — revoked despite the role";
+const GRANTED_LABEL = "Exception — granted beyond the role";
 
 const goto = (page: Page, locale = "") =>
   page.goto(`${locale}/admin/entitlements`);
@@ -60,6 +61,9 @@ const cancelButton = (page: Page) =>
 const cellCheckbox = (page: Page, app: string, user = TEST_USER_FULLNAME) =>
   page.getByRole("checkbox", { name: `Grant ${app} to ${user}` });
 
+const img = (page: Page, name: string) =>
+  page.getByRole("img", { name, exact: true });
+
 const selectUserByEmail = async (page: Page, email: string) => {
   await pickerSearch(page).fill(email);
   await page.getByRole("option").filter({ hasText: email }).first().click();
@@ -70,47 +74,71 @@ const selectUserByEmail = async (page: Page, email: string) => {
   await expect(page.getByRole("listbox")).toHaveCount(0);
 };
 
+const openMatrix = async (page: Page, email = USER_EMAIL, locale = "") => {
+  await goto(page, locale);
+  await selectUserByEmail(page, email);
+  await expect(
+    editButton(page).or(page.getByRole("button", { name: "Chỉnh sửa" }))
+  ).toBeVisible();
+};
+
+let testUserId: string;
+
+test.beforeAll(async () => {
+  testUserId = await getUserIdByEmail(USER_EMAIL);
+  await clearOverrides(testUserId);
+});
+
+test.afterEach(async () => {
+  await clearOverrides(testUserId);
+});
+
 // ---------------------------------------------------------------------------
-// 1. Happy — render rows=selected user, cols=full app catalog
+// 1. Happy — role default, then the seeded exceptions
 // ---------------------------------------------------------------------------
 test.describe("Admin Entitlements Matrix — happy render", () => {
-  test("selecting a user renders all app columns; non-edit shows icons, not checkboxes", async ({
+  test("a user with no override shows the role default and no exception marker", async ({
     page
   }) => {
-    await goto(page);
-    await selectUserByEmail(page, USER_EMAIL);
+    await openMatrix(page);
 
-    await expect(editButton(page)).toBeVisible();
     for (const app of APP_NAMES) {
       await expect(page.getByText(app, { exact: true })).toBeVisible();
     }
-
-    // Test User (role=user): 4 eligible apps not-yet-granted, 2 ineligible.
-    await expect(page.getByRole("img", { name: "Not granted" })).toHaveCount(
-      ELIGIBLE_APPS.length
-    );
-    await expect(page.getByRole("img", { name: "Role required" })).toHaveCount(
-      INELIGIBLE_APPS.length
-    );
+    await expect(img(page, "Granted")).toHaveCount(ROLE_GRANTED.length);
+    await expect(img(page, "Not granted")).toHaveCount(ROLE_WITHHELD.length);
+    await expect(img(page, REVOKED_LABEL)).toHaveCount(0);
+    await expect(img(page, GRANTED_LABEL)).toHaveCount(0);
     // Non-edit mode never renders checkboxes.
     await expect(page.getByRole("checkbox")).toHaveCount(0);
+  });
+
+  test("seeded exceptions show in both directions with a marker", async ({
+    page
+  }) => {
+    await openMatrix(page, USER2_EMAIL);
+
+    await expect(img(page, "Granted")).toHaveCount(4);
+    await expect(img(page, "Not granted")).toHaveCount(2);
+    await expect(img(page, REVOKED_LABEL)).toHaveCount(1);
+    await expect(img(page, GRANTED_LABEL)).toHaveCount(1);
+
+    await img(page, REVOKED_LABEL).hover();
+    await expect(page.getByRole("tooltip")).toContainText(REVOKED_LABEL);
   });
 });
 
 // ---------------------------------------------------------------------------
-// 8. Data rendering — icons not raw booleans; header shows displayName + RoleChip
+// 8. Data rendering — icons not raw booleans; header shows RoleChip label
 // ---------------------------------------------------------------------------
 test.describe("Admin Entitlements Matrix — data rendering", () => {
   test("cells render icons (not raw true/false); app header shows RoleChip label (not raw enum)", async ({
     page
   }) => {
-    await goto(page);
-    await selectUserByEmail(page, USER_EMAIL);
+    await openMatrix(page);
 
     await expect(page.getByText("true", { exact: true })).toHaveCount(0);
     await expect(page.getByText("false", { exact: true })).toHaveCount(0);
-    // RoleChip renders the translated label ("Admin"), never the raw enum
-    // value the backend uses internally.
     await expect(page.getByText("ADMIN", { exact: true })).toHaveCount(0);
     await expect(
       page.getByText("Admin", { exact: true }).first()
@@ -131,29 +159,27 @@ test.describe("Admin Entitlements Matrix — unauthenticated redirect", () => {
 });
 
 // ---------------------------------------------------------------------------
-// 3. AuthZ
+// 3. AuthZ — page denial lives in admin-authz/ (needs a non-admin session);
+//    API 401/403 is asserted in web-app-access/launcher.e2e.ts.
 // ---------------------------------------------------------------------------
 test.describe("Admin Entitlements Matrix — authZ", () => {
-  // DEFERRED: non-admin denial is AuthGuard/BE-403 behavior best verified
-  // under a dedicated non-admin storageState project (mid-test cookie swap
-  // races the SessionGate refresh). The admin-authz suite already covers
-  // /admin/* denial for non-admins. See e2e.md.
-  test.fixme("non-admin is denied access", async () => {});
+  test.fixme(
+    "non-admin is denied access (covered by admin-authz/)",
+    async () => {}
+  );
 });
 
 // ---------------------------------------------------------------------------
-// 4. Validation / expected-error — edit mode, dirty gate, insufficient-role
+// 4. Validation — edit mode and dirty gate; no cell is locked any more
 // ---------------------------------------------------------------------------
 test.describe("Admin Entitlements Matrix — edit mode + dirty gate", () => {
   test("Edit reveals checkboxes + Save/Cancel; Save starts disabled with tooltip", async ({
     page
   }) => {
-    await goto(page);
-    await selectUserByEmail(page, USER_EMAIL);
+    await openMatrix(page);
     await editButton(page).click();
 
-    await expect(page.getByRole("checkbox").first()).toBeVisible();
-    await expect(saveButton(page)).toBeVisible();
+    await expect(page.getByRole("checkbox")).toHaveCount(APP_NAMES.length);
     await expect(cancelButton(page)).toBeVisible();
     await expect(saveButton(page)).toBeDisabled();
 
@@ -165,106 +191,170 @@ test.describe("Admin Entitlements Matrix — edit mode + dirty gate", () => {
     );
   });
 
-  test("toggling an eligible checkbox enables Save; Cancel discards and reverts", async ({
+  test("toggling a cell enables Save; toggling it back disables it again", async ({
     page
   }) => {
-    await goto(page);
-    await selectUserByEmail(page, USER_EMAIL);
+    await openMatrix(page);
     await editButton(page).click();
 
     await cellCheckbox(page, "Blog").click();
     await expect(saveButton(page)).toBeEnabled();
 
+    await cellCheckbox(page, "Blog").click();
+    await expect(saveButton(page)).toBeDisabled();
+  });
+
+  test("a cell the role withholds is editable, and ticking it previews the exception", async ({
+    page
+  }) => {
+    await openMatrix(page);
+    await editButton(page).click();
+
+    const analytics = cellCheckbox(page, "Analytics Dashboard");
+    await expect(analytics).toBeEnabled();
+    await expect(analytics).not.toBeChecked();
+
+    await analytics.click();
+    await expect(analytics).toBeChecked();
+    await expect(img(page, GRANTED_LABEL)).toHaveCount(1);
+  });
+
+  test("Cancel discards and reverts", async ({ page }) => {
+    await openMatrix(page);
+    await editButton(page).click();
+    await cellCheckbox(page, "Blog").click();
+
     await cancelButton(page).click();
     await expect(editButton(page)).toBeVisible();
     await expect(page.getByRole("checkbox")).toHaveCount(0);
-    // Reverted — still 4 "Not granted" (Blog's toggle was discarded).
-    await expect(page.getByRole("img", { name: "Not granted" })).toHaveCount(
-      ELIGIBLE_APPS.length
-    );
-  });
-
-  test("insufficient-role cell is a disabled checkbox with a reason tooltip", async ({
-    page
-  }) => {
-    await goto(page);
-    await selectUserByEmail(page, USER_EMAIL);
-    await editButton(page).click();
-
-    const analyticsCheckbox = cellCheckbox(page, "Analytics Dashboard");
-    await expect(analyticsCheckbox).toBeDisabled();
-    await expect(analyticsCheckbox).toHaveAttribute("aria-checked", "false");
-
-    await analyticsCheckbox.hover();
-    await expect(page.getByRole("tooltip")).toContainText(
-      "This user lacks the required role."
-    );
+    await expect(img(page, "Granted")).toHaveCount(ROLE_GRANTED.length);
+    await expect(img(page, REVOKED_LABEL)).toHaveCount(0);
   });
 });
 
 // ---------------------------------------------------------------------------
-// 11. Mutation safety — Save persists (A only: mutation-heavy)
+// 11. Mutation / state — real persistence (A only)
 // ---------------------------------------------------------------------------
 test.describe("Admin Entitlements Matrix — save", () => {
-  test("Save persists the toggle; non-edit reflects the new grant", async ({
+  test("revoking a role-granted app persists across a reload as an exception", async ({
     page
   }) => {
-    await goto(page);
-    await selectUserByEmail(page, USER_EMAIL);
+    await openMatrix(page);
     await editButton(page).click();
-
     await cellCheckbox(page, "Blog").click();
     await saveButton(page).click();
 
     await expect(editButton(page)).toBeVisible();
-    await expect(saveButton(page)).toHaveCount(0);
-    await expect(
-      page.getByRole("img", { name: "Granted", exact: true })
-    ).toHaveCount(1);
-    await expect(page.getByRole("img", { name: "Not granted" })).toHaveCount(
-      ELIGIBLE_APPS.length - 1
-    );
-    await expect(page.getByRole("img", { name: "Role required" })).toHaveCount(
-      INELIGIBLE_APPS.length
-    );
+    await expect(img(page, "Granted")).toHaveCount(ROLE_GRANTED.length - 1);
+    await expect(img(page, REVOKED_LABEL)).toHaveCount(1);
+
+    await openMatrix(page);
+    await expect(img(page, REVOKED_LABEL)).toHaveCount(1);
+    await expect(img(page, "Granted")).toHaveCount(ROLE_GRANTED.length - 1);
+  });
+
+  test("setting a cell back to its role default removes the override", async ({
+    page
+  }) => {
+    await openMatrix(page);
+    await editButton(page).click();
+    await cellCheckbox(page, "Blog").click();
+    await saveButton(page).click();
+    await expect(img(page, REVOKED_LABEL)).toHaveCount(1);
+
+    await editButton(page).click();
+    await cellCheckbox(page, "Blog").click();
+    await saveButton(page).click();
+
+    await expect(editButton(page)).toBeVisible();
+    await expect(img(page, REVOKED_LABEL)).toHaveCount(0);
+    // No redundant `allow` left behind for an app the role already grants.
+    expect((await getAccess(testUserId)).overriddenAppIds).toEqual([]);
+  });
+
+  test("granting beyond the role persists as an exception", async ({
+    page
+  }) => {
+    await openMatrix(page);
+    await editButton(page).click();
+    await cellCheckbox(page, "Operations Console").click();
+    await saveButton(page).click();
+
+    await expect(editButton(page)).toBeVisible();
+    await expect(img(page, "Granted")).toHaveCount(ROLE_GRANTED.length + 1);
+    await expect(img(page, GRANTED_LABEL)).toHaveCount(1);
+  });
+
+  test("a double-clicked Save sends one request", async ({ page }) => {
+    const patches: string[] = [];
+    page.on("request", (req) => {
+      if (req.method() === "PATCH" && req.url().includes("/admin/entitlements"))
+        patches.push(req.url());
+    });
+
+    await openMatrix(page);
+    await editButton(page).click();
+    await cellCheckbox(page, "Notes").click();
+    await saveButton(page).dblclick();
+
+    await expect(editButton(page)).toBeVisible();
+    expect(patches).toHaveLength(1);
+    await expect(img(page, REVOKED_LABEL)).toHaveCount(1);
   });
 });
 
 // ---------------------------------------------------------------------------
-// 6. Boundary — check-all toggle (eligibleCount ≥1 case; 0-eligible boundary
-//    is not reproducible with the current seed, see e2e.md follow-up)
+// 10. Error — a failed save keeps the edit
 // ---------------------------------------------------------------------------
-test.describe("Admin Entitlements Matrix — check-all toggle", () => {
-  test("row check-all grants all eligible cells; toggling again revokes them", async ({
+test.describe("Admin Entitlements Matrix — save error", () => {
+  test("a 500 on save shows the error toast and stays in edit mode", async ({
     page
   }) => {
-    await goto(page);
-    await selectUserByEmail(page, USER_EMAIL);
+    await page.route("**/admin/entitlements", (route) =>
+      route.request().method() === "PATCH"
+        ? route.fulfill({
+            status: 500,
+            contentType: "application/json",
+            body: JSON.stringify({ code: "INTERNAL", message: "boom" })
+          })
+        : route.continue()
+    );
+
+    await openMatrix(page);
+    await editButton(page).click();
+    await cellCheckbox(page, "Blog").click();
+    await saveButton(page).click();
+
+    await expect(
+      page.getByText("Something went wrong. Please try again.")
+    ).toBeVisible();
+    await expect(saveButton(page)).toBeVisible();
+    await expect(cellCheckbox(page, "Blog")).not.toBeChecked();
+    expect((await getAccess(testUserId)).overriddenAppIds).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Check-all — applies to every app now, not only role-eligible ones
+// ---------------------------------------------------------------------------
+test.describe("Admin Entitlements Matrix — check-all toggle", () => {
+  test("row check-all ticks every app; toggling again clears them all", async ({
+    page
+  }) => {
+    await openMatrix(page);
     await editButton(page).click();
 
-    const checkAllButton = page.getByRole("button", {
-      name: "Grant all eligible apps"
-    });
-    await checkAllButton.click();
-
-    for (const app of ELIGIBLE_APPS) {
+    await page.getByRole("button", { name: "Grant all apps" }).click();
+    for (const app of APP_NAMES) {
       await expect(cellCheckbox(page, app)).toBeChecked();
     }
-    // Ineligible cells stay untouched (still disabled, unchecked).
-    for (const app of INELIGIBLE_APPS) {
-      await expect(cellCheckbox(page, app)).not.toBeChecked();
-      await expect(cellCheckbox(page, app)).toBeDisabled();
-    }
+    await expect(img(page, GRANTED_LABEL)).toHaveCount(ROLE_WITHHELD.length);
 
-    const uncheckAllButton = page.getByRole("button", {
-      name: "Revoke all apps"
-    });
-    await expect(uncheckAllButton).toBeVisible();
-    await uncheckAllButton.click();
-
-    for (const app of ELIGIBLE_APPS) {
+    await page.getByRole("button", { name: "Revoke all apps" }).click();
+    for (const app of APP_NAMES) {
       await expect(cellCheckbox(page, app)).not.toBeChecked();
     }
+    await expect(img(page, REVOKED_LABEL)).toHaveCount(ROLE_GRANTED.length);
   });
 });
 
@@ -275,8 +365,7 @@ test.describe("Admin Entitlements Matrix — picker lock", () => {
   test("search input and remove-chip are disabled while editing", async ({
     page
   }) => {
-    await goto(page);
-    await selectUserByEmail(page, USER_EMAIL);
+    await openMatrix(page);
     await editButton(page).click();
 
     await expect(pickerSearch(page)).toBeDisabled();
@@ -287,14 +376,13 @@ test.describe("Admin Entitlements Matrix — picker lock", () => {
 });
 
 // ---------------------------------------------------------------------------
-// 6. Boundary — sticky user column
+// Sticky user column
 // ---------------------------------------------------------------------------
 test.describe("Admin Entitlements Matrix — sticky user column", () => {
   test("user column header + row cell are pinned via position:sticky, left:0", async ({
     page
   }) => {
-    await goto(page);
-    await selectUserByEmail(page, USER_EMAIL);
+    await openMatrix(page);
 
     const userHeaderCell = page.getByRole("columnheader", {
       name: "User",
@@ -312,7 +400,7 @@ test.describe("Admin Entitlements Matrix — sticky user column", () => {
 });
 
 // ---------------------------------------------------------------------------
-// 10. Error / loading — catalog loading gate
+// 10. Loading — catalog loading gate
 // ---------------------------------------------------------------------------
 test.describe("Admin Entitlements Matrix — loading", () => {
   test("matrix stays in loading state until the app catalog resolves", async ({
@@ -327,44 +415,42 @@ test.describe("Admin Entitlements Matrix — loading", () => {
     await goto(page);
     await selectUserByEmail(page, USER_EMAIL);
 
-    // Toolbar/table (post-loading branch) must not render before the delayed
-    // catalog response resolves.
     await expect(editButton(page)).not.toBeVisible();
     await expect(editButton(page)).toBeVisible({ timeout: 5000 });
   });
-
-  // NOTE: mock `updateUserGrants` always resolves successfully — there is no
-  // reachable error branch to assert `toast.error` / "stay in edit mode on
-  // failure" without modifying app/mock code (out of scope here). Deferred to
-  // when the real BE endpoint lands (see e2e.md follow-up).
 });
 
 // ---------------------------------------------------------------------------
 // 9. i18n — EN + VI
 // ---------------------------------------------------------------------------
 test.describe("Admin Entitlements Matrix — i18n", () => {
-  test("EN: Edit / User column render, no missing keys", async ({ page }) => {
-    await goto(page);
-    await selectUserByEmail(page, USER_EMAIL);
+  test("EN: Edit / User column / exception labels render, no missing keys", async ({
+    page
+  }) => {
+    await openMatrix(page, USER2_EMAIL);
 
-    await expect(editButton(page)).toBeVisible();
     await expect(
       page.getByRole("columnheader", { name: "User", exact: true })
     ).toBeVisible();
-    await expect(page.getByText(/\[adminEntitlements\./)).toHaveCount(0);
+    await expect(img(page, REVOKED_LABEL)).toHaveCount(1);
+    await expect(img(page, GRANTED_LABEL)).toHaveCount(1);
+    await expect(page.getByText(/\[?adminEntitlements\./)).toHaveCount(0);
   });
 
-  test("VI: Chỉnh sửa / Người dùng render, no missing keys", async ({
+  test("VI: Chỉnh sửa / Người dùng / exception labels render, no missing keys", async ({
     page
   }) => {
-    await goto(page, "/vi");
-    await selectUserByEmail(page, USER_EMAIL);
+    await openMatrix(page, USER2_EMAIL, "/vi");
 
     await expect(page.getByRole("button", { name: "Chỉnh sửa" })).toBeVisible();
     await expect(
       page.getByRole("columnheader", { name: "Người dùng", exact: true })
     ).toBeVisible();
-    await expect(page.getByText(/\[adminEntitlements\./)).toHaveCount(0);
+    await expect(img(page, "Ngoại lệ — bị thu hồi dù đủ vai trò")).toHaveCount(
+      1
+    );
+    await expect(img(page, "Ngoại lệ — được cấp ngoài vai trò")).toHaveCount(1);
+    await expect(page.getByText(/\[?adminEntitlements\./)).toHaveCount(0);
   });
 });
 
@@ -372,36 +458,35 @@ test.describe("Admin Entitlements Matrix — i18n", () => {
 // 12. Accessibility
 // ---------------------------------------------------------------------------
 test.describe("Admin Entitlements Matrix — accessibility", () => {
-  test("checkbox exposes accessible name 'Grant {app} to {user}'", async ({
+  test("every cell checkbox exposes 'Grant {app} to {user}'", async ({
     page
   }) => {
-    await goto(page);
-    await selectUserByEmail(page, USER_EMAIL);
+    await openMatrix(page, USER2_EMAIL);
     await editButton(page).click();
 
-    await expect(cellCheckbox(page, "Blog")).toBeVisible();
+    for (const app of APP_NAMES) {
+      await expect(cellCheckbox(page, app, USER2_FULLNAME)).toBeVisible();
+    }
   });
 
   test("keyboard: focus + Space toggles checkbox, Save reachable", async ({
     page
   }) => {
-    await goto(page);
-    await selectUserByEmail(page, USER_EMAIL);
+    await openMatrix(page);
     await editButton(page).click();
 
     const blogCheckbox = cellCheckbox(page, "Blog");
     await blogCheckbox.focus();
     await page.keyboard.press("Space");
 
-    await expect(blogCheckbox).toBeChecked();
+    await expect(blogCheckbox).not.toBeChecked();
     await expect(saveButton(page)).toBeEnabled();
   });
 
   test("live region announces enter-edit and save (screen reader)", async ({
     page
   }) => {
-    await goto(page);
-    await selectUserByEmail(page, USER_EMAIL);
+    await openMatrix(page);
     await editButton(page).click();
     await expect(page.locator("#announcer")).toHaveText("Editing app access.");
 
@@ -411,8 +496,7 @@ test.describe("Admin Entitlements Matrix — accessibility", () => {
   });
 
   test("live region announces cancel (screen reader)", async ({ page }) => {
-    await goto(page);
-    await selectUserByEmail(page, USER_EMAIL);
+    await openMatrix(page);
     await editButton(page).click();
     await cellCheckbox(page, "Blog").click();
     await cancelButton(page).click();

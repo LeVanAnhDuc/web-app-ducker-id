@@ -7,8 +7,11 @@ import type {
   WebAppWithCategories
 } from "../types";
 import type { CategoryReassignment, OrphanApp } from "@/modules/category/types";
+import type { AccessScope, AppAccessRule } from "@/modules/entitlement/types";
 
 export interface WebAppRepository {
+  /** `_id` + `requiredRoles` of every app (any status), or only of `ids`. */
+  findAccessRules(ids?: string[]): Promise<AppAccessRule[]>;
   findAll(filter: FilterQuery<WebAppDocument>): Promise<WebAppDocument[]>;
   findById(id: string): Promise<WebAppDocument | null>;
   findByClientId(clientId: string): Promise<WebAppDocument | null>;
@@ -25,7 +28,7 @@ export interface WebAppRepository {
   ): Promise<WebAppWithCategories[]>;
   findActiveByIds(
     ids: string[],
-    filter: { role?: string; search?: string; categoryId?: string }
+    filter: { access: AccessScope; search?: string; categoryId?: string }
   ): Promise<WebAppWithCategories[]>;
   countActive(filter: FilterQuery<WebAppDocument>): Promise<number>;
   /** Every app referencing the category, active or not. */

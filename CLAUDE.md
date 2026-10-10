@@ -57,7 +57,7 @@ cd client && pnpm e2e e2e/home/home-page.e2e.ts --project=chromium
 cd client && pnpm e2e e2e/admin-apps/ --project=admin
 ```
 
-Jest picks up `src/**/*.spec.ts` plus `test/integration/**` and `test/e2e/**`; factories, helpers and mocks live in `server/test/`. Service tests sit in `services/spec/`, repository tests in `repository/spec/`. Current suite: **81 suites / 601 tests**, no database required.
+Jest picks up `src/**/*.spec.ts` plus `test/integration/**` and `test/e2e/**`; factories, helpers and mocks live in `server/test/`. Service tests sit in `services/spec/`, repository tests in `repository/spec/`. Current suite: **86 suites / 672 tests**, no database required.
 
 `jest.config.ts` sets `resetMocks: true`, which clears the *implementations* a `jest.mock` factory set up, not just the call history. A factory must therefore close over bare `jest.fn()`s and the implementations be rebuilt in `beforeEach`, or the mock works in the first test of a file and returns `undefined` in every one after it.
 
@@ -71,11 +71,11 @@ Playwright (`client/playwright.config.ts`) runs `*.e2e.ts` under `client/e2e/` w
 
 There is no DI container. Every module exports a `create<Name>Module(...)` factory that news up repository → service → controller → router and returns the routers plus any service other modules need. `loaders/modules.loader.ts` calls those factories **in dependency order by hand** (`userService` and `loginHistoryService` exist before `login`, which takes both) and `mountRoutes` mounts every router under `/api/v1`. Consequences:
 
-- **A new module is dead code until it is added to `modules.loader.ts`.** `modules/entitlement/` and `modules/oauth-consent/` are schema-only stubs (`constants/` + `types/`, no routes) and are intentionally unwired.
+- **A new module is dead code until it is added to `modules.loader.ts`.** `modules/oauth-consent/` is a schema-only stub (`constants/` + `types/`, no routes) and is intentionally unwired.
 - Adding an endpoint touches up to **three** places: the module's `*.routes.ts`, `modules.loader.ts` (only for a new module or router), and `src/libs/swagger/openapi.ts`, which imports each module's `swagger/` barrel and spreads it into `allSchemas` / `allPaths`. That registry is incomplete today — `login-history` and `favorite` have no Swagger entry, so their routes are missing from `/api-docs`.
 - A module exposing both a user and an admin surface returns two routers (`userRouter` + `userAdminRouter`, `webAppUserRouter` + `webAppAdminRouter`, …) instead of branching inside one.
 
-Module anatomy: `<name>.module.ts` (factory), `<name>.routes.ts`, `<name>.controller.ts`, plus `dtos/`, `types/`, `constants/` and `swagger/` (`paths.ts` + `schemas.ts` + a Postman collection). 15 wired modules, ~60 route handlers.
+Module anatomy: `<name>.module.ts` (factory), `<name>.routes.ts`, `<name>.controller.ts`, plus `dtos/`, `types/`, `constants/` and `swagger/` (`paths.ts` + `schemas.ts` + a Postman collection). 16 wired modules, ~62 route handlers.
 
 Service and repository live in folders rather than single files (`docs/specs/module-struct-batch*/`) — those are the two that grow worst:
 
@@ -93,9 +93,11 @@ Private methods follow the call graph. One that serves a single public method be
 
 A module with two or more services puts each one in its own sub-folder — `services/login/`, `services/login-audit/` — and `strategies/` is laid out the same way. Neither folder has a barrel; the only `index.ts` is the class inside each sub-folder. Where a `strategies/` folder already splits the work per use case, the façade's one-line delegates stay on the façade: a method file holding `return deps.otpStrategy.sendCode(req)` adds a hop to a trace rather than removing one.
 
-Every module with code uses this layout; `entitlement` and `oauth-consent` are schema-only stubs with nothing to split. No `*.service.ts` or `*.repository.ts` remains at a module root — one appearing means somebody created it off-standard, not that a module was missed. Full rules in `server/.claude/rules/modules.md`; design rationale in `docs/specs/authentication-module-structure/design.md` and the `docs/specs/module-struct-batch*/design.md` series.
+Every module with code uses this layout; `oauth-consent` is a schema-only stub with nothing to split. No `*.service.ts` or `*.repository.ts` remains at a module root — one appearing means somebody created it off-standard, not that a module was missed. Full rules in `server/.claude/rules/modules.md`; design rationale in `docs/specs/authentication-module-structure/design.md` and the `docs/specs/module-struct-batch*/design.md` series.
 
 Categories are their own module (`modules/category/`), wired **before** `web-app` so its repository can be handed to `createWebAppModule` for the `categoryIds` existence check. It owns both `/admin/categories*` and the public `GET /apps/categories`; `/admin/apps/categories` no longer exists. An app carries 1–5 ordered `categoryIds` (first = primary); category names are `{ en, vi }` and the client picks one by locale — there is no slug→locale map anymore. Data from before this shape is moved by `pnpm migrate:category-management` (idempotent; `server/src/database/migrations/`).
+
+**Who may open an app is decided in one place.** `entitlements` stores only exceptions to the role default — `allow` beyond the role, `deny` despite it; with no record a user gets an app when `requiredRoles` is empty, lists their role, or they are an admin. `createEntitlementModule` is wired **before** `web-app` and hands its `AccessPolicy` to `web-app`, `favorite`, `recent-app` and `oauth`; each resolves the user's `AccessScope` per request (no cache, so a revoke holds on the next request) and checks it with `canAccessApp` (one app) or `buildAccessFilter` (a list — its clauses go into `$and`, because `buildWebAppFilter` already owns `$or` for search). Never filter by `requiredRoles` directly in a new launcher query. `PATCH /admin/entitlements` takes the value the admin wants and stores an override only when it differs from the role default.
 
 Every paginated endpoint goes through `src/common/pagination/`: `resolvePaging(query)` turns a validated query into the `{ skip, limit, sort }` a repository takes plus the `page` the response needs, and `toPageMeta(total, page, limit)` builds the `meta`. `PaginatedResult<T>` and `PageMeta` live there too. Don't recompute `(page - 1) * limit` in a service, and don't clamp `page` — every paginated Joi schema already enforces `min(1)`.
 
@@ -115,7 +117,7 @@ Cross-cutting concerns deliberately live **outside** the modules:
 
 Email is never sent inline: `EmailDispatcher` pushes onto the BullMQ `emailQueue` (templates are React Email components rendered server-side), with Bull Board at `/admin/queues`. `/health` reports MongoDB and Redis status.
 
-Notifications follow the same shape. A module that wants to tell a user something takes `NotificationDispatcher` (`src/services/notification/`) through its factory and calls `notify({ userId })`, `notifyByAuthId({ authId })` (login history only knows the auth id) or `broadcast({ roles, dedupeKey })`; the `notification` queue's worker writes the rows. The dispatcher **never throws** — a failed write must not fail the password change or sign-in that caused it. The writer lives in `src/services/`, not in `modules/notification/`, because queues are built before modules load. Rows hold `type + params + link`, never text: the client renders `notifications.types.<TYPE>` from its own catalogue, so a new type needs an entry in **both** `client/src/locales/{en,vi}/notifications.json`. Producers today: change-password, admin reset-password, password lockout, login-history (new device or country → `LOGIN_ANOMALY`, and the row's `isAnomaly`) and web-app (an app announced once, claimed through `webApp.announcedAt`).
+Notifications follow the same shape. A module that wants to tell a user something takes `NotificationDispatcher` (`src/services/notification/`) through its factory and calls `notify({ userId })`, `notifyByAuthId({ authId })` (login history only knows the auth id) or `broadcast({ roles, dedupeKey })`; the `notification` queue's worker writes the rows. The dispatcher **never throws** — a failed write must not fail the password change or sign-in that caused it. The writer lives in `src/services/`, not in `modules/notification/`, because queues are built before modules load. Rows hold `type + params + link`, never text: the client renders `notifications.types.<TYPE>` from its own catalogue, so a new type needs an entry in **both** `client/src/locales/{en,vi}/notifications.json`. Producers today: change-password, admin reset-password, password lockout, login-history (new device or country → `LOGIN_ANOMALY`, and the row's `isAnomaly`), web-app (an app announced once, claimed through `webApp.announcedAt`) and entitlement (`ENTITLEMENT_GRANTED` / `_REVOKED`, only for pairs whose effective access flipped, active apps only).
 
 ### Client — thin routes, thick views
 
@@ -147,7 +149,7 @@ Feature work is spec-driven and worktree-isolated: branch from a fresh `origin/m
 
 ### Still mock-backed
 
-`docs/unfinished-features.md` is the backlog, but it was last audited 2026-07-09 and now overstates the gap — AdminUsers lock/unlock/reset and the entitlements matrix have since been wired to real endpoints. What still imports from `@/mocks` today: `AdminEntitlements` (`useUserGrants`, `useUpdateUserGrants`), `useForceLogoutAdminUser`, all three Billing cards, and the Profile stat badges.
+`docs/unfinished-features.md` is the backlog, but it was last audited 2026-07-09 and now overstates the gap — AdminUsers lock/unlock/reset and the entitlements matrix (05.10.2026) have since been wired to real endpoints. What still imports from `@/mocks` today: `useForceLogoutAdminUser`, all three Billing cards, and the Profile stat badges.
 
 ## README — keep `## Features` in sync
 

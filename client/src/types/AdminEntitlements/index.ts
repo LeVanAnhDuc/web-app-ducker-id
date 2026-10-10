@@ -1,10 +1,13 @@
-export interface Entitlement {
-  _id: string;
+/** One matrix row as the server computes it. */
+export interface UserAccess {
   userId: string;
-  webAppId: string;
-  grantedBy: string;
-  grantedAt: string;
-  revokedAt: string | null;
+  grantedAppIds: string[];
+  /** Cells that differ from the role default; their default is the opposite of `granted`. */
+  overriddenAppIds: string[];
+}
+
+export interface EntitlementMatrixResponse {
+  users: UserAccess[];
 }
 
 export interface EntitlementMatrixFormValues {

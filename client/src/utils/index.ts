@@ -16,7 +16,8 @@ import type { WebApp } from "@/types/AdminApps";
 import type { CategoryName } from "@/types/Apps";
 import type {
   EntitlementChange,
-  EntitlementMatrixFormValues
+  EntitlementMatrixFormValues,
+  UserAccess
 } from "@/types/AdminEntitlements";
 import type { MyProfileResponse } from "@/types/User";
 import type { UpdatePersonalInfoFormValues } from "@/types/UpdatePersonalInfo";
@@ -367,17 +368,27 @@ export const hideBelowClass = (breakpoint?: ColumnBreakpoint): string => {
   }
 };
 
-export const isAppEligibleForUser = (user: AdminUser, app: WebApp): boolean =>
-  app.requiredRoles.length === 0 || app.requiredRoles.includes(user.role);
+/**
+ * The role default of one cell. The server marks a cell overridden only when
+ * it differs from that default, so the default is `granted` flipped back.
+ */
+export const isRoleDefaultGranted = (
+  access: UserAccess | undefined,
+  appId: string
+): boolean => {
+  if (!access) return false;
+  const granted = access.grantedAppIds.includes(appId);
+  return access.overriddenAppIds.includes(appId) ? !granted : granted;
+};
 
 export const buildEntitlementDefaults = (
   users: AdminUser[],
   apps: WebApp[],
-  grantsByUser: Record<string, string[]>
+  accessByUser: Record<string, UserAccess>
 ): EntitlementMatrixFormValues => {
   const grants: Record<string, Record<string, boolean>> = {};
   users.forEach((user) => {
-    const grantedAppIds = grantsByUser[user._id] ?? [];
+    const grantedAppIds = accessByUser[user._id]?.grantedAppIds ?? [];
     grants[user._id] = {};
     apps.forEach((app) => {
       grants[user._id][app._id] = grantedAppIds.includes(app._id);

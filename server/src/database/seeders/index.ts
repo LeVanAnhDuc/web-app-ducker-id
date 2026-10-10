@@ -6,6 +6,7 @@ import { seedUsers, clearUsers } from "./user.seeder";
 import { seedContacts, clearContacts } from "./contact.seeder";
 import { seedWebApps, clearWebApps } from "./web-app.seeder";
 import { seedNotifications, clearNotifications } from "./notification.seeder";
+import { seedEntitlements, clearEntitlements } from "./entitlement.seeder";
 
 const runSeeders = async (): Promise<void> => {
   try {
@@ -17,6 +18,8 @@ const runSeeders = async (): Promise<void> => {
 
     if (shouldClear) {
       Logger.info("Clear flag detected, removing existing test data...");
+      // Overrides find their users by email, so they go before the users.
+      await clearEntitlements();
       // Notifications are found through their owners' emails — clear them
       // while the users still exist, or nothing matches.
       await clearNotifications();
@@ -30,6 +33,7 @@ const runSeeders = async (): Promise<void> => {
     await seedNotifications();
     await seedContacts();
     await seedWebApps();
+    await seedEntitlements();
 
     Logger.info("All seeders completed successfully!");
   } catch (error) {

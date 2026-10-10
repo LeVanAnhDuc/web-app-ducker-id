@@ -11,7 +11,7 @@
 | Identity                       | `auths`, `refresh_tokens`, `login_histories`         |
 | Profile                        | `users`, `user_addresses`                            |
 | App Registry                   | `web_apps`, `web_app_categories`                     |
-| Entitlement & Personalization  | `entitlements` (grant), `user_favorites` (favorite — xem DR-FAV), `user_app_usages` (recently used — xem DR-RECENT)|
+| Entitlement & Personalization  | `entitlements` (override quyền theo role — xem DR-ACCESS), `user_favorites` (favorite — xem DR-FAV), `user_app_usages` (recently used — xem DR-RECENT)|
 | OAuth                          | `oauth_consents` (auth codes lưu Redis, không phải Mongo) |
 | Notification                   | `notifications`                                      |
 | Support                        | `contacts`                                           |
@@ -156,12 +156,8 @@ erDiagram
         ObjectId _id PK
         ObjectId user_id FK,UK "→ USER"
         ObjectId web_app_id FK,UK "→ WEB_APP"
-        ObjectId granted_by FK "→ USER (admin who granted)"
-        Date granted_at
-        Date revoked_at "nullable — soft revoke, audit trail"
-        Boolean is_favorite "default false — user star app"
-        Date last_launched_at "nullable — superseded by USER_APP_USAGE (DR-RECENT)"
-        Number launch_count "default 0 — superseded by USER_APP_USAGE"
+        Enum effect "allow | deny — exception to the role default (DR-ACCESS)"
+        ObjectId updated_by FK "→ USER (admin who last changed it)"
         Date created_at
         Date updated_at
     }
@@ -227,7 +223,8 @@ erDiagram
 
 ### Soft-delete
 - `users` dùng `deleted_at` (null = active)
-- `entitlements`, `oauth_consents` dùng `revoked_at` (null = active) — giữ record cho audit trail thay vì hard delete
+- `oauth_consents` dùng `revoked_at` (null = active) — giữ record cho audit trail thay vì hard delete
+- `entitlements` **hard delete**: record chỉ tồn tại khi khác mặc định theo role; về đúng mặc định là xoá (DR-ACCESS)
 - Repository **bắt buộc** filter `deleted_at: null` (hoặc `revoked_at: null`) khi list — KHÔNG dùng `find()` trần
 
 ### Embedded arrays (denormalized, không có junction table)
@@ -249,6 +246,11 @@ erDiagram
 
 ### Single-collection patterns
 - **ENTITLEMENT** chỉ còn concern grant của admin (favorite tách ở DR-FAV, recently-used tách ở DR-RECENT). 1 user × 1 app = 1 document duy nhất.
+
+### DR-ACCESS — Entitlement là override của role, không phải allow-list (2026-10)
+- **Quyết định**: không có record → quyền theo role (`requiredRoles` rỗng, hoặc role `admin`, hoặc `requiredRoles` chứa role của user). Record `effect: allow` cấp ngoại lệ cho user không đủ role; `effect: deny` chặn user đủ role (kể cả admin).
+- **Lý do**: user mới đăng ký dùng được app ngay mà không chờ admin cấp; admin vẫn chỉnh từng cặp được (G5/ADR-006). Bỏ `granted_by` / `granted_at` / `revoked_at` / `is_favorite` / `last_launched_at` / `launch_count` — favorite và lượt dùng đã tách (DR-FAV, DR-RECENT), còn soft revoke không có nghĩa khi "không có record" đã mang nghĩa "theo role".
+- **Hệ quả**: override được đọc mỗi request qua `AccessPolicy` (index `user_id`), áp ở `/apps`, favorite, recent, thống kê home và `/oauth/authorize`. Favorite / recent của app bị deny chỉ bị ẩn khi đọc, không xoá. Spec: `docs/specs/access-control/design.md`.
 
 ### DR-MYCONTACTS — CONTACT gắn owner `user_id` (2026-07)
 - **Quyết định**: `CONTACT.user_id` (ObjectId, nullable, ref `USER`, index `{user_id:1, created_at:-1}`) — gắn khi user đăng nhập lúc submit (`POST /contact/submit` dùng `optionalAuthGuard`), `null` khi guest submit.
@@ -279,7 +281,7 @@ erDiagram
 
 ### OAuth authorization codes — lưu Redis, không Mongo
 - Authorization code (code flow) TTL 10 phút, chỉ dùng 1 lần → lưu Redis với key `oauth:authcode:{code}` và TTL.
-- Không cần persist DB vì: audit trail đã có ở `login_histories` + `entitlements.granted_at`, code lifetime quá ngắn.
+- Không cần persist DB vì: audit trail đã có ở `login_histories` + `entitlements.updated_at`, code lifetime quá ngắn.
 
 ### Naming note
 Field `login_histories.userId` (theo memory: `project_login_history_userid_naming`) thực tế lưu `auth._id`, **không phải** `user._id`. ERD đã đổi label thành `auth_id` cho đúng semantics. Code cũ vẫn có thể đọc/ghi field `userId` — kiểm tra Mongoose schema để xác nhận tên field thực tế.

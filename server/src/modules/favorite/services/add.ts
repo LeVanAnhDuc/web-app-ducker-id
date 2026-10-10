@@ -9,6 +9,6 @@ export const add = async (
 ): Promise<void> => {
   const userId = RequestContext.requireUserId();
   const role = RequestContext.getUser()?.roles;
-  await deps.favoritableGuard.assert(appId, role);
+  await deps.favoritableGuard.assert(appId, userId, role);
   await deps.favoriteRepo.add(userId, appId);
 };
