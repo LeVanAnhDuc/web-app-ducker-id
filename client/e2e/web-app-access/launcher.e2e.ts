@@ -9,7 +9,8 @@ import {
   userToken
 } from "../helpers/entitlements";
 import { getFavoriteIds, setFavorites } from "../helpers/favorites";
-import { fetchNotifications } from "../helpers/notifications";
+import { apiLogin, withApi } from "../helpers/notifications";
+import type { ApiNotificationRow } from "../helpers/notifications";
 
 // Access control seen by a regular user (`chromium` project, user@test.com,
 // role `user`). Overrides are written through the admin API in each test and
@@ -18,6 +19,12 @@ import { fetchNotifications } from "../helpers/notifications";
 //
 // Seeded catalog (server/src/database/seeders/data/web-apps.ts): Notes is
 // active and [user]; Operations Console is active and [admin].
+//
+// Every grant / revoke here notifies user@test.com for real (design §9), and
+// the notifications suite anchors on seeded rows sitting in the first page of
+// that same user's list. This file lives in `web-app-access/` so it sorts —
+// and with `workers: 1` runs — after `notifications/`; under `access-control/`
+// it ran first and pushed those anchors to page two.
 
 test.describe.configure({ mode: "serial" });
 
@@ -154,29 +161,53 @@ test.describe("Access control — grant beyond the role", () => {
 // Design §9: a flip of effective access writes ENTITLEMENT_GRANTED / _REVOKED
 // for the user, through the notification queue — so rows are polled for.
 test.describe("Access control — notifications", () => {
-  // Only the entitlement rows: the helper's own first API login may still be
-  // delivering an "unusual sign-in" row of its own.
-  const newRows = async (before: Set<string>) =>
-    (await fetchNotifications()).filter(
-      (row) => !before.has(row.id) && row.type.startsWith("ENTITLEMENT_")
-    );
+  // One login for the whole group: `fetchNotifications` signs in on every
+  // call, and a poll would spend the login rate limit (30 / 15 min) that the
+  // suites after this one need.
+  let token: string;
 
-  const rowIds = async () =>
-    new Set((await fetchNotifications()).map((row) => row.id));
+  test.beforeAll(async () => {
+    token = await withApi((ctx) => apiLogin(ctx));
+  });
+
+  const entitlementRows = (appName: string): Promise<ApiNotificationRow[]> =>
+    withApi(async (ctx) => {
+      const res = await ctx.get("/api/v1/notifications", {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      expect(res.ok()).toBeTruthy();
+      const body = (await res.json()) as {
+        data?: { items?: ApiNotificationRow[] };
+      };
+      // Scoped to one app: the previous test's teardown may still be
+      // delivering a row about another app.
+      return (body.data?.items ?? []).filter(
+        (row) =>
+          row.type.startsWith("ENTITLEMENT_") && row.params.appName === appName
+      );
+    });
+
+  const newTypes = async (appName: string, before: Set<string>) =>
+    (await entitlementRows(appName))
+      .filter((row) => !before.has(row.id))
+      .map((row) => row.type);
+
+  const idsOf = async (appName: string) =>
+    new Set((await entitlementRows(appName)).map((row) => row.id));
 
   test("revoking and restoring an app tells the user both times", async ({
     page
   }) => {
-    const before = await rowIds();
+    const before = await idsOf(NOTES.name);
 
     await setAccess([{ userId, appId: appIds[NOTES.name], granted: false }]);
     await expect
-      .poll(async () => (await newRows(before)).map((row) => row.type))
+      .poll(() => newTypes(NOTES.name, before))
       .toEqual(["ENTITLEMENT_REVOKED"]);
 
     await clearOverrides(userId);
     await expect
-      .poll(async () => (await newRows(before)).map((row) => row.type))
+      .poll(() => newTypes(NOTES.name, before))
       .toEqual(["ENTITLEMENT_GRANTED", "ENTITLEMENT_REVOKED"]);
 
     await page.goto("/notifications");
@@ -191,14 +222,16 @@ test.describe("Access control — notifications", () => {
   });
 
   test("saving the value the user already has sends nothing", async () => {
-    const before = await rowIds();
+    const notesBefore = await idsOf(NOTES.name);
+    const opsBefore = await idsOf(OPS.name);
 
     await setAccess([{ userId, appId: appIds[NOTES.name], granted: true }]);
     await setAccess([{ userId, appId: appIds[OPS.name], granted: false }]);
     // Give the queue the time a real row would have taken to land.
     await new Promise((resolve) => setTimeout(resolve, 2_000));
 
-    expect(await newRows(before)).toEqual([]);
+    expect(await newTypes(NOTES.name, notesBefore)).toEqual([]);
+    expect(await newTypes(OPS.name, opsBefore)).toEqual([]);
   });
 });
 

@@ -128,7 +128,7 @@ updateMatrix(deps, changes: EntitlementChange[], actorId: string): Promise<Entit
 ### Task 7: E2E
 
 - [ ] Reconcile `e2e/admin-entitlements/matrix.e2e.ts` theo matrix §10 (bỏ assert "Role required" / ô disabled; mutation `serial` + revert `afterAll` qua API).
-- [ ] Thêm `e2e/access-control/launcher.e2e.ts` (#7, #11b, #11c) dùng helper API admin.
+- [ ] Thêm `e2e/web-app-access/launcher.e2e.ts` (#7, #11b, #11c) dùng helper API admin.
 - [ ] Chạy server `:5100` + client `:3100` worktree, `pnpm seed`, `E2E_BASE_URL=http://localhost:3100 pnpm e2e` toàn bộ → xanh. Gate B: walk các dòng `A+B` bằng browser.
 - [ ] Viết `e2e.md`.
 

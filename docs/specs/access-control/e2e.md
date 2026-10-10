@@ -10,11 +10,19 @@
 | --- | --- | --- |
 | `e2e/admin-entitlements/matrix.e2e.ts` | `admin` | Reconcile toàn bộ suite cũ sang API thật: bỏ trạng thái "Role required" / ô disabled, thêm marker ngoại lệ, persist, xoá override, double-submit, lỗi 500, i18n marker |
 | `e2e/admin-entitlements/admin-sso.e2e.ts` | `admin` | #11c — admin SSO vào app `[user]` |
-| `e2e/access-control/launcher.e2e.ts` | `chromium` | #3 (API 401/403), #7, #11b — revoke / grant thấy ở `/apps`, search, favorites, `/oauth/authorize` |
+| `e2e/web-app-access/launcher.e2e.ts` | `chromium` | #3 (API 401/403), #7, #11b — revoke / grant thấy ở `/apps`, search, favorites, `/oauth/authorize` |
 | `e2e/helpers/entitlements.ts` | — | setup/teardown qua admin API; `clearOverrides` đưa user về mặc định theo role |
 | `e2e/admin-entitlements/picker.e2e.ts` | `admin` | Không đổi (picker không phụ thuộc mock entitlement) — vẫn xanh |
 
 Mọi test ghi DB chạy `serial` và gọi `clearOverrides(user@test.com)` ở `afterEach` / `afterAll`.
+
+**Thứ tự chạy (10.10.2026):** từ §9 mỗi lần revoke / grant ở launcher ghi notification thật cho
+`user@test.com` (~11 dòng mỗi lượt), mà suite `notifications/` neo vào các dòng seed nằm ở trang đầu
+(20 dòng) của chính user đó. Đặt ở `access-control/` thì launcher chạy trước và đẩy các mốc sang trang
+hai, nên file được chuyển sang `e2e/web-app-access/` — sort sau `notifications/`, và với `workers: 1`
+cũng chạy sau. Nhóm notification của launcher đăng nhập API **một lần** rồi dùng lại token:
+`fetchNotifications` đăng nhập mỗi lần gọi, nằm trong `expect.poll` sẽ đốt hết rate limit đăng nhập
+(30 / 15 phút) của các suite chạy sau.
 
 ## Kết quả
 
@@ -47,3 +55,15 @@ Mọi test ghi DB chạy `serial` và gọi `clearOverrides(user@test.com)` ở 
 ## Follow-up
 
 - 51 E2E đang đỏ sẵn trên `main` (danh sách ở trên) — ngoài phạm vi feature này.
+
+## Kết quả — 10.10.2026, sau khi tích hợp notification (§9)
+
+Merge `feat/notification-events` vào branch, server `:5400` (DB `ducker-id-access-control`,
+`pnpm seed:clear`), client **production** (`next build` + `next start -p 3400`). Jest 86 suite / 672
+test, lint + tsc hai phía sạch.
+
+| Lượt | Kết quả |
+| --- | --- |
+| Feature suites (`web-app-access/` + `admin-entitlements/`) | 48 passed, 2 skipped |
+| Toàn bộ lần 1 (launcher còn ở `access-control/`) | 380 passed, 59 failed — 9 lỗi mới: 4 ở `notifications/` (mốc seed bị ~11 dòng entitlement đẩy sang trang hai), 1 ở chính test §9 (dòng `REVOKED Operations Console` từ teardown test trước đến muộn), 4 lỗi `429` ở `admin-authz` / `favorite-apps` (poll gọi `fetchNotifications`, mỗi lần một login) |
+| Toàn bộ lần 2 (chuyển sang `web-app-access/`, một login cho cả nhóm, lọc theo `appName`) | **441 passed, 38 failed, 8 skipped, 25 did not run — 38 lỗi đều nằm trong 52 lỗi baseline `origin/main`, 0 lỗi mới** |

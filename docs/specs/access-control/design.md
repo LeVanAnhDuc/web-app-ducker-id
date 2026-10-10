@@ -213,7 +213,7 @@ response. Chi tiết shape theo code đã merge — bổ sung vào spec này lú
 ## 10. E2E Scenario Matrix
 
 Hai file: `e2e/admin-entitlements/matrix.e2e.ts` (project `admin`, **reconcile** suite cũ) và
-`e2e/access-control/launcher.e2e.ts` (project `chromium`, user `user@test.com`; override tạo qua API
+`e2e/web-app-access/launcher.e2e.ts` (project `chromium`, user `user@test.com`; override tạo qua API
 bằng admin token trong `beforeAll`, xoá trong `afterAll`). Ma trận giờ ghi vào DB thật → mọi test
 mutation chạy `serial` và **revert trong `afterAll`**.
 

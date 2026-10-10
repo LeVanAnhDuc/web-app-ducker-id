@@ -160,7 +160,7 @@ test.describe("Admin Entitlements Matrix — unauthenticated redirect", () => {
 
 // ---------------------------------------------------------------------------
 // 3. AuthZ — page denial lives in admin-authz/ (needs a non-admin session);
-//    API 401/403 is asserted in access-control/launcher.e2e.ts.
+//    API 401/403 is asserted in web-app-access/launcher.e2e.ts.
 // ---------------------------------------------------------------------------
 test.describe("Admin Entitlements Matrix — authZ", () => {
   test.fixme(
