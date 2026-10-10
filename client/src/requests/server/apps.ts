@@ -14,7 +14,7 @@ export const getServerAppCategories = async (): Promise<
   try {
     const res = await fetch(
       `${process.env.API_SERVER_URL}${process.env.NEXT_PUBLIC_API_PREFIX}${END_POINTS.APP_CATEGORIES}`,
-      { next: { revalidate: 300 } }
+      { next: { revalidate: 60 } }
     );
     if (!res.ok) return null;
     const json = (await res.json()) as ResponsePattern<UserCategory[]>;

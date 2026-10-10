@@ -36,6 +36,15 @@ const ENV = {
   JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET,
   JWT_ID_SECRET: process.env.JWT_ID_SECRET,
 
+  // OIDC provider. OIDC_ISSUER phải là origin mà TRÌNH DUYỆT nhìn thấy
+  // (client Next.js rewrite /oauth/* và /.well-known/* về đây), không phải
+  // origin nội bộ của Express — nếu lệch, `iss` trong token sẽ không khớp
+  // discovery document và app vệ tinh từ chối token.
+  OIDC_ISSUER: process.env.OIDC_ISSUER || "http://localhost:3000",
+  OAUTH_PRIVATE_KEY: process.env.OAUTH_PRIVATE_KEY,
+  OAUTH_PUBLIC_KEY: process.env.OAUTH_PUBLIC_KEY,
+  OAUTH_KEY_ID: process.env.OAUTH_KEY_ID,
+
   USERNAME_EMAIL: process.env.USERNAME_EMAIL,
   PASSWORD_EMAIL: process.env.PASSWORD_EMAIL
 };

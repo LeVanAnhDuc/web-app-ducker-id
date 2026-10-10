@@ -107,13 +107,6 @@ export interface AdminUsersFilter {
   isActive?: boolean;
 }
 
-export interface AdminUserListMeta {
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
-
 export interface AdminUserAggregateRow {
   _id: Schema.Types.ObjectId;
   fullName: string;

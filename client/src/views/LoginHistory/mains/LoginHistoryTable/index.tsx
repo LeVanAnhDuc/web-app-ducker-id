@@ -13,16 +13,22 @@ import CustomPagination from "@/components/CustomPagination";
 import CustomTable from "@/components/CustomTable";
 import LoginHistoryTableSkeleton from "../../components/LoginHistoryTableSkeleton";
 // hooks
-import { useListQuery } from "@/hooks";
+import { useListQuery, useLoginAppOptions } from "@/hooks";
 import useMyLoginHistory from "../../hooks/useMyLoginHistory";
 // dataSources
 import {
   buildLoginHistoryColumns,
-  buildLoginHistoryFilterDefs
+  buildLoginAppFilterDefs,
+  buildLoginHistoryFilterDefs,
+  toLoginAppQueryParams
 } from "@/dataSources/LoginHistory";
 // others
 import CONSTANTS from "@/constants";
-import { isLoginHistoryStatus, isLoginHistoryMethod } from "@/utils";
+import {
+  isLoginHistoryStatus,
+  isLoginHistoryMethod,
+  isLoginHistoryDeviceType
+} from "@/utils";
 
 const LoginHistoryTable = () => {
   const tTable = useTranslations("loginHistory.table");
@@ -30,15 +36,21 @@ const LoginHistoryTable = () => {
   const tMethod = useTranslations("loginHistory.method");
   const tFilters = useTranslations("loginHistory.filters");
   const tLocation = useTranslations("loginHistory.location");
+  const tApp = useTranslations("loginHistory.app");
+  const tDevice = useTranslations("loginHistory.deviceType");
+  const appOptions = useLoginAppOptions();
 
   const filterDefs = useMemo(
-    () => buildLoginHistoryFilterDefs(tStatus, tMethod, tFilters),
-    [tStatus, tMethod, tFilters]
+    () => [
+      ...buildLoginHistoryFilterDefs(tStatus, tMethod, tFilters, tDevice),
+      ...buildLoginAppFilterDefs(appOptions, tFilters, tApp)
+    ],
+    [tStatus, tMethod, tFilters, tApp, tDevice, appOptions]
   );
 
   const columns = useMemo(
-    () => buildLoginHistoryColumns(tTable, tStatus, tMethod, tLocation),
-    [tTable, tStatus, tMethod, tLocation]
+    () => buildLoginHistoryColumns(tTable, tStatus, tMethod, tLocation, tApp),
+    [tTable, tStatus, tMethod, tLocation, tApp]
   );
 
   const query = useListQuery(filterDefs);
@@ -52,8 +64,12 @@ const LoginHistoryTable = () => {
     ...(isLoginHistoryMethod(query.filters.method) && {
       method: query.filters.method
     }),
+    ...(isLoginHistoryDeviceType(query.filters.deviceType) && {
+      deviceType: query.filters.deviceType
+    }),
     ...(query.filters.fromDate && { fromDate: query.filters.fromDate }),
-    ...(query.filters.toDate && { toDate: query.filters.toDate })
+    ...(query.filters.toDate && { toDate: query.filters.toDate }),
+    ...toLoginAppQueryParams(query.filters)
   };
 
   const { data, isLoading } = useMyLoginHistory(params);

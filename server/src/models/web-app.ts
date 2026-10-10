@@ -18,10 +18,16 @@ const { WEB_APP, WEB_APP_CATEGORY } = MODEL_NAMES;
 
 const WebAppSchema = new Schema<WebAppDocument>(
   {
-    categoryId: {
-      type: Schema.Types.ObjectId,
-      ref: WEB_APP_CATEGORY,
-      required: [true, "Category ID is required"]
+    categoryIds: {
+      type: [{ type: Schema.Types.ObjectId, ref: WEB_APP_CATEGORY }],
+      default: [],
+      validate: {
+        validator: (ids: Schema.Types.ObjectId[]) =>
+          ids.length >= 1 &&
+          ids.length <= WEB_APP_CONFIG.MAX_CATEGORIES &&
+          new Set(ids.map(String)).size === ids.length,
+        message: `An app needs 1 to ${WEB_APP_CONFIG.MAX_CATEGORIES} distinct categories`
+      }
     },
     name: {
       type: String,
@@ -188,14 +194,20 @@ const WebAppSchema = new Schema<WebAppDocument>(
   }
 );
 
-WebAppSchema.index({ categoryId: 1, sortOrder: 1 });
+// /oauth/authorize và /oauth/token tra client theo clientId ở MỌI request —
+// không có index thì mỗi lần đăng nhập là một collection scan. unique cũng là
+// ràng buộc đúng về ngữ nghĩa: clientId là định danh client trong OAuth.
+WebAppSchema.index({ clientId: 1 }, { unique: true });
+WebAppSchema.index({ categoryIds: 1, sortOrder: 1 });
 WebAppSchema.index({ status: 1, sortOrder: 1 });
 
-WebAppSchema.virtual("category", {
+// Virtual populate returns matches in query order, not `categoryIds` order —
+// the DTO mappers re-sort by `categoryIds`, which is the order an admin chose.
+WebAppSchema.virtual("categories", {
   ref: WEB_APP_CATEGORY,
-  localField: "categoryId",
+  localField: "categoryIds",
   foreignField: "_id",
-  justOne: true
+  justOne: false
 });
 
 const WebAppModel: Model<WebAppDocument> = model<WebAppDocument>(

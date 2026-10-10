@@ -4,6 +4,7 @@ import FORGOT_PASSWORD_FIELD_NAMES from "./ForgotPassword";
 import CHANGE_PASSWORD_FIELD_NAMES from "./ChangePassword";
 import SUPPORT_FIELD_NAMES from "./Support";
 import ADMIN_APP_FIELD_NAMES from "./AdminApp";
+import ADMIN_CATEGORY_FIELD_NAMES from "./AdminCategory";
 import ADMIN_LOGIN_HISTORY_FILTER_FIELD_NAMES from "./AdminLoginHistoryFilter";
 
 const FIELD_NAMES = {
@@ -13,6 +14,7 @@ const FIELD_NAMES = {
   CHANGE_PASSWORD_FIELD_NAMES,
   SUPPORT_FIELD_NAMES,
   ADMIN_APP_FIELD_NAMES,
+  ADMIN_CATEGORY_FIELD_NAMES,
   ADMIN_LOGIN_HISTORY_FILTER_FIELD_NAMES
 };
 

@@ -1,6 +1,6 @@
 // types
 import type { Response } from "express";
-import type { ContactAdminService } from "./contact-admin.service";
+import type { ContactAdminService } from "./services";
 import type {
   SubmitContactRequest,
   AdminContactsQueryRequest,

@@ -1,4 +1,4 @@
-import type { ResponseMeta, ValidationErrorItem } from "@/types/common";
+import type { ValidationErrorItem } from "@/types/common";
 
 declare global {
   interface TranslateFunction {
@@ -15,7 +15,6 @@ declare global {
     timestamp: string;
     path: string;
     data?: T;
-    meta?: ResponseMeta;
   }
 
   interface ErrorPattern {

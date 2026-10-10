@@ -7,35 +7,86 @@ import type {
   LoginHistoryAdminItem,
   LoginHistoryItem,
   LoginHistoryMethod,
+  LoginHistoryDeviceType,
+  LoginHistoryQueryParams,
   LoginHistoryStatus
 } from "@/types/LoginHistory";
 import type { LeafKeyOf, LoginHistoryMessages } from "@/types/libs";
 // components
 import FormatTime from "@/components/FormatTime";
 import CustomBadge from "@/components/CustomBadge";
+import LoginAppLabel from "@/components/LoginAppLabel";
 // others
 import { cn } from "@/libs/utils";
 import { formatLoginLocation } from "@/utils";
 import CONSTANTS from "@/constants";
 
-const { METHOD, STATUS, DEVICE_TYPE, METHOD_VALUES, STATUS_VALUES } =
-  CONSTANTS.LOGIN_HISTORY;
+const {
+  METHOD,
+  STATUS,
+  DEVICE_TYPE,
+  METHOD_VALUES,
+  STATUS_VALUES,
+  DEVICE_TYPE_VALUES,
+  SOURCE,
+  APP_FILTER_IDP
+} = CONSTANTS.LOGIN_HISTORY;
 
 export const LOGIN_HISTORY_METHOD_COLOR: Record<LoginHistoryMethod, string> = {
   [METHOD.PASSWORD]: "text-foreground",
   [METHOD.OTP]: "text-warning-foreground",
   [METHOD.MAGIC_LINK]: "text-info",
-  [METHOD.FORGOT_PASSWORD]: "text-muted-foreground"
+  [METHOD.FORGOT_PASSWORD]: "text-muted-foreground",
+  [METHOD.SSO]: "text-primary"
 };
 
 export const LOGIN_HISTORY_STATUS_VALUES: LoginHistoryStatus[] = STATUS_VALUES;
 
 export const LOGIN_HISTORY_METHOD_VALUES: LoginHistoryMethod[] = METHOD_VALUES;
 
+export const LOGIN_HISTORY_DEVICE_TYPE_VALUES: LoginHistoryDeviceType[] =
+  DEVICE_TYPE_VALUES;
+
+type TFilters = (key: LeafKeyOf<LoginHistoryMessages["filters"]>) => string;
+type TApp = (key: LeafKeyOf<LoginHistoryMessages["app"]>) => string;
+
+export interface LoginAppOption {
+  id: string;
+  name: string;
+}
+
+/** The "app" filter: Ducker ID itself or one catalog app. */
+export const buildLoginAppFilterDefs = (
+  apps: LoginAppOption[],
+  tFilters: TFilters,
+  tApp: TApp
+): ListFilterDef[] => [
+  {
+    key: "app",
+    type: "select",
+    label: tFilters("app"),
+    options: [
+      { value: APP_FILTER_IDP, label: tApp("idp") },
+      ...apps.map((a) => ({ value: a.id, label: a.name }))
+    ]
+  }
+];
+
+export const toLoginAppQueryParams = (
+  filters: Record<string, string | null | undefined>
+): Pick<LoginHistoryQueryParams, "source" | "webAppId"> => {
+  const app = filters.app ?? null;
+
+  if (app === APP_FILTER_IDP) return { source: SOURCE.IDP };
+  if (app) return { webAppId: app };
+  return {};
+};
+
 export const buildLoginHistoryFilterDefs = (
   tStatus: (key: LeafKeyOf<LoginHistoryMessages["status"]>) => string,
   tMethod: (key: LeafKeyOf<LoginHistoryMessages["method"]>) => string,
-  tFilters: (key: LeafKeyOf<LoginHistoryMessages["filters"]>) => string
+  tFilters: TFilters,
+  tDevice: (key: LeafKeyOf<LoginHistoryMessages["deviceType"]>) => string
 ): ListFilterDef[] => [
   {
     key: "status",
@@ -55,6 +106,18 @@ export const buildLoginHistoryFilterDefs = (
       label: tMethod(v)
     }))
   },
+  // Home links in with ?deviceType=…; useListQuery drops any param that has
+  // no definition here, so without this the chart would navigate to an
+  // unfiltered list without a word of complaint.
+  {
+    key: "deviceType",
+    type: "select",
+    label: tFilters("deviceType"),
+    options: LOGIN_HISTORY_DEVICE_TYPE_VALUES.map((v) => ({
+      value: v,
+      label: tDevice(v)
+    }))
+  },
   {
     key: "dateRange",
     type: "dateRange",
@@ -66,7 +129,8 @@ export const buildLoginHistoryColumns = (
   tTable: (key: LeafKeyOf<LoginHistoryMessages["table"]>) => string,
   tStatus: (key: LeafKeyOf<LoginHistoryMessages["status"]>) => string,
   tMethod: (key: LeafKeyOf<LoginHistoryMessages["method"]>) => string,
-  tLocation: (key: LeafKeyOf<LoginHistoryMessages["location"]>) => string
+  tLocation: (key: LeafKeyOf<LoginHistoryMessages["location"]>) => string,
+  tApp: TApp
 ): CustomTableColumn<LoginHistoryItem>[] => [
   {
     id: "createdAt",
@@ -75,6 +139,18 @@ export const buildLoginHistoryColumns = (
       <span className="font-medium">
         <FormatTime value={item.createdAt} variant="datetime" />
       </span>
+    )
+  },
+  {
+    id: "app",
+    header: tTable("app"),
+    cell: (item) => (
+      <LoginAppLabel
+        app={item.app}
+        interactive={item.interactive}
+        idpLabel={tApp("idp")}
+        silentLabel={tApp("silent")}
+      />
     )
   },
   {
@@ -136,12 +212,26 @@ export const buildAdminLoginHistoryColumns = (
   tTable: (key: LeafKeyOf<LoginHistoryMessages["table"]>) => string,
   tMethod: (key: LeafKeyOf<LoginHistoryMessages["method"]>) => string,
   tStatus: (key: LeafKeyOf<LoginHistoryMessages["status"]>) => string,
-  tLocation: (key: LeafKeyOf<LoginHistoryMessages["location"]>) => string
+  tLocation: (key: LeafKeyOf<LoginHistoryMessages["location"]>) => string,
+  tApp: TApp
 ): CustomTableColumn<LoginHistoryAdminItem>[] => [
   {
     id: "usernameAttempted",
     header: tTable("usernameAttempted"),
     cell: (item) => item.usernameAttempted
+  },
+  {
+    id: "app",
+    header: tTable("app"),
+    cell: (item) => (
+      <LoginAppLabel
+        app={item.app}
+        interactive={item.interactive}
+        idpLabel={tApp("idp")}
+        silentLabel={tApp("silent")}
+        className="text-xs"
+      />
+    )
   },
   {
     id: "method",

@@ -1,5 +1,5 @@
 // types
-import type { LoginAuditService } from "@/modules/login/services/login-audit.service";
+import type { LoginAuditService } from "@/modules/login/services/login-audit";
 
 export function createLoginAuditServiceMock(): jest.Mocked<LoginAuditService> {
   return {

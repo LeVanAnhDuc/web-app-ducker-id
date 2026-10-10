@@ -2,7 +2,7 @@
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { LoginMethod } from "@/modules/login-history/types";
 import type { Request } from "express";
-import type { LoginAuditService } from "../services/login-audit.service";
+import type { LoginAuditService } from "../services/login-audit";
 // common
 import { UnauthorizedError } from "@/common/exceptions";
 // others

@@ -1,13 +1,13 @@
 // types
 import type { RedisClientType } from "redis";
-import type { AuthenticationService } from "@/modules/authentication/authentication.service";
-import type { UserService } from "@/modules/user/user.service";
-import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
-import type { LoginService } from "@/modules/login/services";
+import type { AuthenticationService } from "@/modules/authentication/services";
+import type { UserService } from "@/modules/user/services";
+import type { LoginHistoryService } from "@/modules/login-history/services";
+import type { LoginService } from "@/modules/login/services/login";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { RateLimiterMiddleware } from "@/middlewares";
 // others
-import { RedisUnlockAccountRepository } from "./unlock-account.repository";
+import { RedisUnlockAccountRepository } from "./repository/impl/redis-unlock-account.repository";
 // guards
 import {
   CooldownGuard,
@@ -16,7 +16,7 @@ import {
   TempPasswordValidGuard
 } from "./guards";
 // others
-import { UnlockAccountService } from "./unlock-account.service";
+import { UnlockAccountService } from "./services";
 import { UnlockAccountController } from "./unlock-account.controller";
 import { createUnlockAccountRoutes } from "./unlock-account.routes";
 
@@ -34,11 +34,11 @@ export const createUnlockAccountModule = (
   const cooldownGuard = new CooldownGuard(unlockAccountRepo);
   const rateLimitGuard = new RateLimitGuard(unlockAccountRepo);
   const authExistsGuard = new AuthExistsGuard(userService);
-  const tempPasswordValidGuard = new TempPasswordValidGuard();
+  const tempPasswordValidGuard = new TempPasswordValidGuard(unlockAccountRepo);
 
-  const unlockAccountService = new UnlockAccountService(
+  const unlockAccountService = new UnlockAccountService({
     authService,
-    loginHistorySvc,
+    loginHistoryService: loginHistorySvc,
     loginService,
     unlockAccountRepo,
     emailDispatcher,
@@ -46,7 +46,7 @@ export const createUnlockAccountModule = (
     rateLimitGuard,
     authExistsGuard,
     tempPasswordValidGuard
-  );
+  });
   const unlockAccountController = new UnlockAccountController(
     unlockAccountService
   );

@@ -11,11 +11,13 @@ export interface AdminAppDto {
   description: string | null;
   iconUrl: string | null;
   homeUrl: string;
-  categoryId: string;
+  categoryIds: string[];
   status: WebAppStatusPublic;
   requiredRoles: AuthenticationRole[];
   redirectUris: string[];
+  postLogoutRedirectUris: string[];
   clientId: string;
+  tokenEndpointAuthMethod: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -27,22 +29,25 @@ export const toAdminAppDto = (doc: WebAppDocument): AdminAppDto => ({
   description: doc.description ?? null,
   iconUrl: doc.iconUrl ?? null,
   homeUrl: doc.homeUrl,
-  categoryId: doc.categoryId.toString(),
+  categoryIds: doc.categoryIds.map(String),
   status: WEB_APP_STATUS_PUBLIC[doc.status],
   requiredRoles: doc.requiredRoles,
   redirectUris: doc.redirectUris,
+  postLogoutRedirectUris: doc.postLogoutRedirectUris ?? [],
   clientId: doc.clientId,
+  tokenEndpointAuthMethod: doc.tokenEndpointAuthMethod,
   createdAt: doc.createdAt.toISOString(),
   updatedAt: doc.updatedAt.toISOString()
 });
 
 export interface AdminAppCreatedDto extends AdminAppDto {
-  clientSecret: string;
+  /** null với public client — không có secret nào để trả về. */
+  clientSecret: string | null;
 }
 
 export const toAdminAppCreatedDto = (
   doc: WebAppDocument,
-  clientSecret: string
+  clientSecret: string | null
 ): AdminAppCreatedDto => ({
   ...toAdminAppDto(doc),
   clientSecret

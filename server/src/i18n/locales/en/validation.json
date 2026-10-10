@@ -53,6 +53,12 @@
   "limit": {
     "invalid": "Invalid page size."
   },
+  "range": {
+    "invalid": "Invalid statistics range."
+  },
+  "timezone": {
+    "invalid": "Invalid timezone."
+  },
   "sortBy": {
     "invalid": "Invalid sort field."
   },
@@ -64,5 +70,14 @@
   },
   "id": {
     "invalid": "Invalid identifier"
+  },
+  "source": {
+    "invalid": "Source must be idp or oauth"
+  },
+  "webAppId": {
+    "invalid": "Invalid web app id"
+  },
+  "interactive": {
+    "invalid": "interactive must be a boolean"
   }
 }

@@ -1,11 +1,6 @@
 {
   "title": "Login History",
   "description": "Monitor your account access and security events",
-  "stats": {
-    "totalLogins": "Total Logins",
-    "successful": "Successful",
-    "failed": "Failed"
-  },
   "toolbar": {
     "search": "Search logs...",
     "export": "Export"
@@ -42,12 +37,14 @@
     "ipLocation": "IP & Location",
     "action": "Actions",
     "viewDetail": "View",
-    "viewDetailFor": "View details for {name}"
+    "viewDetailFor": "View details for {name}",
+    "app": "App"
   },
   "filters": {
     "title": "Filters",
     "status": "Status",
     "method": "Method",
+    "deviceType": "Device",
     "country": "Country",
     "city": "City",
     "fromDate": "From Date",
@@ -55,7 +52,8 @@
     "userId": "User ID",
     "ip": "IP Address",
     "all": "All",
-    "clear": "Clear"
+    "clear": "Clear",
+    "app": "App"
   },
   "status": {
     "success": "Success",
@@ -65,7 +63,8 @@
     "password": "Password",
     "otp": "OTP",
     "magic-link": "Magic Link",
-    "forgot-password": "Forgot Password"
+    "forgot-password": "Forgot Password",
+    "sso": "SSO"
   },
   "location": {
     "local": "Local",
@@ -113,13 +112,23 @@
         "timezoneOffset": "Timezone",
         "isAnomaly": "Anomaly",
         "anomalyReasons": "Anomaly Reasons",
-        "createdAt": "Date"
+        "createdAt": "Date",
+        "source": "Source",
+        "app": "App",
+        "signIn": "Sign-in type"
       }
     }
   },
   "announce": {
     "loading": "Loading data...",
-    "loaded": "{total} results loaded",
-    "statsLoaded": "Stats loaded: {total} logins"
+    "loaded": "{total} results loaded"
+  },
+  "app": {
+    "idp": "Ducker ID",
+    "silent": "Auto",
+    "silentLong": "Automatic SSO (existing session)",
+    "interactive": "Manual (credentials entered)",
+    "sourceIdp": "Ducker ID (identity provider)",
+    "sourceOauth": "Satellite app (OIDC)"
   }
 }

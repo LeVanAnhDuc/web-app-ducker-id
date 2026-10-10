@@ -1,27 +1,27 @@
 // types
-import type { RateLimiterMiddleware } from "@/middlewares/common/rate-limiter.middleware";
+import type { CategoryRepository } from "@/modules/category/repository/category.repository";
 // others
-import {
-  MongoWebAppRepository,
-  MongoWebAppCategoryRepository
-} from "./repositories";
-import { MongoFavoriteRepository } from "@/modules/favorite/favorite.repository";
-import { WebAppService } from "./web-app.service";
+import { MongoWebAppRepository } from "./repository/impl/mongo-web-app.repository";
+import { MongoFavoriteRepository } from "@/modules/favorite/repository/impl/mongo-favorite.repository";
+import { WebAppService } from "./services";
 import { WebAppController } from "./web-app.controller";
 import {
   createAdminWebAppRoutes,
   createUserWebAppRoutes
 } from "./web-app.routes";
 
-export const createWebAppModule = (rateLimiter: RateLimiterMiddleware) => {
+export const createWebAppModule = (categoryRepo: CategoryRepository) => {
   const webAppRepo = new MongoWebAppRepository();
-  const categoryRepo = new MongoWebAppCategoryRepository();
   const favoriteRepo = new MongoFavoriteRepository();
-  const service = new WebAppService(webAppRepo, categoryRepo, favoriteRepo);
+  const service = new WebAppService({
+    webAppRepo,
+    categoryRepo,
+    favoriteRepo
+  });
   const controller = new WebAppController(service);
 
   return {
     webAppAdminRouter: createAdminWebAppRoutes(controller),
-    webAppUserRouter: createUserWebAppRoutes(controller, rateLimiter)
+    webAppUserRouter: createUserWebAppRoutes(controller)
   };
 };

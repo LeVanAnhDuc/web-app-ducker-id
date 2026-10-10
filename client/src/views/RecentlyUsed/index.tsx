@@ -1,10 +1,6 @@
 // components
-import HistoryList from "./mains/HistoryList";
+import RecentAppsBoard from "./mains/RecentAppsBoard";
 
-const RecentlyUsed = () => (
-  <div className="flex flex-col">
-    <HistoryList />
-  </div>
-);
+const RecentlyUsed = () => <RecentAppsBoard />;
 
 export default RecentlyUsed;

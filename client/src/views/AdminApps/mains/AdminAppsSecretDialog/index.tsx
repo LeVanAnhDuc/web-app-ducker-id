@@ -45,15 +45,17 @@ const AdminAppsSecretDialog = ({
               copiedLabel={tActions("copied")}
               onCopySuccess={() => announce(t("announce.copied"))}
             />
-            <SecretField
-              label={t("clientSecretLabel")}
-              value={app.clientSecret}
-              copyLabel={tActions("copy")}
-              copiedLabel={tActions("copied")}
-              onCopySuccess={() => announce(t("announce.copied"))}
-            />
+            {app.clientSecret ? (
+              <SecretField
+                label={t("clientSecretLabel")}
+                value={app.clientSecret}
+                copyLabel={tActions("copy")}
+                copiedLabel={tActions("copied")}
+                onCopySuccess={() => announce(t("announce.copied"))}
+              />
+            ) : null}
             <p className="text-destructive text-sm font-medium">
-              {t("warning")}
+              {app.clientSecret ? t("warning") : t("publicClientNote")}
             </p>
           </div>
         )}

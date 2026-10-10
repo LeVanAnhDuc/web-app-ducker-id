@@ -1,5 +1,5 @@
 // types
-import type { MagicLinkLoginRepository } from "@/modules/login/repositories";
+import type { MagicLinkLoginRepository } from "@/modules/login/repositories/magic-link-login.repository";
 // modules
 import { MAGIC_LINK_CONFIG } from "@/modules/login/constants";
 // others

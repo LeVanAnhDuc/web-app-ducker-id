@@ -1,5 +1,5 @@
 // types
-import type { UserService } from "@/modules/user/user.service";
+import type { UserService } from "@/modules/user/services";
 
 export function createUserServiceMock(): jest.Mocked<UserService> {
   return {

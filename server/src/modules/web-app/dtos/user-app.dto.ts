@@ -1,5 +1,9 @@
 // types
-import type { WebAppWithCategory } from "../types";
+import type { WebAppWithCategories } from "../types";
+import type { PublicCategoryDto } from "@/modules/category/dtos";
+// modules
+import { toPublicCategoryDto } from "@/modules/category/dtos";
+import { orderByCategoryIds } from "../helpers";
 
 export interface UserAppDto {
   _id: string;
@@ -7,13 +11,13 @@ export interface UserAppDto {
   description: string | null;
   iconUrl: string | null;
   homeUrl: string;
-  category: string | null;
-  categorySlug: string | null;
+  /** In the order the admin chose; the first one is the primary category. */
+  categories: PublicCategoryDto[];
   isFavorite: boolean;
 }
 
 export const toUserAppDto = (
-  doc: WebAppWithCategory,
+  doc: WebAppWithCategories,
   isFavorite = false
 ): UserAppDto => ({
   _id: doc._id.toString(),
@@ -21,7 +25,6 @@ export const toUserAppDto = (
   description: doc.description ?? null,
   iconUrl: doc.iconUrl ?? null,
   homeUrl: doc.homeUrl,
-  category: doc.category?.displayName ?? null,
-  categorySlug: doc.category?.name ?? null,
+  categories: orderByCategoryIds(doc).map(toPublicCategoryDto),
   isFavorite
 });

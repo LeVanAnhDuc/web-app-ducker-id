@@ -19,6 +19,14 @@ import {
 } from "@/modules/contact-admin/swagger";
 import { userSwaggerSchemas, userPaths } from "@/modules/user/swagger";
 import { webAppSwaggerSchemas, webAppPaths } from "@/modules/web-app/swagger";
+import {
+  categorySwaggerSchemas,
+  categoryPaths
+} from "@/modules/category/swagger";
+import {
+  recentAppSwaggerSchemas,
+  recentAppPaths
+} from "@/modules/recent-app/swagger";
 // others
 import ENV from "@/constants/env";
 import { commonSchemas, commonResponses } from "./common.schemas";
@@ -35,7 +43,9 @@ const allSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   ...changePasswordSwaggerSchemas,
   ...contactAdminSwaggerSchemas,
   ...userSwaggerSchemas,
-  ...webAppSwaggerSchemas
+  ...webAppSwaggerSchemas,
+  ...categorySwaggerSchemas,
+  ...recentAppSwaggerSchemas
 };
 
 const allPaths: OpenAPIV3.PathsObject = {
@@ -47,7 +57,9 @@ const allPaths: OpenAPIV3.PathsObject = {
   ...changePasswordPaths,
   ...contactAdminPaths,
   ...userPaths,
-  ...webAppPaths
+  ...webAppPaths,
+  ...categoryPaths,
+  ...recentAppPaths
 };
 
 export const openApiSpec: OpenAPIV3.Document = {
@@ -91,7 +103,16 @@ export const openApiSpec: OpenAPIV3.Document = {
     },
     {
       name: "Web App Admin",
-      description: "Admin endpoints for managing apps and categories"
+      description: "Admin endpoints for managing apps"
+    },
+    {
+      name: "Categories",
+      description: "Public category list for the launcher filter"
+    },
+    {
+      name: "Categories Admin",
+      description:
+        "Admin endpoints for creating, renaming, ordering and deleting categories"
     }
   ],
   paths: allPaths,

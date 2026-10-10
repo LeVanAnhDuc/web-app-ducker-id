@@ -16,14 +16,17 @@ import CustomPagination from "@/components/CustomPagination";
 import AppCard from "@/components/AppCard";
 import AppCardSkeleton from "../../components/AppCardSkeleton";
 // hooks
-import { useListQuery, useToggleFavorite } from "@/hooks";
+import {
+  useAppCategories,
+  useListQuery,
+  useLocalizedName,
+  useToggleFavorite
+} from "@/hooks";
 import useApps from "../../hooks/useApps";
-import useAppCategories from "../../hooks/useAppCategories";
 // dataSources
 import { buildAppsFilterDefs } from "@/dataSources/Apps";
 // others
 import { cn } from "@/libs/utils";
-import { resolveCategoryLabel } from "@/utils";
 import CONSTANTS from "@/constants";
 
 const AppsBoardSkeleton = () => (
@@ -87,23 +90,20 @@ const AppsBoard = ({
 }) => {
   const t = useTranslations("apps");
   const tToolbar = useTranslations("apps.categories");
-  const tCat = useTranslations("common.categories");
+  const localize = useLocalizedName();
 
   // view is a display preference — kept in local state, not URL
   const [view, setView] = useState<"grid" | "list">("grid");
 
-  const { data: fallbackCategories = [] } = useAppCategories({
-    enabled: serverCategories == null
-  });
-  const categories = serverCategories ?? fallbackCategories;
+  const { data: categories = [] } = useAppCategories(serverCategories);
 
   const categoryOptions = useMemo(
     () =>
       categories.map((cat) => ({
         value: cat._id,
-        label: resolveCategoryLabel(tCat, cat.slug, cat.displayName)
+        label: localize(cat.name)
       })),
-    [categories, tCat]
+    [categories, localize]
   );
 
   const filterDefs = useMemo(
@@ -146,7 +146,7 @@ const AppsBoard = ({
         query={query}
         filterDefs={filterDefs}
         searchPlaceholder={t("search.placeholder")}
-        rightSlot={<ViewToggle view={view} onViewChange={setView} />}
+        filterSlot={<ViewToggle view={view} onViewChange={setView} />}
       />
       <PageContent
         isLoading={isLoading}
@@ -174,15 +174,7 @@ const AppsBoard = ({
               key={app._id}
               id={app._id}
               displayName={app.displayName}
-              category={
-                app.category
-                  ? resolveCategoryLabel(
-                      tCat,
-                      app.categorySlug ?? "",
-                      app.category
-                    )
-                  : null
-              }
+              categories={app.categories}
               description={app.description}
               iconUrl={app.iconUrl}
               homeUrl={app.homeUrl}

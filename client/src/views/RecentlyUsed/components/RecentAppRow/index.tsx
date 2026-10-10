@@ -1,62 +1,121 @@
+"use client";
 // libs
-import { ArrowUpRight, Timer } from "lucide-react";
+import { ArrowUpRight, Timer, X } from "lucide-react";
 // types
-import type { LucideIcon } from "lucide-react";
+import type { UserCategory } from "@/types/Apps";
 // components
+import CategoryChips from "@/components/CategoryChips";
 import CardItemTitle from "@/components/CardItemTitle";
 import CustomButton from "@/components/CustomButton";
+import CustomImage from "@/components/CustomImage";
+import FavoriteButton from "@/components/FavoriteButton";
 import { Card } from "@/components/ui/card";
-// others
-import { cn } from "@/libs/utils";
 
 const RecentAppRow = ({
+  id,
   name,
-  category,
-  time,
-  icon: Icon,
-  iconColor,
-  iconBg,
-  openLabel
+  categories,
+  iconUrl,
+  lastOpened,
+  openedCount,
+  isFavorite,
+  labels,
+  togglePending,
+  removePending,
+  onOpen,
+  onToggleFavorite,
+  onRemove
 }: {
+  id: string;
   name: string;
-  category: string;
-  time: string;
-  icon: LucideIcon;
-  iconColor: string;
-  iconBg: string;
-  openLabel: string;
+  categories: UserCategory[];
+  iconUrl: string | null;
+  lastOpened: string;
+  openedCount: string;
+  isFavorite: boolean;
+  labels: {
+    open: string;
+    remove: string;
+    lastOpened: string;
+    addFavorite: string;
+    removeFavorite: string;
+  };
+  togglePending: boolean;
+  removePending: boolean;
+  onOpen: () => void;
+  onToggleFavorite: () => void;
+  onRemove: () => void;
 }) => (
   <Card
-    className="flex flex-row items-center gap-3.5 rounded-xl border p-4"
-    aria-labelledby={`recent-${name}-${time}-title`}
+    className="flex flex-row flex-wrap items-center gap-3.5 rounded-xl border p-4"
+    aria-labelledby={`recent-${id}-title`}
   >
     <div
-      className={cn(
-        "flex size-11 shrink-0 items-center justify-center rounded-xl",
-        iconBg
-      )}
+      className="bg-primary/10 text-primary flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-xl text-base font-semibold"
       aria-hidden="true"
     >
-      <Icon className={cn("size-5.5", iconColor)} />
+      {iconUrl ? (
+        <CustomImage
+          src={iconUrl}
+          alt=""
+          width={44}
+          height={44}
+          className="size-full object-cover"
+        />
+      ) : (
+        name.charAt(0).toUpperCase()
+      )}
     </div>
     <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-      <CardItemTitle id={`recent-${name}-${time}-title`}>{name}</CardItemTitle>
-      <span className="text-muted-foreground text-xs">{category}</span>
+      <CardItemTitle id={`recent-${id}-title`} className="truncate">
+        {name}
+      </CardItemTitle>
+      <div className="flex min-w-0 items-center gap-2">
+        {/* `@container` has no intrinsic width, so in a flex row the chips
+            must be given the free space or they collapse under the count. */}
+        <CategoryChips categories={categories} className="min-w-0 flex-1" />
+        {openedCount && (
+          <span className="text-muted-foreground shrink-0 text-xs">
+            {openedCount}
+          </span>
+        )}
+      </div>
     </div>
     <div className="text-info flex items-center gap-1.5">
       <Timer className="size-3.5" aria-hidden="true" />
       <span className="text-xs font-semibold">
-        <span className="sr-only">Last opened: </span>
-        {time}
+        <span className="sr-only">{labels.lastOpened}: </span>
+        {lastOpened}
       </span>
     </div>
-    <CustomButton
-      size="sm"
-      iconRight={<ArrowUpRight className="size-3" aria-hidden="true" />}
-      aria-label={`${openLabel} ${name}`}
-    >
-      {openLabel}
-    </CustomButton>
+    <div className="flex items-center gap-1">
+      <FavoriteButton
+        isFavorite={isFavorite}
+        pending={togglePending}
+        addLabel={`${labels.addFavorite}: ${name}`}
+        removeLabel={`${labels.removeFavorite}: ${name}`}
+        onToggle={onToggleFavorite}
+      />
+      <CustomButton
+        size="icon-sm"
+        variant="ghost"
+        type="button"
+        disabled={removePending}
+        aria-label={`${labels.remove}: ${name}`}
+        onClick={onRemove}
+        className="text-muted-foreground hover:text-foreground"
+      >
+        <X className="size-4" aria-hidden="true" />
+      </CustomButton>
+      <CustomButton
+        size="sm"
+        onClick={onOpen}
+        iconRight={<ArrowUpRight className="size-3" aria-hidden="true" />}
+        aria-label={`${labels.open} ${name}`}
+      >
+        {labels.open}
+      </CustomButton>
+    </div>
   </Card>
 );
 

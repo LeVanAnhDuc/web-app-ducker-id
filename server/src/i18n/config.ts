@@ -39,7 +39,9 @@ i18next.use(Backend).init({
     "contactAdmin",
     "user",
     "webApp",
-    "favorite"
+    "favorite",
+    "recentApp",
+    "category"
   ],
 
   // Preload all supported languages and namespaces on startup

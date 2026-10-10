@@ -1,16 +1,14 @@
 // types
 import type { RedisClientType } from "redis";
-import type { AuthenticationService } from "@/modules/authentication/authentication.service";
-import type { UserService } from "@/modules/user/user.service";
-import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
+import type { AuthenticationService } from "@/modules/authentication/services";
+import type { UserService } from "@/modules/user/services";
+import type { LoginHistoryService } from "@/modules/login-history/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { RateLimiterMiddleware } from "@/middlewares";
 // repositories
-import {
-  RedisOtpForgotPasswordRepository,
-  RedisMagicLinkForgotPasswordRepository,
-  RedisResetTokenRepository
-} from "./repositories";
+import { RedisOtpForgotPasswordRepository } from "./repositories/impl/redis-otp-forgot-password.repository";
+import { RedisMagicLinkForgotPasswordRepository } from "./repositories/impl/redis-magic-link-forgot-password.repository";
+import { RedisResetTokenRepository } from "./repositories/impl/redis-reset-token.repository";
 // guards
 import {
   OtpCooldownGuard,
@@ -22,11 +20,10 @@ import {
   ResetTokenValidGuard
 } from "./guards";
 // others
-import { ForgotPasswordService, ForgotPasswordAuditService } from "./services";
-import {
-  OtpForgotPasswordStrategy,
-  MagicLinkForgotPasswordStrategy
-} from "./strategies";
+import { ForgotPasswordService } from "./services/forgot-password";
+import { ForgotPasswordAuditService } from "./services/forgot-password-audit";
+import { OtpForgotPasswordStrategy } from "./strategies/otp-forgot-password";
+import { MagicLinkForgotPasswordStrategy } from "./strategies/magic-link-forgot-password";
 import { ForgotPasswordController } from "./forgot-password.controller";
 import { createForgotPasswordRoutes } from "./forgot-password.routes";
 
@@ -54,35 +51,35 @@ export const createForgotPasswordModule = (
   const authExistsGuard = new AuthExistsGuard(userService);
   const resetTokenValidGuard = new ResetTokenValidGuard(resetTokenRepo);
 
-  const otpStrategy = new OtpForgotPasswordStrategy(
+  const otpStrategy = new OtpForgotPasswordStrategy({
     otpRepo,
     resetTokenRepo,
     emailDispatcher,
-    otpCooldownGuard,
-    otpResendLimitGuard,
-    otpLockoutGuard,
+    cooldownGuard: otpCooldownGuard,
+    resendLimitGuard: otpResendLimitGuard,
+    lockoutGuard: otpLockoutGuard,
     authExistsGuard,
-    auditService
-  );
-  const magicLinkStrategy = new MagicLinkForgotPasswordStrategy(
+    audit: auditService
+  });
+  const magicLinkStrategy = new MagicLinkForgotPasswordStrategy({
     magicLinkRepo,
     resetTokenRepo,
     emailDispatcher,
-    magicLinkCooldownGuard,
-    magicLinkResendLimitGuard,
+    cooldownGuard: magicLinkCooldownGuard,
+    resendLimitGuard: magicLinkResendLimitGuard,
     authExistsGuard,
-    auditService
-  );
+    audit: auditService
+  });
 
-  const forgotPasswordService = new ForgotPasswordService(
+  const forgotPasswordService = new ForgotPasswordService({
     authService,
     resetTokenRepo,
     otpStrategy,
     magicLinkStrategy,
     authExistsGuard,
     resetTokenValidGuard,
-    auditService
-  );
+    audit: auditService
+  });
   const forgotPasswordController = new ForgotPasswordController(
     forgotPasswordService
   );

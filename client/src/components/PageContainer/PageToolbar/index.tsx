@@ -16,27 +16,31 @@ import CustomButton from "@/components/CustomButton";
 import SearchInput from "@/components/SearchInput";
 import PageFilterPanel from "../PageFilterPanel";
 
+// Layout contract: search always sits on the LEFT and the filter controls
+// (`filterSlot` + Filters popover) always on the RIGHT, even when only one of
+// the two is rendered — so every list page lines up the same way.
 const PageToolbar = ({
   query,
   filterDefs = [],
   searchPlaceholder,
-  rightSlot,
+  filterSlot,
   showSearch = true
 }: {
   query: ListQueryState;
   filterDefs?: ListFilterDef[];
   searchPlaceholder?: string;
-  rightSlot?: ReactNode;
+  filterSlot?: ReactNode;
   showSearch?: boolean;
 }) => {
   const t = useTranslations("list");
 
   const hasFilters = filterDefs.length > 0;
+  const hasFilterGroup = hasFilters || Boolean(filterSlot);
 
   return (
     <div
       {...(showSearch ? { role: "search" } : {})}
-      className="flex flex-wrap items-center justify-between gap-3"
+      className="flex flex-wrap items-center gap-3"
     >
       {showSearch && (
         <SearchInput
@@ -48,30 +52,32 @@ const PageToolbar = ({
           inputClassName="!h-10"
         />
       )}
-      <div className="flex items-center gap-2">
-        {rightSlot}
-        {hasFilters && (
-          <Popover>
-            <PopoverTrigger asChild>
-              <CustomButton
-                type="button"
-                variant="outline"
-                iconLeft={<SlidersHorizontal className="size-4" />}
-              >
-                {t("filters")}
-                {query.activeFilterCount > 0 && (
-                  <span className="bg-primary text-primary-foreground ml-1 flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-xs font-semibold">
-                    {query.activeFilterCount}
-                  </span>
-                )}
-              </CustomButton>
-            </PopoverTrigger>
-            <PopoverContent align="end" className="w-80">
-              <PageFilterPanel filterDefs={filterDefs} query={query} />
-            </PopoverContent>
-          </Popover>
-        )}
-      </div>
+      {hasFilterGroup && (
+        <div className="ml-auto flex flex-wrap items-center gap-2">
+          {filterSlot}
+          {hasFilters && (
+            <Popover>
+              <PopoverTrigger asChild>
+                <CustomButton
+                  type="button"
+                  variant="outline"
+                  iconLeft={<SlidersHorizontal className="size-4" />}
+                >
+                  {t("filters")}
+                  {query.activeFilterCount > 0 && (
+                    <span className="bg-primary text-primary-foreground ml-1 flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-xs font-semibold">
+                      {query.activeFilterCount}
+                    </span>
+                  )}
+                </CustomButton>
+              </PopoverTrigger>
+              <PopoverContent align="end" className="w-80">
+                <PageFilterPanel filterDefs={filterDefs} query={query} />
+              </PopoverContent>
+            </Popover>
+          )}
+        </div>
+      )}
     </div>
   );
 };

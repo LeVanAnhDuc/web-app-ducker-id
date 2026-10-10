@@ -7,10 +7,12 @@ import type {
   ClientType,
   LoginHistoryDocument
 } from "@/modules/login-history/types";
+import type { LoginAppFieldsDto } from "./login-app.dto";
 // others
+import { toLoginAppFieldsDto } from "./login-app.dto";
 import { maskIp } from "../helpers";
 
-export interface MyHistoryItemDto {
+export interface MyHistoryItemDto extends LoginAppFieldsDto {
   _id: string;
   method: LoginMethod;
   status: LoginStatus;
@@ -39,5 +41,6 @@ export const toMyHistoryItemDto = (
   os: doc.os,
   browser: doc.browser,
   clientType: doc.clientType,
-  createdAt: doc.createdAt.toISOString()
+  createdAt: doc.createdAt.toISOString(),
+  ...toLoginAppFieldsDto(doc)
 });

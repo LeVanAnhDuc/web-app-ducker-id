@@ -28,18 +28,6 @@ const AuthenticationSchema = new Schema<AuthenticationDocument>(
       type: Boolean,
       default: true
     },
-    tempPasswordHash: {
-      type: String,
-      default: null
-    },
-    tempPasswordExpAt: {
-      type: Date,
-      default: null
-    },
-    tempPasswordUsed: {
-      type: Boolean,
-      default: false
-    },
     mustChangePassword: {
       type: Boolean,
       default: false

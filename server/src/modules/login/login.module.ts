@@ -1,21 +1,18 @@
 // types
 import type { RedisClientType } from "redis";
-import type { UserService } from "@/modules/user/user.service";
-import type { LoginHistoryService } from "@/modules/login-history/login-history.service";
+import type { UserService } from "@/modules/user/services";
+import type { LoginHistoryService } from "@/modules/login-history/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { RateLimiterMiddleware } from "@/middlewares";
+import type { SessionService } from "@/modules/session/services";
 // repositories
-import {
-  RedisOtpLoginRepository,
-  RedisMagicLinkLoginRepository,
-  RedisFailedAttemptsRepository
-} from "./repositories";
+import { RedisOtpLoginRepository } from "./repositories/impl/redis-otp-login.repository";
+import { RedisMagicLinkLoginRepository } from "./repositories/impl/redis-magic-link-login.repository";
+import { RedisFailedAttemptsRepository } from "./repositories/impl/redis-failed-attempts.repository";
 // others
-import {
-  LoginService,
-  LoginAuditService,
-  LoginCompletionService
-} from "./services";
+import { LoginService } from "./services/login";
+import { LoginAuditService } from "./services/login-audit";
+import { LoginCompletionService } from "./services/login-completion";
 import {
   AccountExistsGuard,
   AccountActiveGuard,
@@ -25,11 +22,9 @@ import {
   OtpCooldownGuard,
   MagicLinkCooldownGuard
 } from "./guards";
-import {
-  PasswordLoginStrategy,
-  OtpLoginStrategy,
-  MagicLinkLoginStrategy
-} from "./strategies";
+import { PasswordLoginStrategy } from "./strategies/password-login";
+import { OtpLoginStrategy } from "./strategies/otp-login";
+import { MagicLinkLoginStrategy } from "./strategies/magic-link-login";
 import { LoginController } from "./login.controller";
 import { createLoginRoutes } from "./login.routes";
 
@@ -38,7 +33,8 @@ export const createLoginModule = (
   userService: UserService,
   loginHistorySvc: LoginHistoryService,
   emailDispatcher: EmailDispatcher,
-  rateLimiter: RateLimiterMiddleware
+  rateLimiter: RateLimiterMiddleware,
+  sessionService: SessionService
 ) => {
   // repositories
   const otpLoginRepo = new RedisOtpLoginRepository(redisClient);
@@ -68,7 +64,7 @@ export const createLoginModule = (
     auditService,
     completionService
   );
-  const otpStrategy = new OtpLoginStrategy(
+  const otpStrategy = new OtpLoginStrategy({
     accountExistsGuard,
     accountActiveGuard,
     emailVerifiedGuard,
@@ -76,19 +72,19 @@ export const createLoginModule = (
     otpCooldownGuard,
     otpLoginRepo,
     emailDispatcher,
-    auditService,
-    completionService
-  );
-  const magicLinkStrategy = new MagicLinkLoginStrategy(
+    audit: auditService,
+    completion: completionService
+  });
+  const magicLinkStrategy = new MagicLinkLoginStrategy({
     accountExistsGuard,
     accountActiveGuard,
     emailVerifiedGuard,
     magicLinkCooldownGuard,
     magicLinkLoginRepo,
     emailDispatcher,
-    auditService,
-    completionService
-  );
+    audit: auditService,
+    completion: completionService
+  });
 
   // facade + controller + routes
   const loginService = new LoginService(
@@ -97,7 +93,7 @@ export const createLoginModule = (
     magicLinkStrategy,
     failedAttemptsRepo
   );
-  const loginController = new LoginController(loginService);
+  const loginController = new LoginController(loginService, sessionService);
 
   return {
     loginRouter: createLoginRoutes(loginController, rateLimiter),

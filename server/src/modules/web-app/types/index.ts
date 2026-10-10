@@ -2,6 +2,7 @@
 import type { Request } from "express";
 import type { Schema } from "mongoose";
 import type { AuthenticationRole } from "@/modules/authentication/types";
+import type { WebAppCategoryDocument } from "@/modules/category/types";
 import type {
   WEB_APP_STATUSES,
   TOKEN_ENDPOINT_AUTH_METHODS,
@@ -16,7 +17,7 @@ export type TokenEndpointAuthMethod =
 
 export interface WebAppDocument {
   _id: Schema.Types.ObjectId;
-  categoryId: Schema.Types.ObjectId;
+  categoryIds: Schema.Types.ObjectId[];
   name: string;
   displayName: string;
   description: string | null;
@@ -33,16 +34,6 @@ export interface WebAppDocument {
   tokenEndpointAuthMethod: TokenEndpointAuthMethod;
   requiredRoles: AuthenticationRole[];
   status: WebAppStatus;
-  sortOrder: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface WebAppCategoryDocument {
-  _id: Schema.Types.ObjectId;
-  name: string;
-  displayName: string;
-  icon: string | null;
   sortOrder: number;
   createdAt: Date;
   updatedAt: Date;
@@ -67,10 +58,17 @@ export interface AdminAppCreateBody {
   description?: string;
   iconUrl?: string;
   homeUrl: string;
-  categoryId: string;
+  categoryIds: string[];
   status: WebAppStatusPublic;
   requiredRoles: AuthenticationRole[];
   redirectUris: string[];
+  /**
+   * "none" = public client (SPA tĩnh, mobile) — KHÔNG sinh client_secret, vì
+   * không có chỗ nào trong trình duyệt giữ được bí mật. PKCE thay vai trò đó.
+   */
+  tokenEndpointAuthMethod?: TokenEndpointAuthMethod;
+  postLogoutRedirectUris?: string[];
+  scopes?: string[];
 }
 
 export interface AdminCreateAppRequest extends Omit<Request, "body"> {
@@ -83,12 +81,14 @@ export interface WebAppCreateInput {
   description: string | null;
   iconUrl: string | null;
   homeUrl: string;
-  categoryId: string;
+  categoryIds: string[];
   status: WebAppStatus;
   requiredRoles: AuthenticationRole[];
   redirectUris: string[];
+  postLogoutRedirectUris: string[];
   clientId: string;
-  clientSecretHash: string;
+  clientSecretHash: string | null;
+  tokenEndpointAuthMethod: TokenEndpointAuthMethod;
   scopes: string[];
 }
 
@@ -98,10 +98,13 @@ export interface AdminAppUpdateBody {
   description?: string;
   iconUrl?: string;
   homeUrl?: string;
-  categoryId?: string;
+  categoryIds?: string[];
   status?: WebAppStatusPublic;
   requiredRoles?: AuthenticationRole[];
   redirectUris?: string[];
+  postLogoutRedirectUris?: string[];
+  tokenEndpointAuthMethod?: TokenEndpointAuthMethod;
+  scopes?: string[];
 }
 
 export interface AdminAppIdParams {
@@ -122,10 +125,13 @@ export interface WebAppUpdateInput {
   description?: string | null;
   iconUrl?: string | null;
   homeUrl?: string;
-  categoryId?: string;
+  categoryIds?: string[];
   status?: WebAppStatus;
   requiredRoles?: AuthenticationRole[];
   redirectUris?: string[];
+  postLogoutRedirectUris?: string[];
+  tokenEndpointAuthMethod?: TokenEndpointAuthMethod;
+  scopes?: string[];
 }
 
 export interface PaginationParams {
@@ -142,16 +148,6 @@ export interface UserAppsQueryRequest extends Omit<Request, "query"> {
   query: UserAppsQuery;
 }
 
-export interface WebAppWithCategory extends WebAppDocument {
-  category: WebAppCategoryDocument | null;
-}
-
-export interface PaginatedResult<T> {
-  items: T[];
-  meta: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  };
+export interface WebAppWithCategories extends WebAppDocument {
+  categories: WebAppCategoryDocument[];
 }

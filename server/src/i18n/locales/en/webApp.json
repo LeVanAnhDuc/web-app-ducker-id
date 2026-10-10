@@ -1,15 +1,12 @@
 {
   "success": {
     "listApps": "Apps retrieved successfully.",
-    "listCategories": "Categories retrieved successfully.",
     "createApp": "App registered successfully.",
     "updateApp": "App updated successfully."
   },
   "errors": {
     "nameExists": "An app with this name already exists.",
-    "categoryNotFound": "The selected category does not exist.",
-    "notFound": "App not found.",
-    "rateLimitExceeded": "Too many requests. Please try again later"
+    "notFound": "App not found."
   },
   "validation": {
     "name": {
@@ -35,11 +32,16 @@
       "maxLength": "Home URL is too long.",
       "invalid": "Home URL must start with http:// or https://."
     },
-    "categoryId": {
-      "required": "Category is required.",
-      "invalid": "Invalid category id."
+    "categoryIds": {
+      "required": "Select at least one category.",
+      "invalid": "Invalid category id.",
+      "max": "Select at most 5 categories.",
+      "duplicate": "Each category can only be selected once.",
+      "notFound": "One of the selected categories no longer exists."
     },
-    "status": { "invalid": "Status must be active or inactive." },
+    "status": {
+      "invalid": "Status must be active or inactive."
+    },
     "requiredRoles": {
       "required": "Select at least one required role.",
       "invalid": "Invalid role value."
@@ -47,7 +49,10 @@
     "redirectUris": {
       "required": "Add at least one redirect URI.",
       "maxItems": "Too many redirect URIs (max 20).",
-      "invalid": "Each redirect URI must start with http:// or https://."
+      "invalid": "Each redirect URI must use https (http is allowed for localhost only), and must not contain a fragment or wildcard."
+    },
+    "tokenEndpointAuthMethod": {
+      "invalid": "Token endpoint auth method must be client_secret_basic or none."
     },
     "id": {
       "required": "App id is required.",

@@ -64,6 +64,11 @@ const ADMIN_ROUTES = [
     route: "/admin/login-history",
     apiPath: "/api/v1/admin/login-history",
     denySignal: "No login history found"
+  },
+  {
+    route: "/admin/categories",
+    apiPath: "/api/v1/admin/categories",
+    denySignal: "No categories yet"
   }
 ] as const;
 
@@ -215,6 +220,69 @@ test.describe("Admin reset-password — AuthN denial (no token)", () => {
       expect(body.code).toBe("AUTH_MISSING_TOKEN");
     } finally {
       await tokenLessContext.dispose();
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Categories (feature category-management, matrix rows #2/#3).
+// [DT] role × method: every admin category endpoint answers a non-admin with
+// 403 and a token-less caller with 401; the public list stays open to both.
+// ---------------------------------------------------------------------------
+const CATEGORY_CALLS = [
+  ["GET", "/api/v1/admin/categories"],
+  ["POST", "/api/v1/admin/categories"],
+  ["PATCH", `/api/v1/admin/categories/${PLACEHOLDER_ID}`],
+  ["POST", `/api/v1/admin/categories/${PLACEHOLDER_ID}/move`],
+  ["GET", `/api/v1/admin/categories/${PLACEHOLDER_ID}/delete-impact`],
+  ["DELETE", `/api/v1/admin/categories/${PLACEHOLDER_ID}`]
+] as const;
+
+test.describe("Admin categories — authorization matrix", () => {
+  for (const [method, path] of CATEGORY_CALLS) {
+    test(`non-admin ${method} ${path} → 403, token-less → 401`, async ({
+      baseURL
+    }) => {
+      const asUser = await apiContext.fetch(path, {
+        method,
+        headers: { Authorization: `Bearer ${nonAdminToken}` },
+        data: method === "GET" ? undefined : {}
+      });
+      expect(asUser.status()).toBe(403);
+      expect(((await asUser.json()) as { code?: string }).code).toBe(
+        "AUTH_ADMIN_ONLY"
+      );
+
+      const anon = await playwrightRequest.newContext({ baseURL });
+      try {
+        const res = await anon.fetch(path, {
+          method,
+          data: method === "GET" ? undefined : {}
+        });
+        expect(res.status()).toBe(401);
+      } finally {
+        await anon.dispose();
+      }
+    });
+  }
+
+  test("the public category list stays open to a non-admin", async () => {
+    const res = await apiContext.get("/api/v1/apps/categories", {
+      headers: { Authorization: `Bearer ${nonAdminToken}` }
+    });
+    expect(res.status()).toBe(200);
+  });
+
+  test("an anonymous visitor to /admin/categories is sent to login", async ({
+    browser
+  }) => {
+    const anon = await browser.newContext({ storageState: undefined });
+    try {
+      const page = await anon.newPage();
+      await page.goto("/admin/categories");
+      await expect(page).toHaveURL(/\/login/);
+    } finally {
+      await anon.close();
     }
   });
 });

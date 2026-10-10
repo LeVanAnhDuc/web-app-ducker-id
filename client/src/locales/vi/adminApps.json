@@ -73,9 +73,18 @@
         "placeholder": "https://…",
         "hint": "Nơi người dùng được điều hướng khi click tile."
       },
-      "categoryId": {
+      "categoryIds": {
         "label": "Danh mục",
-        "placeholder": "Chọn danh mục"
+        "placeholder": "Chọn danh mục",
+        "searchPlaceholder": "Tìm danh mục…",
+        "hint": "Chọn 1–5 danh mục. Danh mục đầu tiên là danh mục chính, hiện trước khi card bị thu gọn.",
+        "primary": "Chính",
+        "remove": "Bỏ {name}",
+        "create": "Tạo danh mục mới",
+        "createNamed": "Tạo danh mục \"{name}\"",
+        "maxReached": "Tối đa 5 danh mục. Bỏ bớt một danh mục để chọn danh mục khác.",
+        "noMatch": "Không có danh mục khớp \"{query}\"",
+        "selected": "Đã chọn {count}"
       },
       "status": {
         "label": "Đang hoạt động"
@@ -88,6 +97,12 @@
         "label": "Redirect URI",
         "placeholder": "https://app.example.com/auth/callback",
         "hint": "Whitelist redirect_uri của OAuth. Cần ít nhất một."
+      },
+      "tokenEndpointAuthMethod": {
+        "label": "Xác thực client",
+        "hint": "Chọn \"Public\" cho SPA tĩnh hoặc app mobile — loại này không được cấp client secret, vì trình duyệt không giữ được bí mật. PKCE thay vai trò bảo vệ.",
+        "confidential": "Confidential — có cấp client secret",
+        "public": "Public — không có client secret (chỉ PKCE)"
       }
     },
     "validation": {
@@ -115,8 +130,10 @@
         "maxLength": "URL quá dài.",
         "invalid": "Phải bắt đầu bằng http:// hoặc https://"
       },
-      "categoryId": {
-        "required": "Vui lòng chọn danh mục."
+      "categoryIds": {
+        "required": "Hãy chọn ít nhất một danh mục.",
+        "max": "Chỉ chọn tối đa 5 danh mục.",
+        "notFound": "Một danh mục đã chọn vừa bị xoá. Hãy xem lại danh sách."
       },
       "requiredRoles": {
         "required": "Chọn ít nhất một role."
@@ -126,6 +143,9 @@
         "invalid": "Phải bắt đầu bằng http:// hoặc https://",
         "maxLength": "URL quá dài.",
         "maxItems": "Tối đa 20 redirect URI."
+      },
+      "tokenEndpointAuthMethod": {
+        "invalid": "Chọn phương thức xác thực client hợp lệ."
       }
     }
   },
@@ -152,6 +172,7 @@
     "clientIdLabel": "Client ID",
     "clientSecretLabel": "Client Secret",
     "warning": "Hãy lưu client secret ngay — nó sẽ không hiển thị lại.",
+    "publicClientNote": "Đây là public client nên không có client secret. Nó xác thực bằng PKCE — tuyệt đối không nhét secret vào app chạy trên trình duyệt.",
     "done": "Xong",
     "announce": {
       "copied": "Đã sao chép vào clipboard."

@@ -84,6 +84,21 @@ or component layer only — a raw hex or a primitive in a component is a bug.
 `--input-border: var(--color-border)` · `--input-focus-keyline: var(--color-ring)` ·
 `--card-bg: var(--color-card)` · `--keyline: var(--color-accent)`
 
+#### How the three layers are actually named in `globals.css`
+
+Two renames were forced by the stack, and the implementation is the authority on spelling:
+
+- The semantic layer is spelled **`--sem-*`**, not `--color-*`. Tailwind v4 reserves the
+  `--color-*` namespace for `@theme` — a `--color-primary` in `:root` collides with the
+  utility generator. So `--color-primary` in this document is `--sem-primary` in code.
+- The CTA is exposed as **`--cta` / `--cta-foreground`** (utilities `bg-cta`,
+  `text-cta-foreground`), **not** as shadcn's `--accent`. In shadcn, `--accent` means the
+  subtle hover surface; pointing it at brass would turn every hover state in the app copper.
+
+The component layer is the shadcn contract (`--background`, `--primary`, `--muted`, …) plus
+`--cta`, `--keyline`, `--overlay` and the `--button-*` / `--input-*` tokens. It is declared
+once and reads from `--sem-*`, which is what switches between light and dark.
+
 #### Verified contrast (WCAG 2.1)
 
 | Pair | Ratio | Verdict |
@@ -275,6 +290,15 @@ active boundaries; **backdrop blur only on the sticky header**
 Framer Motion only — **do not install GSAP**, even when a motion tier suggests a GSAP preset.
 Animate `transform` and `opacity` only. micro 100–150ms · small 150–250ms · medium 250–350ms ·
 large 300–500ms, **hard ceiling 500ms**. `prefers-reduced-motion` always respected.
+
+## Charts
+
+**shadcn `chart` (recharts) only** — decided in `docs/adr/0003-charting-library.md`, not by this
+bootstrap. A series that already carries a status keeps its semantic token (`--primary` for success,
+`--destructive` for failure); a categorical series takes `--chart-1`, `--chart-5`, `--chart-4`, then
+`--chart-2`, each fill separated by a 1px `--card` border. `--chart-3` is the weak slot in both
+themes and is avoided. Every chart ships an `aria-label` summary plus an `sr-only` table of the same
+numbers, because an SVG series cannot be read point by point.
 
 ## Icons
 

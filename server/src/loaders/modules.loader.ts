@@ -17,10 +17,14 @@ import { createUnlockAccountModule } from "@/modules/unlock-account/unlock-accou
 import { createForgotPasswordModule } from "@/modules/forgot-password/forgot-password.module";
 import { createChangePasswordModule } from "@/modules/change-password/change-password.module";
 import { createContactAdminModule } from "@/modules/contact-admin/contact-admin.module";
+import { createCategoryModule } from "@/modules/category/category.module";
 import { createWebAppModule } from "@/modules/web-app/web-app.module";
 import { createUserModule } from "@/modules/user/user.module";
 import { createNotificationModule } from "@/modules/notification/notification.module";
 import { createFavoriteModule } from "@/modules/favorite/favorite.module";
+import { createRecentAppModule } from "@/modules/recent-app/recent-app.module";
+import { createSessionModule } from "@/modules/session/session.module";
+import { createOAuthModule } from "@/modules/oauth/oauth.module";
 // others
 import { RateLimiterMiddleware } from "@/middlewares";
 import { Logger } from "@/libs/logger";
@@ -39,12 +43,26 @@ interface ModuleRoutes {
   loginHistoryAdmin: Router;
   notification: Router;
   favorite: Router;
+  recentApp: Router;
   contact: Router;
   contactAdmin: Router;
   myContacts: Router;
   webAppAdmin: Router;
   webAppUser: Router;
+  categoryAdmin: Router;
+  categoryUser: Router;
 }
+
+/**
+ * Router OAuth mount THẲNG lên app, không qua `/api/v1`.
+ *
+ * OIDC Discovery bắt buộc `/.well-known/openid-configuration` nằm ở gốc
+ * origin, và `/oauth/*` là đường dẫn công khai mà app vệ tinh cấu hình cứng —
+ * đổi prefix là phá hợp đồng với mọi client đã đăng ký.
+ */
+const mountOAuthRoutes = (app: Express, oauthRouter: Router): void => {
+  app.use(oauthRouter);
+};
 
 const mountRoutes = (app: Express, routes: ModuleRoutes): void => {
   const v1Router = Router();
@@ -65,6 +83,7 @@ const mountRoutes = (app: Express, routes: ModuleRoutes): void => {
   v1Router.use(routes.loginHistoryAdmin);
   v1Router.use(routes.notification);
   v1Router.use(routes.favorite);
+  v1Router.use(routes.recentApp);
 
   // Contact
   v1Router.use(routes.contact);
@@ -74,6 +93,8 @@ const mountRoutes = (app: Express, routes: ModuleRoutes): void => {
   // App Registry
   v1Router.use(routes.webAppAdmin);
   v1Router.use(routes.webAppUser);
+  v1Router.use(routes.categoryAdmin);
+  v1Router.use(routes.categoryUser);
 
   app.use("/api/v1", v1Router);
 };
@@ -87,6 +108,7 @@ export const loadModules = (
   // --- Shared infrastructure ---
   const { authService } = createAuthenticationModule();
   const rateLimiter = new RateLimiterMiddleware(redisClient);
+  const { sessionService } = createSessionModule(redisClient);
 
   // --- Module creation ---
   const { userRouter, userAdminRouter, userService } = createUserModule(
@@ -106,7 +128,8 @@ export const loadModules = (
     userService,
     loginHistoryService,
     emailDispatcher,
-    rateLimiter
+    rateLimiter,
+    sessionService
   );
 
   const { signupRouter } = createSignupModule(
@@ -117,7 +140,7 @@ export const loadModules = (
     rateLimiter
   );
 
-  const { logoutRouter } = createLogoutModule();
+  const { logoutRouter } = createLogoutModule(sessionService);
   const { tokenRouter } = createTokenModule(authService, userService);
 
   const { unlockAccountRouter } = createUnlockAccountModule(
@@ -149,14 +172,34 @@ export const loadModules = (
   const { contactAdminRouter, adminContactsRouter, myContactsRouter } =
     createContactAdminModule(rateLimiter);
 
+  const { categoryRepository, categoryAdminRouter, categoryUserRouter } =
+    createCategoryModule(rateLimiter);
+
   const { webAppAdminRouter, webAppUserRouter } =
-    createWebAppModule(rateLimiter);
+    createWebAppModule(categoryRepository);
 
   const { notificationUserRouter } = createNotificationModule();
 
-  const { favoriteUserRouter } = createFavoriteModule();
+  const { favoriteRepository, favoriteUserRouter } = createFavoriteModule();
+
+  const { recentAppService, recentAppUserRouter } = createRecentAppModule(
+    favoriteRepository,
+    rateLimiter
+  );
+
+  const { oauthRouter } = createOAuthModule(
+    redisClient,
+    sessionService,
+    authService,
+    userService,
+    loginHistoryService,
+    recentAppService,
+    rateLimiter
+  );
 
   // --- Route mounting ---
+  mountOAuthRoutes(app, oauthRouter);
+
   mountRoutes(app, {
     signup: signupRouter,
     login: loginRouter,
@@ -171,11 +214,14 @@ export const loadModules = (
     loginHistoryAdmin: loginHistoryAdminRouter,
     notification: notificationUserRouter,
     favorite: favoriteUserRouter,
+    recentApp: recentAppUserRouter,
     contact: contactAdminRouter,
     contactAdmin: adminContactsRouter,
     myContacts: myContactsRouter,
     webAppAdmin: webAppAdminRouter,
-    webAppUser: webAppUserRouter
+    webAppUser: webAppUserRouter,
+    categoryAdmin: categoryAdminRouter,
+    categoryUser: categoryUserRouter
   });
 
   Logger.info("Modules loaded and routes mounted successfully");

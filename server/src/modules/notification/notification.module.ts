@@ -1,6 +1,6 @@
 // others
-import { MongoNotificationRepository } from "./notification.repository";
-import { NotificationService } from "./notification.service";
+import { MongoNotificationRepository } from "./repository/impl/mongo-notification.repository";
+import { NotificationService } from "./services";
 import { NotificationController } from "./notification.controller";
 import { createNotificationUserRoutes } from "./notification.routes";
 

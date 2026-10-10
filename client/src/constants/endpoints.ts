@@ -49,9 +49,16 @@ const END_POINTS = {
   APP_CATEGORIES: "/apps/categories",
   ADMIN_APPS: "/admin/apps",
   ADMIN_APP_BY_ID: "/admin/apps/:id",
-  ADMIN_APP_CATEGORIES: "/admin/apps/categories",
+  ADMIN_CATEGORIES: "/admin/categories",
+  ADMIN_CATEGORY_BY_ID: "/admin/categories/:id",
+  ADMIN_CATEGORY_MOVE: "/admin/categories/:id/move",
+  ADMIN_CATEGORY_DELETE_IMPACT: "/admin/categories/:id/delete-impact",
   FAVORITES: "/users/me/favorites",
   FAVORITE_BY_APP_ID: "/users/me/favorites/:appId",
+  RECENT_APPS: "/users/me/recent-apps",
+  RECENT_APPS_STATS: "/users/me/recent-apps/stats",
+  RECENT_APP_BY_APP_ID: "/users/me/recent-apps/:appId",
+  RECENT_APP_RESTORE: "/users/me/recent-apps/:appId/restore",
 
   // Users (admin)
   ADMIN_USERS: "/admin/users",

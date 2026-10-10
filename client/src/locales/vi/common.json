@@ -3,12 +3,6 @@
     "name": "App Store",
     "description": "Ứng dụng Web App Store"
   },
-  "categories": {
-    "content": "Nội dung",
-    "tools": "Công cụ nội bộ",
-    "identity": "Định danh",
-    "productivity": "Năng suất"
-  },
   "userMenu": {
     "trigger": "Mở menu người dùng",
     "theme": "Giao diện",
@@ -142,5 +136,14 @@
     "sortBy": "Sắp xếp theo {column}",
     "sortedAscending": "Đã sắp xếp tăng dần.",
     "sortedDescending": "Đã sắp xếp giảm dần."
+  },
+  "redirecting": {
+    "toApp": "Đang chuyển về {app}…",
+    "generic": "Đang chuyển hướng…"
+  },
+  "categoryChips": {
+    "title": "Danh mục",
+    "more": "Xem thêm {count} danh mục",
+    "all": "Danh mục: {names}"
   }
 }

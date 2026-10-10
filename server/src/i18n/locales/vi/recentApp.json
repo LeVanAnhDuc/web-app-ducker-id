@@ -1,0 +1,16 @@
+{
+  "success": {
+    "list": "Lấy danh sách ứng dụng dùng gần đây thành công.",
+    "stats": "Lấy thống kê sử dụng ứng dụng thành công."
+  },
+  "errors": {
+    "appNotFound": "Không tìm thấy ứng dụng hoặc ứng dụng không khả dụng.",
+    "rateLimitExceeded": "Quá nhiều yêu cầu. Vui lòng thử lại sau"
+  },
+  "validation": {
+    "appId": {
+      "required": "Thiếu mã ứng dụng.",
+      "invalid": "Mã ứng dụng không hợp lệ."
+    }
+  }
+}

@@ -11,7 +11,7 @@
 | Identity                       | `auths`, `refresh_tokens`, `login_histories`         |
 | Profile                        | `users`, `user_addresses`                            |
 | App Registry                   | `web_apps`, `web_app_categories`                     |
-| Entitlement & Personalization  | `entitlements` (grant + recently-used), `user_favorites` (favorite — tách riêng, xem DR-FAV)|
+| Entitlement & Personalization  | `entitlements` (grant), `user_favorites` (favorite — xem DR-FAV), `user_app_usages` (recently used — xem DR-RECENT)|
 | OAuth                          | `oauth_consents` (auth codes lưu Redis, không phải Mongo) |
 | Notification                   | `notifications`                                      |
 | Support                        | `contacts`                                           |
@@ -27,12 +27,15 @@ erDiagram
     USER ||--o{ ENTITLEMENT : "granted-to"
     WEB_APP ||--o{ ENTITLEMENT : "grants-on"
     USER ||--|| USER : "granted_by (admin self-ref)"
-    WEB_APP_CATEGORY ||--o{ WEB_APP : "groups"
+    WEB_APP_CATEGORY }o--o{ WEB_APP : "groups (1-5 per app, ordered)"
     USER ||--o{ OAUTH_CONSENT : "consented"
     WEB_APP ||--o{ OAUTH_CONSENT : "for-client"
     USER ||--o{ NOTIFICATION : "receives"
     USER ||--o{ USER_FAVORITE : "favorites"
     WEB_APP ||--o{ USER_FAVORITE : "favorited-as"
+    USER ||--o{ USER_APP_USAGE : "uses"
+    WEB_APP ||--o{ USER_APP_USAGE : "used-as"
+    WEB_APP |o--o{ LOGIN_HISTORY : "signed-into (nullable)"
     USER ||--o{ CONTACT : "submits (nullable — guest submit = no owner)"
 
     AUTH {
@@ -95,6 +98,10 @@ erDiagram
         String timezone_offset "nullable"
         Boolean is_anomaly "default false"
         StringArray anomaly_reasons
+        Enum source "idp|oauth, default idp"
+        ObjectId web_app_id FK "→ WEB_APP, nullable (null = sign-in to the IdP)"
+        String client_name "nullable — snapshot of WEB_APP.display_name"
+        Boolean interactive "default true; false = silent SSO"
         Date created_at "TTL index"
     }
 
@@ -112,17 +119,17 @@ erDiagram
 
     WEB_APP_CATEGORY {
         ObjectId _id PK
-        String name UK
-        String display_name
-        String icon "nullable"
-        Number sort_order "default 0"
+        String slug UK "derived from name.en (DR-CATEGORY)"
+        String name_en UK "case-insensitive unique"
+        String name_vi
+        Number sort_order "renumbered 0..n-1 on move"
         Date created_at
         Date updated_at
     }
 
     WEB_APP {
         ObjectId _id PK
-        ObjectId category_id FK "→ WEB_APP_CATEGORY"
+        ObjectIdArray category_ids FK "→ WEB_APP_CATEGORY, 1-5, ordered, first = primary"
         String name UK
         String display_name
         String description "nullable"
@@ -152,8 +159,8 @@ erDiagram
         Date granted_at
         Date revoked_at "nullable — soft revoke, audit trail"
         Boolean is_favorite "default false — user star app"
-        Date last_launched_at "nullable — recently used tracking"
-        Number launch_count "default 0"
+        Date last_launched_at "nullable — superseded by USER_APP_USAGE (DR-RECENT)"
+        Number launch_count "default 0 — superseded by USER_APP_USAGE"
         Date created_at
         Date updated_at
     }
@@ -163,6 +170,16 @@ erDiagram
         ObjectId user_id FK,UK "→ USER"
         ObjectId web_app_id FK,UK "→ WEB_APP"
         Date created_at "append-only, no updated_at"
+    }
+
+    USER_APP_USAGE {
+        ObjectId _id PK
+        ObjectId user_id FK,UK "→ USER"
+        ObjectId web_app_id FK,UK "→ WEB_APP"
+        Date last_used_at "sort key"
+        Number use_count "≥ 1, reset to 1 on revive"
+        Date hidden_at "nullable — soft delete, TTL 30d"
+        Date created_at
     }
 
     OAUTH_CONSENT {
@@ -224,11 +241,12 @@ erDiagram
 ### Composite unique constraints
 - `entitlements`: `(user_id, web_app_id)` unique — 1 cặp user-app chỉ 1 entitlement record
 - `user_favorites`: `(user_id, web_app_id)` unique — 1 cặp user-app chỉ 1 favorite record (POST favorite idempotent qua index này)
+- `user_app_usages`: `(user_id, web_app_id)` unique — 1 cặp user-app chỉ 1 dòng usage (ghi lượt mở là upsert)
 - `oauth_consents`: `(user_id, web_app_id, scope_set_hash)` unique — phát hiện scope mới yêu cầu re-consent
 - `web_apps`: `client_id` unique (đã đánh dấu UK ở field)
 
 ### Single-collection patterns
-- **ENTITLEMENT** gộp 2 concern còn lại: (1) grant của admin, (2) recently-used tracking. 1 user × 1 app = 1 document duy nhất.
+- **ENTITLEMENT** chỉ còn concern grant của admin (favorite tách ở DR-FAV, recently-used tách ở DR-RECENT). 1 user × 1 app = 1 document duy nhất.
 
 ### DR-MYCONTACTS — CONTACT gắn owner `user_id` (2026-07)
 - **Quyết định**: `CONTACT.user_id` (ObjectId, nullable, ref `USER`, index `{user_id:1, created_at:-1}`) — gắn khi user đăng nhập lúc submit (`POST /contact/submit` dùng `optionalAuthGuard`), `null` khi guest submit.
@@ -240,6 +258,11 @@ erDiagram
 - **Lý do**: catalog `/apps` hiển thị app theo role (chưa gate theo entitlement), nên user thường favorite app **chưa có** entitlement record. Upsert vào `entitlements` sẽ buộc đặt `granted_by` (nghĩa "admin cấp") sai ngữ nghĩa. Collection riêng cho ngữ nghĩa sạch, không đụng grant lifecycle.
 - **Hệ quả**: field `entitlements.is_favorite` không còn được feature favorite dùng (giữ lại trong schema cũ nếu có, nhưng nguồn sự thật favorite là `user_favorites`). Annotate `isFavorite` trên `GET /apps` join từ `user_favorites`.
 - API: `POST/DELETE /users/me/favorites/:appId`, `GET /users/me/favorites`. Xem `specs/favorite-apps/`.
+
+### DR-RECENT — Recently used tách khỏi ENTITLEMENT (2026-10)
+- **Quyết định**: lượt dùng app lưu ở collection riêng `user_app_usages` `{user_id, web_app_id, last_used_at, use_count, hidden_at, created_at}`, KHÔNG dùng `entitlements.last_launched_at` / `launch_count`.
+- **Lý do**: giống DR-FAV — catalog `/apps` không gate theo entitlement, user mở app chưa có entitlement record; ghi vào `entitlements` buộc tạo grant giả. Ngoài ra "xoá lịch sử" của user phải là thao tác riêng, không được đụng grant hay audit log `login_histories`.
+- **Hệ quả**: xoá = soft delete (`hidden_at`), TTL index purge sau 30 ngày; mở lại app hồi sinh dòng với `use_count = 1`. Ghi từ hai nguồn: FE `POST /users/me/recent-apps/:appId` và `/oauth/authorize` khi cấp code. Xem `specs/recently-used/`.
 
 ### OAuth client pattern
 - `WEB_APP` đồng thời là **OAuth client metadata holder** — không tách entity riêng (1-1 quan hệ).
@@ -258,6 +281,15 @@ erDiagram
 
 ### Naming note
 Field `login_histories.userId` (theo memory: `project_login_history_userid_naming`) thực tế lưu `auth._id`, **không phải** `user._id`. ERD đã đổi label thành `auth_id` cho đúng semantics. Code cũ vẫn có thể đọc/ghi field `userId` — kiểm tra Mongoose schema để xác nhận tên field thực tế.
+
+### DR-CATEGORY — Danh mục do admin quản lý, nhiều danh mục mỗi app (2026-10)
+
+- `web_app_categories`: `name` (slug) + `display_name` + `icon` → `slug` + `name: { en, vi }`; bỏ `icon`.
+  Slug luôn sinh từ `name.en` và đổi theo khi đổi tên.
+- `web_apps.category_id` → `category_ids` (1–5, có thứ tự, phần tử đầu là danh mục chính).
+- Xoá danh mục: app còn danh mục khác chỉ bị gỡ; app chỉ thuộc danh mục đó phải được chuyển sang
+  danh mục đích trong cùng transaction. Chi tiết: `docs/specs/category-management/design.md`.
+- Migration một lần: `pnpm migrate:category-management` (server).
 
 ## Satellite ERDs
 

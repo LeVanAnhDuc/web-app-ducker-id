@@ -1,6 +1,6 @@
 // types
 import type { Request } from "express";
-import type { MagicLinkLoginRepository } from "../repositories";
+import type { MagicLinkLoginRepository } from "../repositories/magic-link-login.repository";
 // common
 import { BadRequestError } from "@/common/exceptions";
 // others

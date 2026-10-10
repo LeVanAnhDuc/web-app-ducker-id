@@ -1,18 +1,16 @@
 // types
 import type { RedisClientType } from "redis";
-import type { AuthenticationService } from "@/modules/authentication/authentication.service";
-import type { UserService } from "@/modules/user/user.service";
+import type { AuthenticationService } from "@/modules/authentication/services";
+import type { UserService } from "@/modules/user/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { RateLimiterMiddleware } from "@/middlewares";
 // repositories
-import {
-  RedisOtpSignupRepository,
-  RedisSessionSignupRepository
-} from "./repositories";
+import { RedisOtpSignupRepository } from "./repositories/impl/redis-otp-signup.repository";
+import { RedisSessionSignupRepository } from "./repositories/impl/redis-session-signup.repository";
 // guards
 import { EmailAvailableGuard, CooldownGuard } from "./guards";
 // others
-import { SignupService } from "./signup.service";
+import { SignupService } from "./services";
 import { SignupController } from "./signup.controller";
 import { createSignupRoutes } from "./signup.routes";
 
@@ -29,7 +27,7 @@ export const createSignupModule = (
   const emailAvailableGuard = new EmailAvailableGuard(userService);
   const cooldownGuard = new CooldownGuard(otpSignupRepo);
 
-  const signupService = new SignupService(
+  const signupService = new SignupService({
     authService,
     userService,
     otpSignupRepo,
@@ -37,7 +35,7 @@ export const createSignupModule = (
     emailDispatcher,
     emailAvailableGuard,
     cooldownGuard
-  );
+  });
   const signupController = new SignupController(signupService);
 
   return {

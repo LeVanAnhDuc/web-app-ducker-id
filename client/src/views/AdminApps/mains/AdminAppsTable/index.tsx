@@ -25,7 +25,13 @@ import AdminAppsFormSheet from "../AdminAppsFormSheet";
 import AdminAppsHideDialog from "../AdminAppsHideDialog";
 import AdminAppsSecretDialog from "../AdminAppsSecretDialog";
 // hooks
-import { useListQuery, useAnnounce, useClientSortedRows } from "@/hooks";
+import {
+  useAdminCategories,
+  useAnnounce,
+  useClientSortedRows,
+  useListQuery,
+  useLocalizedName
+} from "@/hooks";
 import useSetAdminAppStatus from "../../hooks/useSetAdminAppStatus";
 // dataSources
 import {
@@ -35,10 +41,9 @@ import {
   ADMIN_APPS_SORT_ACCESSORS
 } from "@/dataSources/AdminApps";
 // requests
-import { getAdminApps, getAdminAppCategories } from "@/requests/adminApps";
+import { getAdminApps } from "@/requests/adminApps";
 // others
 import CONSTANTS from "@/constants";
-import { resolveCategoryLabel } from "@/utils";
 
 const isAppStatus = (value: unknown): value is AppStatus =>
   typeof value === "string" && APP_STATUSES.includes(value as AppStatus);
@@ -50,7 +55,7 @@ const AdminAppsTable = () => {
   const tActions = useTranslations("adminApps.actions");
   const tStatus = useTranslations("adminApps.status");
   const tAnnounce = useTranslations("adminApps.announce");
-  const tCategory = useTranslations("common.categories");
+  const localize = useLocalizedName();
   const { announce } = useAnnounce();
   const setStatusMutation = useSetAdminAppStatus();
 
@@ -61,10 +66,7 @@ const AdminAppsTable = () => {
     null
   );
 
-  const { data: categories = [] } = useQuery({
-    queryKey: [CONSTANTS.QUERY_KEYS.ADMIN_APP_CATEGORIES],
-    queryFn: getAdminAppCategories
-  });
+  const { data: categories = [] } = useAdminCategories();
 
   const statusOptions = useMemo(
     () =>
@@ -79,9 +81,9 @@ const AdminAppsTable = () => {
     () =>
       categories.map((cat) => ({
         value: cat._id,
-        label: resolveCategoryLabel(tCategory, cat.slug, cat.name)
+        label: localize(cat.name)
       })),
-    [categories, tCategory]
+    [categories, localize]
   );
 
   const filterDefs = useMemo(
@@ -107,14 +109,8 @@ const AdminAppsTable = () => {
   });
 
   const categoryMap = useMemo(
-    () =>
-      new Map(
-        categories.map((c) => [
-          c._id,
-          resolveCategoryLabel(tCategory, c.slug, c.name)
-        ])
-      ),
-    [categories, tCategory]
+    () => new Map(categories.map((c) => [c._id, c])),
+    [categories]
   );
 
   const rawItems = data?.items ?? [];

@@ -4,7 +4,7 @@ import type {
   NotificationListRequest,
   NotificationIdRequest
 } from "@/modules/notification/types";
-import type { NotificationService } from "./notification.service";
+import type { NotificationService } from "./services";
 // common
 import { OkSuccess } from "@/common/responses";
 

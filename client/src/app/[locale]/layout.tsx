@@ -2,6 +2,7 @@
 import { hasLocale, NextIntlClientProvider } from "next-intl";
 import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
+import { Space_Grotesk, IBM_Plex_Sans, IBM_Plex_Mono } from "next/font/google";
 // types
 import type { ReactNode } from "react";
 import type { Metadata, Viewport } from "next";
@@ -15,6 +16,27 @@ import AppProvider from "@/contexts/AppProvider";
 import { routing } from "@/i18n/routing";
 import "./globals.css";
 
+const displayFont = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["500", "700"],
+  variable: "--font-space-grotesk",
+  display: "swap"
+});
+
+const sansFont = IBM_Plex_Sans({
+  subsets: ["latin", "latin-ext"],
+  weight: ["400", "500", "700"],
+  variable: "--font-plex-sans",
+  display: "swap"
+});
+
+const monoFont = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-plex-mono",
+  display: "swap"
+});
+
 export const generateStaticParams = () =>
   routing.locales.map((locale) => ({ locale }));
 
@@ -22,8 +44,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" }
+    { media: "(prefers-color-scheme: light)", color: "#fafaf9" },
+    { media: "(prefers-color-scheme: dark)", color: "#1c1917" }
   ]
 };
 
@@ -64,7 +86,11 @@ export default async function RootLayout({
   const t = await getTranslations({ locale, namespace: "common" });
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html
+      lang={locale}
+      suppressHydrationWarning
+      className={`${displayFont.variable} ${sansFont.variable} ${monoFont.variable}`}
+    >
       <body>
         <a
           href="#main-content"

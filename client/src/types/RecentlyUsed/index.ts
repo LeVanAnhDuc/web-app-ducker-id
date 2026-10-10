@@ -1,15 +1,47 @@
 // types
-import type { LucideIcon } from "lucide-react";
+import type { UserApp, UserCategory } from "@/types/Apps";
+// others
+import type RECENT_GROUP from "@/constants/recentGroup";
 
-export type RecentGroupKey = "today" | "yesterday" | "thisWeek" | "earlier";
+export type RecentGroupKey = (typeof RECENT_GROUP)[keyof typeof RECENT_GROUP];
 
-export interface RecentApp {
-  id: string;
-  name: string;
-  category: string;
-  group: RecentGroupKey;
-  time: string;
-  icon: LucideIcon;
-  iconColor: string;
-  iconBg: string;
+export interface RecentApp extends UserApp {
+  lastUsedAt: string;
+  useCount: number;
+}
+
+export type RecentAppsResponse = Paginated<RecentApp>;
+
+export interface TopApp {
+  appId: string;
+  displayName: string;
+  iconUrl: string | null;
+  homeUrl: string;
+  /** The app's primary category. */
+  category: UserCategory | null;
+  useCount: number;
+  lastUsedAt: string;
+}
+
+export interface AppCategoryCount {
+  category: UserCategory | null;
+  count: number;
+}
+
+export interface RecentAppsStats {
+  totalApps: number;
+  activeLast7Days: number;
+  activeLast30Days: number;
+  topApps: TopApp[];
+  byCategory: AppCategoryCount[];
+}
+
+export interface RecentAppsStatsQueryParams {
+  limit?: number;
+}
+
+export interface RecentAppsQueryParams {
+  page?: number;
+  limit?: number;
+  search?: string;
 }

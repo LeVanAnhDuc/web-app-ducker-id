@@ -1,5 +1,5 @@
 // types
-import type { OtpSignupRepository } from "../repositories";
+import type { OtpSignupRepository } from "../repositories/otp-signup.repository";
 // common
 import { BadRequestError } from "@/common/exceptions";
 // others

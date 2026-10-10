@@ -1,6 +1,6 @@
 // types
-import type { AuthenticationService } from "@/modules/authentication/authentication.service";
-import type { UserService } from "@/modules/user/user.service";
+import type { AuthenticationService } from "@/modules/authentication/services";
+import type { UserService } from "@/modules/user/services";
 // guards
 import {
   RefreshTokenPresentGuard,
@@ -10,7 +10,7 @@ import {
   UserExistsGuard
 } from "./guards";
 // others
-import { TokenService } from "./token.service";
+import { TokenService } from "./services";
 import { TokenController } from "./token.controller";
 import { createTokenRoutes } from "./token.routes";
 

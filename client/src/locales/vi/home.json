@@ -1,48 +1,94 @@
 {
   "title": "Trang chủ",
-  "description": "Bảng điều khiển ứng dụng cá nhân của bạn",
+  "description": "Bảng điều khiển ứng dụng của bạn",
   "greeting": {
     "morning": "Chào buổi sáng",
     "afternoon": "Chào buổi chiều",
     "evening": "Chào buổi tối",
-    "subtitle": "Bạn có {count} ứng dụng để khám phá hôm nay.",
-    "date": "Thứ Tư, 6 tháng 5, 2026"
+    "subtitle": "Bạn đang có {count} ứng dụng trong bộ sưu tập.",
+    "subtitleEmpty": "Mở một ứng dụng bất kỳ, nó sẽ xuất hiện ở đây."
   },
   "stats": {
-    "totalApps": "Tổng ứng dụng đã dùng",
-    "appsThisMonth": "Ứng dụng tháng này",
-    "timeSaved": "Thời gian tiết kiệm",
-    "currentStreak": "Chuỗi hiện tại",
-    "allTime": "Mọi thời điểm",
-    "fromLastMonth": "+3 so tháng trước",
-    "hoursThisMonth": "+5 giờ tháng này",
-    "personalBest": "Kỷ lục cá nhân!"
+    "totalApps": "Ứng dụng đã dùng",
+    "activeApps": "Hoạt động 30 ngày",
+    "successfulLogins": "Đăng nhập thành công",
+    "failedLogins": "Đăng nhập thất bại",
+    "allTime": "Từ trước tới nay",
+    "stillOpened": "Ứng dụng bạn còn mở",
+    "inRange": "{days} ngày qua",
+    "withAnomalies": "{days} ngày qua · {count} bất thường",
+    "viewDetails": "Xem chi tiết"
   },
-  "weeklyActivity": {
-    "title": "Hoạt động hàng tuần",
-    "subtitle": "Số ứng dụng mở mỗi ngày trong tuần",
-    "legend": "30 lần mở tuần này"
+  "activity": {
+    "title": "Hoạt động đăng nhập",
+    "subtitle": "{days} ngày qua · {timezone}",
+    "successful": "Thành công",
+    "failed": "Thất bại",
+    "empty": "Chưa ghi nhận lần đăng nhập nào trong khoảng này.",
+    "sparse": "Chỉ có {count} lần đăng nhập trong khoảng này. Phiên đăng nhập được gia hạn tự động nên không tạo thêm bản ghi.",
+    "dayHint": "Chọn một ngày để xem các lượt đăng nhập của ngày đó.",
+    "error": "Không tải được hoạt động đăng nhập.",
+    "seeHistory": "Xem lịch sử",
+    "tableCaption": "Số lượt đăng nhập theo ngày",
+    "dayColumn": "Ngày",
+    "chartLabel": "Hoạt động đăng nhập {days} ngày qua: tổng {total} lượt, {successful} thành công, {failed} thất bại.",
+    "dayLabel": "{date}: {successful} thành công, {failed} thất bại",
+    "dayEmptyLabel": "{date}: không có lượt đăng nhập nào",
+    "announce": {
+      "loading": "Đang tải hoạt động đăng nhập…",
+      "loaded": "Hoạt động đăng nhập {days} ngày qua: {total} lượt."
+    }
   },
-  "achievement": {
-    "title": "Chuỗi 14 ngày — Bạn đang bốc lửa!",
-    "subtitle": "Bạn đã mở ít nhất một ứng dụng mỗi ngày trong 2 tuần. Tiếp tục nào!",
-    "cta": "Xem thành tích"
+  "range": {
+    "label": "Khoảng thời gian",
+    "7d": "7 ngày",
+    "30d": "30 ngày",
+    "90d": "90 ngày",
+    "retention": "Lịch sử đăng nhập được giữ trong 90 ngày."
+  },
+  "methods": {
+    "title": "Phương thức đăng nhập",
+    "subtitle": "{days} ngày qua",
+    "empty": "Chưa có dữ liệu để phân tích.",
+    "tableCaption": "Số lượt đăng nhập theo phương thức",
+    "methodColumn": "Phương thức",
+    "countColumn": "Lượt đăng nhập",
+    "chartLabel": "Số lượt đăng nhập theo phương thức trong {days} ngày qua."
+  },
+  "devices": {
+    "title": "Thiết bị",
+    "subtitle": "{days} ngày qua",
+    "empty": "Chưa có dữ liệu để phân tích.",
+    "tableCaption": "Số lượt đăng nhập theo thiết bị",
+    "deviceColumn": "Thiết bị"
+  },
+  "topApps": {
+    "title": "Ứng dụng dùng nhiều nhất",
+    "subtitle": "Tổng từ trước tới nay — không theo khoảng thời gian ở trên",
+    "empty": "Mở một ứng dụng, nó sẽ được xếp hạng ở đây.",
+    "seeAll": "Xem tất cả",
+    "opens": "{count} lượt mở",
+    "tableCaption": "Ứng dụng theo số lượt mở",
+    "opensColumn": "Lượt mở",
+    "appColumn": "Ứng dụng"
   },
   "quickAccess": {
-    "title": "Truy cập nhanh",
-    "subtitle": "Quay lại ngay",
-    "empty": "Chưa có ứng dụng nào.",
-    "error": "Không thể tải ứng dụng."
+    "title": "Dùng gần đây",
+    "subtitle": "Quay lại nơi bạn vừa rời đi",
+    "empty": "Bạn chưa mở ứng dụng nào — đây là những gì đang có.",
+    "seeAll": "Xem tất cả",
+    "error": "Không tải được ứng dụng dùng gần đây."
   },
-  "recommended": {
-    "title": "Đề xuất cho bạn",
+  "explore": {
+    "title": "Khám phá",
+    "subtitle": "Các ứng dụng khác trong hệ sinh thái",
     "seeAll": "Xem tất cả ứng dụng",
-    "empty": "Chưa có ứng dụng để đề xuất.",
-    "error": "Không thể tải ứng dụng."
+    "empty": "Chưa có ứng dụng nào để hiển thị.",
+    "error": "Không tải được danh sách ứng dụng."
   },
   "exploreCTA": {
-    "title": "Khám phá thêm ứng dụng trong kho",
-    "subtitle": "Hơn 47 ứng dụng có sẵn — tìm ứng dụng yêu thích tiếp theo của bạn.",
-    "cta": "Duyệt tất cả ứng dụng"
+    "title": "Khám phá thêm ứng dụng",
+    "subtitle": "Hiện có {count} ứng dụng — tìm cái tiếp theo bạn cần.",
+    "cta": "Xem tất cả ứng dụng"
   }
 }

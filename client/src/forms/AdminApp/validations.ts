@@ -9,13 +9,16 @@ const {
   DESCRIPTION,
   ICON_URL,
   HOME_URL,
-  CATEGORY_ID,
+  CATEGORY_IDS,
   STATUS,
   REQUIRED_ROLES,
-  REDIRECT_URIS
+  REDIRECT_URIS,
+  TOKEN_ENDPOINT_AUTH_METHOD
 } = CONSTANTS.FIELD_NAMES.ADMIN_APP_FIELD_NAMES;
 const { USER, ADMIN } = CONSTANTS.AUTHENTICATION_ROLES;
 const { ACTIVE, INACTIVE } = CONSTANTS.APP_STATUS;
+const { CLIENT_SECRET_BASIC, NONE } = CONSTANTS.TOKEN_AUTH_METHOD;
+const { MAX_PER_APP } = CONSTANTS.CATEGORY_LIMITS;
 
 const NAME_MIN = 2;
 const NAME_MAX = 64;
@@ -53,7 +56,10 @@ export const adminAppValidation = z.object({
   [DESCRIPTION]: z.string().max(DESCRIPTION_MAX, { message: "maxLength" }),
   [ICON_URL]: optionalUrl,
   [HOME_URL]: requiredUrl,
-  [CATEGORY_ID]: z.string().min(1, { message: "required" }),
+  [CATEGORY_IDS]: z
+    .array(z.string())
+    .min(1, { message: "required" })
+    .max(MAX_PER_APP, { message: "max" }),
   [STATUS]: z.enum([ACTIVE, INACTIVE]),
   [REQUIRED_ROLES]: z
     .array(z.enum([USER, ADMIN]))
@@ -61,5 +67,6 @@ export const adminAppValidation = z.object({
   [REDIRECT_URIS]: z
     .array(requiredUrl)
     .min(1, { message: "required" })
-    .max(REDIRECT_URIS_MAX, { message: "maxItems" })
+    .max(REDIRECT_URIS_MAX, { message: "maxItems" }),
+  [TOKEN_ENDPOINT_AUTH_METHOD]: z.enum([CLIENT_SECRET_BASIC, NONE])
 });

@@ -211,6 +211,19 @@ export const determineClientType = (clientTypeHeader?: string): ClientType => {
 // buildLoginHistoryFilter
 // ──────────────────────────────────────────────
 
+const DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * `toDate` is an inclusive upper bound, but `new Date("2026-10-04")` is that
+ * day's midnight — a filter for a single day would match only rows written in
+ * its first millisecond and answer "no history". A date with no time means the
+ * whole day; a full timestamp is taken as given.
+ */
+const endOfDayIfDateOnly = (value: string): Date =>
+  DATE_ONLY_PATTERN.test(value)
+    ? new Date(`${value}T23:59:59.999Z`)
+    : new Date(value);
+
 export const buildLoginHistoryFilter = (
   query: LoginHistoryAdminQuery,
   userId?: string
@@ -229,8 +242,11 @@ export const buildLoginHistoryFilter = (
   if (query.os) filter.os = query.os;
   if (query.browser) filter.browser = query.browser;
   if (query.ip) filter.ip = query.ip;
+  if (query.source) filter.source = query.source;
+  if (query.webAppId) filter.webAppId = query.webAppId;
+  if (query.interactive !== undefined) filter.interactive = query.interactive;
   if (query.fromDate) filter.fromDate = new Date(query.fromDate);
-  if (query.toDate) filter.toDate = new Date(query.toDate);
+  if (query.toDate) filter.toDate = endOfDayIfDateOnly(query.toDate);
 
   return filter;
 };

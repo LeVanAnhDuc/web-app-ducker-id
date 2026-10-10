@@ -3,12 +3,6 @@
     "name": "App Store",
     "description": "App Store Web Application"
   },
-  "categories": {
-    "content": "Content",
-    "tools": "Internal Tools",
-    "identity": "Identity",
-    "productivity": "Productivity"
-  },
   "userMenu": {
     "trigger": "Open user menu",
     "theme": "Theme",
@@ -142,5 +136,14 @@
     "sortBy": "Sort by {column}",
     "sortedAscending": "Sorted ascending.",
     "sortedDescending": "Sorted descending."
+  },
+  "redirecting": {
+    "toApp": "Taking you back to {app}…",
+    "generic": "Redirecting…"
+  },
+  "categoryChips": {
+    "title": "Categories",
+    "more": "Show {count} more categories",
+    "all": "Categories: {names}"
   }
 }

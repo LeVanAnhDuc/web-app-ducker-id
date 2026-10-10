@@ -7,11 +7,13 @@ import type { Locale } from "next-intl";
 import type { DateTimeVariant, DateTimeValue } from "@/types/DateTime";
 import type {
   LoginHistoryStatus,
-  LoginHistoryMethod
+  LoginHistoryMethod,
+  LoginHistoryDeviceType
 } from "@/types/LoginHistory";
 import type { ContactStatus } from "@/types/ContactAdmin";
 import type { AdminUser } from "@/types/AdminUsers";
 import type { WebApp } from "@/types/AdminApps";
+import type { CategoryName } from "@/types/Apps";
 import type {
   EntitlementChange,
   EntitlementMatrixFormValues
@@ -21,7 +23,6 @@ import type { UpdatePersonalInfoFormValues } from "@/types/UpdatePersonalInfo";
 import type { LeafKeyOf, Messages } from "@/types/libs";
 import type { ColumnAlign, ColumnBreakpoint } from "@/types/CustomTable";
 // dataSources
-import { CATEGORY_LABEL_KEY } from "@/dataSources/Categories";
 // others
 import CONSTANTS from "@/constants";
 import { COLUMN_BREAKPOINT } from "@/constants/list";
@@ -155,6 +156,45 @@ export function popCallbackUrl(): string | null {
   return url;
 }
 
+export function saveAuthRequestId(id: string) {
+  sessionStorage.setItem(CONSTANTS.STORAGE_KEYS.OAUTH_AUTH_REQUEST, id);
+}
+
+export function peekAuthRequestId(): string | null {
+  return sessionStorage.getItem(CONSTANTS.STORAGE_KEYS.OAUTH_AUTH_REQUEST);
+}
+
+export function popAuthRequestId(): string | null {
+  const id = peekAuthRequestId();
+  if (id) sessionStorage.removeItem(CONSTANTS.STORAGE_KEYS.OAUTH_AUTH_REQUEST);
+  return id;
+}
+
+export function saveAuthRequestAppName(name: string) {
+  sessionStorage.setItem(CONSTANTS.STORAGE_KEYS.OAUTH_APP_NAME, name);
+}
+
+export function readAuthRequestAppName(): string | null {
+  return sessionStorage.getItem(CONSTANTS.STORAGE_KEYS.OAUTH_APP_NAME);
+}
+
+/**
+ * Quay lại /oauth/authorize sau khi đăng nhập xong.
+ *
+ * Dùng `window.location` chứ KHÔNG dùng router của Next: đây là endpoint của
+ * Express (tới được qua rewrite), và nó cần một navigation thật của trình duyệt
+ * để cookie `sid` vừa được set đi kèm request.
+ *
+ * `replace` chứ không phải `assign`: trang login không nên nằm lại trong
+ * history, nếu không thì bấm Back từ app vệ tinh sẽ văng ngược về màn hình
+ * đăng nhập của một phiên đã xong.
+ */
+export function resumeAuthorize(requestId: string) {
+  const url = new URL(CONSTANTS.ROUTES.OAUTH_AUTHORIZE, window.location.origin);
+  url.searchParams.set("auth_req", requestId);
+  window.location.replace(url.toString());
+}
+
 export const parseLocalDate = (iso: string): Date => {
   const [year, month, day] = iso.split("T")[0].split("-").map(Number);
   return new Date(year, month - 1, day);
@@ -171,6 +211,8 @@ const LOGIN_HISTORY_STATUSES: LoginHistoryStatus[] =
   CONSTANTS.LOGIN_HISTORY.STATUS_VALUES;
 const LOGIN_HISTORY_METHODS: LoginHistoryMethod[] =
   CONSTANTS.LOGIN_HISTORY.METHOD_VALUES;
+const LOGIN_HISTORY_DEVICE_TYPES: LoginHistoryDeviceType[] =
+  CONSTANTS.LOGIN_HISTORY.DEVICE_TYPE_VALUES;
 const CONTACT_STATUSES: ContactStatus[] = Object.values(
   CONSTANTS.CONTACT_STATUS
 );
@@ -184,6 +226,11 @@ export const isLoginHistoryMethod = (
   value: string | null
 ): value is LoginHistoryMethod =>
   value !== null && (LOGIN_HISTORY_METHODS as string[]).includes(value);
+
+export const isLoginHistoryDeviceType = (
+  value: string | null
+): value is LoginHistoryDeviceType =>
+  value !== null && (LOGIN_HISTORY_DEVICE_TYPES as string[]).includes(value);
 
 const { LOCATION_SENTINEL } = CONSTANTS.LOGIN_HISTORY;
 const LOGIN_LOCATION_SENTINELS: string[] = Object.values(LOCATION_SENTINEL);
@@ -224,17 +271,47 @@ export const buildPaginationPageNumbers = (
   return result;
 };
 
-type CategoryKey = keyof Messages["common"]["categories"];
-type CategoryTranslator = (key: CategoryKey) => string;
+export const pickLocalized = (name: CategoryName, locale: string): string =>
+  locale === "vi" ? name.vi : name.en;
 
-export const resolveCategoryLabel = (
-  t: CategoryTranslator,
-  slug: string,
-  fallback: string
-): string => {
-  const key = CATEGORY_LABEL_KEY[slug] as CategoryKey | undefined;
-  return key ? t(key) : fallback;
-};
+const ZERO_WIDTH = /[\u200B-\u200D\u2060\uFEFF]/g;
+const COMBINING_MARKS = /[\u0300-\u036f]/g;
+
+/** Same folding the server applies before checking uniqueness. */
+export const normalizeCategoryName = (value: string): string =>
+  value.replace(ZERO_WIDTH, "").replace(/\s+/g, " ").trim();
+
+/**
+ * Preview of the server's slug for a name.en — the server stays the source of
+ * truth (it may add a -2 suffix on collision). `đ` has no NFD decomposition.
+ */
+export const slugifyCategoryName = (value: string): string =>
+  normalizeCategoryName(value)
+    .replace(/[đĐ]/g, "d")
+    .normalize("NFKD")
+    .replace(COMBINING_MARKS, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 90)
+    .replace(/^-+|-+$/g, "");
+
+/** Form values → the `{ en, vi }` payload, folded the way the server stores it. */
+export const toCategoryName = (values: {
+  nameEn: string;
+  nameVi: string;
+}): CategoryName => ({
+  en: normalizeCategoryName(values.nameEn),
+  vi: normalizeCategoryName(values.nameVi)
+});
+
+/** Case- and accent-insensitive key for matching names ("nang suat" ↔ "Năng suất"). */
+export const foldForSearch = (value: string): string =>
+  normalizeCategoryName(value)
+    .replace(/[đĐ]/g, "d")
+    .normalize("NFKD")
+    .replace(COMBINING_MARKS, "")
+    .toLowerCase();
 
 export const mapProfileToFormValues = (
   profile: MyProfileResponse

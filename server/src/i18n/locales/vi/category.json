@@ -1,0 +1,50 @@
+{
+  "success": {
+    "list": "Lấy danh sách danh mục thành công.",
+    "create": "Tạo danh mục thành công.",
+    "update": "Cập nhật danh mục thành công.",
+    "move": "Đã cập nhật thứ tự danh mục.",
+    "deleteImpact": "Lấy ảnh hưởng của việc xoá thành công."
+  },
+  "errors": {
+    "notFound": "Không tìm thấy danh mục.",
+    "nameTaken": "Đã có danh mục với tên tiếng Anh này.",
+    "nameNoSlug": "Tên tiếng Anh cần có ít nhất một chữ cái hoặc chữ số.",
+    "reassignRequired": "Hãy chọn danh mục mới cho mọi ứng dụng chỉ thuộc danh mục này.",
+    "reassignInvalid": "Danh mục đích đã chọn không còn tồn tại hoặc chính là danh mục đang xoá.",
+    "impactChanged": "Danh sách ứng dụng của danh mục này đã thay đổi. Hãy xem lại và thử lại.",
+    "rateLimitExceeded": "Quá nhiều yêu cầu. Vui lòng thử lại sau"
+  },
+  "validation": {
+    "nameEn": {
+      "required": "Tên tiếng Anh là bắt buộc.",
+      "maxLength": "Tên tiếng Anh không được vượt quá 100 ký tự.",
+      "noSlug": "Tên tiếng Anh cần có ít nhất một chữ cái hoặc chữ số."
+    },
+    "nameVi": {
+      "required": "Tên tiếng Việt là bắt buộc.",
+      "maxLength": "Tên tiếng Việt không được vượt quá 100 ký tự.",
+      "noSlug": "Tên tiếng Việt cần có ít nhất một chữ cái hoặc chữ số."
+    },
+    "body": {
+      "empty": "Hãy cung cấp ít nhất một tên để cập nhật."
+    },
+    "direction": {
+      "invalid": "Hướng di chuyển phải là up hoặc down."
+    },
+    "id": {
+      "invalid": "Mã danh mục không hợp lệ."
+    },
+    "appId": {
+      "invalid": "Mã ứng dụng không hợp lệ."
+    },
+    "targetId": {
+      "invalid": "Mã danh mục đích không hợp lệ."
+    },
+    "reassignments": {
+      "invalid": "Danh sách chuyển phải là một mảng.",
+      "duplicateApp": "Mỗi ứng dụng chỉ được chuyển một lần.",
+      "tooMany": "Quá nhiều ứng dụng cần chuyển."
+    }
+  }
+}

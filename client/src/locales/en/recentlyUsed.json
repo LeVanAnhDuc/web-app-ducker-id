@@ -5,6 +5,12 @@
     "placeholder": "Search recent apps..."
   },
   "clear": "Clear History",
+  "clearDialog": {
+    "title": "Clear your recent history?",
+    "description": "Every app will be removed from this list. Apps you open later will show up again.",
+    "cancel": "Cancel",
+    "confirm": "Clear history"
+  },
   "groups": {
     "today": "Today",
     "yesterday": "Yesterday",
@@ -13,10 +19,30 @@
   },
   "groupCount": "{count, plural, one {# app} other {# apps}}",
   "card": {
-    "open": "Open"
+    "open": "Open",
+    "remove": "Remove from history",
+    "lastOpened": "Last opened",
+    "addFavorite": "Add to favorites",
+    "removeFavorite": "Remove from favorites",
+    "openedCount": "{count, plural, one {Opened once} other {Opened # times}}"
+  },
+  "empty": {
+    "title": "No recent apps yet",
+    "description": "Apps you open from Ducker ID will appear here.",
+    "browse": "Browse apps"
+  },
+  "error": "Could not load your recent apps.",
+  "loadMore": "Load more",
+  "allLoaded": "You've reached the end of your history.",
+  "toast": {
+    "removed": "{name} removed from history",
+    "undo": "Undo",
+    "cleared": "Recent history cleared",
+    "error": "Something went wrong. Please try again."
   },
   "announce": {
-    "searchChanged": "{count} recent apps match the search.",
+    "removed": "{name} removed from history.",
+    "restored": "{name} restored to history.",
     "cleared": "Recent history cleared."
   }
 }

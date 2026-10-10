@@ -1,12 +1,12 @@
 // types
-import type { AuthenticationService } from "@/modules/authentication/authentication.service";
-import type { UserService } from "@/modules/user/user.service";
+import type { AuthenticationService } from "@/modules/authentication/services";
+import type { UserService } from "@/modules/user/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { RateLimiterMiddleware } from "@/middlewares";
 // guards
 import { WrongCurrentPasswordGuard, SamePasswordGuard } from "./guards";
 // others
-import { ChangePasswordService } from "./change-password.service";
+import { ChangePasswordService } from "./services";
 import { ChangePasswordController } from "./change-password.controller";
 import { createChangePasswordRoutes } from "./change-password.routes";
 

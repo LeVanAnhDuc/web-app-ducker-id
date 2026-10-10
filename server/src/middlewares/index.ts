@@ -13,3 +13,4 @@ export * from "./pipes/validation.pipe";
 
 // filters
 export * from "./filters/error.filter";
+export * from "./filters/oauth-error.filter";

@@ -9,7 +9,15 @@ export const LOGIN_METHODS = {
   PASSWORD: "password",
   OTP: "otp",
   MAGIC_LINK: "magic-link",
-  FORGOT_PASSWORD: "forgot-password"
+  FORGOT_PASSWORD: "forgot-password",
+  // Not a credential check: the IdP handed an authorization code to a
+  // satellite app, either right after a login or silently from a live session.
+  SSO: "sso"
+} as const;
+
+export const LOGIN_SOURCES = {
+  IDP: "idp",
+  OAUTH: "oauth"
 } as const;
 
 export const LOGIN_STATUSES = {
@@ -29,7 +37,8 @@ export const LOGIN_FAIL_REASONS = {
   MAGIC_LINK_EXPIRED: "magic_link_expired",
   RATE_LIMITED: "rate_limited",
   PASSWORDLESS_ACCOUNT: "passwordless_account",
-  INVALID_RESET_TOKEN: "invalid_reset_token"
+  INVALID_RESET_TOKEN: "invalid_reset_token",
+  NOT_ENTITLED: "not_entitled"
 } as const;
 
 export const DEVICE_TYPES = {
@@ -86,8 +95,18 @@ export const LOGIN_HISTORY_CONFIG = {
 } as const;
 
 export const LOGIN_HISTORY_STATS = {
-  DEFAULT_RANGE_DAYS: 30
+  // Nothing longer than the TTL: a 180-day range would answer with a silently
+  // empty tail rather than an error.
+  RANGE_DAYS: [7, 30, 90],
+  DEFAULT_RANGE_DAYS: 7,
+  TOP_APPS_LIMIT: 5,
+  DEFAULT_TIMEZONE: "UTC"
 } as const;
+
+/** Query values for `range`, derived from the day counts above: `7d`, `30d`, … */
+export const LOGIN_HISTORY_STATS_RANGES = LOGIN_HISTORY_STATS.RANGE_DAYS.map(
+  (days) => `${days}d`
+);
 
 export const LOCALHOST_VALUES = ["localhost", "0.0.0.0"] as const;
 

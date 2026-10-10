@@ -1,6 +1,5 @@
 // types
 import type { Response } from "express";
-import type { ResponseMeta } from "@/types/common";
 // common
 import { STATUS_CODES } from "@/common/http";
 
@@ -16,18 +15,11 @@ abstract class SuccessResponse<T> {
   private readonly status: number;
   private readonly message: string;
   private readonly data: T;
-  private readonly meta?: ResponseMeta;
 
-  constructor({
-    data,
-    status,
-    message,
-    meta
-  }: Partial<SuccessResponsePattern<T>>) {
+  constructor({ data, status, message }: Partial<SuccessResponsePattern<T>>) {
     this.status = status;
     this.message = message;
     this.data = data;
-    this.meta = meta;
   }
 
   public send = (req: RequestLike, res: Response): void => {
@@ -37,7 +29,6 @@ abstract class SuccessResponse<T> {
       message: this.message,
       data: this.data
     };
-    if (this.meta) body.meta = this.meta;
     res.status(this.status).json(body);
   };
 }
@@ -46,10 +37,9 @@ export class OkSuccess<T> extends SuccessResponse<T> {
   constructor({
     message = "",
     status = STATUS_CODES.OK,
-    data = undefined,
-    meta
+    data = undefined
   }: Partial<SuccessResponsePattern<T>>) {
-    super({ message, status, data, meta });
+    super({ message, status, data });
   }
 }
 
@@ -57,10 +47,9 @@ export class CreatedSuccess<T> extends SuccessResponse<T> {
   constructor({
     message = "",
     status = STATUS_CODES.CREATED,
-    data = undefined,
-    meta
+    data = undefined
   }: Partial<SuccessResponsePattern<T>>) {
-    super({ message, status, data, meta });
+    super({ message, status, data });
   }
 }
 

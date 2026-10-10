@@ -3,6 +3,7 @@ import type { Schema, Document } from "mongoose";
 import type { Request } from "express";
 import type {
   LOGIN_METHODS,
+  LOGIN_SOURCES,
   LOGIN_STATUSES,
   LOGIN_FAIL_REASONS,
   DEVICE_TYPES,
@@ -14,6 +15,8 @@ import type {
 import type { SortOrder } from "@/common/sort";
 
 export type LoginMethod = (typeof LOGIN_METHODS)[keyof typeof LOGIN_METHODS];
+
+export type LoginSource = (typeof LOGIN_SOURCES)[keyof typeof LOGIN_SOURCES];
 
 export type LoginHistorySortByUser =
   (typeof LOGIN_HISTORY_SORT_BY_USER)[number];
@@ -37,6 +40,9 @@ export interface LoginHistoryQuery extends Partial<PaginationParams> {
   browser?: string;
   fromDate?: string;
   toDate?: string;
+  source?: LoginSource;
+  webAppId?: string;
+  interactive?: boolean;
   sortBy?: LoginHistorySortByUser;
   sortOrder?: SortOrder;
 }
@@ -48,16 +54,6 @@ export interface LoginHistoryAdminQuery extends Omit<
   userId?: string;
   ip?: string;
   sortBy?: LoginHistorySortByAdmin;
-}
-
-export interface PaginatedResult<T> {
-  items: T[];
-  meta: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  };
 }
 
 export interface MyHistoryRequest extends Omit<Request, "query"> {
@@ -99,7 +95,18 @@ export interface LoginHistoryDocument extends Document {
   timezoneOffset: string | null;
   isAnomaly: boolean;
   anomalyReasons: string[];
+  // Rows written before login-history-app-source lack the next four fields.
+  source?: LoginSource;
+  webAppId?: Schema.Types.ObjectId | PopulatedLoginWebApp | null;
+  clientName?: string | null;
+  interactive?: boolean;
   createdAt: Date;
+}
+
+export interface PopulatedLoginWebApp {
+  _id: Schema.Types.ObjectId;
+  displayName: string;
+  iconUrl?: string | null;
 }
 
 export interface CreateLoginHistoryData {
@@ -119,6 +126,16 @@ export interface CreateLoginHistoryData {
   timezoneOffset: string | null;
   isAnomaly: boolean;
   anomalyReasons: string[];
+  source: LoginSource;
+  webAppId: Schema.Types.ObjectId | string | null;
+  clientName: string | null;
+  interactive: boolean;
+}
+
+export interface LoginEventApp {
+  webAppId: Schema.Types.ObjectId | string;
+  clientName: string;
+  interactive: boolean;
 }
 
 export interface LoginEventPayload {
@@ -129,10 +146,25 @@ export interface LoginEventPayload {
   loginMethod: LoginMethod;
   req: Request;
   timezoneOffset?: string;
+  // Present only for an OAuth sign-in into a satellite app.
+  app?: LoginEventApp;
 }
 
 export interface LoginStatsAggregationBucket<TKey extends string> {
   _id: TKey;
+  count: number;
+}
+
+export interface LoginStatsDayBucket {
+  /** Local calendar day, `YYYY-MM-DD`, already cut in the caller's timezone. */
+  _id: string;
+  total: number;
+  successful: number;
+  failed: number;
+}
+
+export interface LoginStatsAppBucket {
+  _id: { webAppId: Schema.Types.ObjectId; clientName: string | null };
   count: number;
 }
 
@@ -141,6 +173,9 @@ export interface LoginStatsAggregationResult {
   byStatus: LoginStatsAggregationBucket<LoginStatus>[];
   byMethod: LoginStatsAggregationBucket<LoginMethod>[];
   byDevice: LoginStatsAggregationBucket<DeviceType>[];
+  byDay: LoginStatsDayBucket[];
+  byApp: LoginStatsAppBucket[];
+  anomalies: { count: number }[];
 }
 
 export interface LoginHistoryFilter {
@@ -154,6 +189,9 @@ export interface LoginHistoryFilter {
   os?: string;
   browser?: string;
   ip?: string;
+  source?: string;
+  webAppId?: string;
+  interactive?: boolean;
   fromDate?: Date;
   toDate?: Date;
 }
@@ -162,4 +200,16 @@ export interface LoginStatsRange {
   userId: string;
   from: Date;
   to: Date;
+  /** IANA zone the day buckets are cut in; never built from raw user input. */
+  timezone: string;
+  topAppsLimit: number;
+}
+
+export interface LoginStatsQuery {
+  range?: string;
+  tz?: string;
+}
+
+export interface MyStatsRequest extends Omit<Request, "query"> {
+  query: LoginStatsQuery;
 }

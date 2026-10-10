@@ -11,9 +11,6 @@ export interface AuthenticationDocument {
   verifiedEmail: boolean;
   roles: AuthenticationRole;
   isActive: boolean;
-  tempPasswordHash: string | null;
-  tempPasswordExpAt: Date | null;
-  tempPasswordUsed: boolean;
   mustChangePassword: boolean;
   passwordChangedAt: Date | null;
   tokenVersion: number;

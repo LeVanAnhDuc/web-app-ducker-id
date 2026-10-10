@@ -1,15 +1,12 @@
 {
   "success": {
     "listApps": "Lấy danh sách ứng dụng thành công.",
-    "listCategories": "Lấy danh sách danh mục thành công.",
     "createApp": "Đăng ký ứng dụng thành công.",
     "updateApp": "Cập nhật ứng dụng thành công."
   },
   "errors": {
     "nameExists": "Đã tồn tại ứng dụng với tên này.",
-    "categoryNotFound": "Danh mục đã chọn không tồn tại.",
-    "notFound": "Không tìm thấy ứng dụng.",
-    "rateLimitExceeded": "Quá nhiều yêu cầu. Vui lòng thử lại sau"
+    "notFound": "Không tìm thấy ứng dụng."
   },
   "validation": {
     "name": {
@@ -23,7 +20,9 @@
       "minLength": "Tên hiển thị tối thiểu 2 ký tự.",
       "maxLength": "Tên hiển thị tối đa 80 ký tự."
     },
-    "description": { "maxLength": "Mô tả tối đa 500 ký tự." },
+    "description": {
+      "maxLength": "Mô tả tối đa 500 ký tự."
+    },
     "iconUrl": {
       "maxLength": "URL icon quá dài.",
       "invalid": "URL icon phải bắt đầu bằng http:// hoặc https://."
@@ -33,11 +32,16 @@
       "maxLength": "Home URL quá dài.",
       "invalid": "Home URL phải bắt đầu bằng http:// hoặc https://."
     },
-    "categoryId": {
-      "required": "Vui lòng chọn danh mục.",
-      "invalid": "Danh mục không hợp lệ."
+    "categoryIds": {
+      "required": "Hãy chọn ít nhất một danh mục.",
+      "invalid": "Mã danh mục không hợp lệ.",
+      "max": "Chỉ chọn tối đa 5 danh mục.",
+      "duplicate": "Mỗi danh mục chỉ được chọn một lần.",
+      "notFound": "Một trong các danh mục đã chọn không còn tồn tại."
     },
-    "status": { "invalid": "Trạng thái phải là active hoặc inactive." },
+    "status": {
+      "invalid": "Trạng thái phải là active hoặc inactive."
+    },
     "requiredRoles": {
       "required": "Chọn ít nhất một vai trò.",
       "invalid": "Giá trị vai trò không hợp lệ."
@@ -45,7 +49,10 @@
     "redirectUris": {
       "required": "Thêm ít nhất một redirect URI.",
       "maxItems": "Quá nhiều redirect URI (tối đa 20).",
-      "invalid": "Mỗi redirect URI phải bắt đầu bằng http:// hoặc https://."
+      "invalid": "Mỗi redirect URI phải dùng https (http chỉ chấp nhận với localhost), không chứa fragment hay ký tự đại diện."
+    },
+    "tokenEndpointAuthMethod": {
+      "invalid": "Phương thức xác thực token endpoint phải là client_secret_basic hoặc none."
     },
     "id": {
       "required": "Thiếu id ứng dụng.",

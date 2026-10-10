@@ -3,6 +3,7 @@ import { ArrowUpRight } from "lucide-react";
 // types
 import type { UserApp } from "@/types/Apps";
 // components
+import CategoryChips from "@/components/CategoryChips";
 import CustomImage from "@/components/CustomImage";
 // others
 import { cn } from "@/libs/utils";
@@ -55,11 +56,11 @@ const ResultRow = ({
           <span className="text-foreground truncate text-sm font-semibold">
             {app.displayName}
           </span>
-          {app.category && (
-            <span className="text-muted-foreground truncate text-xs">
-              {app.category}
-            </span>
-          )}
+          <CategoryChips
+            categories={app.categories}
+            interactive={false}
+            className="mt-0.5 max-w-56"
+          />
         </div>
       </div>
       <ArrowUpRight

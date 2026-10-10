@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Home — Activity Insights</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
+<style>
+  /* Tokens from docs/design-system/ducker-id/MASTER.md */
+  :root {
+    --primary: #143a5a; --primary-hover: #2a5f8f; --on-primary: #fff;
+    --accent: #b07d2b; --on-accent: #1c1917;
+    --bg: #fafaf9; --fg: #1c1917; --card: #fff; --muted: #f5f5f4;
+    --muted-fg: #57534e; --border: #e7e5e4;
+    --success: #15803d; --destructive: #b42318; --info: #2a5f8f; --stone-400: #a8a29e;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.05); --shadow-md: 0 4px 6px rgba(0,0,0,.1);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.5 "IBM Plex Sans", sans-serif; padding: 24px 16px 64px; }
+  main { max-width: 1180px; margin: 0 auto; }
+  h1 { font: 700 25px "Space Grotesk", sans-serif; margin: 0 0 4px; }
+  h2 { font: 600 20px "Space Grotesk", sans-serif; margin: 40px 0 8px; padding-top: 16px; border-top: 1px solid var(--border); }
+  h3 { font: 600 16px "Space Grotesk", sans-serif; margin: 0 0 2px; }
+  .lead { color: var(--muted-fg); margin: 0 0 16px; }
+  .note { border-left: 2px solid var(--accent); padding: 6px 12px; color: var(--muted-fg); margin: 12px 0 16px; }
+  .legend-key { display: flex; flex-wrap: wrap; gap: 12px; margin: 12px 0 24px; font-size: 12px; color: var(--muted-fg); }
+  .tag { font-size: 10px; font-weight: 600; letter-spacing: .04em; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
+  .tag.new { background: rgba(176,125,43,.18); color: #7a561d; }
+  .tag.src { background: rgba(20,58,90,.1); color: var(--primary); }
+  .tag.cut { background: rgba(180,35,24,.1); color: var(--destructive); }
+  .marked { outline: 2px dashed var(--accent); outline-offset: 3px; border-radius: 12px; }
+  .anno { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--muted-fg); background: var(--muted); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; }
+
+  /* ---- app shell ---- */
+  .shell { background: var(--bg); border: 1px solid var(--border); border-radius: 16px; padding: 24px; }
+  .shell.narrow { max-width: 375px; padding: 16px; }
+  .stack { display: flex; flex-direction: column; gap: 24px; }
+
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; box-shadow: var(--shadow-sm); }
+  .card.tight { padding: 16px; }
+  .link-card { display: block; text-decoration: none; color: inherit; cursor: pointer; transition: box-shadow 150ms ease, transform 150ms ease; }
+  .link-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+
+  .hero { display: flex; align-items: center; justify-content: space-between; gap: 24px; border-radius: 16px; }
+  .hero h3 { font: 700 31px "Space Grotesk", sans-serif; margin: 0 0 6px; }
+  .hero .date { color: var(--muted-fg); font-weight: 500; font-size: 13px; margin: 0 0 8px; }
+  .hero p { margin: 0; color: #44403c; }
+  .hero-mark { width: 128px; height: 128px; border-radius: 24px; background: var(--muted); display: flex; align-items: center; justify-content: center; flex: none; color: var(--fg); }
+
+  .grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .statcard { position: relative; }
+  .statcard .ico { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+  .statcard .val { font: 700 25px "Space Grotesk", sans-serif; line-height: 1.1; }
+  .statcard .lbl { color: var(--muted-fg); font-size: 13px; margin-top: 2px; }
+  .statcard .sub { font-size: 11px; color: var(--muted-fg); margin-top: 8px; }
+  .statcard .go { position: absolute; top: 20px; right: 20px; color: var(--stone-400); }
+  .ico.b-primary { background: rgba(20,58,90,.1); color: var(--primary); }
+  .ico.b-info { background: rgba(42,95,143,.12); color: var(--info); }
+  .ico.b-success { background: rgba(21,128,61,.12); color: var(--success); }
+  .ico.b-danger { background: rgba(180,35,24,.1); color: var(--destructive); }
+
+  .sec-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+  .sec-head p { margin: 0; color: var(--muted-fg); font-size: 13px; }
+  .segmented { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--card); flex: none; }
+  .segmented span { height: 36px; display: inline-flex; align-items: center; padding: 0 14px; font-size: 13px; font-weight: 500; color: var(--muted-fg); border-right: 1px solid var(--border); cursor: pointer; }
+  .segmented span:last-child { border-right: 0; }
+  .segmented span.on { background: var(--primary); color: var(--on-primary); }
+
+  .legend { display: flex; gap: 16px; font-size: 12px; color: var(--muted-fg); margin-bottom: 16px; }
+  .swatch { width: 10px; height: 10px; border-radius: 3px; display: inline-block; margin-right: 6px; vertical-align: -1px; }
+
+  .bars { display: flex; align-items: flex-end; gap: 12px; height: 180px; padding-top: 8px; border-bottom: 1px solid var(--border); }
+  .bars li { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; gap: 2px; cursor: pointer; }
+  .bars .fail { background: var(--destructive); border-radius: 4px 4px 0 0; }
+  .bars .ok { background: var(--primary); }
+  .bars li .ok.top { border-radius: 4px 4px 0 0; }
+  .bars li:hover .ok { background: var(--primary-hover); }
+  .xaxis { display: flex; gap: 12px; margin-top: 8px; }
+  .xaxis span { flex: 1; text-align: center; font-size: 11px; color: var(--muted-fg); font-weight: 500; }
+  ul { list-style: none; margin: 0; padding: 0; }
+
+  .applist li { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .applist li:last-child { border-bottom: 0; }
+  .appicon { width: 32px; height: 32px; border-radius: 8px; background: rgba(20,58,90,.1); color: var(--primary); display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 12px; flex: none; }
+  .track { flex: 1; height: 8px; background: var(--muted); border-radius: 999px; overflow: hidden; }
+  .track i { display: block; height: 100%; background: var(--primary); border-radius: 999px; }
+  .count { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--muted-fg); width: 28px; text-align: right; flex: none; }
+  .appname { width: 150px; font-weight: 500; flex: none; }
+
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .tile { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 8px; cursor: pointer; }
+  .tile .nm { font-weight: 500; }
+  .tile .cat { font-size: 11px; color: var(--muted-fg); }
+  .tile .when { font-size: 11px; color: var(--muted-fg); font-family: "IBM Plex Mono", monospace; }
+
+  .btn { height: 36px; border-radius: 8px; padding: 0 14px; font: 500 13px "IBM Plex Sans"; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; border: 1px solid transparent; }
+  .btn.primary { background: var(--primary); color: var(--on-primary); }
+  .btn.ghost { background: transparent; color: var(--primary); }
+  .btn.cta { background: var(--accent); color: var(--on-accent); }
+
+  .empty { text-align: center; padding: 32px 16px; color: var(--muted-fg); }
+  .empty h3 { font: 600 20px "Space Grotesk", sans-serif; color: var(--fg); margin-bottom: 6px; }
+  .bars.ghosted li .ok { background: var(--muted); }
+
+  table.cmp { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  table.cmp th { text-align: left; font-weight: 500; font-size: 12px; color: var(--muted-fg); padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  table.cmp td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  table.cmp tr:last-child td { border-bottom: 0; }
+  code { font-family: "IBM Plex Mono", monospace; font-size: 12px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Home — Activity Insights</h1>
+  <p class="lead">Mock cho <code>home-activity-insights</code> · spec: <code>docs/specs/home-activity-insights/design.md</code></p>
+
+  <div class="legend-key">
+    <span><span class="tag new">Mới</span> khối chưa từng có</span>
+    <span><span class="tag src">Đổi nguồn</span> khối cũ, dữ liệu thay bằng API thật</span>
+    <span><span class="tag cut">Gỡ</span> khối bị xoá khỏi trang</span>
+    <span>Viền nét đứt brass = khối mới hoặc đổi nguồn</span>
+    <span><span class="anno">/đường-dẫn</span> = chú thích đích điều hướng, <b>không</b> render trong UI thật</span>
+  </div>
+
+  <div class="note">
+    Biểu đồ trong mock vẽ bằng CSS/SVG tĩnh. Bản thật dùng <code>shadcn/chart</code> (recharts) theo DR-9,
+    lấy màu từ <code>--chart-1..5</code> đã có sẵn trong <code>globals.css</code>.
+    Lý do chọn màu từng chuỗi nằm ở <code>charts-and-drilldown.html</code> §1.
+  </div>
+
+  <h2>1. Toàn cảnh — desktop (≥1024px)</h2>
+
+  <div class="shell"><div class="stack">
+
+    <!-- Greeting -->
+    <div class="card hero marked">
+      <div>
+        <h3>Chào buổi chiều, Anh Đức</h3>
+        <p class="date">Chủ Nhật, 04 tháng 10, 2026</p>
+        <p>Bạn đang có 12 ứng dụng trong bộ sưu tập.</p>
+      </div>
+      <div class="hero-mark">
+        <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+      </div>
+    </div>
+    <p class="lead" style="margin:-12px 0 0"><span class="tag src">Đổi nguồn</span> Tên lấy từ <code>getMyProfile()</code> thay chuỗi cứng <code>"Anh Duc"</code>; ngày format client-side theo locale thay <code>home.greeting.date</code>; số 12 = <code>recent-apps/stats.totalApps</code>.</p>
+
+    <!-- Stat row -->
+    <div class="grid4">
+      <a class="card statcard link-card marked" href="#">
+        <span class="go"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+        <div class="ico b-primary"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
+        <div class="val">12</div>
+        <div class="lbl">Ứng dụng đã dùng</div>
+        <div class="sub">Tổng từ trước tới nay</div>
+        <div class="sub"><span class="anno">/recently-used</span></div>
+      </a>
+      <a class="card statcard link-card marked" href="#">
+        <span class="go"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+        <div class="ico b-info"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <div class="val">7</div>
+        <div class="lbl">Hoạt động 30 ngày</div>
+        <div class="sub">Ứng dụng có mở trong 30 ngày</div>
+        <div class="sub"><span class="anno">/recently-used</span></div>
+      </a>
+      <a class="card statcard link-card marked" href="#">
+        <span class="go"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+        <div class="ico b-success"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg></div>
+        <div class="val">18</div>
+        <div class="lbl">Đăng nhập thành công</div>
+        <div class="sub">7 ngày qua</div>
+        <div class="sub"><span class="anno">/login-history?status=success</span></div>
+      </a>
+      <a class="card statcard link-card marked" href="#">
+        <span class="go"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+        <div class="ico b-danger"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg></div>
+        <div class="val">2</div>
+        <div class="lbl">Đăng nhập thất bại</div>
+        <div class="sub">7 ngày qua · 0 bất thường</div>
+        <div class="sub"><span class="anno">/login-history?status=failed</span></div>
+      </a>
+    </div>
+    <p class="lead" style="margin:-12px 0 0"><span class="tag src">Đổi nguồn</span> Bốn thẻ đều là <code>&lt;a&gt;</code> thật (DR-10), không phải <code>&lt;div&gt;</code> bắt <code>onClick</code>. Mỗi thẻ ghi rõ khoảng thời gian vì range mặc định đổi 30 → 7 ngày (DR-4).</p>
+
+    <!-- Activity chart -->
+    <div class="card marked">
+      <div class="sec-head">
+        <div>
+          <h3>Hoạt động đăng nhập</h3>
+          <p>7 ngày qua · giờ địa phương (Asia/Ho_Chi_Minh)</p>
+        </div>
+        <div class="segmented"><span class="on">7 ngày</span><span>30 ngày</span><span>90 ngày</span></div>
+      </div>
+      <div class="legend">
+        <span><i class="swatch" style="background:var(--primary)"></i>Thành công</span>
+        <span><i class="swatch" style="background:var(--destructive)"></i>Thất bại</span>
+      </div>
+      <ul class="bars">
+        <li title="28/09: 2 thành công"><div class="ok top" style="height:22%"></div></li>
+        <li title="29/09: 4 thành công"><div class="ok top" style="height:44%"></div></li>
+        <li title="30/09: 1 thành công, 1 thất bại"><div class="fail" style="height:11%"></div><div class="ok" style="height:11%"></div></li>
+        <li title="01/10: 0"><div class="ok top" style="height:0"></div></li>
+        <li title="02/10: 5 thành công"><div class="ok top" style="height:55%"></div></li>
+        <li title="03/10: 3 thành công, 1 thất bại"><div class="fail" style="height:11%"></div><div class="ok" style="height:33%"></div></li>
+        <li title="04/10: 3 thành công"><div class="ok top" style="height:33%"></div></li>
+      </ul>
+      <div class="xaxis"><span>28/09</span><span>29/09</span><span>30/09</span><span>01/10</span><span>02/10</span><span>03/10</span><span>04/10</span></div>
+      <p class="sub" style="color:var(--muted-fg);font-size:11px;margin-top:12px">Click một cột → <span class="anno">/login-history?fromDate=…&amp;toDate=…</span> · click đúng phần đỏ thêm <code>status=failed</code></p>
+    </div>
+    <p class="lead" style="margin:-12px 0 0"><span class="tag new">Mới</span> Thay chỗ của Weekly Activity cũ. Nguồn <code>byDay</code>. Ngày 01/10 không có dữ liệu vẫn giữ cột rỗng (DR-12) — không được co lại còn 6 cột.</p>
+
+    <!-- Method + Device -->
+    <div class="grid2">
+      <div class="card marked">
+        <div class="sec-head"><div><h3>Phương thức đăng nhập</h3><p>7 ngày qua</p></div></div>
+        <div style="display:flex;align-items:center;gap:24px">
+          <svg width="128" height="128" viewBox="0 0 42 42" role="img" aria-label="Mật khẩu 11, OTP 5, Magic link 2, Quên mật khẩu 2">
+            <circle cx="21" cy="21" r="15.9" fill="none" stroke="#f5f5f4" stroke-width="6"/>
+            <circle cx="21" cy="21" r="15.9" fill="none" stroke="#143a5a" stroke-width="6" stroke-dasharray="55 45" stroke-dashoffset="25"/>
+            <circle cx="21" cy="21" r="15.9" fill="none" stroke="#7ca9d8" stroke-width="6" stroke-dasharray="25 75" stroke-dashoffset="-30"/>
+            <circle cx="21" cy="21" r="15.9" fill="none" stroke="#57534e" stroke-width="6" stroke-dasharray="10 90" stroke-dashoffset="-55"/>
+            <circle cx="21" cy="21" r="15.9" fill="none" stroke="#15803d" stroke-width="6" stroke-dasharray="10 90" stroke-dashoffset="-65"/>
+          </svg>
+          <ul style="font-size:13px;display:flex;flex-direction:column;gap:8px">
+            <li style="cursor:pointer"><i class="swatch" style="background:#143a5a"></i>Mật khẩu <b>11</b> <span class="anno">?method=password</span></li>
+            <li style="cursor:pointer"><i class="swatch" style="background:#7ca9d8"></i>OTP <b>5</b> <span class="anno">?method=otp</span></li>
+            <li style="cursor:pointer"><i class="swatch" style="background:#57534e"></i>Magic link <b>2</b> <span class="anno">?method=magic_link</span></li>
+            <li style="cursor:pointer"><i class="swatch" style="background:#15803d"></i>Quên mật khẩu <b>2</b></li>
+          </ul>
+        </div>
+      </div>
+      <div class="card marked">
+        <div class="sec-head"><div><h3>Thiết bị</h3><p>7 ngày qua</p></div></div>
+        <ul class="applist">
+          <li><span class="appname">Desktop</span><span class="track"><i style="width:75%"></i></span><span class="count">15</span></li>
+          <li><span class="appname">Mobile</span><span class="track"><i style="width:20%"></i></span><span class="count">4</span></li>
+          <li><span class="appname">Tablet</span><span class="track"><i style="width:5%"></i></span><span class="count">1</span></li>
+        </ul>
+        <p style="font-size:11px;color:var(--muted-fg);margin:12px 0 0">Click một dòng → <span class="anno">/login-history?deviceType=mobile</span></p>
+      </div>
+    </div>
+    <p class="lead" style="margin:-12px 0 0"><span class="tag new">Mới</span> Cả hai khối dùng <code>byMethod</code> / <code>byDevice</code> — <b>API đã trả sẵn hai field này</b>, UI hiện tại đang vứt đi. 0 dòng backend mới.
+    ⚠️ Deep-link thiết bị chỉ chạy sau khi thêm filter <code>deviceType</code> vào <code>dataSources/LoginHistory</code>.</p>
+
+    <!-- Top apps -->
+    <div class="card marked">
+      <div class="sec-head">
+        <div><h3>Ứng dụng dùng nhiều nhất</h3><p>Tổng từ trước tới nay — không theo khoảng thời gian ở trên</p></div>
+        <span class="btn ghost">Xem tất cả <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg></span>
+      </div>
+      <ul class="applist">
+        <li><span class="appicon">T</span><span class="appname">Tinh tien cau long</span><span class="track"><i style="width:100%"></i></span><span class="count">42</span></li>
+        <li><span class="appicon">M</span><span class="appname">Match CV</span><span class="track"><i style="width:55%"></i></span><span class="count">23</span></li>
+        <li><span class="appicon">S</span><span class="appname">Shorten Link</span><span class="track"><i style="width:36%"></i></span><span class="count">15</span></li>
+        <li><span class="appicon">G</span><span class="appname">Manage Gym</span><span class="track"><i style="width:19%"></i></span><span class="count">8</span></li>
+        <li><span class="appicon">D</span><span class="appname">Ducker Flow Grid</span><span class="track"><i style="width:7%"></i></span><span class="count">3</span></li>
+      </ul>
+    </div>
+    <p class="lead" style="margin:-12px 0 0"><span class="tag new">Mới</span> Nguồn <code>recent-apps/stats.topApps</code> theo <code>useCount</code>. Nhãn phụ bắt buộc ghi "tổng từ trước tới nay" — <code>useCount</code> cộng dồn all-time, không lọc được theo range, nên <b>không</b> gắn chung toggle 7/30/90.</p>
+
+    <!-- Quick access -->
+    <div>
+      <div class="sec-head"><div><h3>Dùng gần đây</h3><p>Quay lại nơi bạn vừa rời đi</p></div></div>
+      <div class="tiles marked" style="padding:4px">
+        <div class="tile"><span class="appicon">T</span><span class="nm">Tinh tien cau long</span><span class="cat">Tiện ích</span><span class="when">14 phút trước</span></div>
+        <div class="tile"><span class="appicon">M</span><span class="nm">Match CV</span><span class="cat">Tuyển dụng</span><span class="when">Hôm qua</span></div>
+        <div class="tile"><span class="appicon">S</span><span class="nm">Shorten Link</span><span class="cat">Tiện ích</span><span class="when">2 ngày trước</span></div>
+        <div class="tile"><span class="appicon">G</span><span class="nm">Manage Gym</span><span class="cat">Quản lý</span><span class="when">5 ngày trước</span></div>
+      </div>
+    </div>
+    <p class="lead" style="margin:-12px 0 0"><span class="tag src">Đổi nguồn</span> Từ <code>getApps().slice(0,4)</code> sang <code>GET /users/me/recent-apps</code> (DR-11). Thêm mốc thời gian thật — trước đây tile không có. Rỗng thì fallback về catalog.</p>
+
+    <!-- Explore -->
+    <div>
+      <div class="sec-head"><div><h3>Khám phá</h3><p>Ứng dụng khác trong hệ sinh thái</p></div><span class="btn ghost">Xem tất cả</span></div>
+      <div class="tiles">
+        <div class="tile"><span class="appicon">D</span><span class="nm">Ducker Flow Grid</span><span class="cat">Tự động hoá</span></div>
+        <div class="tile"><span class="appicon">A</span><span class="nm">AI Study Coach</span><span class="cat">Học tập</span></div>
+        <div class="tile"><span class="appicon">B</span><span class="nm">Badminton</span><span class="cat">Tiện ích</span></div>
+        <div class="tile"><span class="appicon">I</span><span class="nm">IDMS Portal</span><span class="cat">Hệ thống</span></div>
+      </div>
+      <div class="card tight marked" style="display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:16px">
+        <div><div style="font-weight:600">Khám phá thêm ứng dụng</div><div style="font-size:12px;color:var(--muted-fg)">Hiện có 12 ứng dụng — tìm cái tiếp theo bạn cần.</div></div>
+        <span class="btn primary">Xem tất cả ứng dụng</span>
+      </div>
+    </div>
+    <p class="lead" style="margin:-12px 0 0"><span class="tag src">Đổi nguồn</span> Nhãn đổi từ "Dành riêng cho bạn" sang "Khám phá" — nguồn vẫn là catalog, chưa có thuật toán gợi ý nào, nên nhãn cũ là nói quá. <code>"Over 47 apps"</code> cứng thay bằng <code>meta.total</code>; nút được nối vào <code>/apps</code>.</p>
+
+  </div></div>
+
+  <h2>2. Trạng thái rỗng — tài khoản mới</h2>
+  <div class="note">Đây là trạng thái dễ bị bỏ quên nhất: user vừa đăng ký, mới đăng nhập đúng một lần, chưa mở app nào. Biểu đồ <b>không được</b> hiển thị khung trắng không lời giải thích.</div>
+  <div class="shell"><div class="stack">
+    <div class="grid4">
+      <div class="card statcard"><div class="ico b-primary"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div><div class="val">0</div><div class="lbl">Ứng dụng đã dùng</div></div>
+      <div class="card statcard"><div class="ico b-info"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div><div class="val">0</div><div class="lbl">Hoạt động 30 ngày</div></div>
+      <div class="card statcard"><div class="ico b-success"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="m9 12 2 2 4-4"/></svg></div><div class="val">1</div><div class="lbl">Đăng nhập thành công</div><div class="sub">7 ngày qua</div></div>
+      <div class="card statcard"><div class="ico b-danger"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg></div><div class="val">0</div><div class="lbl">Đăng nhập thất bại</div><div class="sub">7 ngày qua</div></div>
+    </div>
+    <div class="card">
+      <div class="sec-head"><div><h3>Hoạt động đăng nhập</h3><p>7 ngày qua · giờ địa phương</p></div><div class="segmented"><span class="on">7 ngày</span><span>30 ngày</span><span>90 ngày</span></div></div>
+      <ul class="bars ghosted">
+        <li><div class="ok top" style="height:4%"></div></li><li><div class="ok top" style="height:4%"></div></li>
+        <li><div class="ok top" style="height:4%"></div></li><li><div class="ok top" style="height:4%"></div></li>
+        <li><div class="ok top" style="height:4%"></div></li><li><div class="ok top" style="height:4%"></div></li>
+        <li><div class="ok top" style="height:22%;background:var(--primary)"></div></li>
+      </ul>
+      <div class="xaxis"><span>28/09</span><span>29/09</span><span>30/09</span><span>01/10</span><span>02/10</span><span>03/10</span><span>04/10</span></div>
+      <p style="font-size:12px;color:var(--muted-fg);margin:16px 0 0;text-align:center">Chỉ có một lần đăng nhập trong 7 ngày qua. Phiên đăng nhập được gia hạn tự động nên không tạo thêm bản ghi.</p>
+    </div>
+    <div class="card">
+      <div class="empty">
+        <h3>Chưa có ứng dụng nào</h3>
+        <p>Mở một ứng dụng bất kỳ, nó sẽ xuất hiện ở đây.</p>
+        <span class="btn primary" style="margin-top:8px">Xem tất cả ứng dụng</span>
+      </div>
+    </div>
+  </div></div>
+  <p class="lead">Dòng giải thích dưới biểu đồ là bắt buộc: không có nó, user tưởng hệ thống hỏng. Trạng thái "thưa" (đăng nhập 1 lần rồi sống bằng refresh token) là trường hợp <b>phổ biến</b> chứ không phải ngoại lệ — xem §7 của design.</p>
+
+  <h2>3. Mobile — 375px</h2>
+  <div class="shell narrow"><div class="stack" style="gap:16px">
+    <div class="card tight hero" style="flex-direction:column;align-items:flex-start;gap:4px">
+      <h3 style="font-size:25px">Chào buổi chiều, Anh Đức</h3>
+      <p class="date">Chủ Nhật, 04 tháng 10, 2026</p>
+    </div>
+    <div class="grid2">
+      <div class="card tight statcard"><div class="val">12</div><div class="lbl">Ứng dụng đã dùng</div></div>
+      <div class="card tight statcard"><div class="val">7</div><div class="lbl">Hoạt động 30 ngày</div></div>
+      <div class="card tight statcard"><div class="val" style="color:var(--success)">18</div><div class="lbl">Thành công · 7 ngày</div></div>
+      <div class="card tight statcard"><div class="val" style="color:var(--destructive)">2</div><div class="lbl">Thất bại · 7 ngày</div></div>
+    </div>
+    <div class="card tight">
+      <div class="sec-head" style="flex-direction:column;align-items:stretch;gap:12px;margin-bottom:12px">
+        <div><h3>Hoạt động đăng nhập</h3><p>7 ngày qua</p></div>
+        <div class="segmented" style="width:100%"><span class="on" style="flex:1;justify-content:center">7</span><span style="flex:1;justify-content:center">30</span><span style="flex:1;justify-content:center">90</span></div>
+      </div>
+      <ul class="bars" style="height:120px;gap:6px">
+        <li><div class="ok top" style="height:22%"></div></li><li><div class="ok top" style="height:44%"></div></li>
+        <li><div class="fail" style="height:11%"></div><div class="ok" style="height:11%"></div></li>
+        <li><div class="ok top" style="height:0"></div></li><li><div class="ok top" style="height:55%"></div></li>
+        <li><div class="fail" style="height:11%"></div><div class="ok" style="height:33%"></div></li>
+        <li><div class="ok top" style="height:33%"></div></li>
+      </ul>
+      <div class="xaxis" style="gap:6px"><span>28</span><span>29</span><span>30</span><span>01</span><span>02</span><span>03</span><span>04</span></div>
+    </div>
+    <div class="card tight">
+      <h3 style="margin-bottom:12px">Ứng dụng dùng nhiều nhất</h3>
+      <ul class="applist">
+        <li><span class="appicon">T</span><span class="appname" style="width:auto;flex:1">Tinh tien cau long</span><span class="count">42</span></li>
+        <li><span class="appicon">M</span><span class="appname" style="width:auto;flex:1">Match CV</span><span class="count">23</span></li>
+        <li><span class="appicon">S</span><span class="appname" style="width:auto;flex:1">Shorten Link</span><span class="count">15</span></li>
+      </ul>
+    </div>
+  </div></div>
+  <p class="lead">Ở 375px: thẻ thống kê bỏ icon, xuống 2 cột; toggle range giãn full-width để chạm đủ 44px; donut phương thức và bar thiết bị xếp dọc; nhãn trục ngày rút còn số ngày. Không có cuộn ngang.</p>
+
+  <h2>4. Những gì bị gỡ khỏi trang</h2>
+  <table class="cmp">
+    <thead><tr><th style="width:200px">Khối</th><th style="width:170px">Vì sao gỡ</th><th>Thay bằng</th></tr></thead>
+    <tbody>
+      <tr><td><span class="tag cut">Gỡ</span> <b>Time Saved</b> — "38 hrs"</td><td>Không có nguồn dữ liệu nào trong hệ thống tính ra con số này</td><td>Thẻ <b>Đăng nhập thất bại</b> — số thật, và là thứ user cần biết nhất trên một sản phẩm danh tính</td></tr>
+      <tr><td><span class="tag cut">Gỡ</span> <b>Current Streak</b> — "14 days"</td><td>Streak cần đếm ngày liên tiếp có hoạt động → cần bảng bucket theo ngày (DR-1 không cho tạo)</td><td>Thẻ <b>Hoạt động 30 ngày</b> từ <code>lastUsedAt</code></td></tr>
+      <tr><td><span class="tag cut">Gỡ</span> <b>Achievement banner</b></td><td>Phụ thuộc streak; nút CTA chưa bao giờ có handler; sản phẩm chưa có khái niệm achievement</td><td>Không thay — trang bớt một khối không có thật</td></tr>
+      <tr><td><span class="tag cut">Gỡ</span> <b>Weekly Activity</b> (số app mở/ngày)</td><td><code>user_app_usages</code> giữ một dòng/app, <code>useCount</code> cộng dồn all-time → không có trục thời gian</td><td><b>Hoạt động đăng nhập</b> theo ngày từ <code>login_histories.createdAt</code> — cùng hình dạng, dữ liệu thật, drill-down tốt hơn</td></tr>
+      <tr><td><span class="tag cut">Gỡ</span> nhãn <b>"Total Apps Used"</b></td><td>Đang hiển thị tổng app trong catalog, không phải số app user đã dùng — sai nhãn còn tệ hơn mock</td><td><b>Ứng dụng đã dùng</b> từ <code>recent-apps/stats.totalApps</code>; tổng catalog chuyển xuống banner "Khám phá"</td></tr>
+    </tbody>
+  </table>
+</main>
+</body>
+</html>

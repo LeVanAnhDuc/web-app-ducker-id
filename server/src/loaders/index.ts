@@ -7,6 +7,7 @@ import { loadDatabase, closeDatabase } from "./database.loader";
 import { loadRedis, closeRedis } from "./redis.loader";
 import { loadServices } from "./services.loader";
 import { loadQueues, closeAllQueues } from "./queue.loader";
+import { loadSigningKeys } from "./jwks.loader";
 import { loadModules } from "./modules.loader";
 import { loadHealthCheck } from "./health.loader";
 import { loadErrorHandlers } from "./error-handler.loader";
@@ -20,6 +21,7 @@ export const loadAll = async (app: Express): Promise<void> => {
     const { emailService } = loadServices();
     const { emailQueue } = loadQueues(app, emailService);
     const emailDispatcher = new EmailDispatcher(emailService, emailQueue);
+    loadSigningKeys();
     loadModules(app, emailDispatcher);
     loadHealthCheck(app);
     loadErrorHandlers(app);

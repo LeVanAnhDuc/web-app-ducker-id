@@ -18,7 +18,9 @@ Ducker ID (Identity Management System) is the sign-in gateway and app launcher p
 > blind. Dated specs under `docs/specs/` keep `IDMS` as historical record.
 > The OpenAPI document also still calls itself `AppStore Web API` (`server/src/libs/swagger/openapi.ts`).
 
-Note: despite the OAuth client metadata stored on app-registry entries, the OAuth 2.0 / OIDC endpoints (`/oauth/authorize`, `/oauth/token`, JWKS, consent screen) are **not implemented yet** — see `docs/project-goals.md` (MVP-1) and `docs/unfinished-features.md`.
+The OIDC core is implemented — `/oauth/authorize`, `/oauth/token`, `/oauth/userinfo`, discovery and JWKS, with Authorization Code + PKCE. Missing from MVP-1: consent screen, `/oauth/introspect`, `/oauth/revoke`, refresh-token grant and back-channel logout. See `docs/project-goals.md` and `docs/unfinished-features.md`.
+
+**These endpoints do not live under `/api/v1`.** OIDC discovery must sit at the origin root, so `oauth.routes.ts` is mounted straight onto `app` by `mountOAuthRoutes` in `modules.loader.ts`, and `client/next.config.ts` rewrites `/oauth/*` and `/.well-known/*` to the API. The client's `middleware.ts` matcher excludes both — letting next-intl touch them would prefix a locale and break every registered `redirect_uri`.
 
 ## Commands
 
@@ -55,9 +57,11 @@ cd client && pnpm e2e e2e/home/home-page.e2e.ts --project=chromium
 cd client && pnpm e2e e2e/admin-apps/ --project=admin
 ```
 
-Jest picks up `src/**/*.spec.ts` (colocated with the code) plus `test/integration/**` and `test/e2e/**`; factories, helpers and mocks live in `server/test/`. Current suite: **43 suites / 276 tests**, no database required.
+Jest picks up `src/**/*.spec.ts` plus `test/integration/**` and `test/e2e/**`; factories, helpers and mocks live in `server/test/`. Service tests sit in `services/spec/`, repository tests in `repository/spec/`. Current suite: **76 suites / 547 tests**, no database required.
 
-Playwright (`client/playwright.config.ts`) runs `*.e2e.ts` under `client/e2e/` with `workers: 1` and `fullyParallel: false`, across four projects: `setup` and `admin-setup` log in and write `e2e/.auth/{user,admin}.json`, then `chromium` runs as a **regular user** (it `testIgnore`s the admin-only folders) and `admin` runs those folders. `admin-authz/` is deliberately left in the regular-user project — its denial tests need a non-admin session. E2E needs client + server + MongoDB + Redis up **and the DB seeded**; credentials come from `E2E_*` (defaults `user@test.com` / `User@123`, `admin@test.com` / `Admin@123`). The base URL resolves as `E2E_BASE_URL` → the nearest `.worktree-state.json` entry keyed by the current folder name → `http://localhost:3000`.
+`jest.config.ts` sets `resetMocks: true`, which clears the *implementations* a `jest.mock` factory set up, not just the call history. A factory must therefore close over bare `jest.fn()`s and the implementations be rebuilt in `beforeEach`, or the mock works in the first test of a file and returns `undefined` in every one after it.
+
+Playwright (`client/playwright.config.ts`) runs `*.e2e.ts` under `client/e2e/` with `workers: 1` and `fullyParallel: false`, across four projects: `setup` and `admin-setup` log in and write `e2e/.auth/{user,admin}.json`, then `chromium` runs as a **regular user** (it `testIgnore`s the admin-only folders) and `admin` runs those folders. `admin-authz/` is deliberately left in the regular-user project — its denial tests need a non-admin session. E2E needs client + server + MongoDB + Redis up **and the DB seeded**; credentials come from `E2E_*` (defaults `user@test.com` / `User@123`, `admin@test.com` / `Admin@123`). The base URL resolves as `E2E_BASE_URL` → the nearest `.worktree-state.json` entry keyed by the current folder name → `http://localhost:3000`. Playwright runs from `client/`, so that key is `client` — a worktree entry keyed by the feature name is never found, and a worktree run silently hits the main checkout on `:3000` unless `E2E_BASE_URL` is set.
 
 ## Architecture
 
@@ -71,7 +75,31 @@ There is no DI container. Every module exports a `create<Name>Module(...)` facto
 - Adding an endpoint touches up to **three** places: the module's `*.routes.ts`, `modules.loader.ts` (only for a new module or router), and `src/libs/swagger/openapi.ts`, which imports each module's `swagger/` barrel and spreads it into `allSchemas` / `allPaths`. That registry is incomplete today — `login-history`, `notification` and `favorite` have no Swagger entry, so their routes are missing from `/api-docs`.
 - A module exposing both a user and an admin surface returns two routers (`userRouter` + `userAdminRouter`, `webAppUserRouter` + `webAppAdminRouter`, …) instead of branching inside one.
 
-Module anatomy: `<name>.module.ts` (factory), `<name>.routes.ts`, `<name>.controller.ts`, `<name>.service.ts`, `<name>.repository.ts`, plus `dtos/`, `types/`, `constants/`, `swagger/` (`paths.ts` + `schemas.ts` + a Postman collection) and colocated `*.spec.ts`. 13 wired modules, ~50 route handlers.
+Module anatomy: `<name>.module.ts` (factory), `<name>.routes.ts`, `<name>.controller.ts`, plus `dtos/`, `types/`, `constants/` and `swagger/` (`paths.ts` + `schemas.ts` + a Postman collection). 15 wired modules, ~60 route handlers.
+
+Service and repository live in folders rather than single files (`docs/specs/module-struct-batch*/`) — those are the two that grow worst:
+
+- `repository/<name>.repository.ts` holds only `interface <Name>Repository` (type imports and nothing else); the Mongoose class moves to `repository/impl/mongo-<name>.repository.ts`. There is **deliberately no barrel** — the service imports the interface, and only the module factory is allowed to reach into `impl/`, which is what keeps the boundary real.
+- `services/` holds **one public method per file** (`update-password.ts` exports `updatePassword(authRepo, …)` — a plain function whose first argument is the dependency), with `services/index.ts` as a façade class whose methods are one-line delegates and `services/spec/` for the unit tests. Validation, logging and `try/catch` live in the method file, never in the façade.
+
+Two shapes fall out of that:
+
+- A service with **one** public method keeps class and logic together in `services/index.ts` — splitting 23 lines across two files buys nothing the module name does not already give. The uniform `@/modules/<name>/services` import path is the part worth keeping.
+- A service with **two or more** dependencies declares them in `services/deps.ts` as `interface <Name>ServiceDeps`; method files take `deps` as their first argument and the façade constructor takes one object instead of a positional list. With seven dependencies, `refreshAccessToken(authService, userService, g1, g2, g3, g4, g5, token)` is not a signature anyone can read.
+
+A module with two or more **different** repositories (not two implementations of one contract) uses `repositories/` instead, laid out the same way: interfaces at the folder root, classes under `repositories/impl/`. Repository tests sit in `repository/spec/`, mirroring `services/spec/`.
+
+Private methods follow the call graph. One that serves a single public method becomes an unexported function in that method's file; one shared by two or more goes to `services/shared/<name>.ts`, same shape, not on the façade. Neither becomes a helper — `helpers/` is for pure functions, and these touch Redis, Mongo or a transaction.
+
+A module with two or more services puts each one in its own sub-folder — `services/login/`, `services/login-audit/` — and `strategies/` is laid out the same way. Neither folder has a barrel; the only `index.ts` is the class inside each sub-folder. Where a `strategies/` folder already splits the work per use case, the façade's one-line delegates stay on the façade: a method file holding `return deps.otpStrategy.sendCode(req)` adds a hop to a trace rather than removing one.
+
+Every module with code uses this layout; `entitlement` and `oauth-consent` are schema-only stubs with nothing to split. No `*.service.ts` or `*.repository.ts` remains at a module root — one appearing means somebody created it off-standard, not that a module was missed. Full rules in `server/.claude/rules/modules.md`; design rationale in `docs/specs/authentication-module-structure/design.md` and the `docs/specs/module-struct-batch*/design.md` series.
+
+Categories are their own module (`modules/category/`), wired **before** `web-app` so its repository can be handed to `createWebAppModule` for the `categoryIds` existence check. It owns both `/admin/categories*` and the public `GET /apps/categories`; `/admin/apps/categories` no longer exists. An app carries 1–5 ordered `categoryIds` (first = primary); category names are `{ en, vi }` and the client picks one by locale — there is no slug→locale map anymore. Data from before this shape is moved by `pnpm migrate:category-management` (idempotent; `server/src/database/migrations/`).
+
+Every paginated endpoint goes through `src/common/pagination/`: `resolvePaging(query)` turns a validated query into the `{ skip, limit, sort }` a repository takes plus the `page` the response needs, and `toPageMeta(total, page, limit)` builds the `meta`. `PaginatedResult<T>` and `PageMeta` live there too. Don't recompute `(page - 1) * limit` in a service, and don't clamp `page` — every paginated Joi schema already enforces `min(1)`.
+
+An empty result is `totalPages: 0` on every paginated endpoint. `web-app.listUserApps` used to answer `1`; that was unified away once the helper landed.
 
 Cross-cutting concerns deliberately live **outside** the modules:
 
@@ -82,7 +110,7 @@ Cross-cutting concerns deliberately live **outside** the modules:
 | Guards | `src/middlewares/guards/` | `authGuard`, `adminGuard`, `optionalAuthGuard` |
 | Rate limiting | `src/middlewares/common/rate-limiter.middleware.ts` | Redis-backed; one `RateLimiterMiddleware` instance is passed into route factories and applied per route (`rl.updateProfileByIp`, …) |
 | Errors | `src/common/exceptions/` + `src/middlewares/filters/error.filter.ts` | handlers are wrapped in `asyncHandler`, so throwing is how you fail a request |
-| Responses | `src/common/responses/`, `pagination/`, `sort/` | envelope `ResponsePattern<T> = { timestamp, path, message, data, meta? }`; errors `{ code, message, timestamp, path, errors? }` |
+| Responses | `src/common/responses/`, `pagination/`, `sort/` | envelope `ResponsePattern<T> = { timestamp, path, message, data }`; errors `{ code, message, timestamp, path, errors? }`. There is no envelope-level `meta` — paginated endpoints return `data.meta`, built by `toPageMeta` |
 | Messages | `src/i18n/` | error and success text is an i18next **key** translated per request (`req.t`), not a literal |
 
 Email is never sent inline: `EmailDispatcher` pushes onto the BullMQ `emailQueue` (templates are React Email components rendered server-side), with Bull Board at `/admin/queues`. `/health` reports MongoDB and Redis status.
@@ -117,11 +145,11 @@ Feature work is spec-driven and worktree-isolated: branch from a fresh `origin/m
 
 ### Still mock-backed
 
-`docs/unfinished-features.md` is the backlog, but it was last audited 2026-07-09 and now overstates the gap — AdminUsers lock/unlock/reset and the entitlements matrix have since been wired to real endpoints. What still imports from `@/mocks` today: `AdminEntitlements` (`useUserGrants`, `useUpdateUserGrants`), `useForceLogoutAdminUser`, all three Billing cards, the Profile stat badges, and `RecentlyUsed`.
+`docs/unfinished-features.md` is the backlog, but it was last audited 2026-07-09 and now overstates the gap — AdminUsers lock/unlock/reset and the entitlements matrix have since been wired to real endpoints. What still imports from `@/mocks` today: `AdminEntitlements` (`useUserGrants`, `useUpdateUserGrants`), `useForceLogoutAdminUser`, all three Billing cards, and the Profile stat badges.
 
-## README (REQUIRED — keep in sync with features)
+## README — keep `## Features` in sync
 
-`README.md` describes what the app does for its users — it is not a boilerplate page. Every commit that adds or changes user-facing behaviour (`feat:`) MUST update the `## Features` section of `README.md` in the same branch, before merging — one short English bullet in the existing style.
+`README.md` describes what the app does for its users — it is not a boilerplate page. Every commit that adds or changes user-facing behaviour (`feat:`) also updates the `## Features` section of `README.md` in the same branch, before merging — one short English bullet in the existing style.
 
 While touching README, refresh any stale numbers you notice (test counts, stack versions).
 

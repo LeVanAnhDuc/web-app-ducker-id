@@ -1,22 +1,48 @@
 {
-  "title": "Đã dùng gần đây",
-  "description": "Truy cập nhanh các ứng dụng bạn đã dùng gần đây.",
+  "title": "Dùng gần đây",
+  "description": "Truy cập nhanh các ứng dụng web bạn đã dùng gần đây.",
   "search": {
-    "placeholder": "Tìm trong gần đây..."
+    "placeholder": "Tìm ứng dụng gần đây..."
   },
-  "clear": "Xóa lịch sử",
+  "clear": "Xoá lịch sử",
+  "clearDialog": {
+    "title": "Xoá lịch sử dùng gần đây?",
+    "description": "Mọi ứng dụng sẽ bị gỡ khỏi danh sách này. Ứng dụng bạn mở sau đó sẽ xuất hiện lại.",
+    "cancel": "Huỷ",
+    "confirm": "Xoá lịch sử"
+  },
   "groups": {
     "today": "Hôm nay",
     "yesterday": "Hôm qua",
     "thisWeek": "Tuần này",
     "earlier": "Trước đó"
   },
-  "groupCount": "{count, plural, other {# ứng dụng}}",
+  "groupCount": "{count} ứng dụng",
   "card": {
-    "open": "Mở"
+    "open": "Mở",
+    "remove": "Xoá khỏi lịch sử",
+    "lastOpened": "Mở lần cuối",
+    "addFavorite": "Thêm vào yêu thích",
+    "removeFavorite": "Bỏ khỏi yêu thích",
+    "openedCount": "Đã mở {count} lần"
+  },
+  "empty": {
+    "title": "Chưa có ứng dụng nào",
+    "description": "Ứng dụng bạn mở từ Ducker ID sẽ hiện ở đây.",
+    "browse": "Khám phá ứng dụng"
+  },
+  "error": "Không tải được danh sách ứng dụng gần đây.",
+  "loadMore": "Tải thêm",
+  "allLoaded": "Bạn đã xem hết lịch sử.",
+  "toast": {
+    "removed": "Đã xoá {name} khỏi lịch sử",
+    "undo": "Hoàn tác",
+    "cleared": "Đã xoá lịch sử dùng gần đây",
+    "error": "Đã có lỗi xảy ra. Vui lòng thử lại."
   },
   "announce": {
-    "searchChanged": "{count} ứng dụng gần đây khớp với tìm kiếm.",
-    "cleared": "Đã xóa lịch sử gần đây."
+    "removed": "Đã xoá {name} khỏi lịch sử.",
+    "restored": "Đã khôi phục {name} vào lịch sử.",
+    "cleared": "Đã xoá lịch sử dùng gần đây."
   }
 }

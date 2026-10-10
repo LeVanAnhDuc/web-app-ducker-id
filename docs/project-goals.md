@@ -146,10 +146,10 @@ Rõ ràng **KHÔNG** thuộc scope của Ducker ID:
 | Forgot Password      | `/auth/forgot-password/{otp,magic-link,reset}`                                                                                                                                             | ✅ có                                  |
 | Unlock               | `/auth/unlock/{request,verify}`                                                                                                                                                            | ✅ có                                  |
 | User Profile         | `GET/PATCH /users/me`, `POST /users/me/avatar`, `GET /users/:id`                                                                                                                           | ✅ có                                  |
-| **OAuth/OIDC**       | `/oauth/authorize`, `/oauth/token`, `/oauth/introspect`, `/oauth/revoke`, `/.well-known/openid-configuration`, `/.well-known/jwks.json`, `/oauth/userinfo`, `/oauth/logout` (RP-initiated) | ❌ **CHƯA CÓ — MVP-1**                 |
+| **OAuth/OIDC**       | `/oauth/authorize`, `/oauth/token`, `/oauth/introspect`, `/oauth/revoke`, `/.well-known/openid-configuration`, `/.well-known/jwks.json`, `/oauth/userinfo`, `/oauth/logout` (RP-initiated) | ⚠️ **Core xong 26.09.2026** — authorize (kèm `prompt=none`) · token (Authorization Code + PKCE) · userinfo · discovery · JWKS · logout. ❌ còn thiếu: introspect, revoke, refresh grant, consent screen, back-channel logout. Xem `docs/specs/oidc-provider/design.md` |
 | **App Registry**     | `GET /apps` (user — catalog tất cả app `ACTIVE`, auth-guarded), `CRUD /admin/apps`, `CRUD /admin/apps/:id/entitlements`                                                                                    | ✅ user list (catalog) · ❌ entitlement-gated launch + admin entitlements CRUD (MVP-2) |
-| **Favorites/Recent** | `POST/DELETE /users/me/favorites/:appId`, `GET /users/me/recent-apps`                                                                                                                      | ❌ chưa có                             |
-| Login History        | `GET /login-history` (mình), `GET /admin/login-history`                                                                                                                                    | ✅ có                                  |
+| **Favorites/Recent** | `POST/DELETE /users/me/favorites/:appId`, `GET /users/me/recent-apps`, `GET /users/me/recent-apps/stats`                                                                                    | ✅ có — favorites (06.2026), recent-apps kèm record / soft delete / restore (10.2026), stats (10.2026) |
+| Login History        | `GET /login-history` (mình), `GET /login-history/stats` (`range` 7d/30d/90d + `tz`), `GET /admin/login-history`                                                                             | ✅ có                                  |
 | Contact Admin        | `POST /contact/submit`, admin CRUD                                                                                                                                                         | ✅ có                                  |
 | **Admin Power**      | force-logout user, lock/unlock, reset-password override                                                                                                                                    | ⚠️ cần bổ sung                         |
 
@@ -230,7 +230,7 @@ Chi tiết version: `.claude/techstack/frontend.md`, `.claude/techstack/backend.
 | **MVP-1**   | OAuth/OIDC server                                                                                                               | Đủ Authorization Code + PKCE + consent + JWKS + introspection + RP-initiated logout + back-channel logout. Test bằng client giả lập.         | —                               |
 | **MVP-2**   | App registry + entitlement                                                                                                      | App model + admin CRUD UI + per-user entitlement + dashboard hiển thị app theo entitlement + Favorites/RecentlyUsed wired.                   | MVP-1 (để có client_id mapping) |
 | **MVP-3**   | Tách Blog thành satellite                                                                                                       | Scaffold project blog mới, migrate `apps/blog/*` ra src riêng, đăng ký Blog vào Ducker ID như app vệ tinh đầu tiên, validate end-to-end SSO flow. | MVP-1, MVP-2                    |
-| **MVP-4**   | UI polish + Admin tools                                                                                                         | Hoàn thiện admin force-logout, lock/unlock, reset-password override. Loại bỏ Categories hardcoded. Notifications wire vào event thật.        | MVP-2                           |
+| **MVP-4**   | UI polish + Admin tools                                                                                                         | Hoàn thiện admin force-logout, lock/unlock, reset-password override. ~~Loại bỏ Categories hardcoded~~ ✅ (04.10.2026, `category-management`). Notifications wire vào event thật.        | MVP-2                           |
 | **Backlog** | Discover algorithm, Billing thực, Anomaly detection nâng cao, OAuth provider khác (Google/GitHub login social) | —                                                                                                                                            | —                               |
 
 ---
@@ -249,9 +249,9 @@ Chi tiết version: `.claude/techstack/frontend.md`, `.claude/techstack/backend.
 
 ## 12. Open Questions (defer — quyết định khi vào spec tương ứng)
 
-1. Chọn lib OAuth/OIDC server: `node-oidc-provider` (đầy đủ chuẩn, nặng) vs custom minimal (gọn, tự kiểm soát) → **quyết định ở spec MVP-1**.
+1. ~~Chọn lib OAuth/OIDC server~~ → **đã chốt 26.09.2026: custom minimal.** Lib mang theo storage adapter, error format và view rendering riêng, đánh nhau với cả bốn convention hiện có (factory DI thủ công, `bodyPipe` Joi, `asyncHandler`, envelope `ResponsePattern` + i18n key). Chỉ cần subset authorization_code + PKCE vì ta sở hữu toàn bộ client.
 2. Cơ chế back-channel logout: signed JWT logout token (chuẩn OIDC Back-Channel Logout 1.0) vs custom webhook → **quyết định ở spec MVP-1**.
-3. Refresh token storage: DB persistent vs Redis vs hybrid → **quyết định ở spec MVP-1**.
+3. ~~Refresh token storage~~ → **hoãn**: app vệ tinh đầu tiên (badminton) là public client tĩnh, không có chỗ cất refresh token an toàn nên bản này không phát refresh token. Quyết định lại khi nối app vệ tinh **có** backend.
 4. Consent persistence: lưu user-đã-consent app nào ở đâu (Mongo collection riêng?) → **quyết định ở spec MVP-1**.
 5. UI Discover thuật toán: featured (admin curate) vs activity-based (most-used in org) → **quyết định ở spec MVP-2**.
 
@@ -263,3 +263,6 @@ Chi tiết version: `.claude/techstack/frontend.md`, `.claude/techstack/backend.
 | ---------- | ------------------------------------------------- |
 | 2026-05-23 | Initial — định vị Ducker ID, scope MVP-1..4, glossary. |
 | 2026-06-29 | Gỡ bỏ Team collaboration placeholder (FE + docs); Team thành Non-Goal dứt khoát (single-tenant). |
+| 2026-10-04 | Mật khẩu tạm của self-unlock chuyển từ Mongo sang Redis (TTL 15 phút, consume một lần); 3 field `auths.tempPassword*` bị gỡ khỏi schema và khỏi dữ liệu. |
+| 2026-10-04 | Login history ghi nguồn đăng nhập (IdP hay app vệ tinh qua OIDC) và mọi lần IdP cấp code cho app, kể cả SSO im lặng (`method = sso`, `interactive = false`). Spec: `docs/specs/login-history-app-source/`. |
+| 2026-10-04 | Home chạy trên số liệu thật: biểu đồ đăng nhập theo ngày (cắt theo múi giờ người dùng), phân bổ theo phương thức / thiết bị, xếp hạng app dùng nhiều nhất, và mọi thẻ đều dẫn sang danh sách đã lọc sẵn. Ba chỉ số không có nguồn dữ liệu (Time Saved, streak, achievement) bị gỡ khỏi UI thay vì giữ mock. Spec: `docs/specs/home-activity-insights/`. |

@@ -53,6 +53,12 @@
   "limit": {
     "invalid": "Kích thước trang không hợp lệ."
   },
+  "range": {
+    "invalid": "Khoảng thống kê không hợp lệ."
+  },
+  "timezone": {
+    "invalid": "Múi giờ không hợp lệ."
+  },
   "sortBy": {
     "invalid": "Trường sắp xếp không hợp lệ."
   },
@@ -64,5 +70,14 @@
   },
   "id": {
     "invalid": "Định danh không hợp lệ"
+  },
+  "source": {
+    "invalid": "Nguồn phải là idp hoặc oauth"
+  },
+  "webAppId": {
+    "invalid": "Mã ứng dụng không hợp lệ"
+  },
+  "interactive": {
+    "invalid": "interactive phải là giá trị boolean"
   }
 }

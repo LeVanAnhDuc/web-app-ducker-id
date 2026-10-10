@@ -5,44 +5,90 @@
     "morning": "Good morning",
     "afternoon": "Good afternoon",
     "evening": "Good evening",
-    "subtitle": "You have {count} apps to explore today.",
-    "date": "Wednesday, May 6, 2026"
+    "subtitle": "You have {count} apps in your collection.",
+    "subtitleEmpty": "Open an app and it will show up here."
   },
   "stats": {
-    "totalApps": "Total Apps Used",
-    "appsThisMonth": "Apps This Month",
-    "timeSaved": "Time Saved",
-    "currentStreak": "Current Streak",
+    "totalApps": "Apps used",
+    "activeApps": "Active in 30 days",
+    "successfulLogins": "Successful sign-ins",
+    "failedLogins": "Failed sign-ins",
     "allTime": "All time",
-    "fromLastMonth": "+3 from last month",
-    "hoursThisMonth": "+5 hrs this month",
-    "personalBest": "Personal best!"
+    "stillOpened": "Apps you still open",
+    "inRange": "Last {days} days",
+    "withAnomalies": "Last {days} days · {count} unusual",
+    "viewDetails": "View details"
   },
-  "weeklyActivity": {
-    "title": "Weekly Activity",
-    "subtitle": "Apps opened per day this week",
-    "legend": "30 opens this week"
+  "activity": {
+    "title": "Sign-in activity",
+    "subtitle": "Last {days} days · {timezone}",
+    "successful": "Successful",
+    "failed": "Failed",
+    "empty": "No sign-in recorded in this period.",
+    "sparse": "Only {count} sign-ins in this period. A session that refreshes itself does not add a record.",
+    "dayHint": "Select a day to see the sign-ins behind it.",
+    "error": "Could not load sign-in activity.",
+    "seeHistory": "View history",
+    "tableCaption": "Sign-ins per day",
+    "dayColumn": "Day",
+    "chartLabel": "Sign-in activity over the last {days} days: {total} in total, {successful} successful, {failed} failed.",
+    "dayLabel": "{date}: {successful} successful, {failed} failed",
+    "dayEmptyLabel": "{date}: no sign-in",
+    "announce": {
+      "loading": "Loading sign-in activity…",
+      "loaded": "Sign-in activity for the last {days} days: {total} sign-ins."
+    }
   },
-  "achievement": {
-    "title": "14-Day Streak — You're on fire!",
-    "subtitle": "You've opened at least one app every day for 2 weeks. Keep it going!",
-    "cta": "View Achievements"
+  "range": {
+    "label": "Time range",
+    "7d": "7 days",
+    "30d": "30 days",
+    "90d": "90 days",
+    "retention": "Sign-ins are kept for 90 days."
+  },
+  "methods": {
+    "title": "Sign-in method",
+    "subtitle": "Last {days} days",
+    "empty": "Nothing to break down yet.",
+    "tableCaption": "Sign-ins by method",
+    "methodColumn": "Method",
+    "countColumn": "Sign-ins",
+    "chartLabel": "Sign-ins by method over the last {days} days."
+  },
+  "devices": {
+    "title": "Device",
+    "subtitle": "Last {days} days",
+    "empty": "Nothing to break down yet.",
+    "tableCaption": "Sign-ins by device",
+    "deviceColumn": "Device"
+  },
+  "topApps": {
+    "title": "Most used apps",
+    "subtitle": "All time — not affected by the range above",
+    "empty": "Open an app and it will be ranked here.",
+    "seeAll": "See all",
+    "opens": "{count} opens",
+    "tableCaption": "Apps by number of opens",
+    "opensColumn": "Opens",
+    "appColumn": "App"
   },
   "quickAccess": {
-    "title": "Quick Access",
-    "subtitle": "Jump back in",
-    "empty": "No apps yet.",
-    "error": "Could not load apps."
+    "title": "Jump back in",
+    "subtitle": "Where you left off",
+    "empty": "No apps opened yet — here is what is available.",
+    "seeAll": "See all",
+    "error": "Could not load your recent apps."
   },
-  "recommended": {
-    "title": "Recommended for You",
+  "explore": {
+    "title": "Explore",
+    "subtitle": "Other apps in the ecosystem",
     "seeAll": "See all apps",
-    "empty": "No apps to recommend yet.",
+    "empty": "No apps to show yet.",
     "error": "Could not load apps."
   },
   "exploreCTA": {
-    "title": "Discover more apps in the store",
-    "subtitle": "Over 47 apps available — find your next favourite.",
-    "cta": "Browse All Apps"
+    "title": "Discover more apps",
+    "subtitle": "{count} apps available — find your next favourite.",
+    "cta": "Browse all apps"
   }
 }

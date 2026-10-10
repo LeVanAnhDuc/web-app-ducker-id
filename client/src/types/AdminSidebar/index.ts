@@ -7,6 +7,7 @@ export type AdminNavKey =
   | "loginHistory"
   | "contacts"
   | "apps"
+  | "categories"
   | "entitlements";
 
 export type AdminNavGroupKey = "overview" | "identity" | "apps";

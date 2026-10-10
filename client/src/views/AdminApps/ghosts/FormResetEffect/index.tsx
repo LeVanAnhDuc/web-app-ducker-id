@@ -14,10 +14,11 @@ const toFormValues = (app: WebApp): AdminAppFormValues => ({
   description: app.description ?? "",
   iconUrl: app.iconUrl ?? "",
   homeUrl: app.homeUrl,
-  categoryId: app.categoryId,
+  categoryIds: app.categoryIds,
   status: app.status,
   requiredRoles: app.requiredRoles,
-  redirectUris: app.redirectUris
+  redirectUris: app.redirectUris,
+  tokenEndpointAuthMethod: app.tokenEndpointAuthMethod
 });
 
 const FormResetEffect = ({

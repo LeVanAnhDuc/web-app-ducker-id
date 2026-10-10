@@ -1,6 +1,7 @@
 // types
 import type { Request, Response } from "express";
-import type { LoginService } from "./services";
+import type { LoginService } from "./services/login";
+import type { SessionService } from "@/modules/session/services";
 // modules
 import {
   REFRESH_TOKEN,
@@ -60,6 +61,7 @@ describe("LoginController", () => {
   let req: Request;
   let res: ResponseMock;
   let service: jest.Mocked<LoginService>;
+  let sessionService: jest.Mocked<SessionService>;
   let controller: LoginController;
 
   beforeEach(() => {
@@ -67,7 +69,12 @@ describe("LoginController", () => {
     (req as unknown as { originalUrl: string }).originalUrl = "/api/login";
     res = createResponseMock();
     service = createServiceMock();
-    controller = new LoginController(service);
+    // RequestContext rỗng ngoài AsyncLocalStorage nên startSession sẽ no-op —
+    // controller vẫn phải trả response bình thường.
+    sessionService = {
+      start: jest.fn()
+    } as unknown as jest.Mocked<SessionService>;
+    controller = new LoginController(service, sessionService);
   });
 
   describe("login (password)", () => {

@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Charts & Drilldown — Home Activity</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400&family=IBM+Plex+Sans:wght@400;500;600&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --primary: #143a5a; --primary-hover: #2a5f8f; --on-primary: #fff;
+    --accent: #b07d2b; --on-accent: #1c1917;
+    --bg: #fafaf9; --fg: #1c1917; --card: #fff; --muted: #f5f5f4;
+    --muted-fg: #57534e; --border: #e7e5e4;
+    --success: #15803d; --destructive: #b42318; --info: #2a5f8f; --stone-400: #a8a29e;
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.05); --shadow-lg: 0 10px 15px rgba(0,0,0,.1);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.5 "IBM Plex Sans", sans-serif; padding: 24px 16px 64px; }
+  main { max-width: 1100px; margin: 0 auto; }
+  h1 { font: 700 25px "Space Grotesk", sans-serif; margin: 0 0 4px; }
+  h2 { font: 600 20px "Space Grotesk", sans-serif; margin: 40px 0 10px; padding-top: 16px; border-top: 1px solid var(--border); }
+  h3 { font: 600 16px "Space Grotesk", sans-serif; margin: 0 0 2px; }
+  .lead { color: var(--muted-fg); margin: 0 0 16px; }
+  .note { border-left: 2px solid var(--accent); padding: 6px 12px; color: var(--muted-fg); margin: 12px 0 16px; }
+  .warn { border-left: 2px solid var(--destructive); padding: 6px 12px; color: var(--muted-fg); margin: 12px 0 16px; }
+  code { font-family: "IBM Plex Mono", monospace; font-size: 12px; }
+  .anno { font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--muted-fg); background: var(--muted); border: 1px solid var(--border); border-radius: 4px; padding: 1px 5px; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; box-shadow: var(--shadow-sm); }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  ul { list-style: none; margin: 0; padding: 0; }
+
+  table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+  th { text-align: left; font-weight: 500; font-size: 12px; color: var(--muted-fg); padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tr:last-child td { border-bottom: 0; }
+  .sw { width: 28px; height: 16px; border-radius: 4px; display: inline-block; vertical-align: -3px; border: 1px solid rgba(0,0,0,.08); }
+  .swatch { width: 10px; height: 10px; border-radius: 3px; display: inline-block; margin-right: 6px; vertical-align: -1px; }
+
+  .sec-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+  .sec-head p { margin: 0; color: var(--muted-fg); font-size: 13px; }
+  .segmented { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--card); flex: none; }
+  .segmented span { height: 36px; display: inline-flex; align-items: center; padding: 0 14px; font-size: 13px; font-weight: 500; color: var(--muted-fg); border-right: 1px solid var(--border); cursor: pointer; }
+  .segmented span:last-child { border-right: 0; }
+  .segmented span.on { background: var(--primary); color: var(--on-primary); }
+  .legend { display: flex; gap: 16px; font-size: 12px; color: var(--muted-fg); margin-bottom: 16px; }
+
+  .plot { position: relative; }
+  .bars { display: flex; align-items: flex-end; gap: 12px; height: 160px; border-bottom: 1px solid var(--border); }
+  .bars li { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; height: 100%; gap: 2px; cursor: pointer; position: relative; }
+  .bars .fail { background: var(--destructive); border-radius: 4px 4px 0 0; }
+  .bars .ok { background: var(--primary); }
+  .bars li .ok.top { border-radius: 4px 4px 0 0; }
+  .bars li.hov .ok { background: var(--primary-hover); }
+  .bars li.foc { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+  .xaxis { display: flex; gap: 12px; margin-top: 8px; }
+  .xaxis span { flex: 1; text-align: center; font-size: 11px; color: var(--muted-fg); font-weight: 500; }
+  .tip { position: absolute; bottom: 70%; left: 50%; transform: translateX(-50%); background: var(--card); border: 1px solid var(--border); border-radius: 8px; box-shadow: var(--shadow-lg); padding: 10px 12px; width: 170px; font-size: 12px; z-index: 2; }
+  .tip b { display: block; font-size: 13px; margin-bottom: 6px; font-family: "Space Grotesk"; }
+  .tip div { display: flex; justify-content: space-between; }
+  .tip .hint { margin-top: 8px; padding-top: 6px; border-top: 1px solid var(--border); color: var(--muted-fg); font-size: 11px; display: block; }
+
+  .skel { background: var(--muted); border-radius: 4px; }
+  .pulse { animation: p 1.4s ease-in-out infinite; }
+  @keyframes p { 0%,100% { opacity: 1 } 50% { opacity: .55 } }
+  @media (prefers-reduced-motion: reduce) { .pulse { animation: none } }
+
+  .applist li { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+  .applist li:last-child { border-bottom: 0; }
+  .applist li:hover .track i { background: var(--primary-hover); }
+  .appname { width: 150px; font-weight: 500; flex: none; }
+  .track { flex: 1; height: 8px; background: var(--muted); border-radius: 999px; overflow: hidden; }
+  .track i { display: block; height: 100%; background: var(--primary); border-radius: 999px; transition: background-color 150ms ease; }
+  .count { font-family: "IBM Plex Mono", monospace; font-size: 12px; color: var(--muted-fg); width: 28px; text-align: right; flex: none; }
+  .srbox { background: var(--muted); border: 1px dashed var(--stone-400); border-radius: 8px; padding: 12px; font-family: "IBM Plex Mono", monospace; font-size: 11px; color: var(--muted-fg); white-space: pre-wrap; }
+  .btn { height: 36px; border-radius: 8px; padding: 0 14px; font: 500 13px "IBM Plex Sans"; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; border: 1px solid var(--border); background: var(--card); color: var(--primary); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Charts &amp; Drilldown</h1>
+  <p class="lead">Mock phụ cho <code>home-activity-insights</code>: quy tắc màu chuỗi dữ liệu, các trạng thái của biểu đồ, bản đồ điều hướng và a11y. Toàn cảnh trang ở <code>home-overview.html</code>.</p>
+
+  <h2>1. Màu chuỗi dữ liệu — quy tắc, và một va chạm với MASTER.md</h2>
+
+  <div class="warn">
+    <b>Va chạm:</b> <code>globals.css</code> gán <code>--chart-2: var(--brass-600)</code>, nhưng MASTER.md nói brass là
+    <i>signature element</i>: "ngoài fill của CTA, đây là fill phi trung tính duy nhất trong sản phẩm. Dùng ở chỗ khác
+    thì nó hết nghĩa 'ở đây'." Đổ brass vào mọi biểu đồ là đúng chữ của code nhưng sai tinh thần của design system.
+  </div>
+
+  <p>Quy tắc đề xuất — <b>phân loại chuỗi trước, mới chọn token</b>:</p>
+  <table>
+    <thead><tr><th style="width:190px">Loại chuỗi</th><th style="width:230px">Token</th><th>Vì sao</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>Có ngữ nghĩa trạng thái</b><br><span style="color:var(--muted-fg);font-size:12px">thành công / thất bại</span></td>
+        <td><span class="sw" style="background:#143a5a"></span> <code>--primary</code><br><span class="sw" style="background:#b42318"></span> <code>--destructive</code></td>
+        <td>Đỏ "thất bại" đã có nghĩa cố định trong toàn app (<code>LoginStatCard tone="danger"</code>, cột trạng thái ở Login History). Gán nó một màu phân loại tuỳ ý là phá sự nhất quán đó. <b>Không</b> dùng <code>--chart-*</code> cho nhóm này.</td>
+      </tr>
+      <tr>
+        <td><b>Phân loại, không thứ bậc</b><br><span style="color:var(--muted-fg);font-size:12px">phương thức, thiết bị, category</span></td>
+        <td><code>--chart-1</code>, <code>--chart-3</code>, <code>--chart-4</code>, <code>--chart-5</code><br><span style="color:var(--destructive)">bỏ qua <code>--chart-2</code></span></td>
+        <td>Đủ 4 màu cho mọi chuỗi phân loại hiện có (phương thức có 5 giá trị nhưng <code>sso</code> bị loại khỏi facet này). Chỉ chạm <code>--chart-2</code> (brass) khi thực sự cần màu thứ 5 — và khi đó ghi lý do vào ADR.</td>
+      </tr>
+      <tr>
+        <td><b>Một chuỗi duy nhất</b><br><span style="color:var(--muted-fg);font-size:12px">top apps</span></td>
+        <td><span class="sw" style="background:#143a5a"></span> <code>--primary</code></td>
+        <td>Không có gì để phân biệt thì không cần bảng màu. Độ dài thanh đã mang toàn bộ thông tin.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="warn" style="margin-top:16px">
+    <b>Vấn đề contrast cần xử lý:</b> <code>--chart-3</code> ở light mode là <code>--prussian-300 #7CA9D8</code> —
+    vốn là <i>màu brand cho dark mode</i>. Trên nền trắng nó chỉ đạt khoảng <b>2.5:1</b>, dưới ngưỡng <b>3:1</b> của
+    WCAG 1.4.11 cho đồ hoạ phi văn bản. Hai cách xử lý, chọn một khi implement:
+    <br>① đổi <code>--chart-3</code> ở light mode sang <code>--prussian-500 #2A5F8F</code> (≈6.5:1) — sửa token, cần ghi ADR;
+    <br>② giữ token, thêm viền 1px <code>--border</code> quanh mỗi lát donut / mỗi thanh — ranh giới do viền đảm nhiệm.
+  </div>
+
+  <h2>2. Biểu đồ chính — bốn trạng thái</h2>
+
+  <div class="row">
+    <div class="card">
+      <div class="sec-head"><div><h3>Mặc định</h3><p>7 ngày qua · Asia/Ho_Chi_Minh</p></div></div>
+      <div class="legend"><span><i class="swatch" style="background:var(--primary)"></i>Thành công</span><span><i class="swatch" style="background:var(--destructive)"></i>Thất bại</span></div>
+      <ul class="bars">
+        <li><div class="ok top" style="height:22%"></div></li><li><div class="ok top" style="height:44%"></div></li>
+        <li><div class="fail" style="height:11%"></div><div class="ok" style="height:11%"></div></li>
+        <li><div class="ok top" style="height:0"></div></li><li><div class="ok top" style="height:55%"></div></li>
+        <li><div class="fail" style="height:11%"></div><div class="ok" style="height:33%"></div></li>
+        <li><div class="ok top" style="height:33%"></div></li>
+      </ul>
+      <div class="xaxis"><span>28/09</span><span>29/09</span><span>30/09</span><span>01/10</span><span>02/10</span><span>03/10</span><span>04/10</span></div>
+    </div>
+
+    <div class="card">
+      <div class="sec-head"><div><h3>Hover — tooltip</h3><p>Chuột trên cột 03/10</p></div></div>
+      <div class="legend"><span><i class="swatch" style="background:var(--primary)"></i>Thành công</span><span><i class="swatch" style="background:var(--destructive)"></i>Thất bại</span></div>
+      <ul class="bars">
+        <li><div class="ok top" style="height:22%"></div></li><li><div class="ok top" style="height:44%"></div></li>
+        <li><div class="fail" style="height:11%"></div><div class="ok" style="height:11%"></div></li>
+        <li><div class="ok top" style="height:0"></div></li><li><div class="ok top" style="height:55%"></div></li>
+        <li class="hov">
+          <div class="tip">
+            <b>Thứ Bảy, 03/10</b>
+            <div><span><i class="swatch" style="background:var(--primary)"></i>Thành công</span><b>3</b></div>
+            <div><span><i class="swatch" style="background:var(--destructive)"></i>Thất bại</span><b>1</b></div>
+            <span class="hint">Click để xem 4 lượt này</span>
+          </div>
+          <div class="fail" style="height:11%"></div><div class="ok" style="height:33%"></div>
+        </li>
+        <li><div class="ok top" style="height:33%"></div></li>
+      </ul>
+      <div class="xaxis"><span>28/09</span><span>29/09</span><span>30/09</span><span>01/10</span><span>02/10</span><span>03/10</span><span>04/10</span></div>
+    </div>
+  </div>
+
+  <div class="row" style="margin-top:16px">
+    <div class="card">
+      <div class="sec-head"><div><h3>Focus bàn phím</h3><p>Tab vào biểu đồ, mũi tên ←→ đổi cột, Enter mở</p></div></div>
+      <div class="legend"><span><i class="swatch" style="background:var(--primary)"></i>Thành công</span><span><i class="swatch" style="background:var(--destructive)"></i>Thất bại</span></div>
+      <ul class="bars">
+        <li><div class="ok top" style="height:22%"></div></li><li><div class="ok top" style="height:44%"></div></li>
+        <li class="foc"><div class="fail" style="height:11%"></div><div class="ok" style="height:11%"></div></li>
+        <li><div class="ok top" style="height:0"></div></li><li><div class="ok top" style="height:55%"></div></li>
+        <li><div class="fail" style="height:11%"></div><div class="ok" style="height:33%"></div></li>
+        <li><div class="ok top" style="height:33%"></div></li>
+      </ul>
+      <div class="xaxis"><span>28/09</span><span>29/09</span><span>30/09</span><span>01/10</span><span>02/10</span><span>03/10</span><span>04/10</span></div>
+      <p style="font-size:11px;color:var(--muted-fg);margin:12px 0 0">Keyline brass 2px là signature của MASTER.md cho "ranh giới đang hoạt động" — đây đúng là chỗ nó được dùng.</p>
+    </div>
+
+    <div class="card">
+      <div class="sec-head"><div><h3>Đang tải</h3><p>Skeleton giữ nguyên chiều cao</p></div></div>
+      <div class="legend"><span class="skel pulse" style="width:90px;height:12px;display:inline-block"></span><span class="skel pulse" style="width:70px;height:12px;display:inline-block"></span></div>
+      <ul class="bars">
+        <li><div class="skel pulse" style="height:30%"></div></li><li><div class="skel pulse" style="height:52%"></div></li>
+        <li><div class="skel pulse" style="height:24%"></div></li><li><div class="skel pulse" style="height:40%"></div></li>
+        <li><div class="skel pulse" style="height:62%"></div></li><li><div class="skel pulse" style="height:46%"></div></li>
+        <li><div class="skel pulse" style="height:35%"></div></li>
+      </ul>
+      <div class="xaxis"><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span><span>&nbsp;</span></div>
+      <p style="font-size:11px;color:var(--muted-fg);margin:12px 0 0">Khối skeleton phải cao đúng bằng biểu đồ thật, nếu không trang nhảy khi dữ liệu về. <code>prefers-reduced-motion</code> tắt nhịp đập.</p>
+    </div>
+  </div>
+
+  <div class="note">
+    Đổi range (7 → 30 → 90) <b>không</b> dựng lại khối từ đầu: giữ dữ liệu cũ bằng <code>placeholderData</code>,
+    làm mờ 60% trong lúc fetch. Biểu đồ nhấp nháy mỗi lần bấm toggle là lỗi cảm nhận rõ nhất của loại UI này.
+  </div>
+
+  <h2>3. Phương thức đăng nhập — donut</h2>
+  <div class="row">
+    <div class="card">
+      <div class="sec-head"><div><h3>Mặc định</h3><p>7 ngày qua</p></div></div>
+      <div style="display:flex;align-items:center;gap:24px">
+        <svg width="140" height="140" viewBox="0 0 42 42" role="img" aria-label="Phương thức đăng nhập: Mật khẩu 11, OTP 5, Magic link 2, Quên mật khẩu 2">
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="#f5f5f4" stroke-width="6"/>
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="#143a5a" stroke-width="6" stroke-dasharray="55 45" stroke-dashoffset="25"/>
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="#2a5f8f" stroke-width="6" stroke-dasharray="25 75" stroke-dashoffset="-30"/>
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="#57534e" stroke-width="6" stroke-dasharray="10 90" stroke-dashoffset="-55"/>
+          <circle cx="21" cy="21" r="15.9" fill="none" stroke="#15803d" stroke-width="6" stroke-dasharray="10 90" stroke-dashoffset="-65"/>
+          <text x="21" y="20.5" text-anchor="middle" font-size="6" font-family="Space Grotesk" font-weight="700" fill="#1c1917">20</text>
+          <text x="21" y="25" text-anchor="middle" font-size="2.6" font-family="IBM Plex Sans" fill="#57534e">lượt</text>
+        </svg>
+        <ul style="font-size:13px;display:flex;flex-direction:column;gap:10px">
+          <li style="cursor:pointer"><i class="swatch" style="background:#143a5a"></i>Mật khẩu <b>11</b></li>
+          <li style="cursor:pointer"><i class="swatch" style="background:#2a5f8f"></i>OTP <b>5</b></li>
+          <li style="cursor:pointer"><i class="swatch" style="background:#57534e"></i>Magic link <b>2</b></li>
+          <li style="cursor:pointer"><i class="swatch" style="background:#15803d"></i>Quên mật khẩu <b>2</b></li>
+        </ul>
+      </div>
+      <p style="font-size:11px;color:var(--muted-fg);margin:16px 0 0">Donut dùng <code>--chart-1/3/4/5</code>, bỏ qua brass. Ở đây <code>--chart-3</code> đã thay bằng <code>prussian-500</code> theo cách ① của §1.</p>
+    </div>
+    <div class="card">
+      <div class="sec-head"><div><h3>Legend là nút điều hướng</h3><p>Mỗi dòng là một <code>&lt;a&gt;</code>, không phải nhãn trang trí</p></div></div>
+      <ul style="font-size:13px;display:flex;flex-direction:column;gap:12px">
+        <li style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border:1px solid var(--accent);border-radius:8px;cursor:pointer"><span><i class="swatch" style="background:#143a5a"></i>Mật khẩu <b>11</b></span><span class="anno">?method=password</span></li>
+        <li style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border:1px solid transparent;cursor:pointer"><span><i class="swatch" style="background:#2a5f8f"></i>OTP <b>5</b></span><span class="anno">?method=otp</span></li>
+        <li style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border:1px solid transparent;cursor:pointer"><span><i class="swatch" style="background:#57534e"></i>Magic link <b>2</b></span><span class="anno">?method=magic_link</span></li>
+        <li style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border:1px solid transparent;cursor:pointer"><span><i class="swatch" style="background:#15803d"></i>Quên mật khẩu <b>2</b></span><span class="anno">?method=forgot_password</span></li>
+      </ul>
+      <p style="font-size:11px;color:var(--muted-fg);margin:16px 0 0">Vùng chạm mỗi dòng ≥44px. Lát donut và dòng legend cùng dẫn một đích — người dùng chuột nhắm vào cái nào cũng được.</p>
+    </div>
+  </div>
+
+  <h2>4. Thiết bị</h2>
+  <div class="card">
+    <div class="sec-head"><div><h3>Thiết bị</h3><p>7 ngày qua</p></div></div>
+    <ul class="applist">
+      <li><span class="appname">Desktop</span><span class="track"><i style="width:75%"></i></span><span class="count">15</span><span class="anno">?deviceType=desktop</span></li>
+      <li><span class="appname">Mobile</span><span class="track"><i style="width:20%"></i></span><span class="count">4</span><span class="anno">?deviceType=mobile</span></li>
+      <li><span class="appname">Tablet</span><span class="track"><i style="width:5%"></i></span><span class="count">1</span><span class="anno">?deviceType=tablet</span></li>
+    </ul>
+  </div>
+  <div class="warn">
+    <b>Chặn:</b> <code>dataSources/LoginHistory</code> hiện chỉ khai 4 filter — <code>app</code>, <code>status</code>,
+    <code>method</code>, <code>dateRange</code>. <code>useListQuery</code> <b>bỏ qua</b> mọi query param không có trong
+    <code>filterDefs</code>, nên <code>?deviceType=mobile</code> sẽ im lặng không có tác dụng dù backend đã hỗ trợ sẵn.
+    Phải thêm filter def + nhãn i18n trong cùng PR, nếu không khối này phải bỏ click.
+  </div>
+
+  <h2>5. Ứng dụng dùng nhiều nhất</h2>
+  <div class="card">
+    <div class="sec-head"><div><h3>Ứng dụng dùng nhiều nhất</h3><p>Tổng từ trước tới nay</p></div><span class="btn">Xem tất cả</span></div>
+    <ul class="applist">
+      <li><span class="appname">Tinh tien cau long</span><span class="track"><i style="width:100%"></i></span><span class="count">42</span></li>
+      <li><span class="appname">Match CV</span><span class="track"><i style="width:55%"></i></span><span class="count">23</span></li>
+      <li><span class="appname">Shorten Link</span><span class="track"><i style="width:36%"></i></span><span class="count">15</span></li>
+      <li><span class="appname">Manage Gym</span><span class="track"><i style="width:19%"></i></span><span class="count">8</span></li>
+      <li><span class="appname">Ducker Flow Grid</span><span class="track"><i style="width:7%"></i></span><span class="count">3</span></li>
+    </ul>
+  </div>
+  <div class="note">
+    Bar ngang chứ không bar dọc: tên app dài, xoay nhãn 45° là thứ MASTER.md gọi là anti-pattern về khả năng đọc.
+    Nhãn "Tổng từ trước tới nay" không phải trang trí — nó là lời cảnh báo rằng khối này <b>không</b> nghe theo
+    toggle 7/30/90 ở trên, vì <code>useCount</code> không có trục thời gian.
+  </div>
+
+  <h2>6. Bản đồ điều hướng</h2>
+  <table>
+    <thead><tr><th style="width:230px">Bấm vào</th><th style="width:300px">Đi tới</th><th>Trạng thái</th></tr></thead>
+    <tbody>
+      <tr><td>Thẻ "Ứng dụng đã dùng"</td><td><code>/recently-used</code></td><td>✅ chạy ngay</td></tr>
+      <tr><td>Thẻ "Hoạt động 30 ngày"</td><td><code>/recently-used</code></td><td>✅ chạy ngay</td></tr>
+      <tr><td>Thẻ "Đăng nhập thành công"</td><td><code>/login-history?status=success</code></td><td>✅ chạy ngay</td></tr>
+      <tr><td>Thẻ "Đăng nhập thất bại"</td><td><code>/login-history?status=failed</code></td><td>✅ chạy ngay</td></tr>
+      <tr><td>Một cột trong biểu đồ chính</td><td><code>/login-history?fromDate=…&amp;toDate=…</code></td><td>✅ filter <code>dateRange</code> đã có</td></tr>
+      <tr><td>Phần đỏ của một cột</td><td>thêm <code>&amp;status=failed</code></td><td>✅ chạy ngay</td></tr>
+      <tr><td>Lát donut / dòng legend phương thức</td><td><code>/login-history?method=otp</code></td><td>✅ chạy ngay</td></tr>
+      <tr><td>Dòng thiết bị</td><td><code>/login-history?deviceType=mobile</code></td><td>⚠️ cần thêm filter def (§4)</td></tr>
+      <tr><td>Một app trong Top apps</td><td>mở app qua <code>useOpenApp</code></td><td>✅ hook đã có từ <code>recently-used</code></td></tr>
+      <tr><td>"Xem tất cả" ở Top apps / Dùng gần đây</td><td><code>/recently-used</code></td><td>✅ chạy ngay</td></tr>
+      <tr><td>Banner "Khám phá thêm"</td><td><code>/apps</code></td><td>✅ nút hiện chưa có handler, PR này nối</td></tr>
+    </tbody>
+  </table>
+  <p class="lead" style="margin-top:12px">Deep-link chạy được vì <code>useListQuery</code> lấy URL làm nguồn sự thật: filter trên trang đích tự mở đúng trạng thái, không cần truyền state qua router. Mọi đích khai ở <code>dataSources/Home/</code> dạng data, không rải trong JSX.</p>
+
+  <h2>7. Khả năng tiếp cận</h2>
+  <p class="lead">recharts render SVG — screen reader không đọc được chuỗi cột. Mỗi biểu đồ kèm một bảng <code>sr-only</code> là <b>cùng dữ liệu</b>, không phải tóm tắt:</p>
+  <div class="srbox">&lt;div role="img" aria-label="Hoạt động đăng nhập 7 ngày qua: 20 lượt, 18 thành công, 2 thất bại"&gt;
+  &lt;!-- biểu đồ recharts --&gt;
+&lt;/div&gt;
+&lt;table class="sr-only"&gt;
+  &lt;caption&gt;Hoạt động đăng nhập theo ngày&lt;/caption&gt;
+  &lt;tr&gt;&lt;th&gt;Ngày&lt;/th&gt;&lt;th&gt;Thành công&lt;/th&gt;&lt;th&gt;Thất bại&lt;/th&gt;&lt;/tr&gt;
+  &lt;tr&gt;&lt;td&gt;28/09&lt;/td&gt;&lt;td&gt;2&lt;/td&gt;&lt;td&gt;0&lt;/td&gt;&lt;/tr&gt;
+  …
+&lt;/table&gt;</div>
+  <ul style="margin-top:16px;display:flex;flex-direction:column;gap:8px;color:var(--muted-fg);font-size:13px">
+    <li>· Đổi range → <code>ghosts/LoginStatsAnnouncer</code> thông báo lại tổng mới qua vùng <code>aria-live</code>.</li>
+    <li>· Màu không bao giờ là tín hiệu duy nhất: tooltip và bảng ẩn luôn ghi tên chuỗi bằng chữ.</li>
+    <li>· Mọi đích điều hướng là <code>&lt;a href&gt;</code> thật — mở tab mới, chuột giữa, screen reader đều đúng.</li>
+    <li>· Vùng chạm ≥44×44 kể cả khi control cao 36px (pad vùng bấm, theo checklist MASTER.md).</li>
+    <li>· Cột có giá trị 0 vẫn tồn tại trong DOM với <code>aria-label</code> "01/10: không có lượt đăng nhập nào".</li>
+  </ul>
+</main>
+</body>
+</html>
