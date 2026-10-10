@@ -5,59 +5,137 @@ import { request } from "@playwright/test";
 import { BASE_URL, USER_EMAIL, USER_PASSWORD } from "./env";
 export { BASE_URL, USER_EMAIL, USER_PASSWORD };
 
-// Literal seed titles (BE seeder: server/src/database/seeders/data/notifications.ts).
-// We assert these verbatim to prove the FE renders the stored string, not an
-// i18n key or enum.
-//
-// IMPORTANT — pick titles the mutation tests never consume. The real seed pads
-// to 26 rows by appending a UNIQUE "(#N)" suffix, with isRead = (N-1) % 2 === 0;
-// each "(#N)" title is therefore globally unique AND deterministically read or
-// unread. The serial mutation tests (mark-single, D9 persistence) permanently
-// flip the NEWEST unread item (`.first()` = top of list) to read with no
-// mark-unread API to revert (documented in the spec + afterAll). The bare
-// titles (items 1-3, newest) get eaten by that drift across runs, so we anchor
-// on OLD padded "(#N)" rows that sort to the bottom and are never clicked:
-//   - "Unusual sign-in detected (#22)" → seeded UNREAD (item #22, even N-1).
-//   - "Password changed" (bare item #4) → seeded READ; mutations only touch
-//     UNREAD rows, so this read row is never flipped. Its exact match never
-//     collides with the padded "Password changed (#11/#18/#25)" variants.
-export const SEED_UNREAD_TITLE = "Unusual sign-in detected (#22)";
-// A seed row that is seeded as read (4th item), used for read-tab assertions.
-export const SEED_READ_TITLE = "Password changed";
+// Seed anchors (server/src/database/seeders/data/notifications.ts). Rows 6-26
+// are APP_AVAILABLE for "Seed App <N>", read when N is odd, so each renders a
+// unique sentence. Anchors sit inside the first page (20 rows, newest first)
+// of every tab. Each has ONE job, because there is no mark-unread API and a
+// mutated row stays mutated until `pnpm seed:clear`:
+//   - read-only assertions use #10 (unread) and #11 (read) — never clicked;
+//   - "mark single" consumes #12, "persists after reload" consumes #14.
+export const seedAppBody = (n: number) =>
+  `Seed App ${n} is now in your launcher.`;
+export const SEED_UNREAD_N = 10;
+export const SEED_UNREAD_BODY = seedAppBody(SEED_UNREAD_N);
+export const SEED_READ_BODY = seedAppBody(11);
+export const SEED_MARK_SINGLE_BODY = seedAppBody(12);
+export const SEED_PERSIST_BODY = seedAppBody(14);
 
-interface UnreadCountResponse {
-  data?: { count?: number };
+// Every API login below uses this one User-Agent, so after the first call the
+// device is known and these helpers stop producing LOGIN_ANOMALY rows of their
+// own (which would skew unread-count deltas).
+export const HELPER_USER_AGENT =
+  "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 E2E-Helper";
+
+interface ApiEnvelope<T> {
+  data?: T;
 }
 
-// Fetch the caller's unread count straight from the API, for delta assertions
-// in the mutation tests (badge math is more robust as a delta than an absolute).
-// Logs in via password to get a fresh bearer token (the page storageState's
-// cookie is not directly reusable from a bare request context).
-export async function fetchUnreadCount(): Promise<number> {
-  const ctx: APIRequestContext = await request.newContext({
-    baseURL: BASE_URL
+export async function apiLogin(
+  ctx: APIRequestContext,
+  userAgent = HELPER_USER_AGENT
+): Promise<string> {
+  const login = await ctx.post("/api/v1/auth/login", {
+    data: { email: USER_EMAIL, password: USER_PASSWORD },
+    headers: { "User-Agent": userAgent }
   });
-  try {
-    const login = await ctx.post("/api/v1/auth/login", {
-      data: { email: USER_EMAIL, password: USER_PASSWORD }
-    });
-    if (!login.ok()) {
-      throw new Error(`fetchUnreadCount: login failed (${login.status()})`);
-    }
-    const body = (await login.json()) as { data?: { accessToken?: string } };
-    const token = body?.data?.accessToken;
-    if (!token)
-      throw new Error("fetchUnreadCount: no access token in response");
+  if (!login.ok()) throw new Error(`apiLogin failed (${login.status()})`);
+  const body = (await login.json()) as ApiEnvelope<{ accessToken?: string }>;
+  const token = body?.data?.accessToken;
+  if (!token) throw new Error("apiLogin: no access token in response");
+  return token;
+}
 
-    const res = await ctx.get("/api/v1/notifications/unread-count", {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    if (!res.ok()) {
-      throw new Error(`fetchUnreadCount: request failed (${res.status()})`);
-    }
-    const json = (await res.json()) as UnreadCountResponse;
-    return json?.data?.count ?? 0;
+export async function withApi<T>(
+  fn: (ctx: APIRequestContext) => Promise<T>
+): Promise<T> {
+  const ctx = await request.newContext({ baseURL: BASE_URL });
+  try {
+    return await fn(ctx);
   } finally {
     await ctx.dispose();
   }
 }
+
+/** The caller's unread count straight from the API, for delta assertions. */
+export async function fetchUnreadCount(): Promise<number> {
+  return withApi(async (ctx) => {
+    const token = await apiLogin(ctx);
+    const res = await ctx.get("/api/v1/notifications/unread-count", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!res.ok()) throw new Error(`unread-count failed (${res.status()})`);
+    const json = (await res.json()) as ApiEnvelope<{ count?: number }>;
+    return json?.data?.count ?? 0;
+  });
+}
+
+export interface ApiNotificationRow {
+  id: string;
+  type: string;
+  params: Record<string, string | number>;
+  createdAt: string;
+}
+
+export async function fetchNotifications(
+  query = ""
+): Promise<ApiNotificationRow[]> {
+  return withApi(async (ctx) => {
+    const token = await apiLogin(ctx);
+    const res = await ctx.get(`/api/v1/notifications${query}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!res.ok()) throw new Error(`list failed (${res.status()})`);
+    const json = (await res.json()) as ApiEnvelope<{
+      items?: ApiNotificationRow[];
+    }>;
+    return json?.data?.items ?? [];
+  });
+}
+
+/**
+ * Makes the helper's own device known before a test measures deltas: the
+ * first helper login of a fresh DB is itself an "unusual sign-in", delivered
+ * through the queue a moment later.
+ */
+export async function warmUpHelperDevice(): Promise<void> {
+  await fetchUnreadCount();
+  await new Promise((resolve) => setTimeout(resolve, 2_000));
+}
+
+// Distinct browser/OS pairs for the real LOGIN_ANOMALY test. A pair already
+// used by an earlier run is known and produces nothing, so the test walks the
+// list until one yields a new notification.
+export const ANOMALY_USER_AGENTS: { ua: string; browser: string }[] = [
+  {
+    ua: "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15",
+    browser: "Safari"
+  },
+  {
+    ua: "Mozilla/5.0 (X11; Linux x86_64; rv:126.0) Gecko/20100101 Firefox/126.0",
+    browser: "Firefox"
+  },
+  {
+    ua: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0",
+    browser: "Edge"
+  },
+  {
+    ua: "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:126.0) Gecko/20100101 Firefox/126.0",
+    browser: "Firefox"
+  },
+  {
+    ua: "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 OPR/111.0.0.0",
+    browser: "Opera"
+  },
+  {
+    ua: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Mobile/15E148 Safari/604.1",
+    browser: "Mobile Safari"
+  },
+  {
+    ua: "Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36",
+    browser: "Chrome"
+  },
+  {
+    ua: "Mozilla/5.0 (Macintosh; Intel Mac OS X 14.4; rv:126.0) Gecko/20100101 Firefox/126.0",
+    browser: "Firefox"
+  }
+];

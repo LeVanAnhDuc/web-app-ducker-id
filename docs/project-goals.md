@@ -230,7 +230,7 @@ Chi tiết version: `.claude/techstack/frontend.md`, `.claude/techstack/backend.
 | **MVP-1**   | OAuth/OIDC server                                                                                                               | Đủ Authorization Code + PKCE + consent + JWKS + introspection + RP-initiated logout + back-channel logout. Test bằng client giả lập.         | —                               |
 | **MVP-2**   | App registry + entitlement                                                                                                      | App model + admin CRUD UI + per-user entitlement + dashboard hiển thị app theo entitlement + Favorites/RecentlyUsed wired.                   | MVP-1 (để có client_id mapping) |
 | **MVP-3**   | Tách Blog thành satellite                                                                                                       | Scaffold project blog mới, migrate `apps/blog/*` ra src riêng, đăng ký Blog vào Ducker ID như app vệ tinh đầu tiên, validate end-to-end SSO flow. | MVP-1, MVP-2                    |
-| **MVP-4**   | UI polish + Admin tools                                                                                                         | Hoàn thiện admin force-logout, lock/unlock, reset-password override. ~~Loại bỏ Categories hardcoded~~ ✅ (04.10.2026, `category-management`). Notifications wire vào event thật.        | MVP-2                           |
+| **MVP-4**   | UI polish + Admin tools                                                                                                         | Hoàn thiện admin force-logout, lock/unlock, reset-password override. ~~Loại bỏ Categories hardcoded~~ ✅ (04.10.2026, `category-management`). ~~Notifications wire vào event thật~~ ✅ (05.10.2026, `notification-events` — realtime + admin announcements là hai feature tiếp theo).        | MVP-2                           |
 | **Backlog** | Discover algorithm, Billing thực, Anomaly detection nâng cao, OAuth provider khác (Google/GitHub login social) | —                                                                                                                                            | —                               |
 
 ---
@@ -240,7 +240,7 @@ Chi tiết version: `.claude/techstack/frontend.md`, `.claude/techstack/backend.
 - Payment gateway thực (Billing UI giữ làm placeholder).
 - Team collaboration (mời thành viên, vai trò owner/admin/member): **Non-Goal** — trái mô hình single-tenant (§5). Placeholder UI `/team` đã được gỡ bỏ.
 - Social login (Google/GitHub) — sẽ vào backlog sau MVP-4.
-- Push notification real-time (WebSocket/SSE) — Notifications hiện chỉ là inbox.
+- Push notification real-time (WebSocket/SSE) — Notifications sinh từ sự kiện thật nhưng client vẫn polling 60s; push là feature `notification-realtime`.
 - Mobile native app.
 - Multi-tenant / workspace isolation.
 - SCIM / directory sync với hệ thống ngoài.

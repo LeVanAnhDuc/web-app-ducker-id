@@ -18,10 +18,10 @@ const LIST_RE = /\/api\/v1\/notifications(\?|$)/;
 // Synthetic item factory (mirrors notifications.e2e.ts).
 const fakeItem = (i: number) => ({
   id: `fake-loading-${i}`,
-  type: "SYSTEM_ANNOUNCEMENT",
-  title: `Loading test notification ${i}`,
-  message: `Body ${i}.`,
-  meta: null,
+  type: "APP_AVAILABLE",
+  category: "app",
+  params: { appName: `Loading test app ${i}` },
+  link: null,
   isRead: false,
   readAt: null,
   createdAt: new Date(Date.now() - i * 60_000).toISOString()
@@ -87,7 +87,9 @@ test.describe("Notifications — loading skeleton (frontend-cleanup)", () => {
 
     // After resolve: at least one notification article is visible.
     await expect(
-      page.getByText("Loading test notification 1", { exact: true })
+      page.getByText("Loading test app 1 is now in your launcher.", {
+        exact: true
+      })
     ).toBeVisible({ timeout: 10_000 });
   });
 
@@ -121,7 +123,9 @@ test.describe("Notifications — loading skeleton (frontend-cleanup)", () => {
 
     // Wait for the real data to appear.
     await expect(
-      page.getByText("Loading test notification 10", { exact: true })
+      page.getByText("Loading test app 10 is now in your launcher.", {
+        exact: true
+      })
     ).toBeVisible({ timeout: 10_000 });
 
     // The skeleton wrapper (aria-hidden div from NotificationGroupsSkeleton)
@@ -138,13 +142,10 @@ test.describe("Notifications — loading skeleton (frontend-cleanup)", () => {
     // The skeleton renders 3+2 = 5 SkeletonNotificationItem divs. In the
     // loaded state there are no such placeholder divs at the skeleton level.
     // We check the first-child aria-hidden div no longer wraps Skeleton nodes
-    // by asserting no top-level aria-hidden sibling wraps .h-3.w-16 (the
-    // group-header Skeleton className used only in NotificationGroupsSkeleton).
-    await expect(page.locator("[aria-hidden='true'] .h-3.w-16")).toHaveCount(
-      0,
-      {
-        timeout: 5_000
-      }
-    );
+    // by asserting no aria-hidden wrapper still holds a `.w-40` title bar
+    // (the Skeleton className used only by NotificationListSkeleton).
+    await expect(page.locator("[aria-hidden='true'] .w-40")).toHaveCount(0, {
+      timeout: 5_000
+    });
   });
 });

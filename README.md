@@ -41,7 +41,10 @@ This repository is a monorepo: `client/` is the Next.js web UI, `server/` is the
   - Your own sign-in attempts with method, success/failure and reason, IP, country and city, device type, OS and browser, and an anomaly flag
   - Each row shows where you signed in — Ducker ID itself or a satellite app over OIDC — and automatic SSO sign-ins from an existing session are recorded too, marked with an "Auto" badge; filter by app or by the SSO method
 - **Notifications inbox**
-  - Unread badge and panel in the header, plus a full `/notifications` page grouped by date
+  - Real events notify you: your password changed or was reset by an admin, your account was locked by wrong passwords, a sign-in came from a device or country you have not used before, or a new app joined your launcher
+  - Unread badge and panel in the header, plus a full `/notifications` page grouped by date, with All / Unread / Read tabs and a filter by type (security, account, apps, system)
+  - Click a notification to open what it is about and mark it read; an unusual sign-in offers "Not you? Change your password"
+  - Shown in your language (English or Vietnamese) and the badge refreshes every minute
   - Mark a single notification or all of them as read
 - **Support requests**
   - Submit a request from the support dialog anywhere in the app — as a signed-in user or as a guest

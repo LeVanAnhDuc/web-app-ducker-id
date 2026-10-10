@@ -94,6 +94,19 @@ export const LOGIN_HISTORY_CONFIG = {
   MAX_ANOMALY_REASONS: 20
 } as const;
 
+export const LOGIN_ANOMALY_REASONS = {
+  NEW_DEVICE: "new_device",
+  NEW_COUNTRY: "new_country"
+} as const;
+
+export const LOGIN_ANOMALY_CONFIG = {
+  // Compare against everything still kept: a shorter window would call a
+  // device "new" just because its last use fell out of the window.
+  LOOKBACK_DAYS: LOGIN_HISTORY_CONFIG.RETENTION_DAYS,
+  // Not a place — geoip could not, or must not, resolve the IP.
+  IGNORED_COUNTRIES: [GEO_DEFAULTS.LOCAL, GEO_DEFAULTS.UNKNOWN_COUNTRY]
+} as const;
+
 export const LOGIN_HISTORY_STATS = {
   // Nothing longer than the TTL: a 180-day range would answer with a silently
   // empty tail rather than an error.

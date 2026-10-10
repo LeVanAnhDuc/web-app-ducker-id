@@ -148,6 +148,16 @@ export class MongoWebAppRepository implements WebAppRepository {
     });
   }
 
+  async markAnnounced(id: string): Promise<boolean> {
+    return asyncDatabaseHandler("markAnnounced", async () => {
+      const res = await WebAppModel.updateOne(
+        { _id: id, announcedAt: null },
+        { $set: { announcedAt: new Date() } }
+      ).exec();
+      return res.modifiedCount === 1;
+    });
+  }
+
   async updateById(
     id: string,
     data: WebAppUpdateInput

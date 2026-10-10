@@ -4,6 +4,7 @@ import type { LoginHistoryDocument } from "@/modules/login-history/types";
 // module under test
 import { LoginHistoryService } from "../";
 import { NotFoundError } from "@/common/exceptions";
+import { createNotificationDispatcherMock } from "@test/mocks/notification-dispatcher.mock";
 
 const makeRepo = (
   overrides: Partial<LoginHistoryRepository> = {}
@@ -13,6 +14,11 @@ const makeRepo = (
   findAll: jest.fn(),
   aggregateMyStats: jest.fn(),
   findById: jest.fn(),
+  findSignInTraits: jest.fn().mockResolvedValue({
+    hasHistory: false,
+    devices: [],
+    countries: []
+  }),
   ...overrides
 });
 
@@ -43,7 +49,10 @@ describe("LoginHistoryService.getLoginHistoryDetail", () => {
     const repo = makeRepo({
       findById: jest.fn().mockResolvedValue(fakeDoc())
     });
-    const service = new LoginHistoryService(repo);
+    const service = new LoginHistoryService({
+      loginHistoryRepo: repo,
+      notificationDispatcher: createNotificationDispatcherMock()
+    });
 
     const result = await service.getLoginHistoryDetail(
       "64b7f0c2f1a2b3c4d5e6f7a8"
@@ -59,7 +68,10 @@ describe("LoginHistoryService.getLoginHistoryDetail", () => {
 
   it("throws NotFoundError when the record is missing", async () => {
     const repo = makeRepo({ findById: jest.fn().mockResolvedValue(null) });
-    const service = new LoginHistoryService(repo);
+    const service = new LoginHistoryService({
+      loginHistoryRepo: repo,
+      notificationDispatcher: createNotificationDispatcherMock()
+    });
 
     await expect(
       service.getLoginHistoryDetail("000000000000000000000000")
@@ -81,7 +93,10 @@ describe("LoginHistoryService app sign-in recording", () => {
 
   it("writes an OAuth SSO row for recordAppSignIn", () => {
     const repo = makeRepo({ create: jest.fn().mockResolvedValue(fakeDoc()) });
-    const service = new LoginHistoryService(repo);
+    const service = new LoginHistoryService({
+      loginHistoryRepo: repo,
+      notificationDispatcher: createNotificationDispatcherMock()
+    });
 
     service.recordAppSignIn({
       userId: "64b7f0c2f1a2b3c4d5e6f7b9",
@@ -104,7 +119,10 @@ describe("LoginHistoryService app sign-in recording", () => {
 
   it("writes a failed not_entitled row for recordAppSignInDenied", () => {
     const repo = makeRepo({ create: jest.fn().mockResolvedValue(fakeDoc()) });
-    const service = new LoginHistoryService(repo);
+    const service = new LoginHistoryService({
+      loginHistoryRepo: repo,
+      notificationDispatcher: createNotificationDispatcherMock()
+    });
 
     service.recordAppSignInDenied({
       userId: "64b7f0c2f1a2b3c4d5e6f7b9",
@@ -123,9 +141,12 @@ describe("LoginHistoryService app sign-in recording", () => {
     );
   });
 
-  it("keeps IdP logins as source=idp with no app", () => {
+  it("keeps IdP logins as source=idp with no app", async () => {
     const repo = makeRepo({ create: jest.fn().mockResolvedValue(fakeDoc()) });
-    const service = new LoginHistoryService(repo);
+    const service = new LoginHistoryService({
+      loginHistoryRepo: repo,
+      notificationDispatcher: createNotificationDispatcherMock()
+    });
 
     service.recordSuccessfulLogin({
       userId: "64b7f0c2f1a2b3c4d5e6f7b9",
@@ -133,6 +154,8 @@ describe("LoginHistoryService app sign-in recording", () => {
       loginMethod: "password",
       req
     });
+    // The successful path reads the user's history before it writes.
+    await new Promise(setImmediate);
 
     expect(repo.create).toHaveBeenCalledWith(
       expect.objectContaining({

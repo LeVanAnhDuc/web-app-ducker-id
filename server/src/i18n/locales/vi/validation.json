@@ -65,6 +65,9 @@
   "sortOrder": {
     "invalid": "Thứ tự sắp xếp không hợp lệ."
   },
+  "category": {
+    "invalid": "category phải là một trong security, account, app, system"
+  },
   "isRead": {
     "invalid": "isRead phải là giá trị boolean"
   },

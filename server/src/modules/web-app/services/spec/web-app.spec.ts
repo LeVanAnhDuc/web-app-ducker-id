@@ -9,6 +9,7 @@ import {
 } from "@/common/exceptions";
 // others
 import { RequestContext } from "@/utils/request-context";
+import { createNotificationDispatcherMock } from "@test/mocks/notification-dispatcher.mock";
 
 const makeRepos = () => {
   const webAppRepo = {
@@ -19,7 +20,8 @@ const makeRepos = () => {
     existsByName: jest.fn().mockResolvedValue(false),
     existsByNameExcludingId: jest.fn().mockResolvedValue(false),
     create: jest.fn(),
-    updateById: jest.fn()
+    updateById: jest.fn(),
+    markAnnounced: jest.fn().mockResolvedValue(true)
   };
   const categoryRepo = {
     // Echo the count back so every id exists unless a test says otherwise.
@@ -84,7 +86,8 @@ describe("WebAppService.createApp", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       favoriteRepo: favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any
+      accessPolicy: accessPolicy as any,
+      notificationDispatcher: createNotificationDispatcherMock()
     });
     await expect(service.createApp(validBody)).rejects.toBeInstanceOf(
       ConflictRequestError
@@ -104,7 +107,8 @@ describe("WebAppService.createApp", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       favoriteRepo: favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any
+      accessPolicy: accessPolicy as any,
+      notificationDispatcher: createNotificationDispatcherMock()
     });
     await expect(service.createApp(validBody)).rejects.toBeInstanceOf(
       BadRequestError
@@ -125,7 +129,8 @@ describe("WebAppService.createApp", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       favoriteRepo: favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any
+      accessPolicy: accessPolicy as any,
+      notificationDispatcher: createNotificationDispatcherMock()
     });
 
     const result = await service.createApp(validBody);
@@ -177,7 +182,8 @@ describe("WebAppService.updateApp", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       favoriteRepo: favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any
+      accessPolicy: accessPolicy as any,
+      notificationDispatcher: createNotificationDispatcherMock()
     });
     await expect(
       service.updateApp("app1", { displayName: "New" })
@@ -198,7 +204,8 @@ describe("WebAppService.updateApp", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       favoriteRepo: favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any
+      accessPolicy: accessPolicy as any,
+      notificationDispatcher: createNotificationDispatcherMock()
     });
     await expect(
       service.updateApp("app1", { name: "taken" })
@@ -219,7 +226,8 @@ describe("WebAppService.updateApp", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       favoriteRepo: favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any
+      accessPolicy: accessPolicy as any,
+      notificationDispatcher: createNotificationDispatcherMock()
     });
     await service.updateApp("app1", { name: "blog", displayName: "Blog 2" });
     expect(webAppRepo.existsByNameExcludingId).not.toHaveBeenCalled();
@@ -239,7 +247,8 @@ describe("WebAppService.updateApp", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       favoriteRepo: favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any
+      accessPolicy: accessPolicy as any,
+      notificationDispatcher: createNotificationDispatcherMock()
     });
     await expect(
       service.updateApp("app1", { categoryIds: ["6a24f14e6d65650b697c34c6"] })
@@ -263,7 +272,8 @@ describe("WebAppService.updateApp", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       favoriteRepo: favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any
+      accessPolicy: accessPolicy as any,
+      notificationDispatcher: createNotificationDispatcherMock()
     });
     const result = await service.updateApp("app1", { status: "inactive" });
     const persisted = webAppRepo.updateById.mock.calls[0][1];
@@ -290,7 +300,8 @@ describe("WebAppService.updateApp", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       favoriteRepo: favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any
+      accessPolicy: accessPolicy as any,
+      notificationDispatcher: createNotificationDispatcherMock()
     });
     const result = await service.updateApp("app1", { status: "active" });
     const persisted = webAppRepo.updateById.mock.calls[0][1];
@@ -314,7 +325,8 @@ describe("WebAppService.updateApp", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       favoriteRepo: favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any
+      accessPolicy: accessPolicy as any,
+      notificationDispatcher: createNotificationDispatcherMock()
     });
     const result = await service.updateApp("app1", { displayName: "Renamed" });
     const persisted = webAppRepo.updateById.mock.calls[0][1];
@@ -363,7 +375,8 @@ describe("WebAppService.listUserApps", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       favoriteRepo: favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any
+      accessPolicy: accessPolicy as any,
+      notificationDispatcher: createNotificationDispatcherMock()
     });
 
     await service.listUserApps({ search: "blog" });
@@ -386,7 +399,8 @@ describe("WebAppService.listUserApps", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       favoriteRepo: favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any
+      accessPolicy: accessPolicy as any,
+      notificationDispatcher: createNotificationDispatcherMock()
     });
 
     const result = await service.listUserApps({ page: 2, limit: 12 });
@@ -431,7 +445,8 @@ describe("WebAppService.listUserApps", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       favoriteRepo: favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any
+      accessPolicy: accessPolicy as any,
+      notificationDispatcher: createNotificationDispatcherMock()
     });
 
     const result = await service.listUserApps({ limit: 9999 });
@@ -457,7 +472,8 @@ describe("WebAppService.listUserApps", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       favoriteRepo: favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any
+      accessPolicy: accessPolicy as any,
+      notificationDispatcher: createNotificationDispatcherMock()
     });
 
     await service.listUserApps(
@@ -482,7 +498,8 @@ describe("WebAppService.listUserApps", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       favoriteRepo: favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any
+      accessPolicy: accessPolicy as any,
+      notificationDispatcher: createNotificationDispatcherMock()
     });
 
     await service.listUserApps({}, "user");
@@ -508,7 +525,8 @@ describe("WebAppService.listUserApps access", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       favoriteRepo: favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any
+      accessPolicy: accessPolicy as any,
+      notificationDispatcher: createNotificationDispatcherMock()
     });
     return { webAppRepo, accessPolicy, service };
   };
@@ -608,11 +626,128 @@ describe("WebAppService.listUserApps isFavorite", () => {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       favoriteRepo: favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any
+      accessPolicy: accessPolicy as any,
+      notificationDispatcher: createNotificationDispatcherMock()
     });
     const res = await service.listUserApps({}, "user");
     expect(res.items.find((i) => i._id === "app1")?.isFavorite).toBe(true);
     expect(res.items.find((i) => i._id === "app2")?.isFavorite).toBe(false);
     jest.restoreAllMocks();
+  });
+});
+
+describe("WebAppService — APP_AVAILABLE announcement", () => {
+  const build = (repos: ReturnType<typeof makeRepos>) => {
+    const notificationDispatcher = createNotificationDispatcherMock();
+    const service = new WebAppService({
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      webAppRepo: repos.webAppRepo as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      categoryRepo: repos.categoryRepo as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      favoriteRepo: repos.favoriteRepo as any,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      accessPolicy: repos.accessPolicy as any,
+      notificationDispatcher
+    });
+    return { service, notificationDispatcher };
+  };
+
+  it("announces an app created active to its roles plus admins", async () => {
+    const repos = makeRepos();
+    repos.webAppRepo.create.mockResolvedValue(createdDoc);
+    const { service, notificationDispatcher } = build(repos);
+
+    await service.createApp(validBody);
+
+    expect(repos.webAppRepo.markAnnounced).toHaveBeenCalledWith("app1");
+    expect(notificationDispatcher.broadcast).toHaveBeenCalledWith({
+      roles: ["user", "admin"],
+      type: "APP_AVAILABLE",
+      params: { appName: "Blog" },
+      link: "/apps?search=Blog",
+      dedupeKey: "app:app1"
+    });
+  });
+
+  it("does not announce an app created hidden", async () => {
+    const repos = makeRepos();
+    repos.webAppRepo.create.mockResolvedValue({
+      ...createdDoc,
+      status: WEB_APP_STATUSES.INACTIVE
+    });
+    const { service, notificationDispatcher } = build(repos);
+
+    await service.createApp({ ...validBody, status: "inactive" });
+
+    expect(repos.webAppRepo.markAnnounced).not.toHaveBeenCalled();
+    expect(notificationDispatcher.broadcast).not.toHaveBeenCalled();
+  });
+
+  it("announces when a hidden app is published", async () => {
+    const repos = makeRepos();
+    repos.webAppRepo.findById.mockResolvedValue({
+      ...existingDoc,
+      status: WEB_APP_STATUSES.INACTIVE
+    });
+    repos.webAppRepo.updateById.mockResolvedValue(existingDoc);
+    const { service, notificationDispatcher } = build(repos);
+
+    await service.updateApp("app1", { status: "active" });
+
+    expect(notificationDispatcher.broadcast).toHaveBeenCalledTimes(1);
+  });
+
+  it("does not announce an edit to an app that was already live", async () => {
+    const repos = makeRepos();
+    repos.webAppRepo.findById.mockResolvedValue(existingDoc);
+    repos.webAppRepo.updateById.mockResolvedValue(existingDoc);
+    const { service, notificationDispatcher } = build(repos);
+
+    await service.updateApp("app1", { displayName: "Blog 2" });
+
+    expect(repos.webAppRepo.markAnnounced).not.toHaveBeenCalled();
+    expect(notificationDispatcher.broadcast).not.toHaveBeenCalled();
+  });
+
+  it("announces only once when the app was announced before", async () => {
+    const repos = makeRepos();
+    repos.webAppRepo.findById.mockResolvedValue({
+      ...existingDoc,
+      status: WEB_APP_STATUSES.INACTIVE
+    });
+    repos.webAppRepo.updateById.mockResolvedValue(existingDoc);
+    repos.webAppRepo.markAnnounced.mockResolvedValue(false);
+    const { service, notificationDispatcher } = build(repos);
+
+    await service.updateApp("app1", { status: "active" });
+
+    expect(notificationDispatcher.broadcast).not.toHaveBeenCalled();
+  });
+
+  it("keeps the admin's save when announcing fails", async () => {
+    const repos = makeRepos();
+    repos.webAppRepo.create.mockResolvedValue(createdDoc);
+    repos.webAppRepo.markAnnounced.mockRejectedValue(new Error("mongo down"));
+    const { service } = build(repos);
+
+    await expect(service.createApp(validBody)).resolves.toMatchObject({
+      clientId: "client_generated"
+    });
+  });
+
+  it("URL-encodes the app name in the link", async () => {
+    const repos = makeRepos();
+    repos.webAppRepo.create.mockResolvedValue({
+      ...createdDoc,
+      displayName: "R&D Tools"
+    });
+    const { service, notificationDispatcher } = build(repos);
+
+    await service.createApp(validBody);
+
+    expect(notificationDispatcher.broadcast).toHaveBeenCalledWith(
+      expect.objectContaining({ link: "/apps?search=R%26D%20Tools" })
+    );
   });
 });

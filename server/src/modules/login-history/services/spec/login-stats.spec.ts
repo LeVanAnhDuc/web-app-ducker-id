@@ -5,6 +5,7 @@ import type { LoginStatsAggregationResult } from "@/modules/login-history/types"
 import { LoginHistoryService } from "../";
 import { LOGIN_HISTORY_STATS } from "../../constants";
 import { RequestContext } from "@/utils/request-context";
+import { createNotificationDispatcherMock } from "@test/mocks/notification-dispatcher.mock";
 
 const AUTH_ID = "507f1f77bcf86cd799439011";
 const APP_ID = "64b7f0c2f1a2b3c4d5e6f7a1";
@@ -29,11 +30,15 @@ const makeRepo = (
     findByUser: jest.fn(),
     findAll: jest.fn(),
     aggregateMyStats: jest.fn().mockResolvedValue(aggregation),
-    findById: jest.fn()
+    findById: jest.fn(),
+    findSignInTraits: jest.fn()
   };
   return {
     repo,
-    service: new LoginHistoryService(repo as unknown as LoginHistoryRepository)
+    service: new LoginHistoryService({
+      loginHistoryRepo: repo as unknown as LoginHistoryRepository,
+      notificationDispatcher: createNotificationDispatcherMock()
+    })
   };
 };
 

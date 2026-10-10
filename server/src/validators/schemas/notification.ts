@@ -3,6 +3,8 @@ import Joi from "joi";
 // common
 import { PAGINATION } from "@/common/pagination";
 import { SORT_ORDER_VALUES } from "@/common/sort";
+// modules
+import { NOTIFICATION_CATEGORIES } from "@/modules/notification/constants";
 // validators
 import { OBJECTID_PATTERN } from "@/validators/constants";
 
@@ -26,6 +28,10 @@ export const notificationListQuerySchema = Joi.object({
   isRead: Joi.boolean().optional().messages({
     "boolean.base": "validation:isRead.invalid"
   }),
+  category: Joi.string()
+    .valid(...Object.values(NOTIFICATION_CATEGORIES))
+    .optional()
+    .messages({ "any.only": "validation:category.invalid" }),
   sortOrder: Joi.string()
     .valid(...SORT_ORDER_VALUES)
     .optional()

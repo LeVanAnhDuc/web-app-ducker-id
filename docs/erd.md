@@ -96,7 +96,7 @@ erDiagram
         String user_agent
         Enum client_type "default WEB"
         String timezone_offset "nullable"
-        Boolean is_anomaly "default false"
+        Boolean is_anomaly "default false — set on successful IdP sign-ins from a new device or country"
         StringArray anomaly_reasons
         Enum source "idp|oauth, default idp"
         ObjectId web_app_id FK "→ WEB_APP, nullable (null = sign-in to the IdP)"
@@ -147,6 +147,7 @@ erDiagram
         EnumArray required_roles "default [USER]"
         Enum status "ACTIVE | INACTIVE, default ACTIVE"
         Number sort_order "default 0"
+        Date announced_at "nullable — set once, when APP_AVAILABLE is first broadcast"
         Date created_at
         Date updated_at
     }
@@ -191,10 +192,11 @@ erDiagram
     NOTIFICATION {
         ObjectId _id PK
         ObjectId user_id FK "→ USER"
-        Enum type "LOGIN_ANOMALY | ACCOUNT_LOCKED | APP_AVAILABLE | ENTITLEMENT_GRANTED | ENTITLEMENT_REVOKED | ..."
-        String title
-        String message
-        Object meta "context data nullable"
+        Enum type "LOGIN_ANOMALY | ACCOUNT_LOCKED | PASSWORD_CHANGED | APP_AVAILABLE | ENTITLEMENT_GRANTED | ENTITLEMENT_REVOKED | SYSTEM_ANNOUNCEMENT"
+        Enum category "security | account | app | system — derived from type at write time"
+        Object params "values for the client's localized template; no text is stored"
+        String link "nullable — internal client path only (starts with a single /)"
+        String dedupe_key "nullable — UK with user_id when set; one fan-out event per user"
         Boolean is_read "default false"
         Date read_at "nullable"
         Date created_at
