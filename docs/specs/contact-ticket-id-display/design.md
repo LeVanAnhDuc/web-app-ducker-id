@@ -79,3 +79,5 @@ Cột `Gate`: `A+B` = cả 2 gate chạy; `A only` = mutation-heavy, gate B ch�
 | —   | ShortId reuse (đặc thù) | ✅ | Cùng 1 component `ShortId` render nhất quán ở 3 nơi (list, detail, success) — cùng độ rút gọn + `title`. | A+B |
 
 Completeness critic: chạy khi user yêu cầu "kỹ/đủ/≥90%" trước khi chốt.
+
+> **Test cases** for this feature now live in `automation-test/test-cases/support.md` + `automation-test/test-cases/admin-contact.md` (merged from the former `e2e.md` on 2026-10-10).

@@ -155,15 +155,15 @@ module nghiệp vụ ──notify()/broadcast()──▶ NotificationDispatcher 
   không throw), processor, `assessLoginAnomaly` (bảng quyết định), `recordSuccessfulLogin` (ghi cờ +
   notify), change-password / admin-reset / password-lockout phát đúng event, web-app create/update chỉ
   announce khi chuyển trạng thái + `markAnnounced` thắng, list lọc `category`, DTO mới.
-- **E2E (Playwright)**: viết lại `e2e/notifications/notifications.e2e.ts` theo shape mới — ma trận ở §9,
-  chi tiết ở `e2e.md`. Sự kiện thật được E2E là `LOGIN_ANOMALY` (đăng nhập API với User-Agent chưa
+- **E2E (Playwright)**: viết lại `automation-test/tests/e2e/notifications/notifications.e2e.ts` theo shape mới — ma trận ở §9,
+  test case ở `automation-test/test-cases/notifications.md`. Sự kiện thật được E2E là `LOGIN_ANOMALY` (đăng nhập API với User-Agent chưa
   thấy) vì nó không có tác dụng phụ lên session hay khoá tài khoản.
 - `seed` viết lại theo shape mới; `pnpm seed:clear` (xoá rồi seed lại) trước khi chạy E2E. Sửa luôn
   thứ tự `--clear`: notification phải được xoá **trước** user, vì `clearNotifications` tìm theo email.
 
 ## 9. E2E Scenario Matrix
 
-Bản chi tiết từng test: `e2e.md`. Gate `A only` = có mutation thật trên seed.
+Bản chi tiết từng test: `automation-test/test-cases/notifications.md`. Gate `A only` = có mutation thật trên seed.
 
 | # | Nhóm | Kịch bản | Gate |
 | --- | --- | --- | --- |
@@ -183,7 +183,11 @@ Bản chi tiết từng test: `e2e.md`. Gate `A only` = có mutation thật trê
 
 Không chạy thật `ACCOUNT_LOCKED` (khoá `user@test.com` 30 phút, làm hỏng các suite khác),
 `APP_AVAILABLE` và `PASSWORD_CHANGED` (đổi mật khẩu tăng `tokenVersion`, giết session của storageState)
-trong E2E — ba sự kiện này có unit test ở server và đã kiểm tay qua API (`e2e.md` §3).
+trong E2E — ba sự kiện này có unit test ở server và đã kiểm tay qua API (05.10.2026). Suite hồi quy sau
+đó tự động hoá `PASSWORD_CHANGED` và `ACCOUNT_LOCKED` trên tài khoản dùng một lần
+(`automation-test/tests/api/notifications/events.api.ts`); `APP_AVAILABLE` vẫn kiểm tay.
+
+> **Test cases** for this feature now live in `automation-test/test-cases/notifications.md` (merged from the former `e2e.md` on 2026-10-10).
 
 ## 10. Ngoài phạm vi
 

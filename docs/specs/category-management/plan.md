@@ -99,9 +99,9 @@ Checkout chính đang chiếm `:3000` / `:5000` và DB `ducker-id`. Worktree ch�
 8. **Invalidate**: mutation danh mục invalidate `ADMIN_CATEGORIES`, `APP_CATEGORIES`, `ADMIN_APPS`, `APPS`,
    `FAVORITES`, `RECENT_APPS`.
 
-## E2E (`client/e2e/admin-categories/` — project `admin`; thêm vào regex `testIgnore`/`testMatch`)
+## E2E (`automation-test/tests/e2e/admin-categories/` — project `admin`; thêm vào regex `testIgnore`/`testMatch`)
 
-Helper `e2e/helpers/categories.ts`: `adminApi()` (login 1 lần / file), `listCategories`, `createCategory`,
+Helper `automation-test/helpers/categories.ts`: `adminApi()` (login 1 lần / file), `listCategories`, `createCategory`,
 `deleteCategory(id, reassignments)`, `setAppCategories(appName, ids)`, `snapshotAppCategories()` /
 `restoreAppCategories(snapshot)`, `restoreOrder(snapshotIds)`.
 

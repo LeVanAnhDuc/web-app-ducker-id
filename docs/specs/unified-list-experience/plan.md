@@ -1279,14 +1279,14 @@ export const buildAdminContactFilterDefs = (
 
 # Phase 2 — E2E (expand Scenario Matrix)
 
-> Expand `## E2E Scenario Matrix` trong `design.md` thành test thực thi. Đại diện: **Admin Users** (server-side, multi-filter) + **Favorites** (client-side). Artifact: `client/e2e/unified-list/*.e2e.ts` + tài liệu `docs/specs/unified-list-experience/e2e.md`. Helper dùng chung `client/e2e/helpers/`; auth qua `auth.setup.ts` → storageState.
+> Expand `## E2E Scenario Matrix` trong `design.md` thành test thực thi. Đại diện: **Admin Users** (server-side, multi-filter) + **Favorites** (client-side). Artifact: `automation-test/tests/e2e/admin-users/*.e2e.ts` + tài liệu `automation-test/test-cases/admin-users.md` + `automation-test/test-cases/apps.md`. Helper dùng chung `automation-test/helpers/`; auth qua `auth.setup.ts` → storageState.
 
-### Task 20 (FE): Author `e2e.md` + scaffold spec files
+### Task 20 (FE): Author `automation-test/test-cases/admin-users.md` + `automation-test/test-cases/apps.md` + scaffold spec files
 
 **Files:**
-- Create: `docs/specs/unified-list-experience/e2e.md`, `client/e2e/unified-list/admin-users.e2e.ts`, `client/e2e/unified-list/favorites.e2e.ts`
+- Create: `automation-test/test-cases/admin-users.md` + `automation-test/test-cases/apps.md`, `automation-test/tests/e2e/admin-users/list.e2e.ts`, `automation-test/tests/e2e/admin-users/favorites.e2e.ts`
 
-- [ ] **Step 1: `e2e.md`** — copy bảng matrix từ `design.md`, thêm cột trạng thái + ghi case defer (vd `dateRange custom` deferred vì DateRangeFilter chưa làm custom; `sort toggle` chỉ test nếu trang có sort UI). Ghi `A only`: không có (read-heavy).
+- [ ] **Step 1: `automation-test/test-cases/admin-users.md` + `automation-test/test-cases/apps.md`** — copy bảng matrix từ `design.md`, thêm cột trạng thái + ghi case defer (vd `dateRange custom` deferred vì DateRangeFilter chưa làm custom; `sort toggle` chỉ test nếu trang có sort UI). Ghi `A only`: không có (read-heavy).
 - [ ] **Step 2: Scaffold** 2 spec file với `test.describe` theo nhóm matrix (happy/authZ/validation-url/empty/boundary-pagination/filter-search/i18n/error-loading/a11y). Mỗi test 1 scenario.
 - [ ] **Step 3: Commit** — `git commit -m "test(unified-list): author e2e scenarios doc + scaffolds"`
 
@@ -1319,7 +1319,7 @@ test("changing filter resets page to 1", async ({ page }) => {
 
 - [ ] **Step 2: i18n en+vi** — lặp test render toolbar/empty ở cả `/admin/users` (en) và `/vi/admin/users` (vi); assert chuỗi "Filters"/"Bộ lọc".
 - [ ] **Step 3: empty + clear** — search no-match → `ListEmptyState` hiện + nút Clear filters → click → URL sạch.
-- [ ] **Step 4:** Chạy `cd client && pnpm e2e unified-list` → PASS. (Tiền đề app-running theo §4.3 — agent self-check trước khi dispatch dual-gate.)
+- [ ] **Step 4:** Chạy `cd automation-test && pnpm test unified-list` → PASS. (Tiền đề app-running theo §4.3 — agent self-check trước khi dispatch dual-gate.)
 - [ ] **Step 5: Commit** — `git commit -m "test(unified-list): implement e2e for admin-users + favorites"`
 
 ---
@@ -1330,7 +1330,7 @@ test("changing filter resets page to 1", async ({ page }) => {
 
 - [ ] **Step 1: Dead code** — `grep -r "AdminUsersToolbar\|AdminContactFilters\|TablePagination" client/src` xác nhận không còn import mồ côi. Xoá `TablePagination` nếu không trang nào dùng (nếu vẫn còn trang chưa migrate dùng, giữ). Bỏ `ALL_VALUE` cục bộ thừa, `AdminContactFilterFormValues`/`ADMIN_CONTACT_FILTER_FIELD_NAMES` nếu mồ côi.
 - [ ] **Step 2: Green checks (§4.7)** — `cd client && pnpm lint && pnpm build` → xanh hết. Fix mọi lỗi.
-- [ ] **Step 3: §4.3 E2E dual-gate** — self-check app running (BE:5000/FE:3000/Mongo/Redis); dispatch song song Gate A (`pnpm e2e unified-list`) + Gate B (Playwright MCP walk matrix trên Admin Users + Favorites, auth context riêng). Cả 2 PASS mới qua. Fail → `systematic-debugging` → `e2e-bugs.md` → fix (max 3 vòng).
+- [ ] **Step 3: §4.3 E2E dual-gate** — self-check app running (BE:5000/FE:3000/Mongo/Redis); dispatch song song Gate A (`pnpm test unified-list`) + Gate B (Playwright MCP walk matrix trên Admin Users + Favorites, auth context riêng). Cả 2 PASS mới qua. Fail → `systematic-debugging` → `e2e-bugs.md` → fix (max 3 vòng).
 - [ ] **Step 4: CLAUDE.md drift audit (§4.6)** — chạy `claude-md-improver` trên `client/.claude/CLAUDE.md` (feature thêm pattern list shell + hook + namespace `list` + folder `components/list/`). Cập nhật Core Patterns/Custom* inventory nếu lệch. Đi kèm PR client.
 - [ ] **Step 5: README sync (§4.8)** — feature không đổi setup/config/env/deps → **skip** readme-maintainer.
 - [ ] **Step 6: Commit** — `git commit -m "chore(unified-list): cleanup dead code + claude.md sync"`

@@ -170,11 +170,11 @@ interactive?: boolean;
 
 ## E2E Scenario Matrix
 
-Đây là thay đổi trên feature đã có, nên **reconcile** delta với `client/e2e/login-history/` và
-`client/e2e/admin-login-history/`. Phần ghi log ở `OAuthService` (nhánh resume / im lặng / denied /
+Đây là thay đổi trên feature đã có, nên **reconcile** delta với `automation-test/tests/e2e/login-history/` và
+`automation-test/tests/e2e/admin-login-history/`. Phần ghi log ở `OAuthService` (nhánh resume / im lặng / denied /
 `prompt=none`) là logic server, cover sâu bằng **Jest unit test**. E2E tạo dòng SSO bằng cách đi
 qua `/oauth/authorize` với app seed `IDMS Portal` (đã có `clientId` + redirect URI trong seeder).
-Bước này sẽ chốt chi tiết ở `e2e.md`.
+Bước này sẽ chốt chi tiết ở `automation-test/test-cases/login-history.md` + `automation-test/test-cases/admin-login-history.md`.
 
 | #  | Category           | Gate | Quyết định |
 | -- | ------------------ | ---- | ---------- |
@@ -196,3 +196,5 @@ Bước này sẽ chốt chi tiết ở `e2e.md`.
 - **BE**: `cd server && pnpm lint && pnpm type-check && pnpm test && pnpm build`
 - **FE**: `cd client && pnpm lint && pnpm exec tsc --noEmit && pnpm build` + E2E dual-gate
 - README `## Features`: thêm một bullet về nguồn đăng nhập và SSO trong lịch sử đăng nhập.
+
+> **Test cases** for this feature now live in `automation-test/test-cases/login-history.md` + `automation-test/test-cases/admin-login-history.md` (merged from the former `e2e.md` on 2026-10-10).

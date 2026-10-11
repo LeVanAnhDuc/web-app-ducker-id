@@ -42,7 +42,7 @@
 
 ## E2E + docs
 
-17. Viết lại `e2e/notifications/notifications.e2e.ts` + helper theo shape mới; thêm kịch bản ở `e2e.md`.
+17. Viết lại `automation-test/tests/e2e/notifications/notifications.e2e.ts` + helper (`automation-test/helpers/notifications.ts`) theo shape mới; thêm test case ở `automation-test/test-cases/notifications.md`.
     Chạy worktree server `:5100` + client `:3100`, seed lại DB, `E2E_BASE_URL=http://localhost:3100`.
 18. Cập nhật `docs/erd.md`, `docs/project-goals.md`, `docs/unfinished-features.md`, `README.md`
     (`## Features` + số test), `CLAUDE.md` (Swagger registry, số test, notification ghi qua queue).

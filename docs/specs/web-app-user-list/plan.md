@@ -1487,10 +1487,10 @@ git commit -m "docs(goals): /apps lists active catalog; entitlement gates launch
 ### Task D1: E2E scenario doc + test
 
 **Files:**
-- Create: `docs/specs/web-app-user-list/e2e.md` (docs repo)
-- Create: `client/e2e/web-app-user-list/apps-list.e2e.ts` (client repo)
+- Create: `automation-test/test-cases/apps.md` (docs repo)
+- Create: `automation-test/tests/e2e/apps/apps-list.e2e.ts` (client repo)
 
-- [ ] **Step 1: Write the scenario doc** (`docs/specs/web-app-user-list/e2e.md`): list the cases below.
+- [ ] **Step 1: Write the scenario doc** (`automation-test/test-cases/apps.md`): list the cases below.
 
 - [ ] **Step 2: Write the Playwright test** covering:
   - Visiting `/vi/apps` (authenticated via global `auth.setup.ts` storageState) renders app cards from the API (at least one seeded active app).
@@ -1501,7 +1501,7 @@ git commit -m "docs(goals): /apps lists active catalog; entitlement gates launch
 
 - [ ] **Step 3: Run E2E green**
 
-Run (client worktree, app running + seeded): `pnpm e2e`
+Run (client worktree, app running + seeded): `pnpm test`
 Expected: PASS.
 
 - [ ] **Step 4: Commit**
@@ -1510,7 +1510,7 @@ Expected: PASS.
 # docs repo
 git add specs/web-app-user-list/e2e.md && git commit -m "docs(web-app-user-list): add E2E scenario"
 # client repo
-git add e2e/web-app-user-list && git commit -m "test(apps): add /apps list E2E"
+git add automation-test/tests/e2e/apps && git commit -m "test(apps): add /apps list E2E"
 ```
 
 ---
@@ -1526,17 +1526,17 @@ git add e2e/web-app-user-list && git commit -m "test(apps): add /apps list E2E"
 
 ## E2E Backfill Plan
 
-> **Mục đích**: backfill suite E2E `web-app-user-list` cho khớp **toàn bộ** `## E2E Scenario Matrix` ở `design.md §6` (12 nhóm rubric đã hợp nhất cả category-filter + EN-locale từ `apps-api-integration`). Suite hiện tại (`client/e2e/web-app-user-list/apps-list.e2e.ts`) đã cover rows 1, 3, 8 (happy / authZ / data-render), một phần 7 (category pill) + một phần 9 (EN render mỏng). Phần backfill: rows **2 (AuthN), 4 (Validation API), 5 (Empty/null), 6 (Boundary — seed-gated), 7 (search+category DT + reset-on-reload), 9 (EN depth), 10 (Error/loading), 12 (a11y keyboard + announcer)**.
+> **Mục đích**: backfill suite E2E `web-app-user-list` cho khớp **toàn bộ** `## E2E Scenario Matrix` ở `design.md §6` (12 nhóm rubric đã hợp nhất cả category-filter + EN-locale từ `apps-api-integration`). Suite hiện tại (`automation-test/tests/e2e/apps/apps-list.e2e.ts`) đã cover rows 1, 3, 8 (happy / authZ / data-render), một phần 7 (category pill) + một phần 9 (EN render mỏng). Phần backfill: rows **2 (AuthN), 4 (Validation API), 5 (Empty/null), 6 (Boundary — seed-gated), 7 (search+category DT + reset-on-reload), 9 (EN depth), 10 (Error/loading), 12 (a11y keyboard + announcer)**.
 >
-> **Phương pháp**: TDD, bite-sized — mỗi scenario áp dụng = **một `test()` mới** (one test per applicable scenario). EXTEND file có sẵn, KHÔNG rebuild. Row 11 (mutation safety) = N/A (read-only, không có write). Vị trí trong flow: sau implement + BE/FE quality gates, **trước** `requesting-code-review`; dual-gate §4.3 (gate A `pnpm e2e` + gate B MCP walk).
+> **Phương pháp**: TDD, bite-sized — mỗi scenario áp dụng = **một `test()` mới** (one test per applicable scenario). EXTEND file có sẵn, KHÔNG rebuild. Row 11 (mutation safety) = N/A (read-only, không có write). Vị trí trong flow: sau implement + BE/FE quality gates, **trước** `requesting-code-review`; dual-gate §4.3 (gate A `pnpm test` + gate B MCP walk).
 >
-> **Tiền đề (app-running, agent tự check 1 lần trước khi dispatch)**: BE :5000 + FE :3000 + Mongo + Redis chạy & seeded (web-app seeder → 5 active app: Blog, Analytics Dashboard, IDMS Portal, Notes, Operations Console; `team-calendar` inactive). Role-scoped: account `user@test.com` (role `user`) thấy **3** app: Blog, IDMS Portal, Notes. Auth qua global `auth.setup.ts` storageState. Worktree → chạy BE/FE alternate port + `E2E_BASE_URL` (xem `e2e.md` Preconditions).
+> **Tiền đề (app-running, agent tự check 1 lần trước khi dispatch)**: BE :5000 + FE :3000 + Mongo + Redis chạy & seeded (web-app seeder → 5 active app: Blog, Analytics Dashboard, IDMS Portal, Notes, Operations Console; `team-calendar` inactive). Role-scoped: account `user@test.com` (role `user`) thấy **3** app: Blog, IDMS Portal, Notes. Auth qua global `auth.setup.ts` storageState. Worktree → chạy BE/FE alternate port + `E2E_BASE_URL` (xem `automation-test/test-cases/apps.md` Preconditions).
 >
 > **Selector convention**: ưu tiên role/name (heading `level: 3`, button accessible-name, textbox); KHÔNG sửa app code để test (gặp a11y/DOM gap → flag follow-up). VI labels ở `/vi/apps`, EN labels ở `/apps` (no prefix). i18n strings lấy từ `client/src/locales/{en,vi}/apps.json` (đã verify).
 
 ### Task E1: Extend suite — bite-sized scenarios
 
-**File:** EXTEND `client/e2e/web-app-user-list/apps-list.e2e.ts` (client repo). Mỗi checkbox = 1 `test()`. Format: `- [ ] <row#> <name> [technique] — <data> → <expected>`.
+**File:** EXTEND `automation-test/tests/e2e/apps/apps-list.e2e.ts` (client repo). Mỗi checkbox = 1 `test()`. Format: `- [ ] <row#> <name> [technique] — <data> → <expected>`.
 
 #### Đã có (giữ nguyên, không viết lại) — chỉ liệt kê để trace
 
@@ -1975,20 +1975,20 @@ test("announces the category change in the live region [a11y]", async ({
 });
 ```
 
-- [ ] **E1 Step — Run E2E green (gate A)**: client worktree, app running + seeded → `cd client && pnpm e2e e2e/web-app-user-list`. Expected: PASS toàn bộ. Nếu fail → `superpowers:systematic-debugging` root-cause → ghi `docs/specs/web-app-user-list/e2e-bugs.md` → fix → chạy lại (max 3 vòng §4.3).
+- [ ] **E1 Step — Run E2E green (gate A)**: client worktree, app running + seeded → `cd automation-test && pnpm test automation-test/tests/e2e/apps`. Expected: PASS toàn bộ. Nếu fail → `superpowers:systematic-debugging` root-cause → ghi `docs/specs/web-app-user-list/e2e-bugs.md` → fix → chạy lại (max 3 vòng §4.3).
 
-### Task E2: Reconcile `e2e.md` (currently stale)
+### Task E2: Reconcile `automation-test/test-cases/apps.md` (currently stale)
 
-**File:** UPDATE `docs/specs/web-app-user-list/e2e.md` (docs repo).
+**File:** UPDATE `automation-test/test-cases/apps.md` (docs repo).
 
-> `e2e.md` hiện **stale** — chỉ liệt kê 3 scenario (render / search / Open), **thiếu**: category-pills + EN-locale (vốn ĐÃ tồn tại trong test file) và toàn bộ backfill mới (AuthN / validation / empty-null / boundary / error-loading / a11y). Reconcile 3-artifact theo §4.3: matrix (`design.md §6`) ↔ `e2e.md` ↔ `apps-list.e2e.ts` phải đồng bộ.
+> `automation-test/test-cases/apps.md` hiện **stale** — chỉ liệt kê 3 scenario (render / search / Open), **thiếu**: category-pills + EN-locale (vốn ĐÃ tồn tại trong test file) và toàn bộ backfill mới (AuthN / validation / empty-null / boundary / error-loading / a11y). Reconcile 3-artifact theo §4.3: matrix (`design.md §6`) ↔ `automation-test/test-cases/apps.md` ↔ `apps-list.e2e.ts` phải đồng bộ.
 
-- [ ] **E2 Step 1: ADD scenario đã tồn tại trong test mà `e2e.md` thiếu** — mục `## Scenarios`:
+- [ ] **E2 Step 1: ADD scenario đã tồn tại trong test mà `automation-test/test-cases/apps.md` thiếu** — mục `## Scenarios`:
   - Category-pills filter (row 7): chọn pill → `categoryId=` request + `aria-pressed=true`; "All" về cache.
   - EN-locale render (row 9): `/apps` group "Filter by category" + "Open Blog" + các string EN (placeholder / empty / summary).
 - [ ] **E2 Step 2: ADD backfill scenarios mới** vào `## Scenarios` cho khớp E1: AuthN redirect + API 401 (row 2), tampered-param validation API (row 4), empty no-match + null icon/desc fallback (row 5), boundary limit API + pager-hidden single-page (row 6), search+category combo + reset-on-reload (row 7), error 5xx + categories-error + loading skeleton (row 10), keyboard Open + announcer (row 12).
 - [ ] **E2 Step 3: UPDATE `## Notes / follow-ups`** — ghi rõ DEFER page-click pagination (cần seed > 12 user-visible app; hiện cover biên `limit` ở API); ghi rõ fresh-context AuthN (clear cookies + storageState undefined); ghi React Query retry 2× cho 5xx ở error test.
-- [ ] **E2 Step 4: Đồng bộ check** — đối chiếu từng row matrix `design.md §6` ↔ scenario `e2e.md` ↔ `test()` trong `apps-list.e2e.ts`; mọi row ✅ áp dụng phải có scenario + test (hoặc DEFER có lý do). KHÔNG update 1 artifact mà bỏ 2 cái còn lại.
+- [ ] **E2 Step 4: Đồng bộ check** — đối chiếu từng row matrix `design.md §6` ↔ scenario `automation-test/test-cases/apps.md` ↔ `test()` trong `apps-list.e2e.ts`; mọi row ✅ áp dụng phải có scenario + test (hoặc DEFER có lý do). KHÔNG update 1 artifact mà bỏ 2 cái còn lại.
 
 ### Task E3: Commit (review gate §7 — đợi user duyệt trước commit)
 
@@ -1999,7 +1999,7 @@ test("announces the category change in the live region [a11y]", async ({
 git add specs/web-app-user-list/e2e.md
 git commit -m "docs(web-app-user-list): reconcile E2E scenario doc with full matrix"
 # client repo
-git add e2e/web-app-user-list/apps-list.e2e.ts
+git add automation-test/tests/e2e/apps/apps-list.e2e.ts
 git commit -m "test(apps): backfill /apps catalog E2E (authN, validation, empty, error, a11y)"
 ```
 

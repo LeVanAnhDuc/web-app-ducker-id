@@ -101,7 +101,7 @@ Không cần env var mới.
 
 ## 6. E2E Scenario Matrix
 
-Feature mutation (admin lock/unlock). Suite mới `client/e2e/admin-users-lock/`.
+Feature mutation (admin lock/unlock). Suite mới `automation-test/tests/e2e/admin-users/`.
 Gate: `A+B` = cả 2 gate chạy; `A only` = mutation-heavy, gate B chỉ verify read/render.
 
 | # | Category | Scenario + expected | Gate |
@@ -144,4 +144,6 @@ Các contract dưới đây kiểm ở tầng BE test (`*.spec.ts`), chính xác
 - BE: `server/src/modules/user/**` (+ `models`/`constants`/`validators`/`locales` liên quan), swagger.
 - FE: `client/src/{constants/endpoints.ts, requests/adminUsers.ts, views/AdminUsers/hooks/*, mocks/AdminUsers.ts}`.
 - Spec: `docs/specs/admin-lock-unlock-user/{design.md, e2e.md}` (+ `security-report.md`, `e2e-bugs.md` khi cần).
-- E2E test: `client/e2e/admin-users-lock/*.e2e.ts`.
+- E2E test: `automation-test/tests/e2e/admin-users/*.e2e.ts`.
+
+> **Test cases** for this feature now live in `automation-test/test-cases/admin-users.md` (merged from the former `e2e.md` on 2026-10-10).

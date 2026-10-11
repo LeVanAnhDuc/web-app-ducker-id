@@ -441,7 +441,7 @@ Only adopt if it reduces real duplication; otherwise document that the current f
 
 **Files:**
 - Modify/Create: `client/.env.example`
-- Create: `client/e2e/helpers/env.ts` (or extend existing helper) — single source for test-env defaults
+- Create: `automation-test/helpers/env.ts` (or extend existing helper) — single source for test-env defaults
 - Verify: change-password error messages location
 
 - [ ] **Step 1:** Add missing `E2E_*` keys to `client/.env.example` (placeholders only, no secrets) — e.g. `E2E_BASE_URL`, `E2E_USER_EMAIL`, `E2E_USER_PASSWORD`, admin creds keys used by `auth.setup.ts`. Cross-check against `playwright.config.ts` + `auth.setup.ts` for every `process.env.E2E_*` referenced.
@@ -457,27 +457,27 @@ If any error copy is inline, move it to the i18n config. If already centralized,
 
 ## §4.3 E2E — expand behavior scenarios
 
-### Task 21: E2E tests for behavior surface + `e2e.md`
+### Task 21: E2E tests for behavior surface + `automation-test/test-cases/notifications.md` + `automation-test/test-cases/admin-apps.md`
 
 **Files:**
-- Create: `client/e2e/frontend-cleanup/*.e2e.ts`
-- Create: `docs/specs/frontend-cleanup/e2e.md` (scenario doc, mirrors design §7 matrix)
+- Create: `automation-test/tests/e2e/notifications/*.e2e.ts`
+- Create: `automation-test/test-cases/notifications.md` + `automation-test/test-cases/admin-apps.md` (scenario doc, mirrors design §7 matrix)
 
-- [ ] **Step 1:** Write `e2e.md` from the design §7 matrix (only the ✅ rows; record N/A rationale). Use skill `e2e-scenario-coverage` rubric.
+- [ ] **Step 1:** Write `automation-test/test-cases/notifications.md` + `automation-test/test-cases/admin-apps.md` from the design §7 matrix (only the ✅ rows; record N/A rationale). Use skill `e2e-scenario-coverage` rubric.
 - [ ] **Step 2:** Implement Playwright tests for the ✅ rows:
   - **#1/#5/#14 Copy button:** click → check icon + `aria-label` "copied" appears; reverts after timeout; rapid 3× clicks stays copied once. Selector by role/label.
   - **#2/#9 NotificationGroups loading:** intercept/slow the notifications request → assert loading placeholder, then groups render.
   - **#3 Toast dedup:** admin app status toggle forced error → assert exactly one error toast (`A only` gate, no double-mutation in MCP walk).
   - **#13 i18n:** new `common.json` keys render in `en` and `vi`.
-- [ ] **Step 3:** Reuse `client/e2e/helpers/` + global `auth.setup.ts` storageState. Mutation test (#3) reverts/avoids real data change. Do not modify app code from tests.
-- [ ] **Step 4:** This task's verification is the §4.3 **dual-gate** run (handled by the main loop after all tasks): `pnpm e2e` (Gate A) + Playwright MCP walk (Gate B), both over this matrix.
+- [ ] **Step 3:** Reuse `automation-test/helpers/` + global `auth.setup.ts` storageState. Mutation test (#3) reverts/avoids real data change. Do not modify app code from tests.
+- [ ] **Step 4:** This task's verification is the §4.3 **dual-gate** run (handled by the main loop after all tasks): `pnpm test` (Gate A) + Playwright MCP walk (Gate B), both over this matrix.
 
 ---
 
 ## Post-implementation gates (main loop, not subagents)
 
 1. **§4.7 green checks:** `cd client && pnpm lint && pnpm build` (FE) — must be green.
-2. **§4.3 E2E dual-gate:** Gate A `pnpm e2e` (scope: frontend-cleanup) + Gate B MCP walk, both PASS.
+2. **§4.3 E2E dual-gate:** Gate A `pnpm test` (scope: frontend-cleanup) + Gate B MCP walk, both PASS.
 3. **Step 4 code review:** `superpowers:requesting-code-review` (FE convention).
 4. **§4.5 security review:** likely **skip** (no auth/input/sensitive-data surface — cleanup only); record skip rationale in `security-report.md` if confirmed skip, else dispatch security-audit.
 5. **§4.6 CLAUDE.md drift audit:** run if any fact in `client/.claude/CLAUDE.md` changed (new shared hook idioms, constants conventions). Non-blocking.

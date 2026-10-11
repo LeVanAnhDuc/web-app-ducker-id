@@ -167,8 +167,8 @@ git commit -m "feat(profile): remove connected accounts and notification prefere
 ### Task 3: Reconcile `profile-account-merge` E2E suite
 
 **Files:**
-- Modify: `client/e2e/profile-account-merge/merge.e2e.ts`
-- Modify: `docs/specs/profile-account-merge/e2e.md` (docs repo worktree)
+- Modify: `automation-test/tests/e2e/profile/account-merge.e2e.ts`
+- Modify: `automation-test/test-cases/profile.md` (docs repo worktree)
 
 **Interfaces:**
 - Consumes: nothing.
@@ -202,14 +202,14 @@ test("renders remaining sections on /profile in one page", async ({ page }) => {
 
 Keep the `EN.connectedAccounts` / `EN.notificationPreferences` constants (now used by the absence assertions).
 
-- [ ] **Step 2: Update `docs/specs/profile-account-merge/e2e.md` Row 1.**
+- [ ] **Step 2: Update `automation-test/test-cases/profile.md` Row 1.**
 
 Change Row 1 wording from "All six card sections render" to reflect the trim: four sections render (title + personalInfo + changePassword + dangerZone); connectedAccounts + notificationPreferences asserted absent. Add a one-line note referencing `docs/specs/profile-trim/` as the change source.
 
 - [ ] **Step 3: Commit (client repo).**
 
 ```bash
-git add e2e/profile-account-merge/merge.e2e.ts
+git add automation-test/tests/e2e/profile/account-merge.e2e.ts
 git commit -m "test(profile): reconcile merge e2e after removing two sections"
 ```
 
@@ -220,7 +220,7 @@ Docs `e2e.md` change is committed in the docs worktree alongside the profile-tri
 ## E2E Dual-Gate (§4.3) — after Task 3
 
 Run the reconciled suite scoped to the feature on the live app (self-check app running first):
-- **Gate A:** `cd client && pnpm e2e profile-account-merge`
+- **Gate A:** `cd automation-test && pnpm test profile-account-merge`
 - **Gate B:** MCP walk of the reconciled Row 1 + i18n scenarios (read/render only — no mutation).
 
 Both PASS → proceed to green-checks gate + PR.

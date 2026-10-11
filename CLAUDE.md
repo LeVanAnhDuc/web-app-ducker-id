@@ -11,7 +11,7 @@ Ducker ID (Identity Management System) is the sign-in gateway and app launcher p
 > **Naming debt from the 2026-08-20 rename:** the product is **Ducker ID** and the slug is
 > `web-app-ducker-id`, but two places still say `IDMS` on purpose. The demo app seeded as
 > `IDMS Portal` in `server/src/database/seeders/data/web-apps.ts` is asserted on by 22 lines
-> across five Playwright specs, and `client/e2e/favorite-apps/favorites-page.e2e.ts` reasons
+> across five Playwright specs, and `automation-test/tests/e2e/favorites/favorites-page.e2e.ts` reasons
 > about its **alphabetical position** to tell Recent order apart from alphabetical order.
 > Renaming the fixture and its assertions is one atomic change that has to be verified by
 > running e2e — which needs MongoDB plus a running client and server, so it was not attempted
@@ -34,7 +34,6 @@ pnpm everywhere (`packageManager` pins the version in each `package.json`). Ther
 | `client/` | `pnpm build` / `pnpm start`                          | production build / serve                     |
 | `client/` | `pnpm lint` / `pnpm lint:fix` / `pnpm format`         | ESLint / autofix / Prettier                  |
 | `client/` | `pnpm exec tsc --noEmit`                             | type check — the client has **no** `type-check` script |
-| `client/` | `pnpm e2e` / `pnpm e2e:ui` / `pnpm e2e:headed`        | Playwright E2E (needs client + server + DB up) |
 | `server/` | `pnpm install`                                       | install backend deps                         |
 | `server/` | `pnpm dev`                                           | nodemon + ts-node API on :5000               |
 | `server/` | `pnpm dev:check` / `pnpm type-check`                 | tsc watch / one-shot                         |
@@ -42,8 +41,12 @@ pnpm everywhere (`packageManager` pins the version in each `package.json`). Ther
 | `server/` | `pnpm test` / `pnpm test:watch` / `pnpm test:coverage` | Jest unit tests (no DB needed)             |
 | `server/` | `pnpm seed` / `pnpm seed:clear`                      | seed / clear MongoDB — the only schema tooling; there is no migration framework |
 | `server/` | `pnpm lint` / `pnpm lint:fix` / `pnpm format`          | ESLint / autofix / Prettier                  |
+| `automation-test/` | `pnpm install` + `pnpm exec playwright install chromium` | install the regression suite              |
+| `automation-test/` | `pnpm test` / `pnpm test:smoke`                 | full regression / `@smoke` subset (needs client + server + DB up) |
+| `automation-test/` | `pnpm test:e2e` / `pnpm test:api`               | browser layer / HTTP layer only              |
+| `automation-test/` | `pnpm coverage:check [--write]`                 | requirement ↔ test case ↔ spec check; `--write` regenerates the traceability matrix |
 
-Husky's pre-commit hook runs `lint-staged` in `client/` then `server/`.
+Husky's pre-commit hook runs `lint-staged` in `client/`, `server/` then `automation-test/`.
 
 ### Running a single test
 
@@ -52,16 +55,17 @@ Husky's pre-commit hook runs `lint-staged` in `client/` then `server/`.
 cd server && pnpm test src/modules/user/user.service.spec.ts
 cd server && pnpm test -t "returns paginated users"
 
-# client — one spec; --project is REQUIRED so the matching auth setup runs first
-cd client && pnpm e2e e2e/home/home-page.e2e.ts --project=chromium
-cd client && pnpm e2e e2e/admin-apps/ --project=admin
+# regression suite — one module, one file, one test case
+cd automation-test && pnpm test tests/e2e/admin-apps
+cd automation-test && pnpm test tests/api/oidc/token.api.ts
+cd automation-test && pnpm test -g "@TC-AUTH-014"
 ```
 
 Jest picks up `src/**/*.spec.ts` plus `test/integration/**` and `test/e2e/**`; factories, helpers and mocks live in `server/test/`. Service tests sit in `services/spec/`, repository tests in `repository/spec/`. Current suite: **86 suites / 672 tests**, no database required.
 
 `jest.config.ts` sets `resetMocks: true`, which clears the *implementations* a `jest.mock` factory set up, not just the call history. A factory must therefore close over bare `jest.fn()`s and the implementations be rebuilt in `beforeEach`, or the mock works in the first test of a file and returns `undefined` in every one after it.
 
-Playwright (`client/playwright.config.ts`) runs `*.e2e.ts` under `client/e2e/` with `workers: 1` and `fullyParallel: false`, across four projects: `setup` and `admin-setup` log in and write `e2e/.auth/{user,admin}.json`, then `chromium` runs as a **regular user** (it `testIgnore`s the admin-only folders) and `admin` runs those folders. `admin-authz/` is deliberately left in the regular-user project — its denial tests need a non-admin session. E2E needs client + server + MongoDB + Redis up **and the DB seeded**; credentials come from `E2E_*` (defaults `user@test.com` / `User@123`, `admin@test.com` / `Admin@123`). The base URL resolves as `E2E_BASE_URL` → the nearest `.worktree-state.json` entry keyed by the current folder name → `http://localhost:3000`. Playwright runs from `client/`, so that key is `client` — a worktree entry keyed by the feature name is never found, and a worktree run silently hits the main checkout on `:3000` unless `E2E_BASE_URL` is set.
+All Playwright tests live in **`automation-test/`** — a standalone pnpm package at the repo root (it was `client/e2e/` until 2026-10-10). `tests/e2e/<module>/*.e2e.ts` drive Chromium, `tests/api/<module>/*.api.ts` hit the API over HTTP; both run with `workers: 1` against one seeded database. The config has no per-role projects: `setup` logs user and admin in once, then each spec **declares its own session** with `test.use({ role: "user" | "admin" | "guest" })` from `@fixtures` (default `user`), and can take `userPage` / `adminPage` / `guestPage` or `userApi` / `adminApi` / `guestApi` to use several roles in one test. A `cleanup` project runs last. The suite needs client + server + MongoDB + Redis up, the DB seeded, and `automation-test/.env` pointing `REDIS_URL` / `MONGO_URL` at the server's datastores: one-time codes are stored only as bcrypt hashes, so tests call the real send endpoint and then **plant** a known code in Redis (`helpers/redis.ts`); rate-limit counters are cleared before every test; any test that changes account state uses a throwaway `…@e2e.example.com` account from `createAccount()`, which `cleanup` deletes. Seeded `user@test.com` / `admin@test.com` are shared by every spec and must never be locked or have their password changed. Every test carries the `@TC-<MODULE>-NNN` tag of the test case it proves (`test-cases/<module>.md`), traced to `docs/requirements.md`; `pnpm coverage:check` fails on any gap. The base URL resolves as `E2E_BASE_URL` → `.worktree-state.json` → `http://localhost:3000` — set `E2E_BASE_URL` explicitly in a worktree, or the run hits the main checkout on `:3000`. Run it only against a **dedicated seeded database** (`DB_NAME=ducker-id-e2e`, API `:5600` with `OIDC_ISSUER` = the test client's URL, client `:3600`) — `server/.env` points at real working data, and `user.setup.ts` refuses any database that is not the seed. Use a production build of the client for a full run (`next dev` outgrows 16 GB of RAM within one UI batch), and keep any other Ducker ID server off the shared Redis while it runs (BullMQ queues are per Redis, not per database). Full rules: `automation-test/docs/conventions.md`; run procedure: `automation-test/docs/test-plan.md`.
 
 ## Architecture
 
@@ -145,7 +149,7 @@ Four instruction layers stack here, and **two of them are not in this repo**:
 
 Three project constraints outrank the plugins because they are wired into code and tests: **Lucide** is the only icon set, motion is **Framer Motion** only (no GSAP), and control heights come from `BUTTON_SIZE_CLASSES`.
 
-Feature work is spec-driven and worktree-isolated: branch from a fresh `origin/main`, keep `design.md` / `plan.md` / `e2e.md` / `security-report.md` under `docs/specs/<feature-name>/`, UI mockups under `docs/ui-designs/<feature-name>/` (read MASTER.md before drawing one), and read plus update `docs/project-goals.md` and `docs/unfinished-features.md` in the same PR. A user review gate precedes every commit.
+Feature work is spec-driven and worktree-isolated: branch from a fresh `origin/main`, keep `design.md` / `plan.md` / `security-report.md` under `docs/specs/<feature-name>/`, the feature's requirements, test cases and specs in `automation-test/` (`docs/requirements.md`, `test-cases/<module>.md`, `tests/`), UI mockups under `docs/ui-designs/<feature-name>/` (read MASTER.md before drawing one), and read plus update `docs/project-goals.md` and `docs/unfinished-features.md` in the same PR. A user review gate precedes every commit.
 
 ### Still mock-backed
 

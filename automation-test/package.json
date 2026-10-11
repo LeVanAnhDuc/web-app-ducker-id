@@ -1,0 +1,38 @@
+{
+  "name": "web-app-ducker-id-automation-test",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Ducker ID regression suite — UI E2E and API tests (Playwright)",
+  "packageManager": "pnpm@10.32.1",
+  "scripts": {
+    "test": "playwright test",
+    "test:e2e": "playwright test --project=e2e",
+    "test:api": "playwright test --project=api",
+    "test:smoke": "playwright test --grep @smoke",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --project=e2e --headed",
+    "report": "playwright show-report reports/html",
+    "coverage:check": "tsx scripts/coverage-check.ts",
+    "type-check": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "lint-staged": {
+    "**/*.{ts,json,md}": [
+      "prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "@playwright/test": "1.60.0",
+    "@types/bcryptjs": "2.4.6",
+    "@types/node": "24.6.0",
+    "bcryptjs": "2.4.3",
+    "dotenv": "16.6.1",
+    "lint-staged": "15.5.2",
+    "mongodb": "6.20.0",
+    "prettier": "3.5.3",
+    "redis": "4.7.1",
+    "tsx": "4.20.6",
+    "typescript": "5.8.3"
+  }
+}

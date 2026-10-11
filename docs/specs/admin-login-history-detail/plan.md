@@ -51,8 +51,8 @@ All BE paths below are under `server/.worktrees/admin-login-history-detail/`; al
 - Modify `src/views/AdminLoginHistory/mains/AdminLoginHistoryTable/index.tsx` — trim columns + Action.
 
 ### E2E (`client/`) + docs
-- Create `client/e2e/admin-login-history/admin-login-history-detail.e2e.ts`.
-- Create `docs/specs/admin-login-history-detail/e2e.md`.
+- Create `automation-test/tests/e2e/admin-login-history/detail.e2e.ts`.
+- Create `automation-test/test-cases/admin-login-history.md`.
 
 ---
 
@@ -1063,10 +1063,10 @@ git add src/views/AdminLoginHistory/mains/AdminLoginHistoryTable/index.tsx
 ### Task E2E-1: Author the Playwright suite + e2e.md
 
 **Files:**
-- Create: `client/e2e/admin-login-history/admin-login-history-detail.e2e.ts`
-- Create: `docs/specs/admin-login-history-detail/e2e.md`
+- Create: `automation-test/tests/e2e/admin-login-history/detail.e2e.ts`
+- Create: `automation-test/test-cases/admin-login-history.md`
 
-**Harness facts:** `playwright.config.ts` runs the new folder under the **chromium** project (it ignores only `admin-apps/`), using `e2e/.auth/user.json` and depending on the `setup` project. Per the `admin-users-list` precedent, the suite must be run with the admin user (`E2E_USER_EMAIL=admin@test.com`) so the session is an admin. The admin login performed by `auth.setup.ts` records ≥1 `login_histories` row, so the list is non-empty.
+**Harness facts:** `playwright.config.ts` runs the new folder under the **chromium** project (it ignores only `admin-apps/`), using `automation-test/.auth/user.json` and depending on the `setup` project. Per the `admin-users-list` precedent, the suite must be run with the admin user (`E2E_USER_EMAIL=admin@test.com`) so the session is an admin. The admin login performed by `auth.setup.ts` records ≥1 `login_histories` row, so the list is non-empty.
 
 **Scenario mapping (matrix → test):**
 - Row 1 Happy + 8 Data render + deep-link: `admin opens list, clicks View, detail renders` + `deep-link to a detail URL renders`.
@@ -1079,7 +1079,7 @@ git add src/views/AdminLoginHistory/mains/AdminLoginHistoryTable/index.tsx
   - Row 3 AuthZ (non-admin → blocked): the harness provides a single admin storageState; exercising a non-admin session needs a separate fixture. BE `adminGuard` covers this server-side. Defer to follow-up.
   - Row 5 Empty/null (null `userId` / failed-login record): requires a guaranteed seeded failed-login row; not guaranteed by the current seed. Defer to follow-up.
 
-- [ ] **Step 1: Write the suite** `client/e2e/admin-login-history/admin-login-history-detail.e2e.ts`:
+- [ ] **Step 1: Write the suite** `automation-test/tests/e2e/admin-login-history/detail.e2e.ts`:
 
 ```ts
 import { test, expect } from "@playwright/test";
@@ -1185,18 +1185,18 @@ test.describe("Admin Login History — auth", () => {
 - [ ] **Step 2: App-running self-check + run (§4.3).** Verify BE :5000, FE :3000 (or worktree dev `--port 3100` + `E2E_BASE_URL` per the worktree dev-server note), Mongo, Redis are up and seeded. If not running, ask the user: (a) they start it, or (b) you start the missing pieces in the background (teardown only what you started). Then run from the client worktree:
 
 ```bash
-E2E_USER_EMAIL=admin@test.com pnpm e2e admin-login-history
+E2E_USER_EMAIL=admin@test.com pnpm test admin-login-history
 ```
 
 Expected: all non-deferred tests green.
 
-- [ ] **Step 3: Write `docs/specs/admin-login-history-detail/e2e.md`** — record final scenarios, the test↔matrix mapping, and the two deferred rows (AuthZ, Empty/null) with their reasons so the gap is explicit (no silent truncation).
+- [ ] **Step 3: Write `automation-test/test-cases/admin-login-history.md`** — record final scenarios, the test↔matrix mapping, and the two deferred rows (AuthZ, Empty/null) with their reasons so the gap is explicit (no silent truncation).
 
 - [ ] **Step 4: Stage** (client worktree for the test; docs worktree for e2e.md)
 
 ```bash
 # in client worktree:
-git add client/e2e/admin-login-history/admin-login-history-detail.e2e.ts
+git add automation-test/tests/e2e/admin-login-history/detail.e2e.ts
 # in docs worktree:
 git add specs/admin-login-history-detail/e2e.md
 ```
@@ -1228,11 +1228,11 @@ After ALL tasks above are implemented and staged, and the FE/BE quality gates + 
 
 ## E2E Backfill Plan
 
-Mục tiêu: backfill suite Playwright hiện có (`client/e2e/admin-login-history/admin-login-history-detail.e2e.ts`) cho khớp **Scenario Matrix đã reconcile** trong `design.md` — không rebuild, chỉ **ADD case thiếu** + **UPDATE case overstated** (row 8, 12) + giữ matrix ↔ e2e.md ↔ test file đồng bộ. TDD bite-sized: mỗi scenario áp dụng được = 1 test (hoặc 1 deferred có lý do). Code English, prose tiếng Việt.
+Mục tiêu: backfill suite Playwright hiện có (`automation-test/tests/e2e/admin-login-history/detail.e2e.ts`) cho khớp **Scenario Matrix đã reconcile** trong `design.md` — không rebuild, chỉ **ADD case thiếu** + **UPDATE case overstated** (row 8, 12) + giữ matrix ↔ e2e.md ↔ test file đồng bộ. TDD bite-sized: mỗi scenario áp dụng được = 1 test (hoặc 1 deferred có lý do). Code English, prose tiếng Việt.
 
 ### Tiền đề (đọc trước khi viết test)
 
-- **Project scope — depends CF-1:** matrix ghi detail chạy dưới **`admin` project** (storageState `e2e/.auth/admin.json`, dependency `admin-setup`). Hiện `playwright.config.ts` chỉ map `admin` project cho `admin-apps/.*\.e2e\.ts` (`testMatch: /admin-apps\/.*\.e2e\.ts/`) và `chromium` project `testIgnore: /admin-apps\//` ôm phần còn lại với `user.json`. **CF-1** = mở rộng `admin` project `testMatch` để bao luôn `admin-login-history/` (và loại nó khỏi `chromium` testIgnore) → suite này chạy với admin storageState mà không cần override `E2E_USER_EMAIL`. Đây là code-fix hạ tầng test, **không** sửa app code. **Nếu CF-1 chưa close** → giữ nguyên cách chạy cũ (`E2E_USER_EMAIL=admin@test.com pnpm e2e admin-login-history` dưới `chromium`).
+- **Project scope — depends CF-1:** matrix ghi detail chạy dưới **`admin` project** (storageState `automation-test/.auth/admin.json`, dependency `admin-setup`). Hiện `playwright.config.ts` chỉ map `admin` project cho `admin-apps/.*\.e2e\.ts` (`testMatch: /admin-apps\/.*\.e2e\.ts/`) và `chromium` project `testIgnore: /admin-apps\//` ôm phần còn lại với `user.json`. **CF-1** = mở rộng `admin` project `testMatch` để bao luôn `admin-login-history/` (và loại nó khỏi `chromium` testIgnore) → suite này chạy với admin storageState mà không cần override `E2E_USER_EMAIL`. Đây là code-fix hạ tầng test, **không** sửa app code. **Nếu CF-1 chưa close** → giữ nguyên cách chạy cũ (`E2E_USER_EMAIL=admin@test.com pnpm test admin-login-history` dưới `chromium`).
 - **Selector thực tế (READ-ONLY, đã verify trong code):**
   - View action: `<CustomButton>` render `<button>` với text từ `tTable("viewDetail")` (en label ~ "View", vi "Xem") → `page.getByRole("button", { name: /view|xem/i })`.
   - Detail heading: `getByRole("heading", { name: /Login Attempt Detail/i })` (en) — `LoginHistoryDetailCard` render `<h2>{data.usernameAttempted}</h2>`, còn "Login Attempt Detail" là page title ở `AdminLoginHistoryDetailHeader`.
@@ -1249,7 +1249,7 @@ Mục tiêu: backfill suite Playwright hiện có (`client/e2e/admin-login-histo
 
 ### Task E2E-BF-1: Backfill ADD/UPDATE scenarios trong test file
 
-**File (extend, READ-ONLY ngoài file này):** `client/e2e/admin-login-history/admin-login-history-detail.e2e.ts`
+**File (extend, READ-ONLY ngoài file này):** `automation-test/tests/e2e/admin-login-history/detail.e2e.ts`
 
 Một checkbox / scenario áp dụng được. `<row#>` tham chiếu Scenario Matrix `design.md`.
 
@@ -1493,9 +1493,9 @@ test("detail load announces to the #announcer live region", async ({
 - [ ] **3 AuthZ (non-admin → blocked)** `[Decision Table]` (role=admin→allow · role=user→deny) — **DEFER: thiếu non-admin fixture.** `auth.setup.ts` chỉ seed admin storageState (`E2E_USER_EMAIL=admin`); chưa có non-admin login fixture/storageState để gate A assert `adminGuard` chặn non-admin (403/redirect, detail card KHÔNG render). Server-side `adminGuard` đã cover về mặt bảo vệ. **Khi non-admin fixture sẵn sàng** (cross-ref suite `admin-authz` / `admin.setup`-style cho user thường), enable test sau:
 
 ```ts
-// ENABLE khi có e2e/.auth/non-admin.json (hoặc fixture tương đương)
+// ENABLE khi có automation-test/.auth/non-admin.json (hoặc fixture tương đương)
 test.describe("Admin Login History — authZ (non-admin)", () => {
-  test.use({ storageState: "e2e/.auth/non-admin.json" });
+  test.use({ storageState: "automation-test/.auth/non-admin.json" });
   test("non-admin cannot view a login-history detail record", async ({
     page
   }) => {
@@ -1520,23 +1520,23 @@ test.describe("Admin Login History — authZ (non-admin)", () => {
 ### Task E2E-BF-2: App-running self-check + dual-gate run (§4.3)
 
 - [ ] **Self-check một lần** trước khi dispatch: BE :5000, FE :3000 (hoặc worktree dev `--port 3100` + `E2E_BASE_URL` per worktree dev-server note), Mongo, Redis up + seeded. Chưa chạy → hỏi user (a) tự run / (b) agent run background (teardown chỉ cái mình bật).
-- [ ] **Gate A — `pnpm e2e`** (sau CF-1 chạy dưới `admin` project, không cần override email):
+- [ ] **Gate A — `pnpm test`** (sau CF-1 chạy dưới `admin` project, không cần override email):
 
 ```bash
 # từ client worktree, sau CF-1:
-pnpm e2e admin-login-history
+pnpm test admin-login-history
 # nếu CF-1 chưa close (fallback chromium + admin user):
-E2E_USER_EMAIL=admin@test.com pnpm e2e admin-login-history
+E2E_USER_EMAIL=admin@test.com pnpm test admin-login-history
 ```
 
 Expected: mọi test non-deferred green (announce-on-load test phụ thuộc CF-4; AuthZ phụ thuộc non-admin fixture).
 
-- [ ] **Gate B — MCP walk** (general-purpose + Playwright MCP, auth context riêng, KHÔNG share storageState với A): walk Scenario Matrix từ `e2e.md`, verify visual/UX/console/network mà assertion gate A có thể sót. Read-only feature → gate B verify read/render thoải mái.
+- [ ] **Gate B — MCP walk** (general-purpose + Playwright MCP, auth context riêng, KHÔNG share storageState với A): walk Scenario Matrix từ `automation-test/test-cases/admin-login-history.md`, verify visual/UX/console/network mà assertion gate A có thể sót. Read-only feature → gate B verify read/render thoải mái.
 - [ ] Fail ≥1 gate → `superpowers:systematic-debugging` root cause → `e2e-bugs.md` → fix → rerun cả 2 (max 3 vòng). Cả 2 PASS → sang `requesting-code-review`.
 
-### Task E2E-BF-3: Reconcile `docs/specs/admin-login-history-detail/e2e.md`
+### Task E2E-BF-3: Reconcile `automation-test/test-cases/admin-login-history.md`
 
-- [ ] **UPDATE** `docs/specs/admin-login-history-detail/e2e.md` để khớp suite backfilled (reconcile cả 3 artifact: matrix ↔ e2e.md ↔ test file):
+- [ ] **UPDATE** `automation-test/test-cases/admin-login-history.md` để khớp suite backfilled (reconcile cả 3 artifact: matrix ↔ e2e.md ↔ test file):
   - Bảng "Scenario → test mapping": ADD các test mới (row 5 empty/null, row 8 data-render localized, row 9 vi not-found/error, row 10 skeleton + abort, row 12 keyboard + back-preserves-filter + announce-on-load).
   - Sửa mapping row 10: 500 → **error** UI (không `notFound`).
   - "Deferred scenarios": cập nhật — **row 3 AuthZ** vẫn deferred (non-admin fixture); row 5 Empty/null **chuyển từ deferred → covered** (giờ stub qua `page.route`, không cần seed); **row 12 announce-on-load** = deferred-pending-CF-4 (ghi rõ enable sau CF-4).

@@ -123,15 +123,15 @@
 ### Task 7: E2E — expand Scenario Matrix (§4.3)
 
 **Files:**
-- Create: `docs/specs/admin-entitlements-picker-refinement/e2e.md`
-- Create: `client/e2e/admin-entitlements/picker.e2e.ts`
+- Create: `automation-test/test-cases/admin-entitlements.md`
+- Create: `automation-test/tests/e2e/admin-entitlements/picker.e2e.ts`
 
 **Interfaces:**
-- Consumes: matrix §7 của `design.md`; helpers `client/e2e/helpers/`; auth `auth.setup.ts` (admin storageState).
+- Consumes: matrix §7 của `design.md`; helpers `automation-test/helpers/`; auth `auth.setup.ts` (admin storageState).
 
-- [ ] **Step 1:** Viết `e2e.md` từ matrix §7 (final scenarios + follow-up gaps nếu có).
-- [ ] **Step 2:** Author `picker.e2e.ts` — 1 test / scenario Applicable (admin project). Case cần >6/>20 user hoặc seed đặc thù → defer ghi rõ lý do trong `e2e.md` (no silent cap).
-- [ ] **Step 3:** Chạy §4.3 **dual-gate** (gate A `pnpm e2e` scope feature + gate B MCP walk) theo tiền đề app-running. Fail → `systematic-debugging` → `e2e-bugs.md` → fix → lặp (max 3).
+- [ ] **Step 1:** Viết `automation-test/test-cases/admin-entitlements.md` từ matrix §7 (final scenarios + follow-up gaps nếu có).
+- [ ] **Step 2:** Author `picker.e2e.ts` — 1 test / scenario Applicable (admin project). Case cần >6/>20 user hoặc seed đặc thù → defer ghi rõ lý do trong `automation-test/test-cases/admin-entitlements.md` (no silent cap).
+- [ ] **Step 3:** Chạy §4.3 **dual-gate** (gate A `pnpm test` scope feature + gate B MCP walk) theo tiền đề app-running. Fail → `systematic-debugging` → `e2e-bugs.md` → fix → lặp (max 3).
 - [ ] **Step 4:** Commit `test(admin-entitlements): E2E picker search + role filter`.
 
 ---

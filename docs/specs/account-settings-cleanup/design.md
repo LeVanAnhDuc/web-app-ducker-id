@@ -104,3 +104,5 @@ Thay đổi observable (mất nav item + route, trang account-settings trimmed) 
 | F3 | Dead-reference guard | ✅ | Không còn import/string tham chiếu `ROUTES.SECURITY`/`views/Security`/`mocks/Security`/locale `security`/các card đã xoá — chốt bằng `pnpm build` (type-check) + grep, không cần E2E. | — |
 
 **Test-design techniques**: EP/BVA/DT không kích hoạt (không có input domain / boundary / điều kiện kết hợp mới). Chỉ ST cho F1 (route removal = invalid transition). Completeness-critic: chưa yêu cầu "thorough/≥90%" → không chạy (có thể bật nếu cần).
+
+> **Test cases** for this feature now live in `automation-test/test-cases/profile.md` (merged from the former `e2e.md` on 2026-10-10).

@@ -125,7 +125,7 @@ Không có dòng `A only` (không mutation) → gate A & B chạy full như nhau
 
 - **Mới:** `client/src/utils/datetime.ts` (core + `useFormatTime` + `useHasMounted`), `client/src/components/FormatTime/index.tsx`.
 - **Sửa:** 7 component tiêu thụ (bảng + detail card + NotificationPanel), `client/src/utils/index.ts` (xoá hàm cũ), `client/src/utils/notifications.ts`.
-- **E2E:** `client/e2e/locale-time-format/*.e2e.ts` + `docs/specs/locale-time-format/e2e.md` (expand ở writing-plans).
+- **E2E:** `automation-test/tests/e2e/settings/*.e2e.ts` + `automation-test/test-cases/settings.md` (expand ở writing-plans).
 
 ## Out of scope
 
@@ -133,3 +133,5 @@ Không có dòng `A only` (không mutation) → gate A & B chạy full như nhau
 - Date-range filter logic (`computeDateRange`, `formatYmdLocal`).
 - Footer copyright year.
 - BE: không đụng `server/`.
+
+> **Test cases** for this feature now live in `automation-test/test-cases/settings.md` (merged from the former `e2e.md` on 2026-10-10).

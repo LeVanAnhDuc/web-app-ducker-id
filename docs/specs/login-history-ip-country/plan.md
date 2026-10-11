@@ -404,12 +404,12 @@ Expected: no errors (next build type-check pass).
 ### Task 5 (E2E): Reconcile scenario + tests + e2e.md
 
 **Files:**
-- Modify: `client/e2e/admin-login-history/admin-login-history-detail.e2e.ts` (reconcile assertion location/IP)
-- Create: `client/e2e/login-history/my-login-history.e2e.ts` (happy + i18n render cho view user)
-- Create: `docs/specs/login-history-ip-country/e2e.md`
+- Modify: `automation-test/tests/e2e/admin-login-history/detail.e2e.ts` (reconcile assertion location/IP)
+- Create: `automation-test/tests/e2e/login-history/my-login-history.e2e.ts` (happy + i18n render cho view user)
+- Create: `automation-test/test-cases/login-history.md`
 
 **Interfaces:**
-- Consumes: helpers `client/e2e/helpers/*`, `auth.setup.ts` (storageState).
+- Consumes: helpers `automation-test/helpers/*`, `auth.setup.ts` (storageState).
 
 - [ ] **Step 1: Đọc test hiện có + reconcile**
 
@@ -417,17 +417,17 @@ Expected: no errors (next build type-check pass).
 
 - [ ] **Step 2: Thêm test view user LoginHistory (happy + i18n)**
 
-Tạo `client/e2e/login-history/my-login-history.e2e.ts`: đăng nhập (storageState), mở trang lịch sử đăng nhập của user; assert (a) cột IP hiện giá trị đã normalize (không chứa `::1`, không chứa `::ffff:`), (b) cột location hiện nhãn người-đọc (regex khớp "Local"/"Nội bộ" hoặc tên quốc gia, KHÔNG hiện chuỗi thô `UNKNOWN`/`LOCAL`). Lặp assert i18n cho cả `en` và `vi` (điều hướng `/` và `/vi`).
+Tạo `automation-test/tests/e2e/login-history/my-login-history.e2e.ts`: đăng nhập (storageState), mở trang lịch sử đăng nhập của user; assert (a) cột IP hiện giá trị đã normalize (không chứa `::1`, không chứa `::ffff:`), (b) cột location hiện nhãn người-đọc (regex khớp "Local"/"Nội bộ" hoặc tên quốc gia, KHÔNG hiện chuỗi thô `UNKNOWN`/`LOCAL`). Lặp assert i18n cho cả `en` và `vi` (điều hướng `/` và `/vi`).
 
 - [ ] **Step 3: Viết e2e.md**
 
-Tạo `docs/specs/login-history-ip-country/e2e.md` — liệt kê scenario từ Scenario Matrix (design.md): #1 happy, #4 validation-render (EP giá trị country/ip), #8 data-rendering (DT composition), #9 i18n en+vi; ghi rõ N/A cho các nhóm còn lại; note các case defer (vd IP public thật cần seed) + lý do.
+Tạo `automation-test/test-cases/login-history.md` — liệt kê scenario từ Scenario Matrix (design.md): #1 happy, #4 validation-render (EP giá trị country/ip), #8 data-rendering (DT composition), #9 i18n en+vi; ghi rõ N/A cho các nhóm còn lại; note các case defer (vd IP public thật cần seed) + lý do.
 
 - [ ] **Step 4: Stage (KHÔNG commit)**
 
 `git add client:e2e...` (stage trong repo client + docs tương ứng).
 
-Note: E2E dual-gate (§4.3) chạy ở bước riêng sau khi code xong (gate A `pnpm e2e` + gate B MCP walk), không phải trong task này.
+Note: E2E dual-gate (§4.3) chạy ở bước riêng sau khi code xong (gate A `pnpm test` + gate B MCP walk), không phải trong task này.
 
 ---
 

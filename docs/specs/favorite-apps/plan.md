@@ -79,7 +79,7 @@
 | `src/views/Home/mains/{QuickAccessSection,RecommendedSection}/index.tsx` | truyền `id`+`isFavorite` | Modify |
 | `src/locales/{en,vi}/favorites.json` | reconcile (bỏ rating/reviews, thêm button/toast) | Modify |
 | `src/locales/{en,vi}/apps.json` | thêm `card.addFavorite/removeFavorite` + announce | Modify |
-| `client/e2e/favorite-apps/*.e2e.ts` | E2E suite | Create |
+| `automation-test/tests/e2e/favorites/*.e2e.ts` | E2E suite | Create |
 
 ---
 
@@ -1743,9 +1743,9 @@ git commit -m "feat(fe-favorite): i18n en+vi for favorites + apps card labels"
 # PHASE 3 — E2E (expand Scenario Matrix → tests)
 
 **Files:**
-- Create: `client/e2e/favorite-apps/toggle.e2e.ts`, `favorites-page.e2e.ts`, `i18n.e2e.ts` (split theo nhóm)
-- Create: `docs/specs/favorite-apps/e2e.md` (kịch bản cuối)
-- Reuse: `client/e2e/helpers/`, `auth.setup.ts` storageState
+- Create: `automation-test/tests/e2e/favorites/toggle.e2e.ts`, `favorites-page.e2e.ts`, `i18n.e2e.ts` (split theo nhóm)
+- Create: `automation-test/test-cases/favorites.md` (kịch bản cuối)
+- Reuse: `automation-test/helpers/`, `auth.setup.ts` storageState
 
 > Mỗi Applicable scenario trong matrix (design §6, 13 nhóm) = ≥1 test. Mutation revert trong `afterAll` (idempotent: cleanup các app đã favorite trong test bằng DELETE). Selector ưu tiên role/label: nút tim có `aria-label` "Add/Remove ... to favorites" + `aria-pressed`.
 
@@ -1762,17 +1762,17 @@ git commit -m "feat(fe-favorite): i18n en+vi for favorites + apps card labels"
   - remove on page: click heart filled → item biến mất (optimistic).
 - [ ] **Task E2E-3: i18n en+vi** (`i18n.e2e.ts`) — nhóm 9: render `/apps` + `/favorites` ở en và vi; assert nhãn nút tim (`aria-label` add/remove), sort labels, empty state; bắt missing-message (không có chuỗi `favorites.` hoặc raw key lộ ra).
 - [ ] **Task E2E-4: AuthN** — (nhóm 2) có thể nằm trong suite chung: truy cập `/favorites` chưa đăng nhập → redirect `/login`. (Dùng context không storageState.)
-- [ ] **Task E2E-5: Write `docs/specs/favorite-apps/e2e.md`** — liệt kê scenario cuối + cột Gate (A only cho mutation-heavy: idempotency, AuthZ, validation, error/loading, cross-page) + follow-up gaps nếu có (vd cần seed user rỗng favorite).
+- [ ] **Task E2E-5: Write `automation-test/test-cases/favorites.md`** — liệt kê scenario cuối + cột Gate (A only cho mutation-heavy: idempotency, AuthZ, validation, error/loading, cross-page) + follow-up gaps nếu có (vd cần seed user rỗng favorite).
 - [ ] **Commit**
 
 ```bash
-git add client/e2e/favorite-apps
+git add automation-test/tests/e2e/favorites
 git commit -m "test(fe-favorite): e2e suite for favorite apps"
 # docs commit in docs worktree:
 # git -C docs/.worktrees/favorite-apps add specs/favorite-apps/e2e.md && git commit -m "docs(favorite-apps): e2e scenarios"
 ```
 
-> **Dual-gate (§4.3)** chạy ở bước E2E của flow (sau code review), KHÔNG trong writing-plans: gate A `cd client && pnpm e2e` (scope favorite-apps) + gate B MCP walk (auth context riêng, skip mutation của `A only` rows). Fail → `systematic-debugging` → `e2e-bugs.md` → fix → lặp max 3.
+> **Dual-gate (§4.3)** chạy ở bước E2E của flow (sau code review), KHÔNG trong writing-plans: gate A `cd automation-test && pnpm test` (scope favorite-apps) + gate B MCP walk (auth context riêng, skip mutation của `A only` rows). Fail → `systematic-debugging` → `e2e-bugs.md` → fix → lặp max 3.
 
 ---
 

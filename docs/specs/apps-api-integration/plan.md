@@ -48,9 +48,9 @@
 - **Delete** `src/mocks/Home/index.ts`.
 - **Delete** Discover: `src/app/[locale]/(private)/(dashboard)/discover/`, `src/views/Discover/`, `src/mocks/Discover/`, `src/locales/{en,vi}/discover.json`.
 - **Modify** `src/locales/{en,vi}/index.ts`, `src/constants/routes.ts`, `src/dataSources/Dashboard/index.ts`, `src/locales/{en,vi}/dashboard.json` — gỡ tham chiếu Discover.
-- **Modify** `e2e/web-app-user-list/apps-list.e2e.ts` — reconcile + category cases.
-- **Create** `e2e/home/home.e2e.ts`.
-- **Create** `docs/specs/apps-api-integration/e2e.md` (docs worktree).
+- **Modify** `automation-test/tests/e2e/apps/apps-list.e2e.ts` — reconcile + category cases.
+- **Create** `automation-test/tests/e2e/home/home.e2e.ts`.
+- **Create** `automation-test/test-cases/apps.md` + `automation-test/test-cases/home.md` (docs worktree).
 
 ---
 
@@ -1135,11 +1135,11 @@ Run: `pnpm format && pnpm lint && pnpm exec tsc` → 0 lỗi.
 
 ## Phase 6 — E2E (Playwright)
 
-> Tiền đề app-running (CLAUDE.md §4.3): agent tự check BE :5000 + FE + Mongo/Redis; worktree cần dev server riêng `--port 3100` + `E2E_BASE_URL` (memory [[reference_e2e_worktree_devserver]]). Seed phải có ≥1 category + apps thuộc category để test filter. Auth qua `e2e/auth.setup.ts` (seed user `user@test.com`).
+> Tiền đề app-running (CLAUDE.md §4.3): agent tự check BE :5000 + FE + Mongo/Redis; worktree cần dev server riêng `--port 3100` + `E2E_BASE_URL` (memory [[reference_e2e_worktree_devserver]]). Seed phải có ≥1 category + apps thuộc category để test filter. Auth qua `automation-test/tests/setup/user.setup.ts` (seed user `user@test.com`).
 
 ### Task E2E-1: Reconcile Apps suite + thêm category cases
 
-**Files:** Modify `e2e/web-app-user-list/apps-list.e2e.ts`
+**Files:** Modify `automation-test/tests/e2e/apps/apps-list.e2e.ts`
 
 - [ ] **Step 1: Thêm test category filter (vi)** — append vào `test.describe("Apps catalog (/vi/apps)", ...)`:
 ```typescript
@@ -1204,16 +1204,16 @@ test.describe("Apps catalog (/apps EN locale)", () => {
 
 - [ ] **Step 3: Chạy E2E Apps**
 
-Run: `cd client/.worktrees/apps-api-integration && pnpm e2e --grep "Apps catalog"`
+Run: `cd automation-test && pnpm test --grep "Apps catalog"`
 Expected: tất cả PASS (app + seed đang chạy).
 
-- [ ] **Step 4: Stage** — `git add e2e/web-app-user-list/apps-list.e2e.ts`
+- [ ] **Step 4: Stage** — `git add automation-test/tests/e2e/apps/apps-list.e2e.ts`
 
 ---
 
 ### Task E2E-2: Home suite
 
-**Files:** Create `e2e/home/home.e2e.ts`
+**Files:** Create `automation-test/tests/e2e/home/home.e2e.ts`
 
 - [ ] **Step 1: Tạo test Home**
 ```typescript
@@ -1267,18 +1267,18 @@ test.describe("Home dashboard (/vi/home)", () => {
 
 - [ ] **Step 2: Chạy E2E Home**
 
-Run: `cd client/.worktrees/apps-api-integration && pnpm e2e --grep "Home dashboard"`
+Run: `cd automation-test && pnpm test --grep "Home dashboard"`
 Expected: PASS. Nếu selector totalApps trùng nhiều text → tinh chỉnh dùng `getByLabel`/scope StatCard.
 
-- [ ] **Step 3: Stage** — `git add e2e/home/home.e2e.ts`
+- [ ] **Step 3: Stage** — `git add automation-test/tests/e2e/home/home.e2e.ts`
 
 ---
 
 ### Task E2E-3: Tài liệu kịch bản
 
-**Files:** Create `docs/specs/apps-api-integration/e2e.md` (docs worktree)
+**Files:** Create `automation-test/test-cases/apps.md` + `automation-test/test-cases/home.md` (docs worktree)
 
-- [ ] **Step 1:** Viết `e2e.md` liệt kê scenario cuối cùng theo matrix §6 design.md, đánh dấu đã cover / defer (kèm lý do). Ghi rõ các phụ thuộc seed (category + apps-per-category) + follow-up gaps nếu có (vd test empty-category cần seed category rỗng).
+- [ ] **Step 1:** Viết `automation-test/test-cases/apps.md` + `automation-test/test-cases/home.md` liệt kê scenario cuối cùng theo matrix §6 design.md, đánh dấu đã cover / defer (kèm lý do). Ghi rõ các phụ thuộc seed (category + apps-per-category) + follow-up gaps nếu có (vd test empty-category cần seed category rỗng).
 - [ ] **Step 2: Stage** (docs worktree) — `git add specs/apps-api-integration/e2e.md`
 
 ---
@@ -1287,7 +1287,7 @@ Expected: PASS. Nếu selector totalApps trùng nhiều text → tinh chỉnh d�
 
 - [ ] **Step 1: BE full check** — `cd server/.worktrees/apps-api-integration && pnpm exec tsc --noEmit && pnpm exec jest --testMatch "**/?(*.)+(spec).ts"` → 0 lỗi, test xanh.
 - [ ] **Step 2: FE full check** — `cd client/.worktrees/apps-api-integration && pnpm format && pnpm lint && pnpm exec tsc` → 0 lỗi.
-- [ ] **Step 3: E2E xanh** — `cd client/.worktrees/apps-api-integration && pnpm e2e` (Apps + Home) → xanh.
+- [ ] **Step 3: E2E xanh** — `cd automation-test && pnpm test` (Apps + Home) → xanh.
 - [ ] **Step 4: Code review** — `superpowers:requesting-code-review` theo side (BE convention cho server, FE convention cho client) + `security-auditor` nếu cần (endpoint mới + query param).
 - [ ] **Step 5: Commit gate (§7)** — trình diff tổng thể 3 repo cho user review → duyệt → commit per-repo (server/client/docs) với Conventional Commit.
 - [ ] **Step 6: Finish** — `superpowers:finishing-a-development-branch` → `creating-github-pr` (PR riêng từng repo).

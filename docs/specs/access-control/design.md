@@ -212,8 +212,8 @@ response. Chi tiết shape theo code đã merge — bổ sung vào spec này lú
 
 ## 10. E2E Scenario Matrix
 
-Hai file: `e2e/admin-entitlements/matrix.e2e.ts` (project `admin`, **reconcile** suite cũ) và
-`e2e/web-app-access/launcher.e2e.ts` (project `chromium`, user `user@test.com`; override tạo qua API
+Hai file: `automation-test/tests/e2e/admin-entitlements/matrix.e2e.ts` (role `admin`, **reconcile** suite cũ) và
+`automation-test/tests/e2e/apps/launcher-access.e2e.ts` (role `user`; override tạo qua API
 bằng admin token trong `beforeAll`, xoá trong `afterAll`). Ma trận giờ ghi vào DB thật → mọi test
 mutation chạy `serial` và **revert trong `afterAll`**.
 
@@ -237,6 +237,8 @@ mutation chạy `serial` và **revert trong `afterAll`**.
 
 Error-guessing bổ sung: hai tab admin cùng sửa một ô → bên lưu sau thắng (last-write-wins, upsert theo
 cặp) — ghi nhận, không test tự động.
+
+> **Test cases** for this feature now live in `automation-test/test-cases/admin-entitlements.md` (with the launcher rows in `apps.md`, `favorites.md`, `recently-used.md` and `oidc.md`; merged from the former `e2e.md` on 2026-10-10).
 
 ## 11. Ngoài phạm vi
 

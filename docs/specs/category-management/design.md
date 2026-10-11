@@ -228,7 +228,7 @@ thành `categories: UserCategory[]` và card dùng `CategoryChips`:
 
 ## 5. Bảo mật
 
-- Mọi endpoint `/admin/categories*` sau `authGuard` + `adminGuard`; user thường → 403 (thêm vào `e2e/admin-authz/`).
+- Mọi endpoint `/admin/categories*` sau `authGuard` + `adminGuard`; user thường → 403 (thêm vào `automation-test/tests/e2e/authz/`).
 - Joi `stripUnknown` chặn ghi `slug` / `sortOrder` qua body.
 - Tên danh mục render như text (React escape), không `dangerouslySetInnerHTML`.
 - Rate limit cho POST / PATCH / move / DELETE.
@@ -249,7 +249,7 @@ thành `categories: UserCategory[]` và card dùng `CategoryChips`:
 
 ### E2E Scenario Matrix
 
-Sinh bằng skill `e2e-scenario-coverage` (bổ sung ở bước plan). Gate: `A+B` = cả `pnpm e2e` lẫn walk MCP;
+Sinh bằng skill `e2e-scenario-coverage` (bổ sung ở bước plan). Gate: `A+B` = cả `pnpm test` lẫn walk MCP;
 `A only` = mutation, gate B chỉ kiểm tra phần đọc/hiển thị.
 
 **Dữ liệu seed dùng làm mốc** (`server/src/database/seeders/data/`): 4 danh mục `content` (Blog),
@@ -260,7 +260,7 @@ Sau migration mỗi app có `categoryIds` một phần tử.
 gốc → chuyển sang danh mục tạm qua `PATCH /admin/apps/:id` → thao tác → `afterAll` khôi phục đúng `categoryIds`
 gốc. Danh mục tạm đặt tên `E2E <spec> <timestamp>` và bị xoá trong `afterAll` (kèm `reassignments` nếu cần).
 Thứ tự danh mục seed được khôi phục bằng `move`. **Không đổi tên app** — `favorites-page` dựa vào vị trí
-alphabet của "IDMS Portal". Helper mới: `client/e2e/helpers/categories.ts`.
+alphabet của "IDMS Portal". Helper mới: `automation-test/helpers/categories.ts`.
 
 | # | Category | Scenarios (kỹ thuật + giá trị) | Gate |
 | --- | --- | --- | --- |

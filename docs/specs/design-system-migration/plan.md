@@ -26,7 +26,7 @@
 
 ### Chưa chạy
 
-- `pnpm e2e` — cần MongoDB + Redis + server + client đang chạy và DB đã seed. 30 spec không
+- `pnpm test` — cần MongoDB + Redis + server + client đang chạy và DB đã seed. 30 spec không
   assert màu/font nên không kỳ vọng gãy selector, nhưng phải chạy trước khi merge.
 - Xem bằng mắt light + dark ở 375 / 768 / 1024 / 1440.
 

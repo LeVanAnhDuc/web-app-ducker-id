@@ -81,7 +81,7 @@ apps/page.tsx (Server Component, async)
 
 ## Ghi chú E2E — RECONCILE, không rebuild
 
-Feature này **sửa đổi trang Apps đã có** (`specs/web-app-user-list/` + `client/e2e/web-app-user-list/`). E2E của thay đổi này **reconcile vào suite `web-app-user-list`** (ADD case category-SSR + public endpoint + fallback; UPDATE case có expected đổi; giữ matrix ↔ e2e.md ↔ test file đồng bộ) — KHÔNG tạo suite mới, KHÔNG rebuild.
+Feature này **sửa đổi trang Apps đã có** (`specs/web-app-user-list/` + `automation-test/tests/e2e/apps/`). E2E của thay đổi này **reconcile vào suite `web-app-user-list`** (ADD case category-SSR + public endpoint + fallback; UPDATE case có expected đổi; giữ matrix ↔ e2e.md ↔ test file đồng bộ) — KHÔNG tạo suite mới, KHÔNG rebuild.
 
 ## E2E Scenario Matrix
 

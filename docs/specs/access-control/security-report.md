@@ -20,7 +20,7 @@ Không có lỗ hổng chặn merge. Hai rủi ro được chấp nhận có ghi
 | 6 | **Mass assignment** | ✅ `bulkWrite` chỉ `$set` `effect` (tính ở server) và `updatedBy` (lấy từ token, không từ body). |
 | 7 | **Atomic batch** | ✅ Validate toàn bộ user/app trước khi ghi; một id lạ → 404, không ghi gì (unit test "404s on an unknown app in the last change and writes nothing"). |
 | 8 | **Rate limiting** | ✅ `PATCH` có `entitlementMutationByIpAndUser` (60 / phút / IP+admin). `GET` không có — xem R-2. |
-| 9 | **Idempotency** | ✅ `PATCH` idempotent theo thiết kế (upsert/xoá theo cặp unique). Client chặn double-submit đồng bộ (`e2e-bugs.md` Round 1). |
+| 9 | **Idempotency** | ✅ `PATCH` idempotent theo thiết kế (upsert/xoá theo cặp unique). Client chặn double-submit đồng bộ (`automation-test/defects/bug-log.md` → History → access-control, Round 1). |
 | 10 | **Không lộ sự tồn tại** | ✅ Favorite/recent của app bị deny trả **404** như app không tồn tại, không phải 403. |
 | 11 | **Leo thang đặc quyền** | ✅ Override `allow` chỉ cho vào app; claim `roles` trong token không đổi. Quyền chi tiết trong app vệ tinh là việc của app đó (Non-Goals). |
 | 12 | **Logging (§1)** | ✅ Body PATCH chỉ có ObjectId + boolean; không log token/secret mới. |

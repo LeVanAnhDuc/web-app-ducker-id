@@ -31,4 +31,4 @@ Thứ tự thực hiện (mỗi bước xanh tsc + lint + test trước khi sang
 
 ## Docs
 
-`erd.md` (DR-RECENT), `unfinished-features.md` §5, `project-goals.md` bảng endpoint, README `## Features`, CLAUDE.md, `e2e.md`.
+`erd.md` (DR-RECENT), `unfinished-features.md` §5, `project-goals.md` bảng endpoint, README `## Features`, CLAUDE.md, `automation-test/test-cases/recently-used.md`.

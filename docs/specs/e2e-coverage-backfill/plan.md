@@ -6,9 +6,9 @@
 
 **Goal:** Nâng E2E coverage của 6 feature đã có test lên đạt rubric `e2e-scenario-coverage` (12 nhóm), kèm 5 code fix mà coverage phụ thuộc, rồi verify bằng dual-gate.
 
-**Architecture:** Code fixes trước (unblock test) → per-feature E2E expansion (TDD, mỗi scenario 1 test) → dual-gate (gate A `pnpm e2e` + gate B MCP walk) → teardown.
+**Architecture:** Code fixes trước (unblock test) → per-feature E2E expansion (TDD, mỗi scenario 1 test) → dual-gate (gate A `pnpm test` + gate B MCP walk) → teardown.
 
-**Tech Stack:** Next.js 15 + React 19, Playwright, next-intl (en/vi), React Query, RHF+Zod. Test ở `client/e2e/<feature>/*.e2e.ts`.
+**Tech Stack:** Next.js 15 + React 19, Playwright, next-intl (en/vi), React Query, RHF+Zod. Test ở `automation-test/tests/e2e/<module>/*.e2e.ts`.
 
 ---
 
@@ -38,8 +38,8 @@ Per-feature plans:
 ### Task CF-1: Playwright project routing cho admin suites + AuthZ
 
 **Files:**
-- Modify: `client/playwright.config.ts` (projects array)
-- Create: `client/e2e/admin-authz/admin-authz.e2e.ts` (AuthZ deny tests chạy dưới user-context)
+- Modify: `automation-test/playwright.config.ts` (projects array)
+- Create: `automation-test/tests/e2e/authz/admin-routes-denied.e2e.ts` (AuthZ deny tests chạy dưới user-context)
 
 **Vấn đề:** `chromium` project (`storageState: user.json`) chỉ `testIgnore: /admin-apps\//`, nên `admin-users-list/` + `admin-login-history/` chạy nhầm dưới user thường → chỉ pass nhờ hack set `E2E_USER_EMAIL=admin` lúc setup.
 
@@ -55,13 +55,13 @@ projects: [
     name: "chromium",
     // user-context: loại admin-only suites, GIỮ admin-authz (cần user storageState)
     testIgnore: ADMIN_SUITES,
-    use: { ...devices["Desktop Chrome"], storageState: "e2e/.auth/user.json" },
+    use: { ...devices["Desktop Chrome"], storageState: "automation-test/.auth/user.json" },
     dependencies: ["setup"]
   },
   {
     name: "admin",
     testMatch: /(?:admin-apps|admin-users-list|admin-login-history)\/.*\.e2e\.ts/,
-    use: { ...devices["Desktop Chrome"], storageState: "e2e/.auth/admin.json" },
+    use: { ...devices["Desktop Chrome"], storageState: "automation-test/.auth/admin.json" },
     dependencies: ["admin-setup"]
   }
 ]
@@ -71,7 +71,7 @@ projects: [
 - [ ] **Step 3: Viết AuthZ deny test** (chạy dưới chromium/user.json):
 
 ```ts
-// client/e2e/admin-authz/admin-authz.e2e.ts
+// automation-test/tests/e2e/authz/admin-routes-denied.e2e.ts
 import { test, expect } from "@playwright/test";
 
 const ADMIN_ROUTES = ["/admin/users", "/admin/apps", "/admin/login-history"];
@@ -86,7 +86,7 @@ for (const route of ADMIN_ROUTES) {
 }
 ```
 
-- [ ] **Step 4: Verify** — `cd client && pnpm e2e --project=admin` (admin suites pass) + `--project=chromium e2e/admin-authz` (deny pass). Expected: PASS.
+- [ ] **Step 4: Verify** — `cd automation-test && pnpm test` (admin suites pass) + `--project=chromium automation-test/tests/e2e/authz` (deny pass). Expected: PASS.
 - [ ] **Step 5: Commit** (chờ review gate §7).
 
 > Lưu ý: hành vi deny thực tế (redirect đích nào / 403 component) phải xác minh khi chạy app; chỉnh assertion cho khớp, KHÔNG sửa app code trong test.
@@ -186,7 +186,7 @@ useEffect(() => {
   - FE worktree dev port riêng: `node .claude/scripts/worktree.mjs up e2e-coverage-backfill` (chỉ có client worktree → script start FE; junction node_modules + copy/patch env tự lo).
   - Seed nếu cần (`cd server && pnpm seed --clear && pnpm seed`).
 - [ ] **DG-2: Dispatch 2 gate SONG SONG** (1 message, 2 Agent):
-  - **Gate A** — subagent: `cd client/.worktrees/e2e-coverage-backfill && pnpm e2e` (scope 6 feature + admin-authz). Auto-target FE port qua `.worktree-state.json`. Report PASS/FAIL + output. Lưu ý session contamination: chạy change-password (revoke token) RIÊNG khỏi user-auth suites (`reference_e2e_suite_session_contamination`).
+  - **Gate A** — subagent: `cd automation-test && pnpm test` (scope 6 feature + admin-authz). Auto-target FE port qua `.worktree-state.json`. Report PASS/FAIL + output. Lưu ý session contamination: chạy change-password (revoke token) RIÊNG khỏi user-auth suites (`reference_e2e_suite_session_contamination`).
   - **Gate B** — subagent (general-purpose + Playwright MCP `browser_*`): nhận Scenario Matrix từ mỗi `docs/specs/<feature>/e2e.md`, auth context RIÊNG (login qua browser, không share storageState với A), walk từng scenario `A+B`; scenario `A only` chỉ verify read/render. Report PASS/FAIL per-scenario + evidence (`browser_snapshot`/`browser_console_messages`/`browser_network_requests`). i18n rows verify cả en+vi.
 - [ ] **DG-3: Fail ≥1 gate** → `superpowers:systematic-debugging` root cause → ghi `docs/specs/<feature>/e2e-bugs.md` (append/round) → fix (subagent-driven/TDD) → re-run CẢ 2 gate. Max 3 vòng; quá → DỪNG + báo user.
 - [ ] **DG-4: Cả 2 PASS** → sang requesting-code-review.

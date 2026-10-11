@@ -1,7 +1,7 @@
 # Design — Trim trang `/profile`
 
 **Feature:** `profile-trim`
-**Side:** FE-only (`client/src/**` + `client/e2e/**`) + docs
+**Side:** FE-only (`client/src/**` + `automation-test/tests/e2e/**`) + docs
 **Ngày:** 2026-07-08
 
 ## 1. Mục tiêu
@@ -71,8 +71,8 @@ Không đổi. Cả 3 thay đổi thuần FE UI; không đụng request/response
 
 | Artifact | Thay đổi |
 |----------|----------|
-| `client/e2e/profile-account-merge/merge.e2e.ts` — Row 1 (happy path) | REMOVE `connectedAccounts` + `notificationPreferences` khỏi danh sách heading phải-visible → còn `title + personalInfo + changePassword + dangerZone`. ADD assertion 2 heading đó `toHaveCount(0)` (regression guard). |
-| `docs/specs/profile-account-merge/e2e.md` — Row 1 | Cập nhật mô tả "six sections" → 4 section render + 2 section đã xóa vắng mặt. |
+| `automation-test/tests/e2e/profile/account-merge.e2e.ts` — Row 1 (happy path) | REMOVE `connectedAccounts` + `notificationPreferences` khỏi danh sách heading phải-visible → còn `title + personalInfo + changePassword + dangerZone`. ADD assertion 2 heading đó `toHaveCount(0)` (regression guard). |
+| `automation-test/test-cases/profile.md` — Row 1 | Cập nhật mô tả "six sections" → 4 section render + 2 section đã xóa vắng mặt. |
 
 Các row khác của suite (AuthN, page identity, i18n, route removal, nav integrity) **không đổi** — không phụ thuộc 2 section bị xóa.
 
@@ -91,4 +91,4 @@ Không tạo case mới cho việc bỏ input Email: không có e2e case nào as
 
 - Worktree per-repo từ `origin/main`, branch `chore/profile-trim`: `client/`, `docs/`.
 - Design/plan: `docs/specs/profile-trim/`.
-- E2E reconcile sửa trực tiếp `docs/specs/profile-account-merge/e2e.md` + `client/e2e/profile-account-merge/merge.e2e.ts`.
+- E2E reconcile sửa trực tiếp `automation-test/test-cases/profile.md` + `automation-test/tests/e2e/profile/account-merge.e2e.ts`.

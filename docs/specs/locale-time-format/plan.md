@@ -430,19 +430,19 @@ git commit -m "refactor(locale-time-format): route relative time via useFormatTi
 ### Task 7: E2E scenarios (tầng test hành vi)
 
 **Files:**
-- Create: `client/e2e/locale-time-format/datetime-format.e2e.ts`
-- Create: `docs/specs/locale-time-format/e2e.md` (kịch bản cho gate B MCP walk)
+- Create: `automation-test/tests/e2e/settings/datetime-format.e2e.ts`
+- Create: `automation-test/test-cases/settings.md` (kịch bản cho gate B MCP walk)
 
 **Bối cảnh hạ tầng** (theo memory): admin suites dưới project `admin` của `playwright.config.ts`; auth qua `auth.setup.ts` → storageState (cần admin creds `E2E_USER_EMAIL`/`E2E_USER_PASSWORD`). Selector ưu tiên role/label; timestamp render trong `<time>` → assert qua `time[datetime]`. Đổi locale: prefix URL `/vi/...` (default `en` không prefix).
 
 **Interfaces:**
 - Consumes: app đang chạy (BE :5000, FE :3000 hoặc worktree :3100) — tiền đề app-running do bước §4.3 lo.
 
-- [ ] **Step 1: Viết `docs/specs/locale-time-format/e2e.md`**
+- [ ] **Step 1: Viết `automation-test/test-cases/settings.md`**
 
 Liệt kê scenario từ matrix `design.md` (mỗi dòng ✅): happy (en datetime render), i18n (vi datetime render), empty/null (`lastLoginAt` null → `—`), boundary-tz (ISA UTC tối → local sang ngày sau), data-render (không lộ ISO thô; `<time datetime>` có ISO), a11y (`<time>` semantic), hydration (không mismatch warning console). Ghi rõ page mỗi scenario walk + cách verify (en + vi).
 
-- [ ] **Step 2: Viết spec test `client/e2e/locale-time-format/datetime-format.e2e.ts`**
+- [ ] **Step 2: Viết spec test `automation-test/tests/e2e/settings/datetime-format.e2e.ts`**
 
 Khung test (điều chỉnh selector theo DOM thực khi chạy; KHÔNG sửa app code để fit test — gặp lỗi a11y thì flag follow-up):
 
@@ -481,26 +481,26 @@ test("null timestamp renders em-dash, not Invalid Date", async ({ page }) => {
 });
 ```
 
-> Lưu ý: nếu seed chưa có user `lastLoginAt = null`, ghi follow-up trong `e2e.md` thay vì giả định (no silent gap).
+> Lưu ý: nếu seed chưa có user `lastLoginAt = null`, ghi follow-up trong `automation-test/test-cases/settings.md` thay vì giả định (no silent gap).
 
 - [ ] **Step 3: Verify (defer chạy thật sang bước §4.3)**
 
-`pnpm exec tsc --noEmit && pnpm lint` trên file test. Việc chạy `pnpm e2e` + gate B MCP walk thực hiện ở **bước §4.3 dual-gate** (cần app running) — KHÔNG chạy trong task này.
+`pnpm exec tsc --noEmit && pnpm lint` trên file test. Việc chạy `pnpm test` + gate B MCP walk thực hiện ở **bước §4.3 dual-gate** (cần app running) — KHÔNG chạy trong task này.
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add client/e2e/locale-time-format docs/specs/locale-time-format/e2e.md
+git add automation-test/tests/e2e/settings `automation-test/test-cases/settings.md`
 git commit -m "test(locale-time-format): e2e scenarios for locale-aware time rendering"
 ```
 
-> `e2e.md` ở repo docs → commit ở worktree docs; test `.e2e.ts` ở repo client → commit ở worktree client (2 repo riêng).
+> `automation-test/test-cases/settings.md` ở repo docs → commit ở worktree docs; test `.e2e.ts` ở repo client → commit ở worktree client (2 repo riêng).
 
 ---
 
 ## Sau khi hết task (do main loop điều phối theo §4.3–§5)
 
-1. **§4.3 E2E dual-gate**: check app running → dispatch gate A (`pnpm e2e` scope feature) + gate B (MCP walk theo `e2e.md`) song song. Fail → `systematic-debugging` → `e2e-bugs.md` → fix (max 3 vòng).
+1. **§4.3 E2E dual-gate**: check app running → dispatch gate A (`pnpm test` scope feature) + gate B (MCP walk theo `automation-test/test-cases/settings.md`) song song. Fail → `systematic-debugging` → `e2e-bugs.md` → fix (max 3 vòng).
 2. **§4.5 Security review**: feature **chỉ hiển thị**, không đụng auth/input/data nhạy cảm → **SKIP** (ghi lý do trong report/summary). 
 3. **§4.6 CLAUDE.md drift audit**: không đổi command/struct/deps/ERD → **SKIP** (chỉ thêm util/hook/component theo convention sẵn có).
 4. **§4.7 Green checks**: `cd client && pnpm lint && pnpm build`.

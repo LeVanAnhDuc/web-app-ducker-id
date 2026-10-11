@@ -14,12 +14,12 @@
 
 | Feature | Spec folder | Test file | View |
 | --- | --- | --- | --- |
-| change-password | `docs/specs/change-password/` | `client/e2e/change-password/change-password.e2e.ts` | `views/AccountSettings/**` |
-| admin-users-list | `docs/specs/admin-users-list/` | `client/e2e/admin-users-list/admin-users-list.e2e.ts` | `views/AdminUsers/**` |
-| edit-apps | `docs/specs/edit-apps/` | `client/e2e/admin-apps/edit-apps.e2e.ts` | `views/AdminApps/**` |
-| notifications | `docs/specs/notifications-api/` | `client/e2e/notifications/notifications.e2e.ts` | `views/Notifications/**` + `layouts/AppHeader/**` |
-| web-app-user-list | `docs/specs/web-app-user-list/` | `client/e2e/web-app-user-list/apps-list.e2e.ts` | `views/Apps/**` |
-| admin-login-history-detail | `docs/specs/admin-login-history-detail/` | `client/e2e/admin-login-history/admin-login-history-detail.e2e.ts` | `views/AdminLoginHistory(/Detail)/**` |
+| change-password | `docs/specs/change-password/` | `automation-test/tests/e2e/password/change-password.e2e.ts` | `views/AccountSettings/**` |
+| admin-users-list | `docs/specs/admin-users-list/` | `automation-test/tests/e2e/admin-users/admin-users-list.e2e.ts` | `views/AdminUsers/**` |
+| edit-apps | `docs/specs/edit-apps/` | `automation-test/tests/e2e/admin-apps/edit-app.e2e.ts` | `views/AdminApps/**` |
+| notifications | `docs/specs/notifications-api/` | `automation-test/tests/e2e/notifications/notifications.e2e.ts` | `views/Notifications/**` + `layouts/AppHeader/**` |
+| web-app-user-list | `docs/specs/web-app-user-list/` | `automation-test/tests/e2e/apps/apps-list.e2e.ts` | `views/Apps/**` |
+| admin-login-history-detail | `docs/specs/admin-login-history-detail/` | `automation-test/tests/e2e/admin-login-history/detail.e2e.ts` | `views/AdminLoginHistory(/Detail)/**` |
 
 **Ngoài scope**: tạo E2E mới cho view chưa từng có test (Billing, Profile, Favorites,
 MyContacts, Team, AdminDashboard, AdminEntitlements, ForgotPasswords, Logins, …) — đợt sau.
@@ -39,7 +39,7 @@ Audit phát hiện 5 vấn đề code/cấu hình (không chỉ test). User duy�
 
 ### CF-1 — Playwright project routing (admin suites)
 
-`client/playwright.config.ts`: project `chromium` (`storageState: user.json`) chỉ `testIgnore`
+`automation-test/playwright.config.ts`: project `chromium` (`storageState: user.json`) chỉ `testIgnore`
 `admin-apps/`, nên `admin-users-list/` + `admin-login-history/` chạy nhầm dưới user thường →
 chỉ pass nhờ hack `E2E_USER_EMAIL=admin` lúc `auth.setup`.
 
@@ -118,7 +118,7 @@ enum→label + isAnomaly Yes/No + date không ISO; loading skeleton + network ab
 
 ## 5. Quy ước test (giữ nguyên convention hiện có)
 
-- Test ở `client/e2e/<feature>/*.e2e.ts`; helper chung `client/e2e/helpers/`; auth qua
+- Test ở `automation-test/tests/e2e/<module>/*.e2e.ts`; helper chung `automation-test/helpers/`; auth qua
   `auth.setup.ts`/`admin.setup.ts` → storageState.
 - AuthN fresh context: `clearCookies()` + `storageState: undefined` (cookie localhost không scope port).
 - Mutation-heavy (token revoke, rate-limit, mark-all) → matrix cột `Gate = A only`, gate B chỉ verify
@@ -132,7 +132,7 @@ Sau khi viết xong code fixes + test + docs:
 1. Agent tự check port (BE :5000, FE :3000, Mongo, Redis). Chưa chạy → agent tự dựng background
    (Mongo/Redis → BE từ main `server/` (không đổi) → FE worktree dev port riêng qua
    `node .claude/scripts/worktree.mjs up e2e-coverage-backfill`) + seed.
-2. Dispatch **2 gate song song** (1 message, 2 Agent): Gate A `pnpm e2e` (scope 6 feature);
+2. Dispatch **2 gate song song** (1 message, 2 Agent): Gate A `pnpm test` (scope 6 feature);
    Gate B MCP browser walk (auth context riêng) theo từng `e2e.md`.
 3. Fail (≥1 gate) → `systematic-debugging` root cause → `e2e-bugs.md` (append/round) → fix → re-run
    cả 2. Max 3 vòng; quá → dừng + báo user.

@@ -86,3 +86,5 @@ Feature **read-only** (search + mở app external). Không có mutation dữ li�
 | 12 | Accessibility | Selector role/label: input `role=combobox` `aria-expanded`; rows `role=option`. ↓/↑ đổi active, Enter mở app active, Esc đóng + focus trả về input. Announce số kết quả (`aria-live`). | A+B |
 
 **Error-guessing (fold-in)**: double Enter (mở 1 lần), paste query có trailing space (trim), emoji query không crash, click ngoài lúc đang loading → đóng gọn, chuyển locale khi popover mở → chuỗi đổi ngay.
+
+> **Test cases** for this feature now live in `automation-test/test-cases/apps.md` (merged from the former `e2e.md` on 2026-10-10).

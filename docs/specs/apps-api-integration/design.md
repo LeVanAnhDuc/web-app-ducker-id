@@ -117,7 +117,7 @@ BE đã có sẵn `buildWebAppFilter` (đã hỗ trợ `categoryId`) và `catego
 
 ## 6. E2E Scenario Matrix
 
-Phạm vi E2E: **trang Apps** (thêm category filter) + **trang Home** (data thật). Trang Discover bị xoá → gỡ e2e Discover nếu tồn tại (`client/e2e/discover/`). Áp dụng vì có behavior user quan sát được mới (filter category, Home hiển thị app thật).
+Phạm vi E2E: **trang Apps** (thêm category filter) + **trang Home** (data thật). Trang Discover bị xoá → gỡ e2e Discover nếu tồn tại (`automation-test/tests/e2e/apps/`). Áp dụng vì có behavior user quan sát được mới (filter category, Home hiển thị app thật).
 
 Walk đủ 12 nhóm rubric:
 
@@ -137,9 +137,9 @@ Walk đủ 12 nhóm rubric:
 | 12 | Accessibility | ✅ | Pills dùng `CustomButton` + `role="group"` + `aria-pressed`; đổi category `announce` qua `useAnnounce`. Keyboard tab qua pills. Card icon `alt=""` (decorative) + tên app là text. Pager đã có `aria-label`. |
 
 **Artifact E2E (writing-plans sẽ expand):**
-- `client/e2e/apps/*.e2e.ts` — category filter, search+filter, empty, i18n en+vi, error/loading, a11y.
-- `client/e2e/home/*.e2e.ts` — render app thật, totalApps, empty, i18n en+vi.
-- Tài liệu kịch bản: `docs/specs/apps-api-integration/e2e.md`.
+- `automation-test/tests/e2e/apps/*.e2e.ts` — category filter, search+filter, empty, i18n en+vi, error/loading, a11y.
+- `automation-test/tests/e2e/home/*.e2e.ts` — render app thật, totalApps, empty, i18n en+vi.
+- Tài liệu kịch bản: `automation-test/test-cases/apps.md` + `automation-test/test-cases/home.md`.
 
 ## 7. Testing (BE)
 
@@ -159,3 +159,5 @@ Walk đủ 12 nhóm rubric:
 - `server/.worktrees/apps-api-integration`
 - `client/.worktrees/apps-api-integration`
 - `docs/.worktrees/apps-api-integration`
+
+> **Test cases** for this feature now live in `automation-test/test-cases/apps.md` + `automation-test/test-cases/home.md` (merged from the former `e2e.md` on 2026-10-10).

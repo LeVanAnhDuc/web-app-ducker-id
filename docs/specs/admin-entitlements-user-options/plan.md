@@ -16,8 +16,8 @@
 - Types bulk ở `src/types/AdminEntitlements`; enum status ở `constants/entitlementStatus.ts` (thêm PARTIAL nếu cần, derive type).
 
 ## Task DOCS-1 — Spec (chạm `docs/**`)
-- `design.md`, `plan.md`, `e2e.md` + mock đã duyệt `ui-designs/admin-entitlements-user-options/picker-bulk-matrix.html`.
+- `design.md`, `plan.md`, `automation-test/test-cases/admin-entitlements.md` + mock đã duyệt `ui-designs/admin-entitlements-user-options/picker-bulk-matrix.html`.
 
 ## Verify
 - FE: `pnpm lint && pnpm build` xanh. i18n en+vi đủ. Không hardcode string/route/endpoint.
-- Security: skip (không bề mặt BE mới — DR §6). E2E: hoãn slice sau (`e2e.md`).
+- Security: skip (không bề mặt BE mới — DR §6). E2E: hoãn slice sau (`automation-test/test-cases/admin-entitlements.md`).

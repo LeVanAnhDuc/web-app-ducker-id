@@ -129,7 +129,7 @@ Bổ sung path + schema cho `GET /admin/users` theo `standard-doc-api` (develope
 
 - **Error**: `adminGuard` → 403 (không phải admin); `queryPipe` → 400 (param sai). Dùng cơ chế response/exception sẵn có.
 - **BE test** (jest): unit cho service (map DTO, build meta, role mapping) + repository (filter/aggregation). Lưu ý chạy jest trong worktree: dùng `pnpm exec jest --testMatch "**/?(*.)+(spec).ts"`.
-- **FE E2E** (Playwright, §4.3): trang `admin/users` — load list thật, filter theo role/status/search, đổi trang. Artifact `client/e2e/admin-users-list/*.e2e.ts` + `docs/specs/admin-users-list/e2e.md`.
+- **FE E2E** (Playwright, §4.3): trang `admin/users` — load list thật, filter theo role/status/search, đổi trang. Artifact `automation-test/tests/e2e/admin-users/*.e2e.ts` + `automation-test/test-cases/admin-users.md`.
 
 ## 7. Drift đã ghi nhận (cần biết khi plan)
 
@@ -145,7 +145,7 @@ Worktree per-repo đã tạo từ `origin/main`, branch `feat/admin-users-list`:
 
 > Trang đích: `/admin/users` (en) · `/vi/admin/users` (vi). Read-only list, filter/page driven qua URL searchParams. Auth dùng admin storageState (`auth.setup` với `E2E_USER_EMAIL=admin@test.com`). Seed reference: `admin@test.com`, `user@test.com`, `inactive@test.com`.
 >
-> Walk đủ 12 nhóm rubric `e2e-scenario-coverage` (breadth) + tag `[technique]` + giá trị cụ thể (depth). Cột `Gate`: `A` = `pnpm e2e` (deterministic, committed), `B` = MCP walk (visual/UX/console/network). Marker `[EXISTS]` = đã có trong `admin-users-list.e2e.ts`; `[NEW]` = chưa có, cần bổ sung. Một số row phụ thuộc code-fix prereq (xem §10).
+> Walk đủ 12 nhóm rubric `e2e-scenario-coverage` (breadth) + tag `[technique]` + giá trị cụ thể (depth). Cột `Gate`: `A` = `pnpm test` (deterministic, committed), `B` = MCP walk (visual/UX/console/network). Marker `[EXISTS]` = đã có trong `admin-users-list.e2e.ts`; `[NEW]` = chưa có, cần bổ sung. Một số row phụ thuộc code-fix prereq (xem §10).
 
 | # | Category | Status (✅/N/A) | Scenario(s) + expected + [technique] + values | Gate |
 | --- | --- | --- | --- | --- |
@@ -175,3 +175,5 @@ Một số row của matrix §9 không thể PASS với code hiện tại — c�
 - **CF-4 — `useAnnounce` wiring (row 12)**: `AdminUsersTable`/`AdminUsersToolbar` chưa gọi `useAnnounce` (`src/hooks/useAnnounce.ts`) cho pagination / filter / search / loading change. Theo `rules/accessibility.md` các dynamic change này MANDATORY phải announce. Cần wire + thêm `announce` keys vào `en/` + `vi/` namespace `adminUsers`.
 
 **Param-name drift cần biết**: Contract §3.6 (`AdminUsersQueryParams`) đặt tên `order?: "asc" | "desc"`, nhưng validator BE (`adminUsersQuerySchema`) dùng tên **`sortOrder`**. Drift `order` ↔ `sortOrder` phải reconcile (đồng bộ FE type ↔ BE schema ↔ swagger) trước khi test sort/order param — hiện chưa có UI sort (row 6 N/A) nên chưa block, nhưng flag để `writing-plans` xử lý.
+
+> **Test cases** for this feature now live in `automation-test/test-cases/admin-users.md` (merged from the former `e2e.md` on 2026-10-10).

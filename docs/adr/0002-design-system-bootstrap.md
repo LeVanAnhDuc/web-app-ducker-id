@@ -36,6 +36,6 @@ Ba thứ **không** theo plugin vì gắn với code và test: icon chỉ **Luci
 - `client/src/app/[locale]/layout.tsx` phải thêm 3 font qua `next/font/google` + map vào `@theme`. Hiện project **chưa wire font nào** — đang chạy font mặc định của Tailwind.
 - Mục `## Font` trong `client/.claude/CLAUDE.md` (preload `/fonts/Inter.woff2`) vốn đã chết, đã thay bằng cấu hình `next/font` thật.
 - `client/.claude/rules/uiux-tokens.md` hạ xuống thành tầng hiện thực của MASTER.md; luật "một font family duy nhất" và focus ring 3px đã bị thay.
-- 30 spec Playwright chưa assert màu/font nên không gãy về mặt selector, nhưng mọi ảnh chụp và cảm nhận thị giác sẽ đổi. Cần chạy lại `pnpm e2e` sau khi migrate.
+- 30 spec Playwright chưa assert màu/font nên không gãy về mặt selector, nhưng mọi ảnh chụp và cảm nhận thị giác sẽ đổi. Cần chạy lại `pnpm test` sau khi migrate.
 - Thay đổi UI diện rộng này chạy như một feature riêng (`docs/specs/design-system-migration/`) trong worktree, có gate duyệt trước commit.
 - `.claude/uiux/design-guide.md` và `frontend-reference.md` không khôi phục nữa — MASTER.md thay thế chúng. `icon-map.md` và `ux-copy.md` thì nên khôi phục vì plugin không biết về Lucide map và i18n copy của project.

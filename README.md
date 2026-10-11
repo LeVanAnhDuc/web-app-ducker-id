@@ -103,7 +103,7 @@ These have a user interface but no working backend, or are named in `docs/projec
 | --------- | ------------------------------------------------------------------------------------------------------------------------ |
 | Client    | Next.js 15.3 (App Router) · React 19 · TypeScript 5 · Tailwind CSS v4 · shadcn/ui + Radix · TanStack Query 5 · Zustand 5 · React Hook Form 7 + Zod 4 · next-intl 4 · Axios · Framer Motion |
 | Server    | Node.js · Express 4 · TypeScript 5 · MongoDB with Mongoose 8 · Redis + BullMQ · JWT + bcrypt · Joi 17 · i18next · Nodemailer + React Email · Winston · Swagger UI |
-| Testing   | Jest 30 + ts-jest on the server — **86 suites / 672 tests, all passing**. Playwright 1.60 on the client — 41 E2E spec files under `client/e2e/` (require a running client, server, MongoDB and Redis, so they are not counted here) |
+| Testing   | Jest 30 + ts-jest on the server — **86 suites / 672 tests, all passing**. Playwright 1.60 in `automation-test/` — **1069 tests** (701 UI E2E + 368 API) proving 808 test cases over 100 requirements; last full run 2026-10-11: 0 unexpected failures, 37 expected failures marking open bugs (needs a running client, server, MongoDB and Redis — see `automation-test/README.md`) |
 | Tooling   | pnpm · ESLint · Prettier · Husky pre-commit running lint-staged in both `client/` and `server/`                 |
 
 ## Running
@@ -135,13 +135,17 @@ pnpm install
 pnpm dev              # http://localhost:3000
 ```
 
-`client/.env.example` covers `NEXT_PUBLIC_API_PREFIX`, `API_SERVER_URL` (the backend origin that `next.config.ts` rewrites the API prefix to), `NEXT_PUBLIC_SITE_URL`, and the `E2E_*` variables used by Playwright.
+`client/.env.example` covers `NEXT_PUBLIC_API_PREFIX`, `API_SERVER_URL` (the backend origin that `next.config.ts` rewrites the API prefix to), and `NEXT_PUBLIC_SITE_URL`.
 
 **4. Tests**
 
 ```bash
 cd server && pnpm test     # Jest unit tests — no database needed
-cd client && pnpm e2e      # Playwright — needs client, server, MongoDB and Redis up and the DB seeded
+
+cd automation-test         # Playwright regression suite — needs client, server, MongoDB and Redis up and the DB seeded
+pnpm install && pnpm exec playwright install chromium
+cp .env.example .env       # REDIS_URL / MONGO_URL = the server's
+pnpm test                  # or test:smoke, test:e2e, test:api — see automation-test/README.md
 ```
 
 ## Project structure
@@ -162,7 +166,6 @@ cd client && pnpm e2e      # Playwright — needs client, server, MongoDB and Re
 │   │   ├── ghosts/             # Headless side-effect components (e.g. TokenRefresher)
 │   │   ├── dataSources/ constants/ contexts/ i18n/ libs/ types/ utils/
 │   │   └── middleware.ts       # Locale routing
-│   ├── e2e/                    # Playwright specs and setup projects
 │   └── public/
 ├── server/                     # Express REST API, mounted under /api/v1
 │   ├── src/
@@ -182,13 +185,19 @@ cd client && pnpm e2e      # Playwright — needs client, server, MongoDB and Re
 │   │   ├── libs/ i18n/ common/ constants/ types/ utils/
 │   ├── test/                   # Jest factories, helpers and mocks
 │   └── postman-collection.json
+├── automation-test/            # Playwright regression suite: UI e2e + API, run on request
+│   ├── docs/                   # Test strategy, plan, requirements, traceability, conventions
+│   ├── test-cases/             # Test cases per module (TC-<MODULE>-NNN)
+│   ├── tests/{setup,e2e,api}/  # Specs
+│   ├── fixtures/ helpers/      # Role fixtures; Redis/Mongo test-data helpers
+│   └── defects/ reports/       # Bug log; run summaries
 ├── docs/
 │   ├── project-goals.md        # Scope, goals, non-goals, MVP roadmap
 │   ├── erd.md                  # Target MongoDB schema
 │   ├── unfinished-features.md  # Backlog of UI-without-API features
-│   ├── specs/<feature>/        # Per-feature design, plan, e2e and security notes
+│   ├── specs/<feature>/        # Per-feature design, plan and security notes
 │   ├── adr/                    # Architecture decision records
 │   └── ui-designs/
-├── .husky/pre-commit           # Runs lint-staged in client/ then server/
+├── .husky/pre-commit           # Runs lint-staged in client/, server/ and automation-test/
 └── package.json                # Root: husky only
 ```

@@ -40,6 +40,8 @@ GET /api/v1/admin/users?search=<q>&limit=20   (authGuard + adminGuard, đã có)
 
 **N/A (skip)** — không thêm bề mặt tấn công BE: picker tái dùng `/admin/users` (đã review + ship), matrix + grant/revoke là **mock client-side** slice này. Khi wire endpoint entitlement thật (slice sau) → chạy security review lúc đó.
 
-## 7. E2E — xem `e2e.md`
+## 7. E2E — xem `automation-test/test-cases/admin-entitlements.md`
 
 Trang chỉ persist thật khi endpoint entitlement được wire (slice sau) → **E2E test author + chạy ở slice đó**. Slice này (mock) phủ bằng green checks FE (lint + build) + review.
+
+> **Test cases** for this feature now live in `automation-test/test-cases/admin-entitlements.md` (merged from the former `e2e.md` on 2026-10-10).

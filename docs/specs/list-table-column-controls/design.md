@@ -184,3 +184,5 @@ Feature đụng `client/src/**`, thêm behavior tương tác (click header sort,
 - **Client-side sort chỉ đúng cho bảng 1-trang**: chỉ wire AdminApps (thỏa điều kiện). Hook `useClientSortedRows` document rõ ràng buộc này để không bị lạm dụng cho bảng server-paginated.
 - **AdminAppsTable đã 227 dòng (>200 rule pre-existing)**: additions tối thiểu (1 dòng hook + 3 props). KHÔNG refactor phần cũ (ngoài scope); flag pre-existing ở review.
 - **`width` inline style vs Tailwind**: dùng inline vì width là giá trị tự do; hideBelow dùng class tĩnh vì Tailwind cần literal.
+
+> **Test cases** for this feature now live in `automation-test/test-cases/admin-apps.md` (merged from the former `e2e.md` on 2026-10-10).

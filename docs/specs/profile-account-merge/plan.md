@@ -28,7 +28,7 @@
 - `client/src/locales/en/account.json`, `client/src/locales/vi/account.json` — namespace `account` hợp nhất (title/description/card/personalInfo/connectedAccounts/notificationPreferences/changePassword/dangerZone).
 - `client/src/views/Profile/mains/ChangePasswordCard/index.tsx` — move từ AccountSettings.
 - `client/src/views/Profile/hooks/useChangePassword.ts` — move từ AccountSettings.
-- `client/e2e/profile-account-merge/merge.e2e.ts` — suite E2E mới.
+- `automation-test/tests/e2e/profile/account-merge.e2e.ts` — suite E2E mới.
 
 **Modified:**
 - `client/src/views/Profile/index.tsx` — thêm ChangePasswordCard trước DangerZoneCard.
@@ -38,13 +38,13 @@
 - `client/src/constants/routes.ts` — gỡ `ACCOUNT_SETTINGS`.
 - `client/src/types/Dashboard/index.ts` — gỡ `"accountSettings"` khỏi `NavKey`.
 - `client/src/dataSources/Dashboard/index.ts` — gỡ nav item `accountSettings` + import `Settings` nếu orphan.
-- `client/e2e/change-password/change-password.e2e.ts` — repoint `/account-settings` → `/profile`.
+- `automation-test/tests/e2e/password/change-password.e2e.ts` — repoint `/account-settings` → `/profile`.
 
 **Deleted:**
 - `client/src/views/AccountSettings/` (toàn bộ).
 - `client/src/app/[locale]/(private)/(settings)/account-settings/`.
 - `client/src/locales/{en,vi}/profile.json`, `client/src/locales/{en,vi}/accountSettings.json`.
-- `client/e2e/account-settings-cleanup/` (toàn bộ suite).
+- `automation-test/tests/e2e/profile/` (toàn bộ suite).
 
 ---
 
@@ -222,18 +222,18 @@ git add -A && git commit -m "feat(profile-account-merge): merge change-password 
 ## Task 3: Reconcile E2E (suite mới + xoá cleanup + repoint change-password)
 
 **Files:**
-- Create: `client/e2e/profile-account-merge/merge.e2e.ts`
-- Delete: `client/e2e/account-settings-cleanup/` (toàn bộ)
-- Modify: `client/e2e/change-password/change-password.e2e.ts`
-- Create: `docs/specs/profile-account-merge/e2e.md` (trong docs worktree)
+- Create: `automation-test/tests/e2e/profile/account-merge.e2e.ts`
+- Delete: `automation-test/tests/e2e/profile/` (toàn bộ)
+- Modify: `automation-test/tests/e2e/password/change-password.e2e.ts`
+- Create: `automation-test/test-cases/profile.md` (trong docs worktree)
 
 **Interfaces:**
-- Consumes: helpers `client/e2e/helpers/env.ts` (`BASE_URL`, `USER_EMAIL`, `USER_PASSWORD`).
+- Consumes: helpers `automation-test/helpers/env.ts` (`BASE_URL`, `USER_EMAIL`, `USER_PASSWORD`).
 - Verify thật sự ở bước §4.3 dual-gate (không chạy trong task này — task này chỉ viết test đúng).
 
 - [ ] **Step 1: Repoint suite change-password sang `/profile`**
 
-Trong `client/e2e/change-password/change-password.e2e.ts`, thay TẤT CẢ:
+Trong `automation-test/tests/e2e/password/change-password.e2e.ts`, thay TẤT CẢ:
 - `page.goto("/account-settings")` → `page.goto("/profile")`
 - `page.goto("/vi/account-settings")` → `page.goto("/vi/profile")`
 - `await freshPage.goto("/account-settings")` → `"/profile"`
@@ -245,18 +245,18 @@ Logic test giữ nguyên (form đổi mật khẩu không đổi behavior; selec
 - [ ] **Step 2: Xoá suite cleanup obsolete**
 
 ```bash
-rm -rf client/e2e/account-settings-cleanup
+rm -rf automation-test/tests/e2e/profile
 ```
 (Mọi assertion của suite này dựa trên `/account-settings` tồn tại + nav "Account Settings" — không còn đúng. Case route-removal `/security` của nó KHÔNG thuộc feature này; không di chuyển. Case còn giá trị về co-location DangerZone được suite mới phủ lại.)
 
-- [ ] **Step 3: Viết suite mới `client/e2e/profile-account-merge/merge.e2e.ts`**
+- [ ] **Step 3: Viết suite mới `automation-test/tests/e2e/profile/account-merge.e2e.ts`**
 
 ```ts
 import { test, expect } from "@playwright/test";
 
 // E2E — Profile/Account merge. Scenario Matrix:
-// docs/specs/profile-account-merge/e2e.md. Read-only / no mutation
-// (password-change form behaviour lives in e2e/change-password). i18n strings
+// `automation-test/test-cases/profile.md`. Read-only / no mutation
+// (password-change form behaviour lives in automation-test/tests/e2e/password). i18n strings
 // sourced verbatim from src/locales/{en,vi}/{account,dashboard}.json.
 
 const EN = {
@@ -441,7 +441,7 @@ test.describe("Profile/Account merge — nav integrity", () => {
 });
 ```
 
-- [ ] **Step 4: Viết `docs/specs/profile-account-merge/e2e.md`**
+- [ ] **Step 4: Viết `automation-test/test-cases/profile.md`**
 
 Tài liệu kịch bản: liệt kê các describe trên ánh xạ về row matrix (1, 2, 8, 9, F1, F2), ghi rõ:
 - Gate column (tất cả `A+B`; không scenario mutation).

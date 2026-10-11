@@ -99,13 +99,13 @@ Chỉ i18n file/namespace đổi tên thành `account`. Route `/profile` và fol
 
 Việc gom phá vỡ giả định "/account-settings tồn tại" của các suite cũ. Reconcile:
 
-### D.1. Suite mới `client/e2e/profile-account-merge/`
-Owns hành vi **đặc thù của việc gom** (route removal, nav, composition, i18n rename). Di chuyển case còn hữu dụng từ `account-settings-cleanup` sang đây. Tài liệu kịch bản: `docs/specs/profile-account-merge/e2e.md`.
+### D.1. Suite mới `automation-test/tests/e2e/profile/`
+Owns hành vi **đặc thù của việc gom** (route removal, nav, composition, i18n rename). Di chuyển case còn hữu dụng từ `account-settings-cleanup` sang đây. Tài liệu kịch bản: `automation-test/test-cases/profile.md`.
 
-### D.2. Xoá suite `client/e2e/account-settings-cleanup/`
+### D.2. Xoá suite `automation-test/tests/e2e/profile/`
 Phần lớn obsolete sau khi `/account-settings` biến mất (F2 assert "có link Account Settings", #1/#9/#2 goto `/account-settings`). Case còn giá trị (F1 security-route 404 — KHÔNG liên quan feature này) đã có lịch sử riêng; F1 giữ lại bằng cách **di chuyển vào suite mới** hoặc xác nhận đã được suite khác cover. Reconcile khi `writing-plans` quyết định từng case: ADD (nav-removed, /account-settings 404, page co-location) · UPDATE (target /profile) · REMOVE (mọi assert dựa trên /account-settings tồn tại).
 
-### D.3. Repoint suite `client/e2e/change-password/change-password.e2e.ts`
+### D.3. Repoint suite `automation-test/tests/e2e/password/change-password.e2e.ts`
 Form đổi mật khẩu giờ sống ở `/profile`. **Update** (không re-derive — logic form không đổi): mọi `goto("/account-settings")` / `"/vi/account-settings"` → `/profile`; mọi `expect(page).toHaveURL(/\/account-settings/)` → `/\/profile/`; comment nguồn i18n `accountSettings.changePassword` → `account.changePassword`. Helper `helpers/changePassword.ts` không hardcode route → không đổi.
 
 ## 5. Ngoài phạm vi (YAGNI)
@@ -147,3 +147,5 @@ Thay đổi observable (gộp card, mất nav item + route, đổi title/nhãn, 
 - **[error-guessing]** — row 2 (fresh-context AuthN), row 9 (console MISSING_MESSAGE scan), row 10 (not-found không crash).
 - **[EP]/[BVA]/[DT]** — KHÔNG kích hoạt ở merge suite: không có input domain / boundary / điều kiện kết hợp **mới** do việc gom. Các kỹ thuật này áp cho form đổi mật khẩu, **đã thuộc suite `change-password`** (giữ nguyên, chỉ repoint `/profile`).
 - **Completeness-critic**: user chưa yêu cầu "thorough/≥90%" → không chạy subagent critic. Error-guessing inline đã phủ: bookmark URL cũ → 404 (F1), đổi locale giữ trang gom (row 9), link sidebar cũ (F2), console missing-message sau rename (row 9).
+
+> **Test cases** for this feature now live in `automation-test/test-cases/profile.md` (merged from the former `e2e.md` on 2026-10-10).

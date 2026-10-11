@@ -181,7 +181,7 @@ layouts/AuthGuardLayout/
 
 ## E2E Scenario Matrix
 
-Feature có **2 bề mặt hành vi**: (S1) admin reset action ở `/admin/users`; (S2) force-change flow (login temp pw → redirect → đổi → home). Test file dự kiến: `client/e2e/admin-users-reset/*.e2e.ts` (project `admin` cho S1; S2 cần context user thường + temp pw thật). Cột `Gate`: `A+B` = cả 2 gate; `A only` = mutation-heavy (reset thật đổi mật khẩu account khác / đổi pw) → gate B chỉ verify read/render.
+Feature có **2 bề mặt hành vi**: (S1) admin reset action ở `/admin/users`; (S2) force-change flow (login temp pw → redirect → đổi → home). Test file dự kiến: `automation-test/tests/e2e/admin-users/*.e2e.ts` (project `admin` cho S1; S2 cần context user thường + temp pw thật). Cột `Gate`: `A+B` = cả 2 gate; `A only` = mutation-heavy (reset thật đổi mật khẩu account khác / đổi pw) → gate B chỉ verify read/render.
 
 | # | Nhóm | Scenario + expected | Kỹ thuật | Gate |
 | - | ---- | ------------------- | -------- | ---- |
@@ -215,7 +215,7 @@ Feature có **2 bề mặt hành vi**: (S1) admin reset action ở `/admin/users
 
 ### Dual-gate (§4.3)
 
-- **Gate A** — `cd client && pnpm e2e --project=admin -g "Admin Reset Password"` (+ suite S2 force-change) trên app thật.
+- **Gate A** — `cd automation-test && pnpm test -g "Admin Reset Password"` (+ suite S2 force-change) trên app thật.
 - **Gate B** — MCP browser walk cùng matrix (auth context riêng); walk mọi row `A+B`, SKIP mutation của row `A only` (reset thật + đổi pw) — chỉ verify read/render/i18n/a11y.
 - Fail → `systematic-debugging` → `e2e-bugs.md` → fix → re-run (max 3 vòng).
 
@@ -225,4 +225,6 @@ Feature có **2 bề mặt hành vi**: (S1) admin reset action ở `/admin/users
 - FE: `client/src/{constants/{endpoints,routes}.ts, requests/adminUsers.ts, views/AdminUsers/hooks/useResetAdminUserPassword.ts, mocks/AdminUsers.ts, hooks/useUserInfo.ts, types/User, layouts/AuthGuardLayout, views/ForceChangePassword, app/[locale]/(private)/(force-password)/**, locales}`.
 - docs: `docs/specs/admin-reset-password/{design.md, e2e.md}` (+ `security-report.md`).
 - UI mock: `docs/ui-designs/admin-reset-password/*.html` (SuperDesign 1.5, light+dark).
-- E2E test: `client/e2e/admin-users-reset/*.e2e.ts`.
+- E2E test: `automation-test/tests/e2e/admin-users/*.e2e.ts`.
+
+> **Test cases** for this feature now live in `automation-test/test-cases/admin-users.md` + `automation-test/test-cases/password.md` (merged from the former `e2e.md` on 2026-10-10).

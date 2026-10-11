@@ -127,10 +127,10 @@ updateMatrix(deps, changes: EntitlementChange[], actorId: string): Promise<Entit
 
 ### Task 7: E2E
 
-- [ ] Reconcile `e2e/admin-entitlements/matrix.e2e.ts` theo matrix §10 (bỏ assert "Role required" / ô disabled; mutation `serial` + revert `afterAll` qua API).
-- [ ] Thêm `e2e/web-app-access/launcher.e2e.ts` (#7, #11b, #11c) dùng helper API admin.
-- [ ] Chạy server `:5100` + client `:3100` worktree, `pnpm seed`, `E2E_BASE_URL=http://localhost:3100 pnpm e2e` toàn bộ → xanh. Gate B: walk các dòng `A+B` bằng browser.
-- [ ] Viết `e2e.md`.
+- [ ] Reconcile `automation-test/tests/e2e/admin-entitlements/matrix.e2e.ts` theo matrix §10 (bỏ assert "Role required" / ô disabled; mutation `serial` + revert `afterAll` qua API).
+- [ ] Thêm `automation-test/tests/e2e/apps/launcher-access.e2e.ts` (#7, #11b) và `automation-test/tests/e2e/admin-entitlements/admin-sso.e2e.ts` (#11c) dùng helper API admin (`automation-test/helpers/entitlements.ts`).
+- [ ] Chạy server `:5100` + client `:3100` worktree, `pnpm seed`, `cd automation-test && E2E_BASE_URL=http://localhost:3100 pnpm test` toàn bộ → xanh. Gate B: walk các dòng `A+B` bằng browser.
+- [ ] Viết test case vào `automation-test/test-cases/admin-entitlements.md` (+ `apps`, `favorites`, `recently-used`, `oidc`).
 
 ### Task 8: Docs + merge
 

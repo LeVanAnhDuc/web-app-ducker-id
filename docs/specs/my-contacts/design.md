@@ -118,7 +118,7 @@ CONTACT thiếu liên kết user (spec gap). **DR**: thêm `user_id ObjectId FK 
 
 ## E2E Scenario Matrix
 
-Suite: `client/e2e/my-contacts/*.e2e.ts` (project user — cần user thường có contact seed). Cột `Gate`: `A+B` cả 2 gate; `A only` mutation-heavy.
+Suite: `automation-test/tests/e2e/support/*.e2e.ts` (project user — cần user thường có contact seed). Cột `Gate`: `A+B` cả 2 gate; `A only` mutation-heavy.
 
 | # | Nhóm | Scenario + expected | Kỹ thuật | Gate |
 | - | ---- | ------------------- | -------- | ---- |
@@ -145,7 +145,7 @@ Suite: `client/e2e/my-contacts/*.e2e.ts` (project user — cần user thường 
 - `getMyContactDetail`: của mình → ok; của người khác/không tồn tại → 404.
 
 ### Dual-gate (§4.3)
-- Gate A: `cd client && pnpm e2e --project=user -g "My Contacts"` (hoặc project phù hợp) trên app thật.
+- Gate A: `cd automation-test && pnpm test --project=user -g "My Contacts"` (hoặc project phù hợp) trên app thật.
 - Gate B: MCP browser walk cùng matrix (auth context user riêng); row `A only` (submit) chỉ verify read/render, không mutate song song.
 - Fail → systematic-debugging → `e2e-bugs.md` → fix → re-run (max 3).
 
@@ -153,4 +153,6 @@ Suite: `client/e2e/my-contacts/*.e2e.ts` (project user — cần user thường 
 - BE: `models/contact.ts`, `modules/contact-admin/{routes,controller,service,repository,dtos,types,swagger}`, `validators/schemas/contact-admin`, `modules.loader`, seeders.
 - FE: `constants/{endpoints,routes}.ts`, `requests/myContacts.ts`, `types/MyContacts`, `dataSources/MyContacts`, `views/MyContacts` (list) + `views/MyContactDetail`, `app/[locale]/(private)/(dashboard)/contacts/me/{page.tsx,[id]/page.tsx}`, locales.
 - docs: `docs/specs/my-contacts/{design.md, e2e.md}` (+ security-report), `erd.md` (DR).
-- E2E: `client/e2e/my-contacts/*.e2e.ts`.
+- E2E: `automation-test/tests/e2e/support/*.e2e.ts`.
+
+> **Test cases** for this feature now live in `automation-test/test-cases/support.md` (merged from the former `e2e.md` on 2026-10-10).
