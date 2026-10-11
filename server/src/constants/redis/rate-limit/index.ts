@@ -139,6 +139,16 @@ export const RATE_LIMIT_CONFIG = {
     }
   },
 
+  ENTITLEMENTS: {
+    MUTATION: {
+      PER_IP_USER: {
+        KEY: "rate-limit:entitlement-mutation:ip-user:",
+        MAX_REQUESTS: 60,
+        WINDOW_SECONDS: 60
+      }
+    }
+  },
+
   RECENT_APP: {
     RECORD: {
       PER_USER: {

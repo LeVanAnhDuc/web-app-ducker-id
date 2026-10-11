@@ -24,9 +24,17 @@ import {
   categoryPaths
 } from "@/modules/category/swagger";
 import {
+  entitlementSwaggerSchemas,
+  entitlementPaths
+} from "@/modules/entitlement/swagger";
+import {
   recentAppSwaggerSchemas,
   recentAppPaths
 } from "@/modules/recent-app/swagger";
+import {
+  notificationSwaggerSchemas,
+  notificationPaths
+} from "@/modules/notification/swagger";
 // others
 import ENV from "@/constants/env";
 import { commonSchemas, commonResponses } from "./common.schemas";
@@ -45,7 +53,9 @@ const allSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   ...userSwaggerSchemas,
   ...webAppSwaggerSchemas,
   ...categorySwaggerSchemas,
-  ...recentAppSwaggerSchemas
+  ...entitlementSwaggerSchemas,
+  ...recentAppSwaggerSchemas,
+  ...notificationSwaggerSchemas
 };
 
 const allPaths: OpenAPIV3.PathsObject = {
@@ -59,7 +69,9 @@ const allPaths: OpenAPIV3.PathsObject = {
   ...userPaths,
   ...webAppPaths,
   ...categoryPaths,
-  ...recentAppPaths
+  ...entitlementPaths,
+  ...recentAppPaths,
+  ...notificationPaths
 };
 
 export const openApiSpec: OpenAPIV3.Document = {
@@ -110,9 +122,19 @@ export const openApiSpec: OpenAPIV3.Document = {
       description: "Public category list for the launcher filter"
     },
     {
+      name: "Notifications",
+      description:
+        "The signed-in user's inbox — written by domain events, rendered by the client in the reader's locale"
+    },
+    {
       name: "Categories Admin",
       description:
         "Admin endpoints for creating, renaming, ordering and deleting categories"
+    },
+    {
+      name: "Entitlements Admin",
+      description:
+        "Admin endpoints for granting or revoking a user's access to an app beyond the role default"
     }
   ],
   paths: allPaths,

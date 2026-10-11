@@ -7,7 +7,8 @@ import type {
   PublicUserRecord,
   UserWithAuth,
   AdminUserAggregateRow,
-  AdminUsersFilter
+  AdminUsersFilter,
+  UserRole
 } from "@/modules/user/types";
 import type { PaginationOptions } from "@/types/common";
 import type { ClientSession } from "mongoose";
@@ -38,4 +39,6 @@ export interface UserRepository {
   findAuthIdById(
     userId: string
   ): Promise<{ authId: string; email: string } | null>;
+  /** The role of each user found; ids with no user are simply absent. */
+  findRolesByIds(userIds: string[]): Promise<UserRole[]>;
 }

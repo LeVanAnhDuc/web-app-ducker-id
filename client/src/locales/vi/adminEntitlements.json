@@ -1,6 +1,6 @@
 {
   "title": "Phân quyền truy cập",
-  "subtitle": "Xem và chỉnh sửa quyền truy cập ứng dụng của từng người dùng.",
+  "subtitle": "Mỗi người dùng được các ứng dụng mà vai trò cho phép. Đổi một ô để tạo ngoại lệ cho người đó.",
   "picker": {
     "searchPlaceholder": "Tìm người dùng theo tên hoặc email...",
     "results": "Kết quả",
@@ -22,9 +22,8 @@
     "save": "Lưu",
     "cancel": "Hủy",
     "saveDisabledTooltip": "Chưa có thay đổi nào để lưu.",
-    "checkAll": "Cấp tất cả ứng dụng khả dụng",
+    "checkAll": "Cấp tất cả ứng dụng",
     "uncheckAll": "Thu hồi tất cả ứng dụng",
-    "insufficientRoleTooltip": "Người dùng này không đủ quyền.",
     "empty": {
       "title": "Không có ứng dụng",
       "description": "Chưa có ứng dụng nào để quản lý."
@@ -33,8 +32,9 @@
   "cell": {
     "granted": "Đã cấp",
     "notGranted": "Chưa cấp",
-    "insufficientRole": "Cần quyền",
-    "grantAria": "Cấp {app} cho {user}"
+    "grantAria": "Cấp {app} cho {user}",
+    "overrideGranted": "Ngoại lệ — được cấp ngoài vai trò",
+    "overrideRevoked": "Ngoại lệ — bị thu hồi dù đủ vai trò"
   },
   "emptyUser": {
     "title": "Chưa chọn người dùng",
@@ -52,7 +52,7 @@
     "editStart": "Đang chỉnh sửa quyền truy cập ứng dụng.",
     "saved": "Đã lưu quyền truy cập ứng dụng.",
     "canceled": "Đã hủy các thay đổi.",
-    "checkAll": "Đã cấp tất cả ứng dụng khả dụng cho {name}.",
+    "checkAll": "Đã cấp tất cả ứng dụng cho {name}.",
     "uncheckAll": "Đã thu hồi tất cả ứng dụng của {name}."
   }
 }

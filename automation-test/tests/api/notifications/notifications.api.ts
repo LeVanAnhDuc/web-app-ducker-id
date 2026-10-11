@@ -5,10 +5,11 @@ import { insertNotifications } from "@helpers/notifications";
 
 // /api/v1/notifications — list, read filter, paging, unread count, mark one,
 // mark all, isolation between users and authorisation.
-// Test cases: test-cases/notifications.md (TC-NOTIF-030 … 037).
+// Test cases: test-cases/notifications.md (TC-NOTIF-030 … 038).
 //
-// Notifications have no public producer, so each case seeds rows for a
-// throwaway account directly in the database (insertNotifications); the
+// Rows carry type + category + params + link, never text. Each case seeds
+// rows for a throwaway account directly in the database (insertNotifications,
+// same shape the real producers write); the
 // cleanup project deletes the account and its rows. The seeded user's
 // notifications are never marked here.
 
@@ -18,8 +19,9 @@ const ZERO_ID = "ffffffffffffffffffffffff";
 interface Item {
   id: string;
   type: string;
-  title: string;
-  message: string;
+  category: string;
+  params: Record<string, string | number>;
+  link: string | null;
   isRead: boolean;
   readAt: string | null;
   createdAt: string;
@@ -56,24 +58,32 @@ test(
   { tag: ["@TC-NOTIF-030", "@smoke"] },
   async () => {
     const { api, ids } = await owner("notif-contract", [
-      { title: "Oldest", ageMinutes: 30 },
-      { title: "Middle", ageMinutes: 20, isRead: true },
-      { title: "Newest", ageMinutes: 10 }
+      { name: "Oldest", ageMinutes: 30 },
+      { name: "Middle", ageMinutes: 20, isRead: true },
+      { name: "Newest", ageMinutes: 10 }
     ]);
     try {
       const { items, meta } = await list(api);
-      expect(items.map((i) => i.title)).toEqual(["Newest", "Middle", "Oldest"]);
+      expect(items.map((i) => i.params.appName)).toEqual([
+        "Newest",
+        "Middle",
+        "Oldest"
+      ]);
       expect(meta).toMatchObject({ total: 3, page: 1, totalPages: 1 });
       expect(items.map((i) => i.id).sort()).toEqual([...ids].sort());
       for (const i of items) {
-        expect(typeof i.message).toBe("string");
+        expect(i).toMatchObject({ type: "APP_AVAILABLE", category: "app" });
+        // Text is never stored: the client renders the type in its locale.
+        expect(i).not.toHaveProperty("title");
+        expect(i).not.toHaveProperty("message");
+        expect(i).not.toHaveProperty("dedupeKey");
         expect(typeof i.isRead).toBe("boolean");
         expect(i.isRead ? i.readAt : null).toEqual(
           i.isRead ? expect.any(String) : null
         );
       }
       const asc = await list(api, { sortOrder: "asc" });
-      expect(asc.items.map((i) => i.title)).toEqual([
+      expect(asc.items.map((i) => i.params.appName)).toEqual([
         "Oldest",
         "Middle",
         "Newest"
@@ -85,13 +95,64 @@ test(
 );
 
 test(
+  "category filters the list and combines with isRead [EP][DT]",
+  { tag: "@TC-NOTIF-038" },
+  async () => {
+    const { api } = await owner("notif-category", [
+      { name: "App one" },
+      { name: "App two", isRead: true },
+      {
+        name: "anomaly",
+        type: "LOGIN_ANOMALY",
+        params: {
+          reason: "device",
+          browser: "Safari",
+          os: "macOS",
+          country: "VN"
+        }
+      },
+      {
+        name: "locked",
+        type: "ACCOUNT_LOCKED",
+        params: { minutes: 30 },
+        isRead: true
+      }
+    ]);
+    try {
+      const security = await list(api, { category: "security" });
+      expect(security.meta.total).toBe(2);
+      expect(security.items.every((i) => i.category === "security")).toBe(true);
+      const app = await list(api, { category: "app" });
+      expect(app.items.map((i) => i.params.appName).sort()).toEqual([
+        "App one",
+        "App two"
+      ]);
+      const unreadSecurity = await list(api, {
+        category: "security",
+        isRead: false
+      });
+      expect(unreadSecurity.items.map((i) => i.type)).toEqual([
+        "LOGIN_ANOMALY"
+      ]);
+      expect((await list(api, { category: "system" })).items).toEqual([]);
+      for (const category of ["bogus", "SECURITY", ""]) {
+        const res = await api.get(N, { params: { category } });
+        expect(res.status(), `category=${category}`).toBe(400);
+      }
+    } finally {
+      await api.dispose();
+    }
+  }
+);
+
+test(
   "isRead splits the list and unread-count matches the unread side [EP]",
   { tag: "@TC-NOTIF-031" },
   async () => {
     const { api } = await owner("notif-split", [
-      { title: "U1" },
-      { title: "U2" },
-      { title: "R1", isRead: true }
+      { name: "U1" },
+      { name: "U2" },
+      { name: "R1", isRead: true }
     ]);
     try {
       const u = await list(api, { isRead: false });
@@ -113,7 +174,7 @@ test(
   async () => {
     const { api } = await owner(
       "notif-paging",
-      Array.from({ length: 21 }, (_, i) => ({ title: `P${i}`, ageMinutes: i }))
+      Array.from({ length: 21 }, (_, i) => ({ name: `P${i}`, ageMinutes: i }))
     );
     try {
       // Default limit is 20: 21 rows → 2 pages, the last holds 1.
@@ -131,6 +192,7 @@ test(
         [{ limit: 100 }, 200],
         [{ limit: 101 }, 400],
         [{ isRead: "maybe" }, 400],
+        [{ category: "bogus" }, 400],
         [{ sortOrder: "sideways" }, 400]
       ] as const) {
         const res = await api.get(N, { params });
@@ -147,8 +209,8 @@ test(
   { tag: ["@TC-NOTIF-033", "@smoke"] },
   async () => {
     const { api, ids } = await owner("notif-mark", [
-      { title: "A" },
-      { title: "B" }
+      { name: "A" },
+      { name: "B" }
     ]);
     try {
       expect(await unread(api)).toBe(2);
@@ -176,9 +238,9 @@ test(
   { tag: "@TC-NOTIF-034" },
   async () => {
     const { api } = await owner("notif-all", [
-      { title: "A" },
-      { title: "B" },
-      { title: "C", isRead: true }
+      { name: "A" },
+      { name: "B" },
+      { name: "C", isRead: true }
     ]);
     try {
       const first = await api.patch(`${N}/read-all`);
@@ -199,10 +261,10 @@ test(
   "a user can neither see nor mark another user's notifications",
   { tag: ["@TC-NOTIF-035", "@smoke"] },
   async () => {
-    const alice = await owner("notif-alice", [{ title: "Alice only" }]);
-    const bob = await owner("notif-bob", [{ title: "Bob only" }]);
+    const alice = await owner("notif-alice", [{ name: "Alice only" }]);
+    const bob = await owner("notif-bob", [{ name: "Bob only" }]);
     try {
-      expect((await list(bob.api)).items.map((i) => i.title)).toEqual([
+      expect((await list(bob.api)).items.map((i) => i.params.appName)).toEqual([
         "Bob only"
       ]);
       const cross = await bob.api.patch(`${N}/${alice.ids[0]}/read`);

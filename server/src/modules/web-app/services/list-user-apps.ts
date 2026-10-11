@@ -9,7 +9,7 @@ import { toUserAppDto } from "../dtos";
 import { buildWebAppFilter } from "../helpers";
 import { WEB_APP_STATUS_PUBLIC } from "../constants";
 import { resolvePaging, toPageMeta } from "@/common/pagination";
-import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
+import { buildAccessFilter } from "@/modules/entitlement/entitlement.helper";
 import { RequestContext } from "@/utils/request-context";
 
 export const listUserApps = async (
@@ -26,20 +26,18 @@ export const listUserApps = async (
     categoryId: query.categoryId
   });
 
-  // Role-scoped visibility: admins see the full active catalog; everyone else
-  // (non-admins, and any unauthenticated edge case) sees only apps whose
-  // requiredRoles include the USER role. Matching a scalar against the array
-  // field returns documents whose requiredRoles array contains that role.
-  if (role !== AUTHENTICATION_ROLES.ADMIN) {
-    filter.requiredRoles = AUTHENTICATION_ROLES.USER;
-  }
+  // Access = role default + the user's overrides. The clauses go into `$and`
+  // because `buildWebAppFilter` already put the search into `$or`.
+  const userId = RequestContext.getUserId();
+  const scope = await deps.accessPolicy.resolveScope(userId, role);
+  const accessClauses = buildAccessFilter(scope);
+  if (accessClauses.length > 0) filter.$and = accessClauses;
 
   const [docs, total] = await Promise.all([
     deps.webAppRepo.findActivePaginated(filter, { skip, limit }),
     deps.webAppRepo.countActive(filter)
   ]);
 
-  const userId = RequestContext.getUserId();
   const favoriteIds = userId
     ? await deps.favoriteRepo.findFavoritedAppIds(
         userId,

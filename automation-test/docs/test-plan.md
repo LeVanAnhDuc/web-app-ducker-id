@@ -15,8 +15,8 @@ ports (environment variables beat `.env` in both apps):
 cd server && DB_NAME=ducker-id-e2e pnpm seed
 
 # API and client on that database (separate terminals)
-cd server && DB_NAME=ducker-id-e2e APP_PORT=5600 CLIENT_URL=http://localhost:3600 pnpm dev
-cd client && API_SERVER_URL=http://localhost:5600 npx next dev --port 3600
+cd server && DB_NAME=ducker-id-e2e APP_PORT=5600 CLIENT_URL=http://localhost:3600 OIDC_ISSUER=http://localhost:3600 pnpm dev
+cd client && API_SERVER_URL=http://localhost:5600 pnpm exec next build            && API_SERVER_URL=http://localhost:5600 pnpm exec next start --port 3600
 
 # once per clone
 cd automation-test
@@ -28,8 +28,22 @@ cp .env.example .env   # E2E_BASE_URL=http://localhost:3600, E2E_API_URL=http://
 
 `user.setup.ts` stops the run before anything is written if the database is
 not the seed (no `content` category / `blog` app) or is not the one the API
-under test reads. Stop any other client dev server running from the same
-`client/` folder first — two `next dev` processes share `.next/`.
+under test reads. **Use a production build of the client for a full run.** `next dev` keeps
+every compiled route in memory and grows past 3 GB within one UI batch; on a
+16 GB machine that gets the whole stack killed. `next dev` is fine for one
+module. The one dev-only behaviour the suite knows about — React StrictMode's
+double effects — is detected per test (`helpers/build.ts`; BUG-005).
+
+Two more rules, both learned the hard way:
+
+- **No other Ducker ID server may share the Redis** during a run. BullMQ
+  queues (`bull:email`, `bull:notification`) are keyed in Redis, not per
+  database, so another server's worker can take a job and write the
+  notification into _its_ database — notification tests then fail at random.
+- **One `next dev` per `client/` folder.** Two share `.next/` and corrupt it
+  (500 "Cannot find module './vendor-chunks/…'"). Run the test client from a
+  worktree, or stop the other one. `OIDC_ISSUER` must be the test client's
+  URL, or every token's `iss` points at the wrong origin.
 
 ## 2. Running
 

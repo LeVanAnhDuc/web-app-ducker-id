@@ -2,6 +2,8 @@
 import { Schema, model, type Model } from "mongoose";
 // types
 import type { EntitlementDocument } from "@/modules/entitlement/types";
+// modules
+import { ENTITLEMENT_EFFECTS } from "@/modules/entitlement/constants";
 // others
 import { MODEL_NAMES } from "@/constants/models";
 
@@ -19,32 +21,15 @@ const EntitlementSchema = new Schema<EntitlementDocument>(
       ref: WEB_APP,
       required: [true, "Web app ID is required"]
     },
-    grantedBy: {
+    effect: {
+      type: String,
+      enum: Object.values(ENTITLEMENT_EFFECTS),
+      required: [true, "Effect is required"]
+    },
+    updatedBy: {
       type: Schema.Types.ObjectId,
       ref: USER,
-      required: [true, "Granted by is required"]
-    },
-    grantedAt: {
-      type: Date,
-      required: [true, "Granted at is required"],
-      default: () => new Date()
-    },
-    revokedAt: {
-      type: Date,
-      default: null
-    },
-    isFavorite: {
-      type: Boolean,
-      default: false
-    },
-    lastLaunchedAt: {
-      type: Date,
-      default: null
-    },
-    launchCount: {
-      type: Number,
-      default: 0,
-      min: [0, "Launch count cannot be negative"]
+      required: [true, "Updated by is required"]
     }
   },
   {
@@ -54,24 +39,7 @@ const EntitlementSchema = new Schema<EntitlementDocument>(
 );
 
 EntitlementSchema.index({ userId: 1, webAppId: 1 }, { unique: true });
-EntitlementSchema.index({ userId: 1, revokedAt: 1 });
-EntitlementSchema.index({ userId: 1, isFavorite: 1 });
-EntitlementSchema.index({ userId: 1, lastLaunchedAt: -1 });
-EntitlementSchema.index({ webAppId: 1, revokedAt: 1 });
-
-EntitlementSchema.virtual("user", {
-  ref: USER,
-  localField: "userId",
-  foreignField: "_id",
-  justOne: true
-});
-
-EntitlementSchema.virtual("webApp", {
-  ref: WEB_APP,
-  localField: "webAppId",
-  foreignField: "_id",
-  justOne: true
-});
+EntitlementSchema.index({ webAppId: 1 });
 
 const EntitlementModel: Model<EntitlementDocument> = model<EntitlementDocument>(
   ENTITLEMENT,

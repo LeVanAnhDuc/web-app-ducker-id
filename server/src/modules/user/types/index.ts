@@ -101,6 +101,11 @@ export interface AdminUsersQuery {
   sortOrder?: SortOrder;
 }
 
+export interface UserRole {
+  userId: string;
+  role: string;
+}
+
 export interface AdminUsersFilter {
   search?: string;
   role?: AdminUserRole;

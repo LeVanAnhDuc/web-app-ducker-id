@@ -51,6 +51,28 @@ export interface MockChangePasswordOptions {
  * 5 requests / IP+user / 900s). Non-PATCH requests (and other methods) pass
  * through untouched. Call `page.unroute(CHANGE_PASSWORD_GLOB)` after asserting.
  */
+/**
+ * A real token set for the page's own session, from the refresh endpoint.
+ * A mocked 200 from change-password must carry tokens the client can decode:
+ * the client stores whatever the response returns, and a non-JWT placeholder
+ * ("x") makes it treat the session as broken and sign the user out — a race
+ * a dev build happens to lose slowly and a production build loses at once.
+ */
+export async function realTokens(
+  page: Page
+): Promise<{ accessToken: string; idToken: string; expiresIn: number }> {
+  const res = await page.request.post("/api/v1/auth/token/refresh");
+  if (!res.ok()) throw new Error(`realTokens: refresh → ${res.status()}`);
+  const { data } = (await res.json()) as {
+    data: { accessToken: string; idToken: string; expiresIn: number };
+  };
+  return {
+    accessToken: data.accessToken,
+    idToken: data.idToken,
+    expiresIn: data.expiresIn
+  };
+}
+
 export async function mockChangePassword(
   page: Page,
   { status, body, delayMs }: MockChangePasswordOptions

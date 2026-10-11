@@ -2,6 +2,7 @@
 import type { Express } from "express";
 // services
 import { EmailDispatcher } from "@/services/email/email.dispatcher";
+import { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 // others
 import { loadDatabase, closeDatabase } from "./database.loader";
 import { loadRedis, closeRedis } from "./redis.loader";
@@ -18,11 +19,19 @@ export const loadAll = async (app: Express): Promise<void> => {
     await loadDatabase();
     await loadRedis();
 
-    const { emailService } = loadServices();
-    const { emailQueue } = loadQueues(app, emailService);
+    const { emailService, notificationDelivery } = loadServices();
+    const { emailQueue, notificationQueue } = loadQueues(
+      app,
+      emailService,
+      notificationDelivery
+    );
     const emailDispatcher = new EmailDispatcher(emailService, emailQueue);
+    const notificationDispatcher = new NotificationDispatcher(
+      notificationDelivery,
+      notificationQueue
+    );
     loadSigningKeys();
-    loadModules(app, emailDispatcher);
+    loadModules(app, emailDispatcher, notificationDispatcher);
     loadHealthCheck(app);
     loadErrorHandlers(app);
 

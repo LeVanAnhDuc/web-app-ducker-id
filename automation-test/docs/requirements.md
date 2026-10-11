@@ -61,31 +61,34 @@ Module codes match the file names under `test-cases/`.
 
 ## APPS — app catalogue and search
 
-| ID          | Requirement                                                                                         |
-| ----------- | --------------------------------------------------------------------------------------------------- |
-| REQ-APPS-01 | `/apps` lists every active app the user may see, filtered by role.                                  |
-| REQ-APPS-02 | `/apps` supports text search, category filter, grid/list toggle and pagination, kept in the URL.    |
-| REQ-APPS-03 | Opening a tile launches the app's own URL in a new tab and records the launch.                      |
-| REQ-APPS-04 | Header search finds apps as you type, with keyboard navigation, and opens one or jumps to the list. |
-| REQ-APPS-05 | Category names render in the active locale (English / Vietnamese).                                  |
+| ID          | Requirement                                                                                                                                                                           |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| REQ-APPS-01 | `/apps` lists every active app the user may open: the apps their role allows, plus any an admin granted beyond the role, minus any an admin revoked; a change shows on the next load. |
+| REQ-APPS-02 | `/apps` supports text search, category filter, grid/list toggle and pagination, kept in the URL.                                                                                      |
+| REQ-APPS-03 | Opening a tile launches the app's own URL in a new tab and records the launch.                                                                                                        |
+| REQ-APPS-04 | Header search finds apps as you type, with keyboard navigation, and opens one or jumps to the list.                                                                                   |
+| REQ-APPS-05 | Category names render in the active locale (English / Vietnamese).                                                                                                                    |
+| REQ-APPS-06 | An app the user may not open is never found by `/apps` search, even by its exact name.                                                                                                |
 
 ## FAV — favourites
 
-| ID         | Requirement                                                    |
-| ---------- | -------------------------------------------------------------- |
-| REQ-FAV-01 | A user stars or unstars any app from its tile.                 |
-| REQ-FAV-02 | `/favorites` shows only the user's starred apps.               |
-| REQ-FAV-03 | Favourites persist across reloads and are private to the user. |
+| ID         | Requirement                                                                                                           |
+| ---------- | --------------------------------------------------------------------------------------------------------------------- |
+| REQ-FAV-01 | A user stars or unstars any app from its tile.                                                                        |
+| REQ-FAV-02 | `/favorites` shows only the user's starred apps.                                                                      |
+| REQ-FAV-03 | Favourites persist across reloads and are private to the user.                                                        |
+| REQ-FAV-04 | A starred app whose access was revoked is hidden from `/favorites`, not deleted, and returns when access is restored. |
 
 ## RECENT — recently used
 
-| ID            | Requirement                                                                                                 |
-| ------------- | ----------------------------------------------------------------------------------------------------------- |
-| REQ-RECENT-01 | `/recently-used` lists each opened app once, newest first, grouped Today / Yesterday / This Week / Earlier. |
-| REQ-RECENT-02 | Each row shows the last-opened time and the open count.                                                     |
-| REQ-RECENT-03 | Search and infinite scroll over the history.                                                                |
-| REQ-RECENT-04 | Remove one app with Undo, or clear the whole history after a confirmation.                                  |
-| REQ-RECENT-05 | Signing in to a satellite app through Ducker ID also records the app as used.                               |
+| ID            | Requirement                                                                                                         |
+| ------------- | ------------------------------------------------------------------------------------------------------------------- |
+| REQ-RECENT-01 | `/recently-used` lists each opened app once, newest first, grouped Today / Yesterday / This Week / Earlier.         |
+| REQ-RECENT-02 | Each row shows the last-opened time and the open count.                                                             |
+| REQ-RECENT-03 | Search and infinite scroll over the history.                                                                        |
+| REQ-RECENT-04 | Remove one app with Undo, or clear the whole history after a confirmation.                                          |
+| REQ-RECENT-05 | Signing in to a satellite app through Ducker ID also records the app as used.                                       |
+| REQ-RECENT-06 | An app whose access was revoked drops out of `/recently-used` and returns, history intact, when access is restored. |
 
 ## LOGHIST — my login history
 
@@ -98,11 +101,16 @@ Module codes match the file names under `test-cases/`.
 
 ## NOTIF — notifications
 
-| ID           | Requirement                                                 |
-| ------------ | ----------------------------------------------------------- |
-| REQ-NOTIF-01 | The header shows an unread badge and a notifications panel. |
-| REQ-NOTIF-02 | `/notifications` lists notifications grouped by date.       |
-| REQ-NOTIF-03 | A user marks one notification, or all of them, as read.     |
+| ID           | Requirement                                                                                                                                                                               |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| REQ-NOTIF-01 | The header shows an unread badge and a panel with the latest notifications, its own empty and error states, Mark all and View all.                                                        |
+| REQ-NOTIF-02 | `/notifications` lists notifications newest first, grouped Today / Yesterday / Earlier, with Load more, empty and error (retry) states.                                                   |
+| REQ-NOTIF-03 | A user marks one notification, or all of them, as read.                                                                                                                                   |
+| REQ-NOTIF-04 | Real events notify the user: password changed by themselves or reset by an admin, account locked by wrong passwords, a sign-in from a new device or country, a new app in their launcher. |
+| REQ-NOTIF-05 | The list has All / Unread / Read tabs and a type filter (security, account, apps, system); the two combine.                                                                               |
+| REQ-NOTIF-06 | Opening a notification marks it read and follows its internal link; an unusual sign-in offers "Not you? Change your password"; a link that is not an internal path is never rendered.     |
+| REQ-NOTIF-07 | Notifications are rendered from their type and parameters in the reader's language (English / Vietnamese), country names included.                                                        |
+| REQ-NOTIF-08 | The unread badge refreshes on its own every minute.                                                                                                                                       |
 
 ## SUPPORT — support requests
 
@@ -130,17 +138,18 @@ Module codes match the file names under `test-cases/`.
 
 ## OIDC — single sign-on for satellite apps
 
-| ID          | Requirement                                                                                                                                    |
-| ----------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| REQ-OIDC-01 | Discovery at `/.well-known/openid-configuration` and public keys at `/.well-known/jwks.json`.                                                  |
-| REQ-OIDC-02 | `/oauth/authorize` implements Authorization Code with PKCE S256, required for every client.                                                    |
-| REQ-OIDC-03 | Authorization codes live 60 seconds and are single-use.                                                                                        |
-| REQ-OIDC-04 | `/oauth/token` exchanges a code for RS256-signed ID and access tokens; confidential clients authenticate with a secret, public clients do not. |
-| REQ-OIDC-05 | An existing Ducker ID session returns straight to the app with no screen in between.                                                           |
-| REQ-OIDC-06 | `prompt=none` checks for a session without ever showing a login screen.                                                                        |
-| REQ-OIDC-07 | `/oauth/userinfo` returns the user's claims for a valid access token.                                                                          |
-| REQ-OIDC-08 | Invalid client, redirect URI, scope or verifier is rejected without redirecting to an unregistered URI.                                        |
-| REQ-OIDC-09 | `/oauth/logout` ends the identity-provider session.                                                                                            |
+| ID          | Requirement                                                                                                                                                                                     |
+| ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| REQ-OIDC-01 | Discovery at `/.well-known/openid-configuration` and public keys at `/.well-known/jwks.json`.                                                                                                   |
+| REQ-OIDC-02 | `/oauth/authorize` implements Authorization Code with PKCE S256, required for every client.                                                                                                     |
+| REQ-OIDC-03 | Authorization codes live 60 seconds and are single-use.                                                                                                                                         |
+| REQ-OIDC-04 | `/oauth/token` exchanges a code for RS256-signed ID and access tokens; confidential clients authenticate with a secret, public clients do not.                                                  |
+| REQ-OIDC-05 | An existing Ducker ID session returns straight to the app with no screen in between.                                                                                                            |
+| REQ-OIDC-06 | `prompt=none` checks for a session without ever showing a login screen.                                                                                                                         |
+| REQ-OIDC-07 | `/oauth/userinfo` returns the user's claims for a valid access token.                                                                                                                           |
+| REQ-OIDC-08 | Invalid client, redirect URI, scope or verifier is rejected without redirecting to an unregistered URI.                                                                                         |
+| REQ-OIDC-09 | `/oauth/logout` ends the identity-provider session.                                                                                                                                             |
+| REQ-OIDC-10 | `/oauth/authorize` lets a user into an app only if they may open it — role default, an admin's grant beyond the role, never after a revoke (`access_denied`); an admin qualifies for every app. |
 
 ## OPS — operator tooling
 
@@ -202,15 +211,18 @@ Module codes match the file names under `test-cases/`.
 
 ## ADMENT — admin entitlements
 
-| ID            | Requirement                                                                                                  |
-| ------------- | ------------------------------------------------------------------------------------------------------------ |
-| REQ-ADMENT-01 | `/admin/entitlements` shows a user × app matrix and a user picker. Grants are still mock-backed (see below). |
+| ID            | Requirement                                                                                                                                                                                       |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| REQ-ADMENT-01 | `/admin/entitlements` shows a user × app matrix for the users picked in a user picker; each cell starts at what the user's role allows.                                                           |
+| REQ-ADMENT-02 | An admin grants an app beyond the role or revokes one despite it; the exception is saved, survives a reload and is marked with its direction; setting a cell back to the role default removes it. |
+| REQ-ADMENT-03 | The entitlement admin API refuses guests (401) and non-admins (403).                                                                                                                              |
+| REQ-ADMENT-04 | The user is notified whenever their effective access to an app changes — granted (with a link to the app) or revoked — and not when a save leaves it as it was.                                   |
 
 ## Out of scope
 
 Not built, so not tested. Each line names where it is tracked.
 
 - Consent screen, `/oauth/introspect`, `/oauth/revoke`, refresh-token grant, back-channel logout — `docs/unfinished-features.md`.
-- Persisting entitlement grants, admin force logout, Billing cards, Profile stat badges — still read from `@/mocks` (root `CLAUDE.md` → "Still mock-backed").
+- Admin force logout, Billing cards, Profile stat badges — still read from `@/mocks` (root `CLAUDE.md` → "Still mock-backed").
 - Server unit tests — they live beside the code in `server/src/**/*.spec.ts` and run with `cd server && pnpm test`.
 - Performance, visual regression and automated a11y scanning — see `docs/test-strategy.md` → "Not covered".

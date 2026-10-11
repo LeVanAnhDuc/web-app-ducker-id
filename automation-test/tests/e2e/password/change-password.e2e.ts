@@ -3,6 +3,7 @@ import type { Page, Route } from "@playwright/test";
 import {
   expectNoPatch,
   mockChangePassword,
+  realTokens,
   trackPatch
 } from "@helpers/changePassword";
 import { USER_PASSWORD as DEFAULT_PASSWORD } from "@helpers/env";
@@ -498,7 +499,7 @@ test.describe("Change Password — success", () => {
     async ({ page }) => {
       await mockChangePassword(page, {
         status: 200,
-        body: { data: { accessToken: "x", idToken: "x", expiresIn: 900 } }
+        body: { data: await realTokens(page) }
       });
       await currentPassword(page).fill(DEFAULT_PASSWORD);
       await newPassword(page).fill(NEW_PASSWORD);
@@ -524,7 +525,7 @@ test.describe("Change Password — success", () => {
       expect(eightChars).toHaveLength(8);
       await mockChangePassword(page, {
         status: 200,
-        body: { data: { accessToken: "x", idToken: "x", expiresIn: 900 } }
+        body: { data: await realTokens(page) }
       });
       await currentPassword(page).fill(DEFAULT_PASSWORD);
       await newPassword(page).fill(eightChars);
@@ -604,7 +605,7 @@ test.describe("Change Password — double submit", () => {
       });
       await mockChangePassword(page, {
         status: 200,
-        body: { data: { accessToken: "x", idToken: "x", expiresIn: 900 } },
+        body: { data: await realTokens(page) },
         delayMs: 800
       });
       await currentPassword(page).fill(DEFAULT_PASSWORD);

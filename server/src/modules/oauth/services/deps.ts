@@ -5,6 +5,7 @@ import type { UserService } from "@/modules/user/services";
 import type { SessionService } from "@/modules/session/services";
 import type { LoginHistoryService } from "@/modules/login-history/services";
 import type { RecentAppService } from "@/modules/recent-app/services";
+import type { AccessPolicy } from "@/modules/entitlement/services/access-policy";
 import type { OAuthRepository } from "../repository/oauth.repository";
 
 export interface OAuthServiceDeps {
@@ -15,4 +16,5 @@ export interface OAuthServiceDeps {
   userService: UserService;
   loginHistoryService: LoginHistoryService;
   recentAppService: RecentAppService;
+  accessPolicy: AccessPolicy;
 }

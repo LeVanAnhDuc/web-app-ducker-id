@@ -5,12 +5,11 @@ import { USER_EMAIL } from "@helpers/env";
 test.use({ role: "admin" });
 
 // /admin/entitlements — states the seed cannot produce on its own, reached by
-// stubbing the two real reads (/admin/apps, /admin/users), plus multi-user
-// selection and the mock-backed grant store (REQ-ADMENT-01).
-// Test cases: test-cases/admin-entitlements.md (TC-ADMENT-025 … TC-ADMENT-031,
-// TC-ADMENT-033).
-// Grants are mock (client/src/mocks/AdminEntitlements, in-memory per page),
-// so nothing server-side changes.
+// stubbing the two catalog reads (/admin/apps, /admin/users), plus multi-user
+// selection and picker edge cases (REQ-ADMENT-01).
+// Test cases: test-cases/admin-entitlements.md (TC-ADMENT-025, TC-ADMENT-028
+// … TC-ADMENT-031, TC-ADMENT-033). Nothing here saves, so nothing
+// server-side changes.
 
 const SECOND_USER = { email: "user2@test.com", name: "John Doe" };
 const TEST_USER = "Test User";
@@ -59,31 +58,9 @@ test.describe("Entitlements — catalog boundaries (stubbed)", () => {
       await expect(page.getByRole("checkbox")).toHaveCount(0);
     }
   );
-
-  test(
-    "[BVA] a user eligible for 0 apps cannot use grant-all",
-    { tag: "@TC-ADMENT-026" },
-    async ({ page }) => {
-      // Keep only the admin-only apps: a role=user account is eligible for none.
-      await rewrite(page, "**/api/v1/admin/apps**", (data) => {
-        data.items = data.items.filter(
-          (a) => !(a.requiredRoles as string[]).includes("user")
-        );
-      });
-      await page.goto("/admin/entitlements");
-      await selectUser(page, USER_EMAIL);
-      await page.getByRole("button", { name: "Edit" }).click();
-      await expect(
-        page.getByRole("button", { name: "Grant all eligible apps" })
-      ).toBeDisabled();
-      for (const checkbox of await page.getByRole("checkbox").all()) {
-        await expect(checkbox).toBeDisabled();
-      }
-    }
-  );
 });
 
-test.describe("Entitlements — selection and mock grants", () => {
+test.describe("Entitlements — selection", () => {
   test(
     "several users get one row each; removing a chip removes the row",
     { tag: "@TC-ADMENT-028" },
@@ -109,32 +86,6 @@ test.describe("Entitlements — selection and mock grants", () => {
 
       await page.getByRole("button", { name: `Remove ${TEST_USER}` }).click();
       await expect(page.getByText("No users selected")).toBeVisible();
-    }
-  );
-
-  test(
-    "saved grants live only in the page: a reload starts from no grants",
-    { tag: "@TC-ADMENT-027" },
-    async ({ page }) => {
-      await page.goto("/admin/entitlements");
-      await selectUser(page, USER_EMAIL);
-      await page.getByRole("button", { name: "Edit" }).click();
-      await page
-        .getByRole("checkbox", { name: `Grant Blog to ${TEST_USER}` })
-        .click();
-      await page.getByRole("button", { name: "Save" }).click();
-      await expect(
-        page.getByRole("img", { name: "Granted", exact: true })
-      ).toHaveCount(1);
-
-      await page.reload();
-      await selectUser(page, USER_EMAIL);
-      await expect(
-        page.getByRole("img", { name: "Granted", exact: true })
-      ).toHaveCount(0);
-      await expect(page.getByRole("img", { name: "Not granted" })).toHaveCount(
-        4
-      );
     }
   );
 });

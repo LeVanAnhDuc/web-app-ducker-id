@@ -6,6 +6,7 @@ import {
   clearEmailState,
   deleteKeys,
   hasCode,
+  clearRateLimits,
   plantCode
 } from "@helpers/redis";
 import {
@@ -153,7 +154,11 @@ test(
     }
 
     // Cooldown over (the 60 s key expires) → resend works and is counted.
+    // The two refused attempts above still spent the per-email budget
+    // (signupOtpByEmail: 3 sends per 15 min), so the 4th request would be a
+    // 429 that has nothing to do with the cooldown under test — reset it.
     await deleteKeys(`otp-signup-cooldown:${email}`);
+    await clearRateLimits();
     const resend = await api.post(RESEND, { data: { email } });
     expect(resend.status()).toBe(200);
     expect((await resend.json()).data).toEqual({

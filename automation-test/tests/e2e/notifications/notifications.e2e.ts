@@ -1,68 +1,84 @@
 import { test, expect } from "@fixtures";
 import type { Page, Route } from "@playwright/test";
+import { createAccount } from "@helpers/accounts";
+import { loginViaUi } from "@helpers/auth";
 import {
+  ANOMALY_USER_AGENTS,
+  SEED_CONSUMED_APPS,
+  SEED_MARK_SINGLE_BODY,
+  SEED_PERSIST_BODY,
+  SEED_READ_BODY,
+  SEED_UNREAD_BODY,
+  SEED_UNREAD_N,
+  USER_EMAIL,
   fetchUnreadCount,
-  markUnreadByTitle,
-  SEED_UNREAD_TITLE,
-  SEED_READ_TITLE,
-  USER_EMAIL
+  markUnreadByAppName,
+  warmUpHelperDevice,
+  withApi
 } from "@helpers/notifications";
 
-// The Notifications page (/notifications) and the header bell + panel.
-// Role: user (user@test.com). Test cases: test-cases/notifications.md
-// (TC-NOTIF-001 … 025, 027, 028). The API layer is
-// tests/api/notifications/notifications.api.ts.
+// The notification panel (header bell) and the /notifications page.
+// Role: user (user@test.com); the real-event case signs in a throwaway
+// account of its own. Test cases: test-cases/notifications.md
+// (TC-NOTIF-001 … 028, 039 … 051). The API layer — list contract, filters,
+// paging, validation, isolation — is tests/api/notifications/notifications.api.ts.
+//
+// Notifications carry no text: the API returns `type + params + link` and the
+// client renders `notifications.types.<TYPE>` in the page locale. Assertions
+// therefore target rendered sentences, never stored strings.
 //
 // Real backend vs intercepts:
-//   - Real backend: happy path, tabs, data rendering, en/vi chrome, mark
-//     single, persistence after reload, a11y — against the seeded
-//     notifications of user@test.com.
-//   - page.route intercepts (deterministic): empty, pagination, error, mark
-//     all, double click, keyboard, bell badge, per-tab empty, grouping.
+//   - Real (seeded DB): seed rendering, real category filter, vi templates,
+//     mark single, persistence, and the real LOGIN_ANOMALY event.
+//   - page.route intercepts: empty / error / pagination / link safety /
+//     unknown type / request params / grouping — deterministic regardless of
+//     seed.
 //
-// Mutation safety: "mark single" and "stays read after reload" fire the REAL
-// PATCH /notifications/:id/read. There is no mark-unread API, so the serial
-// block records the titles it marked and afterAll puts them back to unread
-// directly in the database (helpers/notifications.ts → markUnreadByTitle).
+// Mutation safety: "mark single" consumes Seed App 12 and "persists after
+// reload" consumes Seed App 14 through the real PATCH; afterAll puts both back
+// to unread in the database (there is no mark-unread API). The real-event case
+// runs on a throwaway account, so the seeded user gains no rows.
 
-// Regex route matchers (unambiguous vs glob `?`/`*`). The list endpoint must
-// NOT match the sub-routes (/unread-count, /read-all, /:id/read), so anchor the
-// list match to a query string or end-of-path right after "notifications".
 const LIST_RE = /\/api\/v1\/notifications(\?|$)/;
 const UNREAD_COUNT_RE = /\/api\/v1\/notifications\/unread-count/;
 const READ_ALL_RE = /\/api\/v1\/notifications\/read-all/;
-// PATCH /api/v1/notifications/<id>/read  (must NOT match /read-all).
 const MARK_READ_RE = /\/api\/v1\/notifications\/[^/]+\/read(\?|$)/;
 
-// ---- en/vi chrome strings (must mirror src/locales/*/notifications.json) ----
 const EN = {
+  all: "All",
   unread: "Unread",
   read: "Read",
   markAll: "Mark all as read",
   markRead: "Mark as read",
   loadMore: "Load more notifications",
+  emptyTitle: "You're all caught up",
   empty: "No notifications here.",
   error: "Couldn't load notifications.",
-  // announce.* (notifications.json → announce) — tabChanged interpolates {tab}
-  // with the localized tab label (NotificationList passes t(`tabs.${next}`)).
+  retry: "Try again",
+  notMe: "Not you? Change your password",
+  categoryLabel: "Filter by type",
+  security: "Security",
+  apps: "Apps",
+  allTypes: "All types",
   announceTabChangedRead: "Showing Read notifications.",
-  announceMarkedRead: "Notification marked as read.",
-  announceMarkedAllRead: "All notifications marked as read.",
+  announceCategorySecurity: "Showing Security notifications.",
   announceLoadingMore: "Loading more notifications...",
-  // A failed mutation is toasted by the global MutationCache handler
-  // (libs/query-client.ts): every 5xx reads the same fixed text.
-  toastServerError: "Server error. Please try again later.",
-  // header bell (dashboard.json → header.notificationsLabel)
+  toastMarkReadError: "Could not mark as read.",
   bellLabel: "Notifications",
-  // header panel (dashboard.json → notifications.markAllRead)
-  panelMarkAll: "Mark all as read"
+  viewAll: "View all notifications",
+  anomalyTitle: "New sign-in to your account",
+  adminResetTitle: "Your password was reset by an administrator",
+  selfChangedTitle: "Your password was changed",
+  lockedBody: "Too many wrong passwords. Sign-in was blocked for 30 minutes."
 };
 const VI = {
+  all: "Tất cả",
   unread: "Chưa đọc",
   read: "Đã đọc",
   markAll: "Đánh dấu tất cả đã đọc",
-  markRead: "Đánh dấu đã đọc",
-  loadMore: "Tải thêm thông báo"
+  newApp: "Có ứng dụng mới",
+  anomalyTitle: "Có lượt đăng nhập mới vào tài khoản",
+  seedAppBody: `Seed App ${SEED_UNREAD_N} đã có trong launcher của bạn.`
 };
 
 const gotoNotifications = (page: Page, prefix = "") =>
@@ -70,6 +86,9 @@ const gotoNotifications = (page: Page, prefix = "") =>
 
 const markReadButtons = (page: Page) =>
   page.getByRole("button", { name: EN.markRead });
+
+const tab = (page: Page, name: string) =>
+  page.getByRole("tab", { name, exact: true });
 
 const responseEnvelope = <T>(data: T) => ({
   timestamp: new Date().toISOString(),
@@ -81,118 +100,260 @@ const responseEnvelope = <T>(data: T) => ({
 interface FakeNotification {
   id: string;
   type: string;
-  title: string;
-  message: string;
-  meta: null;
+  category: string;
+  params: Record<string, string | number>;
+  link: string | null;
   isRead: boolean;
   readAt: string | null;
   createdAt: string;
 }
 
-const fakeItem = (i: number, isRead = false): FakeNotification => ({
+const fakeBody = (i: number) => `Intercepted app ${i} is now in your launcher.`;
+
+const fakeItem = (
+  i: number,
+  over: Partial<FakeNotification> = {}
+): FakeNotification => ({
   id: `fake-${i}`,
-  type: "SYSTEM_ANNOUNCEMENT",
-  title: `Intercepted notification ${i}`,
-  message: `Synthetic body ${i}.`,
-  meta: null,
-  isRead,
-  readAt: isRead ? new Date().toISOString() : null,
-  createdAt: new Date(Date.now() - i * 60 * 1000).toISOString()
+  type: "APP_AVAILABLE",
+  category: "app",
+  params: { appName: `Intercepted app ${i}` },
+  link: `/apps?search=Intercepted%20app%20${i}`,
+  isRead: false,
+  readAt: null,
+  createdAt: new Date(Date.now() - i * 60 * 1000).toISOString(),
+  ...over
 });
 
-test.describe("Notifications page", () => {
-  // --- Scenario 1: Happy path (real backend) ---
+const fulfillList =
+  (items: FakeNotification[], totalPages = items.length ? 1 : 0) =>
+  (route: Route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "application/json",
+      body: JSON.stringify(
+        responseEnvelope({
+          items,
+          meta: { total: items.length, page: 1, limit: 20, totalPages }
+        })
+      )
+    });
+
+const fail500 = (route: Route) =>
+  route.fulfill({
+    status: 500,
+    contentType: "application/json",
+    body: JSON.stringify({
+      code: "INTERNAL",
+      message: "boom",
+      timestamp: new Date().toISOString(),
+      path: "/api/v1/notifications"
+    })
+  });
+
+// ─── 1. Happy path + 8. Data rendering (real backend) ──────────────────────
+test.describe("Notifications page — rendering", () => {
   test(
-    "happy path: unread tab shows grouped notifications with relative timestamps",
+    "defaults to All and renders seeded templates with relative time",
     { tag: ["@TC-NOTIF-001", "@smoke"] },
     async ({ page }) => {
       await gotoNotifications(page);
-
-      // Unread tab is the default and selected.
+      await expect(tab(page, EN.all)).toHaveAttribute("data-state", "active");
       await expect(
-        page.getByRole("tab", { name: EN.unread, exact: true })
-      ).toHaveAttribute("data-state", "active");
-
-      // At least one notification article visible.
-      const articles = page.locator("article");
-      await expect(articles.first()).toBeVisible();
-
-      // At least one group header (Today / Yesterday / Earlier) visible.
+        page.getByText(SEED_UNREAD_BODY, { exact: true })
+      ).toBeVisible();
+      await expect(
+        page.getByText(SEED_READ_BODY, { exact: true })
+      ).toBeVisible();
       await expect(
         page.getByText(/^(Today|Yesterday|Earlier)$/).first()
       ).toBeVisible();
+      await expect(page.getByText(/\dT\d\d:\d\d/)).toHaveCount(0);
+    }
+  );
 
-      // A relative timestamp is rendered (not an ISO string).
+  test(
+    "[DT] fills each template from its params",
+    { tag: "@TC-NOTIF-006" },
+    async ({ page }) => {
+      await gotoNotifications(page);
+      // LOGIN_ANOMALY reason=device: browser + os, country code → no raw "VN".
+      // On a freshly seeded DB the suite's own Chrome-on-Windows sign-in is a
+      // new device too, so the seeded sentence may appear twice.
+      await expect(page.getByText(EN.anomalyTitle).first()).toBeVisible();
       await expect(
-        page.getByText(/ago|trước|hour|minute|day/i).first()
+        page
+          .getByText(
+            "Chrome on Windows — a device we haven't seen on your account before."
+          )
+          .first()
+      ).toBeVisible();
+      // PASSWORD_CHANGED: actor=admin and actor=self pick different sentences.
+      await expect(page.getByText(EN.adminResetTitle)).toBeVisible();
+      await expect(page.getByText(EN.selfChangedTitle).first()).toBeVisible();
+      // ACCOUNT_LOCKED interpolates the number.
+      await expect(page.getByText(EN.lockedBody)).toBeVisible();
+      // No raw enum or key leaked.
+      await expect(page.getByText(/LOGIN_ANOMALY|types\.|actor/)).toHaveCount(
+        0
+      );
+    }
+  );
+
+  test(
+    "[DT] reason=both renders the country name, not the ISO code",
+    { tag: "@TC-NOTIF-039" },
+    async ({ page }) => {
+      await page.route(
+        LIST_RE,
+        fulfillList([
+          fakeItem(1, {
+            type: "LOGIN_ANOMALY",
+            category: "security",
+            params: {
+              reason: "both",
+              browser: "Firefox",
+              os: "Linux",
+              country: "JP"
+            },
+            link: "/login-history"
+          })
+        ])
+      );
+      await gotoNotifications(page);
+      await expect(
+        page.getByText(
+          "Firefox on Linux, from Japan — a device and a country we haven't seen before."
+        )
       ).toBeVisible();
     }
   );
 
-  // --- Scenario 2: AuthN (no storageState → redirect to login) ---
   test(
-    "unauthenticated visit is gated to the login screen",
-    { tag: "@TC-NOTIF-002" },
-    async ({ browser }) => {
-      // Truly clean context: no storageState, and proactively clear cookies so a
-      // localhost-scoped refresh cookie from another port/run can't leak in.
-      const ctx = await browser.newContext({ storageState: undefined });
-      await ctx.clearCookies();
-      try {
-        const freshPage = await ctx.newPage();
-        await freshPage.goto("/notifications");
-        // The app renders the login screen for unauthenticated users (AuthGuard).
-        // It may keep the /notifications URL and swap in the login content, so we
-        // assert the login affordance rather than a specific URL.
-        await expect(
-          freshPage.getByRole("button", { name: /continue with email/i })
-        ).toBeVisible({ timeout: 20_000 });
-        // And the protected notifications chrome must NOT be present.
-        await expect(
-          freshPage.getByRole("tab", { name: EN.unread, exact: true })
-        ).toHaveCount(0);
-      } finally {
-        await ctx.close();
-      }
+    "unread rows carry a mark-read button, read rows do not",
+    { tag: "@TC-NOTIF-005" },
+    async ({ page }) => {
+      await page.route(
+        LIST_RE,
+        fulfillList([fakeItem(1), fakeItem(2, { isRead: true })])
+      );
+      await gotoNotifications(page);
+      await expect(page.locator("article[data-read='false']")).toHaveCount(1);
+      await expect(page.locator("article[data-read='true']")).toHaveCount(1);
+      await expect(markReadButtons(page)).toHaveCount(1);
     }
   );
 
-  // --- Scenario 3: Empty state (INTERCEPT for determinism) ---
   test(
-    "empty state renders when the list API returns no items",
-    { tag: "@TC-NOTIF-003" },
+    "an unknown type falls back to its name instead of crashing",
+    { tag: "@TC-NOTIF-018" },
     async ({ page }) => {
-      await page.route(LIST_RE, (route: Route) =>
-        route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          body: JSON.stringify(
-            responseEnvelope({
-              items: [],
-              meta: { total: 0, page: 1, limit: 20, totalPages: 0 }
-            })
-          )
-        })
+      const errors: string[] = [];
+      page.on("pageerror", (e) => errors.push(e.message));
+      await page.route(
+        LIST_RE,
+        fulfillList([
+          fakeItem(1, { type: "FUTURE_TYPE", category: "system", params: {} })
+        ])
       );
       await gotoNotifications(page);
+      await expect(page.getByText("FUTURE_TYPE")).toBeVisible();
+      expect(errors).toEqual([]);
+    }
+  );
+});
+
+// ─── 2. AuthN ──────────────────────────────────────────────────────────────
+test(
+  "unauthenticated visit is gated to the login screen",
+  { tag: "@TC-NOTIF-002" },
+  async ({ guestPage }) => {
+    await guestPage.goto("/notifications");
+    await expect(
+      guestPage.getByRole("button", { name: /continue with email/i })
+    ).toBeVisible({ timeout: 20_000 });
+    await expect(guestPage.getByRole("tab", { name: EN.all })).toHaveCount(0);
+  }
+);
+
+// ─── 4. Validation (link safety) ─────────────────────────────────────────────────────────
+test.describe("Notifications — validation", () => {
+  // `category=bogus` → 400 is proven at the API layer (TC-NOTIF-038).
+
+  for (const [label, link] of [
+    ["absolute URL", "https://evil.example/phish"],
+    ["protocol-relative", "//evil.example"],
+    ["backslash", "/\\evil.example"]
+  ] as const) {
+    test(
+      `[EP] a ${label} link renders no anchor`,
+      { tag: "@TC-NOTIF-040" },
+      async ({ page }) => {
+        await page.route(LIST_RE, fulfillList([fakeItem(1, { link })]));
+        await gotoNotifications(page);
+        const article = page.locator("article").first();
+        await expect(article.getByText(fakeBody(1))).toBeVisible();
+        await expect(article.locator("a")).toHaveCount(0);
+      }
+    );
+  }
+
+  test(
+    "[EP] an internal link renders an anchor to that path",
+    { tag: "@TC-NOTIF-041" },
+    async ({ page }) => {
+      await page.route(LIST_RE, fulfillList([fakeItem(1)]));
+      await gotoNotifications(page);
+      await expect(
+        page.locator("article a").filter({ hasText: fakeBody(1) })
+      ).toHaveAttribute("href", "/apps?search=Intercepted%20app%201");
+    }
+  );
+});
+
+// ─── 5. Empty states ───────────────────────────────────────────────────────
+test.describe("Notifications — empty", () => {
+  test(
+    "empty list renders the empty state",
+    { tag: "@TC-NOTIF-003" },
+    async ({ page }) => {
+      await page.route(LIST_RE, fulfillList([]));
+      await gotoNotifications(page);
+      await expect(page.getByText(EN.emptyTitle)).toBeVisible();
       await expect(page.getByText(EN.empty)).toBeVisible();
     }
   );
 
-  // --- Scenario 4: Boundary / pagination (INTERCEPT — seeded per-tab volume
-  // <20 is not guaranteed to span 2 pages on a single tab) ---
   test(
-    "load more appends page 2 and disappears on the last page",
-    { tag: "@TC-NOTIF-004" },
+    "Read tab shows its own empty state",
+    { tag: "@TC-NOTIF-017" },
+    async ({ page }) => {
+      await page.route(LIST_RE, (route) => {
+        const isRead = new URL(route.request().url()).searchParams.get(
+          "isRead"
+        );
+        return fulfillList(isRead === "true" ? [] : [fakeItem(1)])(route);
+      });
+      await gotoNotifications(page);
+      await tab(page, EN.read).click();
+      await expect(tab(page, EN.read)).toHaveAttribute("data-state", "active");
+      await expect(page.getByText(EN.empty)).toBeVisible();
+    }
+  );
+});
+
+// ─── 6. Boundary / pagination ──────────────────────────────────────────────
+test.describe("Notifications — pagination", () => {
+  test(
+    "[BVA] load more appends page 2 and disappears on the last page",
+    { tag: ["@TC-NOTIF-004", "@TC-NOTIF-023"] },
     async ({ page }) => {
       const page1 = Array.from({ length: 20 }, (_, i) => fakeItem(i + 1));
       const page2 = Array.from({ length: 5 }, (_, i) => fakeItem(i + 21));
-
-      await page.route(LIST_RE, (route: Route) => {
-        const url = new URL(route.request().url());
-        const p = url.searchParams.get("page");
-        const isPage2 = p === "2";
-        route.fulfill({
+      await page.route(LIST_RE, (route) => {
+        const isPage2 =
+          new URL(route.request().url()).searchParams.get("page") === "2";
+        return route.fulfill({
           status: 200,
           contentType: "application/json",
           body: JSON.stringify(
@@ -208,889 +369,514 @@ test.describe("Notifications page", () => {
           )
         });
       });
-
       await gotoNotifications(page);
-
       const loadMore = page.getByRole("button", { name: EN.loadMore });
-      await expect(loadMore).toBeVisible();
-      await expect(
-        page.getByText("Intercepted notification 1", { exact: true })
-      ).toBeVisible();
-      await expect(
-        page.getByText("Intercepted notification 21", { exact: true })
-      ).toHaveCount(0);
-
+      await expect(page.getByText(fakeBody(21))).toHaveCount(0);
       await loadMore.click();
-
-      // Page 2 items appended; load-more gone (last page reached).
-      await expect(
-        page.getByText("Intercepted notification 21", { exact: true })
-      ).toBeVisible();
+      await expect(page.getByText(fakeBody(21))).toBeVisible();
       await expect(loadMore).toHaveCount(0);
+      await expect(page.locator("#announcer")).toHaveText(
+        EN.announceLoadingMore
+      );
     }
   );
 
-  // --- Scenario 5: Tabs filter (real backend) ---
   test(
-    "unread items expose a mark-read button; read items do not",
-    { tag: "@TC-NOTIF-005" },
+    "[BVA] exactly one full page shows no load more",
+    { tag: "@TC-NOTIF-019" },
     async ({ page }) => {
+      await page.route(
+        LIST_RE,
+        fulfillList(Array.from({ length: 20 }, (_, i) => fakeItem(i + 1)))
+      );
       await gotoNotifications(page);
-
-      // Unread tab: at least one mark-read button present.
-      await expect(markReadButtons(page).first()).toBeVisible();
-
-      // Switch to Read tab: read items have no mark-read button.
-      await page.getByRole("tab", { name: EN.read, exact: true }).click();
-      await expect(
-        page.getByRole("tab", { name: EN.read, exact: true })
-      ).toHaveAttribute("data-state", "active");
-      await expect(markReadButtons(page)).toHaveCount(0);
-    }
-  );
-
-  // --- Scenario 6: Data rendering (real backend) ---
-  test(
-    "renders literal titles, relative time (no ISO), and an icon container",
-    { tag: "@TC-NOTIF-006" },
-    async ({ page }) => {
-      await gotoNotifications(page);
-
-      // A seeded literal title appears verbatim.
-      await expect(page.getByText(SEED_UNREAD_TITLE).first()).toBeVisible();
-
-      // No raw ISO timestamp leaked into the rendered text.
-      await expect(page.getByText(/\dT\d\d:\d\d/)).toHaveCount(0);
-
-      // Each article has its icon container (aria-hidden visual wrapper).
-      const article = page.locator("article").first();
-      await expect(article).toBeVisible();
-      await expect(
-        article.locator("[aria-hidden='true']").first()
-      ).toBeAttached();
-    }
-  );
-
-  // --- Scenario 7: i18n (en + vi) — chrome only ---
-  test(
-    "renders English chrome on the default locale",
-    { tag: "@TC-NOTIF-007" },
-    async ({ page }) => {
-      await gotoNotifications(page);
-      await expect(
-        page.getByRole("tab", { name: EN.unread, exact: true })
-      ).toBeVisible();
-      await expect(
-        page.getByRole("tab", { name: EN.read, exact: true })
-      ).toBeVisible();
-      await expect(
-        page.getByRole("button", { name: EN.markAll })
-      ).toBeVisible();
-      // Load-more label exists in the seeded dataset (>20 across read+unread).
-      // Assert it is at least defined in the DOM chrome when present.
-    }
-  );
-
-  test(
-    "renders Vietnamese chrome on the /vi locale",
-    { tag: "@TC-NOTIF-008" },
-    async ({ page }) => {
-      await gotoNotifications(page, "/vi");
-      await expect(
-        page.getByRole("tab", { name: VI.unread, exact: true })
-      ).toBeVisible();
-      await expect(
-        page.getByRole("tab", { name: VI.read, exact: true })
-      ).toBeVisible();
-      await expect(
-        page.getByRole("button", { name: VI.markAll })
-      ).toBeVisible();
-    }
-  );
-
-  // --- Scenario 8: Error / loading (INTERCEPT) ---
-  test(
-    "shows the error state when the list API returns 500",
-    { tag: "@TC-NOTIF-009" },
-    async ({ page }) => {
-      const fail = (route: Route) =>
-        route.fulfill({
-          status: 500,
-          contentType: "application/json",
-          body: JSON.stringify({
-            code: "INTERNAL",
-            message: "boom",
-            timestamp: new Date().toISOString(),
-            path: "/api/v1/notifications"
-          })
-        });
-      // LIST_RE matches both `?query` and bare-path forms.
-      await page.route(LIST_RE, fail);
-
-      await gotoNotifications(page);
-      await expect(page.getByText(EN.error)).toBeVisible();
+      await expect(page.getByText(fakeBody(20))).toBeVisible();
+      await expect(page.getByRole("button", { name: EN.loadMore })).toHaveCount(
+        0
+      );
     }
   );
 });
 
-// Mutation tests run serial: test 9 fires a REAL PATCH that changes seeded
-// state; test 10 intercepts to avoid wiping the backend. Keep them isolated
-// from the read-only tests above and ordered.
-// Titles the real-PATCH tests below marked read; restored in afterAll.
-const markedForReal: string[] = [];
-
-test.describe.serial("Notifications — mutations", () => {
-  // --- Scenario 9: Mark single (REAL mutation; asserts badge delta) ---
+// ─── 7. Filters ────────────────────────────────────────────────────────────
+test.describe("Notifications — filters", () => {
   test(
-    "mark single moves item out of unread and decrements the badge",
-    { tag: ["@TC-NOTIF-010", "@smoke"] },
+    "[DT] status tab × category chip combine into one request",
+    { tag: ["@TC-NOTIF-042", "@TC-NOTIF-023"] },
     async ({ page }) => {
-      const before = await fetchUnreadCount();
-      expect(before).toBeGreaterThan(0);
-
+      const seen: URLSearchParams[] = [];
+      await page.route(LIST_RE, (route) => {
+        seen.push(new URL(route.request().url()).searchParams);
+        return fulfillList([fakeItem(1)])(route);
+      });
       await gotoNotifications(page);
+      await expect.poll(() => seen.length).toBeGreaterThan(0);
+      expect(seen[0].has("isRead")).toBe(false);
+      expect(seen[0].has("category")).toBe(false);
 
-      const firstButton = markReadButtons(page).first();
-      await expect(firstButton).toBeVisible();
-
-      // Capture the title of the item we are about to mark read. NotificationItem
-      // sets aria-label={title} on the <article>, so read it from there.
-      const firstArticle = page.locator("article").first();
-      const markedTitle = (
-        await firstArticle.getAttribute("aria-label")
-      )?.trim();
-      if (markedTitle) markedForReal.push(markedTitle);
-
-      await firstButton.click();
-
-      // The unread count read from the API decreases by exactly 1.
+      await tab(page, EN.unread).click();
+      await page
+        .getByRole("group", { name: EN.categoryLabel })
+        .getByRole("button", { name: EN.security })
+        .click();
       await expect
-        .poll(async () => fetchUnreadCount(), { timeout: 15_000 })
-        .toBe(before - 1);
-
-      // That specific item is no longer in the unread tab.
-      if (markedTitle) {
-        await expect(page.getByText(markedTitle, { exact: true })).toHaveCount(
-          0
-        );
-      }
+        .poll(() =>
+          seen.some(
+            (p) =>
+              p.get("isRead") === "false" && p.get("category") === "security"
+          )
+        )
+        .toBe(true);
+      await expect(
+        page.getByRole("button", { name: EN.security, pressed: true })
+      ).toBeVisible();
+      await expect(page.locator("#announcer")).toHaveText(
+        EN.announceCategorySecurity
+      );
     }
   );
 
-  // --- Scenario 10: Mark all (INTERCEPT — does not wipe real backend) ---
   test(
-    "mark all empties the unread tab and clears the badge",
-    { tag: "@TC-NOTIF-011" },
+    "[EP] the Security chip shows only security notifications (real)",
+    { tag: "@TC-NOTIF-043" },
     async ({ page }) => {
-      let markedAll = false;
+      await gotoNotifications(page);
+      await page.getByRole("button", { name: EN.security }).click();
+      await expect(page.getByText(EN.anomalyTitle).first()).toBeVisible();
+      await expect(page.getByText(SEED_UNREAD_BODY)).toHaveCount(0);
+      await page.getByRole("button", { name: EN.apps }).click();
+      await expect(page.getByText(SEED_UNREAD_BODY)).toBeVisible();
+      await expect(page.getByText(EN.anomalyTitle)).toHaveCount(0);
+    }
+  );
 
-      // List: before mark-all return 2 unread; after, return empty.
-      await page.route(LIST_RE, (route: Route) =>
+  test(
+    "Read tab keeps read rows and drops unread ones (real)",
+    { tag: ["@TC-NOTIF-020", "@TC-NOTIF-023"] },
+    async ({ page }) => {
+      await gotoNotifications(page);
+      await tab(page, EN.read).click();
+      await expect(page.getByText(SEED_READ_BODY)).toBeVisible();
+      await expect(page.getByText(SEED_UNREAD_BODY)).toHaveCount(0);
+      await expect(page.locator("#announcer")).toHaveText(
+        EN.announceTabChangedRead
+      );
+    }
+  );
+});
+
+// ─── 9. i18n ───────────────────────────────────────────────────────────────
+test.describe("Notifications — i18n", () => {
+  test(
+    "vi renders tabs and templates in Vietnamese",
+    { tag: ["@TC-NOTIF-008", "@TC-NOTIF-021"] },
+    async ({ page }) => {
+      await gotoNotifications(page, "/vi");
+      await expect(tab(page, VI.all)).toBeVisible();
+      await expect(tab(page, VI.unread)).toBeVisible();
+      await expect(tab(page, VI.read)).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: VI.markAll })
+      ).toBeVisible();
+      await expect(page.getByText(VI.seedAppBody)).toBeVisible();
+      await expect(page.getByText(VI.anomalyTitle).first()).toBeVisible();
+      await expect(page.getByText(/trước/).first()).toBeVisible();
+      await expect(
+        page.getByText(/\bago\b|is now in your launcher/)
+      ).toHaveCount(0);
+    }
+  );
+
+  test(
+    "vi names the country in Vietnamese",
+    { tag: "@TC-NOTIF-044" },
+    async ({ page }) => {
+      await page.route(
+        LIST_RE,
+        fulfillList([
+          fakeItem(1, {
+            type: "LOGIN_ANOMALY",
+            category: "security",
+            params: { reason: "country", browser: "", os: "", country: "VN" }
+          })
+        ])
+      );
+      await gotoNotifications(page, "/vi");
+      await expect(page.getByText(/Việt Nam/)).toBeVisible();
+    }
+  );
+});
+
+// ─── 10. Error / loading ───────────────────────────────────────────────────
+test.describe("Notifications — errors", () => {
+  test(
+    "a failing list shows the error state and Try again refetches",
+    { tag: "@TC-NOTIF-009" },
+    async ({ page }) => {
+      let fail = true;
+      await page.route(LIST_RE, (route) =>
+        fail ? fail500(route) : fulfillList([fakeItem(1)])(route)
+      );
+      await gotoNotifications(page);
+      await expect(page.getByText(EN.error)).toBeVisible({ timeout: 20_000 });
+      fail = false;
+      await page.getByRole("button", { name: EN.retry }).click();
+      await expect(page.getByText(fakeBody(1))).toBeVisible();
+    }
+  );
+
+  test(
+    "mark-read failure shows its own toast and keeps the row unread",
+    { tag: "@TC-NOTIF-022" },
+    async ({ page }) => {
+      await page.route(LIST_RE, fulfillList([fakeItem(301)]));
+      await page.route(MARK_READ_RE, fail500);
+      await gotoNotifications(page);
+      await markReadButtons(page).first().click();
+      await expect(page.getByText(EN.toastMarkReadError)).toBeVisible();
+      await expect(
+        page.getByText("Server error. Please try again later.")
+      ).toHaveCount(0);
+      await expect(markReadButtons(page)).toHaveCount(1);
+    }
+  );
+});
+
+// ─── 11. Mutations (A only) ────────────────────────────────────────────────
+test.describe.serial("Notifications — mutations", () => {
+  test.beforeAll(async () => {
+    await warmUpHelperDevice();
+  });
+
+  test.afterAll(async () => {
+    // Seed App 12 / 14 were marked read through the real PATCH.
+    await markUnreadByAppName(USER_EMAIL, SEED_CONSUMED_APPS);
+  });
+
+  test(
+    "[ST] mark single moves the row out of Unread and drops the count by one",
+    { tag: ["@TC-NOTIF-010", "@smoke"] },
+    async ({ page }) => {
+      const before = await fetchUnreadCount();
+      await gotoNotifications(page);
+      await tab(page, EN.unread).click();
+      const row = page
+        .locator("article")
+        .filter({ hasText: SEED_MARK_SINGLE_BODY });
+      await row.getByRole("button", { name: EN.markRead }).click();
+      await expect
+        .poll(() => fetchUnreadCount(), { timeout: 15_000 })
+        .toBe(before - 1);
+      await expect(page.getByText(SEED_MARK_SINGLE_BODY)).toHaveCount(0);
+    }
+  );
+
+  test(
+    "[ST] a marked row stays read after reload",
+    { tag: "@TC-NOTIF-014" },
+    async ({ page }) => {
+      await gotoNotifications(page);
+      const row = page
+        .locator("article")
+        .filter({ hasText: SEED_PERSIST_BODY });
+      await row.getByRole("button", { name: EN.markRead }).click();
+      await expect(row).toHaveAttribute("data-read", "true", {
+        timeout: 15_000
+      });
+      await page.reload();
+      await tab(page, EN.unread).click();
+      await expect(page.getByText(SEED_PERSIST_BODY)).toHaveCount(0);
+      await tab(page, EN.read).click();
+      await expect(page.getByText(SEED_PERSIST_BODY)).toBeVisible();
+    }
+  );
+
+  test(
+    "[ST] opening a row marks it read and follows its link",
+    { tag: "@TC-NOTIF-045" },
+    async ({ page }) => {
+      let patched = false;
+      await page.route(LIST_RE, fulfillList([fakeItem(7)]));
+      await page.route(MARK_READ_RE, (route) => {
+        patched = true;
+        return route.fulfill({
+          status: 200,
+          contentType: "application/json",
+          body: JSON.stringify(responseEnvelope(fakeItem(7, { isRead: true })))
+        });
+      });
+      await gotoNotifications(page);
+      await page.getByText(fakeBody(7)).click();
+      await expect(page).toHaveURL(
+        /\/apps\?search=Intercepted(\+|%20)app(\+|%20)7/
+      );
+      expect(patched).toBe(true);
+    }
+  );
+
+  test(
+    "[ST] opening an already read row does not PATCH again",
+    { tag: "@TC-NOTIF-046" },
+    async ({ page }) => {
+      let patches = 0;
+      await page.route(LIST_RE, fulfillList([fakeItem(8, { isRead: true })]));
+      await page.route(MARK_READ_RE, (route) => {
+        patches += 1;
+        return route.abort();
+      });
+      await gotoNotifications(page);
+      await page.getByText(fakeBody(8)).click();
+      await expect(page).toHaveURL(/\/apps\?search=/);
+      expect(patches).toBe(0);
+    }
+  );
+
+  test(
+    "'Not you?' on an unusual sign-in leads to the password form",
+    { tag: "@TC-NOTIF-047" },
+    async ({ page }) => {
+      await page.route(
+        LIST_RE,
+        fulfillList([
+          fakeItem(9, {
+            type: "LOGIN_ANOMALY",
+            category: "security",
+            params: {
+              reason: "device",
+              browser: "Chrome",
+              os: "Linux",
+              country: "VN"
+            },
+            link: "/login-history"
+          })
+        ])
+      );
+      await page.route(MARK_READ_RE, (route) =>
         route.fulfill({
           status: 200,
           contentType: "application/json",
-          body: JSON.stringify(
-            responseEnvelope({
-              items: markedAll ? [] : [fakeItem(101), fakeItem(102)],
-              meta: {
-                total: markedAll ? 0 : 2,
-                page: 1,
-                limit: 20,
-                totalPages: markedAll ? 0 : 1
-              }
-            })
-          )
+          body: JSON.stringify(responseEnvelope(fakeItem(9, { isRead: true })))
         })
       );
-      // Unread count: 2 before, 0 after.
-      await page.route(UNREAD_COUNT_RE, (route: Route) =>
+      await gotoNotifications(page);
+      await page.getByRole("link", { name: EN.notMe }).click();
+      await expect(page).toHaveURL(/\/profile$/);
+    }
+  );
+
+  test(
+    "mark all empties Unread (intercepted, seed untouched)",
+    { tag: "@TC-NOTIF-011" },
+    async ({ page }) => {
+      let markedAll = false;
+      await page.route(LIST_RE, (route) =>
+        fulfillList(markedAll ? [] : [fakeItem(101), fakeItem(102)])(route)
+      );
+      await page.route(UNREAD_COUNT_RE, (route) =>
         route.fulfill({
           status: 200,
           contentType: "application/json",
           body: JSON.stringify(responseEnvelope({ count: markedAll ? 0 : 2 }))
         })
       );
-      // Mark-all PATCH: flip the flag, return updated count.
-      await page.route(READ_ALL_RE, (route: Route) => {
+      await page.route(READ_ALL_RE, (route) => {
         markedAll = true;
-        route.fulfill({
+        return route.fulfill({
           status: 200,
           contentType: "application/json",
           body: JSON.stringify(responseEnvelope({ updated: 2 }))
         });
       });
-
       await gotoNotifications(page);
-      await expect(
-        page.getByText("Intercepted notification 101")
-      ).toBeVisible();
-
+      await expect(page.getByText(fakeBody(101))).toBeVisible();
       await page.getByRole("button", { name: EN.markAll }).click();
-
-      // Unread tab becomes empty.
-      await expect(page.getByText(EN.empty)).toBeVisible();
-      // Badge (only rendered when count > 0) is gone.
-      await expect(page.getByText("Intercepted notification 101")).toHaveCount(
-        0
-      );
-    }
-  );
-
-  // --- D7: Mark-all-when-empty no-op (matrix row 11c) — A only -------------
-  test(
-    "mark-all on an already-empty list is a no-op (no negative badge)",
-    { tag: "@TC-NOTIF-012" },
-    async ({ page }) => {
-      // [BVA] mark-all when nothing unread → BE returns updated:0, UI no-op, the
-      // bell badge never goes negative (count never < 0). All via intercept, so
-      // the real seed is NOT mutated; classified A only as a mutation-path test.
-      await page.route(LIST_RE, (route: Route) =>
-        route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          body: JSON.stringify(
-            responseEnvelope({
-              items: [],
-              meta: { total: 0, page: 1, limit: 20, totalPages: 0 }
-            })
-          )
-        })
-      );
-      await page.route(UNREAD_COUNT_RE, (route: Route) =>
-        route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          body: JSON.stringify(responseEnvelope({ count: 0 }))
-        })
-      );
-      await page.route(READ_ALL_RE, (route: Route) =>
-        route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          body: JSON.stringify(responseEnvelope({ updated: 0 }))
-        })
-      );
-
-      await gotoNotifications(page);
-      await expect(page.getByText(EN.empty)).toBeVisible();
-      // PageHeader mark-all button is always present; click with nothing unread.
-      await page.getByRole("button", { name: EN.markAll }).click();
-
-      // Still empty; no numeric (and definitely no negative) badge on the bell.
       await expect(page.getByText(EN.empty)).toBeVisible();
       const bell = page.getByRole("button", { name: EN.bellLabel });
       await expect(bell.getByText(/^-?\d+$/)).toHaveCount(0);
     }
   );
 
-  // --- D8: Double-click idempotency (matrix row 11d) — A only -------------
   test(
-    "double-clicking mark-read fires the PATCH once, not twice",
+    "[Error Guessing] double-clicking mark-read sends one PATCH",
     { tag: "@TC-NOTIF-013" },
     async ({ page }) => {
-      // [State Transition] the mark-read button is disabled while
-      // markRead.isPending (the hook is shared across the whole list), so a 2nd
-      // rapid click is swallowed → exactly one PATCH fires (count -1, not -2).
-      // Measured at the PATCH-request layer via intercept (no seed mutation).
       let patchCount = 0;
-      await page.route(LIST_RE, (route: Route) =>
-        route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          body: JSON.stringify(
-            responseEnvelope({
-              items: [fakeItem(401)],
-              meta: { total: 1, page: 1, limit: 20, totalPages: 1 }
-            })
-          )
-        })
-      );
-      // Delay the PATCH so the button stays disabled (isPending) across the 2nd
-      // click; the 2nd click must be swallowed by `disabled={isMarking}`.
-      await page.route(MARK_READ_RE, async (route: Route) => {
+      await page.route(LIST_RE, fulfillList([fakeItem(401)]));
+      await page.route(MARK_READ_RE, async (route) => {
         patchCount += 1;
         await new Promise((resolve) => setTimeout(resolve, 600));
-        route.fulfill({
+        await route.fulfill({
           status: 200,
           contentType: "application/json",
           body: JSON.stringify(
-            responseEnvelope({ ...fakeItem(401, true), id: "fake-401" })
+            responseEnvelope(fakeItem(401, { isRead: true }))
           )
         });
       });
-
       await gotoNotifications(page);
       const button = markReadButtons(page).first();
-      await expect(button).toBeVisible();
-
-      // First click fires the (delayed 600ms) PATCH; the shared markRead.isPending
-      // flips → the button becomes `disabled={isMarking}`. We must OBSERVE that
-      // disabled state before attempting the 2nd click — a forced/auto-waiting 2nd
-      // click defeats the guard: force bypasses actionability, and a long auto-wait
-      // outlives the 600ms PATCH (which re-enables the button on success, letting a
-      // queued click legitimately fire). Both race React renders, not the app's
-      // in-flight idempotency contract.
       await button.click();
-      // In-flight guard is observable: the button goes disabled while pending.
       await expect(button).toBeDisabled();
-      // Within the still-pending window, a 2nd click is swallowed. dispatchEvent
-      // bypasses Playwright's auto-wait so we evaluate the click NOW (button still
-      // disabled) instead of waiting for it to re-enable — a disabled <button>
-      // ignores a dispatched click natively, so no 2nd PATCH fires.
       await button.dispatchEvent("click");
-      // Assert no 2nd PATCH fired *while still pending* (before the 600ms resolves
-      // and legitimately re-enables the button).
       await expect.poll(() => patchCount, { timeout: 400 }).toBe(1);
-      expect(patchCount).toBe(1);
-      // Let the delayed PATCH settle so it doesn't leak into the next test.
       await page.waitForTimeout(700);
       expect(patchCount).toBe(1);
     }
   );
 
-  // --- D9: Persistence after reload (matrix row 11e) — A only (REAL) ------
-  // REAL mutation: permanently flips one seeded item to read. There is NO
-  // mark-unread API → afterAll cannot revert; restore the seed manually via:
-  //   cd server && pnpm seed --clear && pnpm seed
   test(
-    "a marked item stays read after a full page reload",
-    { tag: "@TC-NOTIF-014" },
-    async ({ page }) => {
-      await gotoNotifications(page);
-      const firstButton = markReadButtons(page).first();
-      await expect(firstButton).toBeVisible();
-      const firstArticle = page.locator("article").first();
-      const markedTitle = (
-        await firstArticle.getAttribute("aria-label")
-      )?.trim();
-      expect(markedTitle).toBeTruthy();
-      markedForReal.push(markedTitle!);
+    "[ST] a sign-in from an unseen device produces a real notification",
+    { tag: "@TC-NOTIF-048" },
+    async ({ guestPage }) => {
+      // A throwaway account: its first sign-in has no history (never an
+      // anomaly), the second from another browser/OS is a new device.
+      const account = await createAccount({ tag: "notif-anomaly" });
+      const [known, unseen] = ANOMALY_USER_AGENTS;
+      const signIn = (ua: string) =>
+        withApi(async (ctx) => {
+          const res = await ctx.post("/api/v1/auth/login", {
+            data: { email: account.email, password: account.password },
+            headers: { "User-Agent": ua }
+          });
+          expect(res.ok(), `login → ${res.status()}`).toBeTruthy();
+          return ((await res.json()) as { data: { accessToken: string } }).data
+            .accessToken;
+        });
+      const anomalies = (token: string) =>
+        withApi(async (ctx) => {
+          const res = await ctx.get(
+            "/api/v1/notifications?category=security&limit=50",
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          const body = (await res.json()) as {
+            data: {
+              items: { type: string; params: Record<string, string> }[];
+            };
+          };
+          return body.data.items.filter((n) => n.type === "LOGIN_ANOMALY");
+        });
 
-      await firstButton.click();
-      // Wait for the item to leave the unread tab (invalidate → refetch).
-      await expect(page.getByText(markedTitle!, { exact: true })).toHaveCount(
-        0,
-        {
+      const first = await signIn(known.ua);
+      // Login history is written fire-and-forget; give it a moment to land
+      // before the second sign-in reads it.
+      await guestPage.waitForTimeout(1_500);
+      expect(await anomalies(first)).toHaveLength(0);
+
+      const second = await signIn(unseen.ua);
+      await expect
+        .poll(async () => (await anomalies(second)).length, {
           timeout: 15_000
-        }
-      );
+        })
+        .toBe(1);
+      const [newest] = await anomalies(second);
+      expect(newest.params.browser).toBe(unseen.browser);
 
-      // Reload: authoritative server state is refetched; the item must stay out
-      // of the (default) Unread tab.
-      await page.reload();
+      await loginViaUi(guestPage, account.email, account.password);
+      await gotoNotifications(guestPage);
       await expect(
-        page.getByRole("tab", { name: EN.unread, exact: true })
-      ).toHaveAttribute("data-state", "active");
-      await expect(page.getByText(markedTitle!, { exact: true })).toHaveCount(
-        0
-      );
-
-      // ...and it now appears on the Read tab.
-      await page.getByRole("tab", { name: EN.read, exact: true }).click();
-      await expect(
-        page.getByText(markedTitle!, { exact: true }).first()
+        guestPage.getByText(new RegExp(`^${unseen.browser} on `)).first()
       ).toBeVisible();
     }
   );
-
-  test.afterAll(async () => {
-    // Put the seeded notifications the two real-PATCH tests marked read back
-    // to unread, so the next run (and every other spec) sees the seed.
-    await markUnreadByTitle(USER_EMAIL, markedForReal);
-  });
 });
 
-// ===========================================================================
-// Header bell, per-tab states, announcer and keyboard cases.
-// ===========================================================================
-
-// --- D1: Header bell badge + panel (matrix row 1b) — A only ---------------
-test.describe("Notifications — header bell + panel", () => {
-  // Gate A only: the panel exposes a mark-all mutation affordance; we assert
-  // its presence/visibility but never CLICK it, so no real mutation fires.
-  // Badge + count are pinned via intercept (read-only) so the assertion does
-  // not depend on live seed counts.
+// ─── 13. Header panel ──────────────────────────────────────────────────────
+test.describe("Notifications — header panel", () => {
   test(
-    "bell shows the unread badge and the panel lists recent items + mark-all",
+    "[BVA] the panel asks for 8 items and lists them with a badge",
     { tag: ["@TC-NOTIF-015", "@smoke"] },
     async ({ page }) => {
-      await page.route(UNREAD_COUNT_RE, (route: Route) =>
+      const limits: string[] = [];
+      await page.route(UNREAD_COUNT_RE, (route) =>
         route.fulfill({
           status: 200,
           contentType: "application/json",
           body: JSON.stringify(responseEnvelope({ count: 3 }))
         })
       );
-      await page.route(LIST_RE, (route: Route) =>
-        route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          body: JSON.stringify(
-            responseEnvelope({
-              items: [fakeItem(201), fakeItem(202)],
-              meta: { total: 2, page: 1, limit: 20, totalPages: 1 }
-            })
-          )
-        })
-      );
-
-      await gotoNotifications(page);
-
+      await page.route(LIST_RE, (route) => {
+        limits.push(
+          new URL(route.request().url()).searchParams.get("limit") ?? ""
+        );
+        return fulfillList([fakeItem(201), fakeItem(202)])(route);
+      });
+      await page.goto("/");
       const bell = page.getByRole("button", { name: EN.bellLabel });
-      await expect(bell).toBeVisible();
-      // Badge text is the unread count; only rendered when count > 0.
       await expect(bell.getByText("3", { exact: true })).toBeVisible();
-
       await bell.click();
-      // Panel renders inside the Popover content (role="dialog"). Scope BOTH
-      // assertions to that dialog so the title (which also appears in the page
-      // list behind the panel) and the mark-all button (which also exists in the
-      // PageHeader) uniquely match the panel's own copy.
       const panel = page.getByRole("dialog");
-      await expect(panel).toBeVisible();
-      // Panel (Popover content) lists the intercepted first-page items...
+      await expect(panel.getByText(fakeBody(201))).toBeVisible();
       await expect(
-        panel.getByText("Intercepted notification 201", { exact: true })
+        panel.getByRole("button", { name: EN.markAll })
       ).toBeVisible();
-      // ...and exposes a "Mark all as read" affordance inside the panel.
-      await expect(
-        panel.getByRole("button", { name: EN.panelMarkAll })
-      ).toBeVisible();
+      expect(limits).toContain("8");
     }
   );
 
   test(
-    "bell badge is hidden when the unread count is zero",
+    "the badge is hidden at zero and the panel shows its empty state",
     { tag: "@TC-NOTIF-016" },
     async ({ page }) => {
-      await page.route(UNREAD_COUNT_RE, (route: Route) =>
+      await page.route(UNREAD_COUNT_RE, (route) =>
         route.fulfill({
           status: 200,
           contentType: "application/json",
           body: JSON.stringify(responseEnvelope({ count: 0 }))
         })
       );
-      await page.goto("/notifications");
+      await page.route(LIST_RE, fulfillList([]));
+      await page.goto("/");
       const bell = page.getByRole("button", { name: EN.bellLabel });
-      await expect(bell).toBeVisible();
-      // No numeric badge node rendered (AppHeader renders <Badge> only on > 0).
       await expect(bell.getByText(/^\d+$/)).toHaveCount(0);
-    }
-  );
-});
-
-// --- D2: Per-tab empty state + null readAt (matrix rows 5a, 5c) — A+B ------
-test.describe("Notifications — per-tab empty + null states", () => {
-  test(
-    "Read tab renders the per-tab empty state when no read items exist",
-    { tag: "@TC-NOTIF-017" },
-    async ({ page }) => {
-      // Only the read filter (isRead=true) returns empty; the unread filter still
-      // serves data so the page does not look globally empty. [EP] empty-set
-      // partition vs non-empty-set.
-      await page.route(LIST_RE, (route: Route) => {
-        const url = new URL(route.request().url());
-        const isReadParam = url.searchParams.get("isRead");
-        const empty = isReadParam === "true";
-        route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          body: JSON.stringify(
-            responseEnvelope({
-              items: empty ? [] : [fakeItem(1)],
-              meta: {
-                total: empty ? 0 : 1,
-                page: 1,
-                limit: 20,
-                totalPages: empty ? 0 : 1
-              }
-            })
-          )
-        });
-      });
-
-      await gotoNotifications(page);
-      await page.getByRole("tab", { name: EN.read, exact: true }).click();
+      await bell.click();
       await expect(
-        page.getByRole("tab", { name: EN.read, exact: true })
-      ).toHaveAttribute("data-state", "active");
-      await expect(page.getByText(EN.empty)).toBeVisible();
-    }
-  );
-
-  test(
-    "an unread item with readAt:null renders without crashing",
-    { tag: "@TC-NOTIF-018" },
-    async ({ page }) => {
-      // [EP] null-date path: fakeItem default is isRead:false, readAt:null.
-      const errors: string[] = [];
-      page.on("pageerror", (e) => errors.push(e.message));
-      await page.route(LIST_RE, (route: Route) =>
-        route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          body: JSON.stringify(
-            responseEnvelope({
-              items: [fakeItem(1)],
-              meta: { total: 1, page: 1, limit: 20, totalPages: 1 }
-            })
-          )
-        })
-      );
-      await gotoNotifications(page);
-      await expect(
-        page.getByText("Intercepted notification 1", { exact: true })
+        page.getByRole("dialog").getByText(EN.emptyTitle)
       ).toBeVisible();
-      expect(errors).toEqual([]);
-    }
-  );
-});
-
-// --- D3: Single full page → no "Load more" from start (row 6b) — A+B -------
-test(
-  "no Load more button when the dataset is a single full page",
-  { tag: "@TC-NOTIF-019" },
-  async ({ page }) => {
-    // [BVA] limit boundary: exactly 20 items but totalPages 1 →
-    // getNextPageParam returns undefined → hasNextPage false → button never
-    // rendered (distinct from row 6a where it disappears AFTER the last page).
-    const items = Array.from({ length: 20 }, (_, i) => fakeItem(i + 1));
-    await page.route(LIST_RE, (route: Route) =>
-      route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify(
-          responseEnvelope({
-            items,
-            meta: { total: 20, page: 1, limit: 20, totalPages: 1 }
-          })
-        )
-      })
-    );
-    await gotoNotifications(page);
-    await expect(
-      page.getByText("Intercepted notification 1", { exact: true })
-    ).toBeVisible();
-    await expect(page.getByRole("button", { name: EN.loadMore })).toHaveCount(
-      0
-    );
-  }
-);
-
-// --- D4: Read-tab content assertion (matrix row 7) — A+B ------------------
-test(
-  "Read tab shows read seed titles and hides unread ones (and vice versa)",
-  { tag: "@TC-NOTIF-020" },
-  async ({ page }) => {
-    // [Decision Table] tab × isRead → expected subset. Real backend (seed has
-    // both read + unread rows). Read-only, no mutation.
-    await gotoNotifications(page);
-
-    // Unread tab (default): unread title present, read title absent.
-    await expect(
-      page.getByText(SEED_UNREAD_TITLE, { exact: true }).first()
-    ).toBeVisible();
-    await expect(page.getByText(SEED_READ_TITLE, { exact: true })).toHaveCount(
-      0
-    );
-
-    // Switch to Read tab: read title present, unread title absent.
-    await page.getByRole("tab", { name: EN.read, exact: true }).click();
-    await expect(
-      page.getByText(SEED_READ_TITLE, { exact: true }).first()
-    ).toBeVisible();
-    await expect(
-      page.getByText(SEED_UNREAD_TITLE, { exact: true })
-    ).toHaveCount(0);
-  }
-);
-
-// --- D5: vi relative-time '/trước/' (matrix row 9 NEW) — A+B --------------
-test(
-  "vi locale renders relative time with the Vietnamese suffix 'trước'",
-  { tag: "@TC-NOTIF-021" },
-  async ({ page }) => {
-    // [Error Guessing] locale-leak: prove date-fns vi locale is wired (not the
-    // loose /ago|trước/ union) and that English "ago" never appears on /vi.
-    await gotoNotifications(page, "/vi");
-    await expect(page.getByText(/trước/).first()).toBeVisible();
-    await expect(page.getByText(/\bago\b/i)).toHaveCount(0);
-  }
-);
-
-// --- D6: Mark-read mutation failure (matrix row 10c) — A+B ----------------
-test(
-  "mark-read failure shows an error toast and leaves the item unread",
-  { tag: "@TC-NOTIF-022" },
-  async ({ page }) => {
-    // [Error Guessing] server-error on the mutate path. Seed-agnostic: serve one
-    // unread item via intercept, then fail the PATCH. invalidate-on-success means
-    // a FAILED mutation never flips the cache → item stays unread, no rollback.
-    await page.route(LIST_RE, (route: Route) =>
-      route.fulfill({
-        status: 200,
-        contentType: "application/json",
-        body: JSON.stringify(
-          responseEnvelope({
-            items: [fakeItem(301)],
-            meta: { total: 1, page: 1, limit: 20, totalPages: 1 }
-          })
-        )
-      })
-    );
-    await page.route(MARK_READ_RE, (route: Route) =>
-      route.fulfill({
-        status: 500,
-        contentType: "application/json",
-        body: JSON.stringify({
-          code: "INTERNAL",
-          message: "boom",
-          timestamp: new Date().toISOString(),
-          path: "/api/v1/notifications/fake-301/read"
-        })
-      })
-    );
-
-    await gotoNotifications(page);
-    const button = markReadButtons(page).first();
-    await expect(button).toBeVisible();
-    await button.click();
-
-    // The global MutationCache handler toasts a 5xx once (sonner).
-    await expect(page.getByText(EN.toastServerError)).toBeVisible({
-      timeout: 10_000
-    });
-    // Item is still unread (cache untouched) and still has its mark-read button.
-    await expect(
-      page.getByText("Intercepted notification 301", { exact: true })
-    ).toBeVisible();
-    await expect(markReadButtons(page)).toHaveCount(1);
-  }
-);
-
-// --- D10: #announcer aria-live updates (matrix row 12 NEW) — A+B ----------
-test.describe("Notifications — announcer (aria-live)", () => {
-  test(
-    "tab change announces via the #announcer live region",
-    { tag: "@TC-NOTIF-023" },
-    async ({ page }) => {
-      // [State Transition] read-only tab switch writes to the polite live region.
-      await gotoNotifications(page);
-      await page.getByRole("tab", { name: EN.read, exact: true }).click();
-      await expect(page.locator("#announcer")).toHaveText(
-        EN.announceTabChangedRead,
-        { timeout: 5_000 }
-      );
     }
   );
 
   test(
-    "load-more announces via the #announcer live region",
-    { tag: "@TC-NOTIF-023" },
+    "the panel shows the error state when the list fails",
+    { tag: "@TC-NOTIF-049" },
     async ({ page }) => {
-      const page1 = Array.from({ length: 20 }, (_, i) => fakeItem(i + 1));
-      const page2 = Array.from({ length: 3 }, (_, i) => fakeItem(i + 21));
-      await page.route(LIST_RE, (route: Route) => {
-        const url = new URL(route.request().url());
-        const isPage2 = url.searchParams.get("page") === "2";
-        route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          body: JSON.stringify(
-            responseEnvelope({
-              items: isPage2 ? page2 : page1,
-              meta: {
-                total: 23,
-                page: isPage2 ? 2 : 1,
-                limit: 20,
-                totalPages: 2
-              }
-            })
-          )
-        });
+      await page.route(LIST_RE, fail500);
+      await page.goto("/");
+      await page.getByRole("button", { name: EN.bellLabel }).click();
+      await expect(page.getByRole("dialog").getByText(EN.error)).toBeVisible({
+        timeout: 20_000
       });
-      await gotoNotifications(page);
-      await page.getByRole("button", { name: EN.loadMore }).click();
-      await expect(page.locator("#announcer")).toHaveText(
-        EN.announceLoadingMore,
-        { timeout: 5_000 }
-      );
     }
   );
-});
 
-// --- D11: Keyboard activation (Enter/Space) on mark-read (row 12) — A only -
-test.describe("Notifications — keyboard activation", () => {
-  for (const key of ["Enter", "Space"] as const) {
-    // [State Transition] CustomButton is a native <button>; both Enter and
-    // Space activate it. Measured at the PATCH-request layer via intercept so
-    // no real seed mutation occurs (assert PATCH fired, not a live badge).
-    test(
-      `pressing ${key} on a focused mark-read button fires the mutation`,
-      { tag: "@TC-NOTIF-024" },
-      async ({ page }) => {
-        let patchFired = false;
-        await page.route(LIST_RE, (route: Route) =>
-          route.fulfill({
-            status: 200,
-            contentType: "application/json",
-            body: JSON.stringify(
-              responseEnvelope({
-                items: [fakeItem(501)],
-                meta: { total: 1, page: 1, limit: 20, totalPages: 1 }
-              })
-            )
-          })
-        );
-        await page.route(MARK_READ_RE, (route: Route) => {
-          patchFired = true;
-          route.fulfill({
-            status: 200,
-            contentType: "application/json",
-            body: JSON.stringify(
-              responseEnvelope({ ...fakeItem(501, true), id: "fake-501" })
-            )
-          });
-        });
-
-        await gotoNotifications(page);
-        const button = markReadButtons(page).first();
-        await button.focus();
-        await expect(button).toBeFocused();
-        await page.keyboard.press(key);
-        await expect.poll(() => patchFired, { timeout: 5_000 }).toBe(true);
-      }
-    );
-  }
-});
-
-test.describe("Notifications — accessibility", () => {
-  // --- Scenario 11: A11y (real backend) ---
   test(
-    "mark-read button has an accessible name and is keyboard focusable",
-    { tag: "@TC-NOTIF-025" },
+    "opening an item in the panel closes it and navigates",
+    { tag: "@TC-NOTIF-050" },
     async ({ page }) => {
-      await gotoNotifications(page);
-
-      // Accessible name comes from getByRole name match (aria-label).
-      const button = markReadButtons(page).first();
-      await expect(button).toBeVisible();
-
-      // Keyboard-focusable.
-      await button.focus();
-      await expect(button).toBeFocused();
+      await page.route(LIST_RE, fulfillList([fakeItem(203, { isRead: true })]));
+      await page.goto("/");
+      await page.getByRole("button", { name: EN.bellLabel }).click();
+      await page.getByRole("dialog").getByText(fakeBody(203)).click();
+      await expect(page).toHaveURL(/\/apps\?search=/);
+      await expect(page.getByRole("dialog")).toHaveCount(0);
     }
   );
 
   test(
-    "load more is reachable by role when the dataset paginates",
-    { tag: "@TC-NOTIF-025" },
-    async ({ page }) => {
-      // Pagination depends on seeded volume per tab; drive it deterministically
-      // via intercept so the a11y assertion (Load more reachable by role) is
-      // stable regardless of seed counts.
-      const items = Array.from({ length: 20 }, (_, i) => fakeItem(i + 1));
-      await page.route(LIST_RE, (route: Route) =>
-        route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          body: JSON.stringify(
-            responseEnvelope({
-              items,
-              meta: { total: 25, page: 1, limit: 20, totalPages: 2 }
-            })
-          )
-        })
-      );
-      await gotoNotifications(page);
-      const loadMore = page.getByRole("button", { name: EN.loadMore });
-      await expect(loadMore).toBeVisible();
-      await loadMore.focus();
-      await expect(loadMore).toBeFocused();
-    }
-  );
-});
-
-// --- Grouping by local day ------------------------------------------------
-test.describe("Notifications — grouping", () => {
-  test.use({ timezoneId: "Asia/Ho_Chi_Minh" });
-
-  test(
-    "items group into Today / Yesterday / Earlier at local midnight [BVA]",
-    { tag: "@TC-NOTIF-027" },
-    async ({ page }) => {
-      await page.clock.setFixedTime(new Date("2026-10-07T10:00:00+07:00"));
-      const at = (i: number, iso: string): FakeNotification => ({
-        ...fakeItem(i),
-        createdAt: new Date(iso).toISOString()
-      });
-      await page.route(LIST_RE, (route: Route) =>
-        route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          body: JSON.stringify(
-            responseEnvelope({
-              items: [
-                at(1, "2026-10-07T00:00:00+07:00"), // today, first instant
-                at(2, "2026-10-06T23:59:59+07:00"), // yesterday, last second
-                at(3, "2026-10-06T00:00:00+07:00"), // yesterday, first instant
-                at(4, "2026-10-05T23:59:59+07:00") // earlier
-              ],
-              meta: { total: 4, page: 1, limit: 20, totalPages: 1 }
-            })
-          )
-        })
-      );
-      await gotoNotifications(page);
-      const group = (label: string) =>
-        page.locator(`div:has(> div:text-is("${label}")) > article`);
-      await expect(group("Today")).toHaveCount(1);
-      await expect(group("Today")).toHaveAttribute(
-        "aria-label",
-        "Intercepted notification 1"
-      );
-      await expect(group("Yesterday")).toHaveCount(2);
-      await expect(group("Earlier")).toHaveCount(1);
-      await expect(group("Earlier")).toHaveAttribute(
-        "aria-label",
-        "Intercepted notification 4"
-      );
-    }
-  );
-});
-
-// --- Header panel actions -------------------------------------------------
-test.describe("Notifications — header panel actions", () => {
-  test(
-    "the panel's View all opens the page and its Mark all clears the badge",
+    "the panel's Mark all clears the badge and View all opens the page",
     { tag: "@TC-NOTIF-028" },
     async ({ page }) => {
       let markedAll = false;
-      await page.route(UNREAD_COUNT_RE, (route: Route) =>
+      await page.route(UNREAD_COUNT_RE, (route) =>
         route.fulfill({
           status: 200,
           contentType: "application/json",
           body: JSON.stringify(responseEnvelope({ count: markedAll ? 0 : 2 }))
         })
       );
-      await page.route(LIST_RE, (route: Route) =>
-        route.fulfill({
-          status: 200,
-          contentType: "application/json",
-          body: JSON.stringify(
-            responseEnvelope({
-              items: markedAll ? [] : [fakeItem(601), fakeItem(602)],
-              meta: {
-                total: markedAll ? 0 : 2,
-                page: 1,
-                limit: 20,
-                totalPages: markedAll ? 0 : 1
-              }
-            })
-          )
-        })
+      await page.route(LIST_RE, (route) =>
+        fulfillList(markedAll ? [] : [fakeItem(601), fakeItem(602)])(route)
       );
-      await page.route(READ_ALL_RE, (route: Route) => {
+      await page.route(READ_ALL_RE, (route) => {
         markedAll = true;
         return route.fulfill({
           status: 200,
@@ -1102,16 +888,149 @@ test.describe("Notifications — header panel actions", () => {
       await page.goto("/");
       const bell = page.getByRole("button", { name: EN.bellLabel });
       await expect(bell.getByText("2", { exact: true })).toBeVisible();
-
       await bell.click();
       const panel = page.getByRole("dialog");
-      await panel.getByRole("button", { name: EN.panelMarkAll }).click();
+      await panel.getByRole("button", { name: EN.markAll }).click();
       await expect(bell.getByText(/^\d+$/)).toHaveCount(0);
 
-      await panel
-        .getByRole("button", { name: "View all notifications" })
-        .click();
+      await panel.getByRole("button", { name: EN.viewAll }).click();
       await expect(page).toHaveURL(/\/notifications$/);
+    }
+  );
+});
+
+// ─── 12. Accessibility ─────────────────────────────────────────────────────
+test.describe("Notifications — accessibility", () => {
+  for (const key of ["Enter", "Space"] as const) {
+    test(
+      `pressing ${key} on a focused mark-read button fires the mutation`,
+      { tag: "@TC-NOTIF-024" },
+      async ({ page }) => {
+        let patchFired = false;
+        await page.route(LIST_RE, fulfillList([fakeItem(501)]));
+        await page.route(MARK_READ_RE, (route) => {
+          patchFired = true;
+          return route.fulfill({
+            status: 200,
+            contentType: "application/json",
+            body: JSON.stringify(
+              responseEnvelope(fakeItem(501, { isRead: true }))
+            )
+          });
+        });
+        await gotoNotifications(page);
+        const button = markReadButtons(page).first();
+        await button.focus();
+        await expect(button).toBeFocused();
+        await page.keyboard.press(key);
+        await expect.poll(() => patchFired, { timeout: 5_000 }).toBe(true);
+      }
+    );
+  }
+
+  test(
+    "each row is an article named by its title, its link is focusable",
+    { tag: "@TC-NOTIF-025" },
+    async ({ page }) => {
+      await page.route(LIST_RE, fulfillList([fakeItem(601)]));
+      await gotoNotifications(page);
+      await expect(
+        page.getByRole("article", { name: "New app available" })
+      ).toBeVisible();
+      const link = page.locator("article a").first();
+      await link.focus();
+      await expect(link).toBeFocused();
+    }
+  );
+
+  test(
+    "category chips expose their pressed state",
+    { tag: "@TC-NOTIF-051" },
+    async ({ page }) => {
+      await page.route(LIST_RE, fulfillList([fakeItem(1)]));
+      await gotoNotifications(page);
+      const group = page.getByRole("group", { name: EN.categoryLabel });
+      await expect(
+        group.getByRole("button", { name: EN.allTypes, pressed: true })
+      ).toBeVisible();
+      await expect(
+        group.getByRole("button", { name: EN.security, pressed: false })
+      ).toBeVisible();
+    }
+  );
+});
+
+// ─── Chrome, no-op mark all, day grouping ──────────────────────────────────
+test(
+  "renders English chrome on the default locale",
+  { tag: "@TC-NOTIF-007" },
+  async ({ page }) => {
+    await gotoNotifications(page);
+    await expect(tab(page, EN.all)).toBeVisible();
+    await expect(tab(page, EN.unread)).toBeVisible();
+    await expect(tab(page, EN.read)).toBeVisible();
+    await expect(page.getByRole("button", { name: EN.markAll })).toBeVisible();
+    await expect(
+      page.getByRole("group", { name: EN.categoryLabel })
+    ).toBeVisible();
+  }
+);
+
+test(
+  "mark all on an already-empty list is a no-op (no negative badge) [BVA]",
+  { tag: "@TC-NOTIF-012" },
+  async ({ page }) => {
+    await page.route(LIST_RE, fulfillList([]));
+    await page.route(UNREAD_COUNT_RE, (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(responseEnvelope({ count: 0 }))
+      })
+    );
+    await page.route(READ_ALL_RE, (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(responseEnvelope({ updated: 0 }))
+      })
+    );
+    await gotoNotifications(page);
+    await expect(page.getByText(EN.empty)).toBeVisible();
+    await page.getByRole("button", { name: EN.markAll }).click();
+    await expect(page.getByText(EN.empty)).toBeVisible();
+    const bell = page.getByRole("button", { name: EN.bellLabel });
+    await expect(bell.getByText(/^-?\d+$/)).toHaveCount(0);
+  }
+);
+
+test.describe("Notifications — grouping", () => {
+  test.use({ timezoneId: "Asia/Ho_Chi_Minh" });
+
+  test(
+    "items group into Today / Yesterday / Earlier at local midnight [BVA]",
+    { tag: "@TC-NOTIF-027" },
+    async ({ page }) => {
+      await page.clock.setFixedTime(new Date("2026-10-07T10:00:00+07:00"));
+      const at = (i: number, iso: string) =>
+        fakeItem(i, { createdAt: new Date(iso).toISOString() });
+      await page.route(
+        LIST_RE,
+        fulfillList([
+          at(1, "2026-10-07T00:00:00+07:00"), // today, first instant
+          at(2, "2026-10-06T23:59:59+07:00"), // yesterday, last second
+          at(3, "2026-10-06T00:00:00+07:00"), // yesterday, first instant
+          at(4, "2026-10-05T23:59:59+07:00") // earlier
+        ])
+      );
+      await gotoNotifications(page);
+      const group = (label: string) =>
+        page.locator(`section[aria-label="${label}"] article`);
+      await expect(group("Today")).toHaveCount(1);
+      await expect(group("Today")).toContainText(fakeBody(1));
+      await expect(group("Yesterday")).toHaveCount(2);
+      await expect(group("Earlier")).toHaveCount(1);
+      await expect(group("Earlier")).toContainText(fakeBody(4));
     }
   );
 });

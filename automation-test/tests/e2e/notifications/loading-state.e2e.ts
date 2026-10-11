@@ -2,8 +2,8 @@ import { test, expect } from "@fixtures";
 import type { Route } from "@playwright/test";
 
 // ---------------------------------------------------------------------------
-// NotificationGroups loading skeleton: while the notifications query is
-// pending, NotificationGroupsSkeleton is rendered (wrapped in
+// Notifications list loading skeleton: while the notifications query is
+// pending, NotificationListSkeleton is rendered (wrapped in
 // aria-hidden="true"). After the request resolves, real notification groups
 // appear and the skeleton is gone. Role: user.
 // Test cases: test-cases/notifications.md (TC-NOTIF-026).
@@ -15,10 +15,10 @@ const LIST_RE = /\/api\/v1\/notifications(\?|$)/;
 // Synthetic item factory (mirrors notifications.e2e.ts).
 const fakeItem = (i: number) => ({
   id: `fake-loading-${i}`,
-  type: "SYSTEM_ANNOUNCEMENT",
-  title: `Loading test notification ${i}`,
-  message: `Body ${i}.`,
-  meta: null,
+  type: "APP_AVAILABLE",
+  category: "app",
+  params: { appName: `Loading test app ${i}` },
+  link: null,
   isRead: false,
   readAt: null,
   createdAt: new Date(Date.now() - i * 60_000).toISOString()
@@ -39,7 +39,7 @@ test.describe("Notifications — loading skeleton", () => {
   // After resolve: skeleton gone (or hidden), at least one notification item
   // rendered.
   //
-  // NotificationGroupsSkeleton is wrapped in <div aria-hidden="true">. The
+  // NotificationListSkeleton is wrapped in <div aria-hidden="true">. The
   // skeleton div has no accessible role, so we query it via its aria-hidden
   // attribute and assert its DOM presence while the query is loading.
   //
@@ -71,7 +71,7 @@ test.describe("Notifications — loading skeleton", () => {
 
       await page.goto("/notifications");
 
-      // While pending: NotificationGroupsSkeleton renders inside
+      // While pending: NotificationListSkeleton renders inside
       // <div aria-hidden="true">. We locate it by its aria-hidden attribute.
       // The skeleton node is present in DOM (attached) even though it is
       // aria-hidden (screen-reader hidden), so toBeAttached() is the right
@@ -85,7 +85,9 @@ test.describe("Notifications — loading skeleton", () => {
 
       // After resolve: at least one notification article is visible.
       await expect(
-        page.getByText("Loading test notification 1", { exact: true })
+        page.getByText("Loading test app 1 is now in your launcher.", {
+          exact: true
+        })
       ).toBeVisible({ timeout: 10_000 });
     }
   );
@@ -101,7 +103,7 @@ test.describe("Notifications — loading skeleton", () => {
       // We assert on the final settled state: no aria-hidden skeleton sibling
       // is present inside the Tabs content area when real items are visible.
       //
-      // NotificationGroupsSkeleton is the ONLY top-level aria-hidden div in the
+      // NotificationListSkeleton is the ONLY top-level aria-hidden div in the
       // Tabs content; NotificationGroups renders <article> elements without
       // aria-hidden. So once data renders, the aria-hidden div is gone.
       await page.route(LIST_RE, (route: Route) =>
@@ -121,10 +123,12 @@ test.describe("Notifications — loading skeleton", () => {
 
       // Wait for the real data to appear.
       await expect(
-        page.getByText("Loading test notification 10", { exact: true })
+        page.getByText("Loading test app 10 is now in your launcher.", {
+          exact: true
+        })
       ).toBeVisible({ timeout: 10_000 });
 
-      // The skeleton wrapper (aria-hidden div from NotificationGroupsSkeleton)
+      // The skeleton wrapper (aria-hidden div from NotificationListSkeleton)
       // must no longer be present in the DOM. The Tabs content area at this
       // point holds only NotificationGroups (article elements).
       //
@@ -138,14 +142,11 @@ test.describe("Notifications — loading skeleton", () => {
       // The skeleton renders 3+2 = 5 SkeletonNotificationItem divs. In the
       // loaded state there are no such placeholder divs at the skeleton level.
       // We check the first-child aria-hidden div no longer wraps Skeleton nodes
-      // by asserting no top-level aria-hidden sibling wraps .h-3.w-16 (the
-      // group-header Skeleton className used only in NotificationGroupsSkeleton).
-      await expect(page.locator("[aria-hidden='true'] .h-3.w-16")).toHaveCount(
-        0,
-        {
-          timeout: 5_000
-        }
-      );
+      // by asserting no aria-hidden wrapper still holds a `.w-40` title bar
+      // (the Skeleton className used only by NotificationListSkeleton).
+      await expect(page.locator("[aria-hidden='true'] .w-40")).toHaveCount(0, {
+        timeout: 5_000
+      });
     }
   );
 });

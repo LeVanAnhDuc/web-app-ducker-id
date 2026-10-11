@@ -9,8 +9,11 @@ import type { RecentAppService } from "@/modules/recent-app/services";
 import type { SessionRecord } from "@/modules/session/types";
 import type { OAuthRepository } from "../../repository/oauth.repository";
 import type { AuthorizeParams } from "../../types";
+import type { EntitlementOverride } from "@/modules/entitlement/types";
+import type { EntitlementRepository } from "@/modules/entitlement/repository/entitlement.repository";
 // module under test
 import { OAuthService } from "../";
+import { AccessPolicy } from "@/modules/entitlement/services/access-policy";
 // common
 import { OAuthError } from "@/common/exceptions";
 // mocks
@@ -75,7 +78,8 @@ const setup = ({
   user = { _id: USER_ID, email: "user@test.com" } as {
     _id: string;
     email: string;
-  } | null
+  } | null,
+  overrides = [] as EntitlementOverride[]
 } = {}) => {
   const oauthRepo = {
     storePendingRequest: jest.fn().mockResolvedValue("req-1"),
@@ -97,6 +101,10 @@ const setup = ({
     record: jest.fn().mockResolvedValue(undefined)
   } as unknown as RecentAppService;
 
+  const entitlementRepo = {
+    findByUser: jest.fn().mockResolvedValue(overrides)
+  };
+
   const service = new OAuthService({
     oauthRepo,
     webAppRepo,
@@ -104,10 +112,19 @@ const setup = ({
     authService: {} as AuthenticationService,
     userService,
     loginHistoryService,
-    recentAppService
+    recentAppService,
+    accessPolicy: new AccessPolicy(
+      entitlementRepo as unknown as EntitlementRepository
+    )
   });
 
-  return { service, loginHistoryService, userService, recentAppService };
+  return {
+    service,
+    loginHistoryService,
+    userService,
+    recentAppService,
+    entitlementRepo
+  };
 };
 
 const reqWith = (query: Record<string, string>) =>
@@ -251,6 +268,66 @@ describe("OAuthService.authorize — app sign-in audit", () => {
 
     const outcome = await service.authorize(reqWith(freshQuery));
     await flush();
+
+    expect(outcome.kind).toBe("redirect");
+  });
+});
+
+describe("OAuthService.authorize — entitlement", () => {
+  const SESSION_USER = "64b7f0c2f1a2b3c4d5e6f7d2";
+  const APP = "64b7f0c2f1a2b3c4d5e6f7c1";
+
+  const expectDenied = async (service: OAuthService) => {
+    await expect(service.authorize(reqWith(freshQuery))).rejects.toMatchObject({
+      oauthError: "access_denied"
+    });
+  };
+
+  it("reads the overrides of the session's user", async () => {
+    const { service, entitlementRepo } = setup();
+
+    await service.authorize(reqWith(freshQuery));
+
+    expect(entitlementRepo.findByUser).toHaveBeenCalledWith(SESSION_USER);
+  });
+
+  it("lets an admin into an app that only lists the user role", async () => {
+    const { service } = setup({
+      client: makeClient({ requiredRoles: ["user"] } as never),
+      session: makeSession({ roles: "admin" })
+    });
+
+    const outcome = await service.authorize(reqWith(freshQuery));
+
+    expect(outcome.kind).toBe("redirect");
+  });
+
+  it("denies a user the role would let in once an override revokes it", async () => {
+    const { service } = setup({
+      client: makeClient({ requiredRoles: ["user"] } as never),
+      overrides: [{ userId: SESSION_USER, webAppId: APP, effect: "deny" }]
+    });
+
+    await expectDenied(service);
+  });
+
+  it("denies an admin revoked from an app", async () => {
+    const { service } = setup({
+      client: makeClient({ requiredRoles: ["admin"] } as never),
+      session: makeSession({ roles: "admin" }),
+      overrides: [{ userId: SESSION_USER, webAppId: APP, effect: "deny" }]
+    });
+
+    await expectDenied(service);
+  });
+
+  it("lets a user into an admin-only app granted by an override", async () => {
+    const { service } = setup({
+      client: makeClient({ requiredRoles: ["admin"] } as never),
+      overrides: [{ userId: SESSION_USER, webAppId: APP, effect: "allow" }]
+    });
+
+    const outcome = await service.authorize(reqWith(freshQuery));
 
     expect(outcome.kind).toBe("redirect");
   });

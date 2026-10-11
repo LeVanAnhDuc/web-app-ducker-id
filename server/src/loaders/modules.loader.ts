@@ -4,6 +4,7 @@ import { Router } from "express";
 import type { Express } from "express";
 import type { RedisClientType } from "redis";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
+import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 // database
 import { instanceRedis } from "@/database/redis";
 // modules
@@ -18,6 +19,7 @@ import { createForgotPasswordModule } from "@/modules/forgot-password/forgot-pas
 import { createChangePasswordModule } from "@/modules/change-password/change-password.module";
 import { createContactAdminModule } from "@/modules/contact-admin/contact-admin.module";
 import { createCategoryModule } from "@/modules/category/category.module";
+import { createEntitlementModule } from "@/modules/entitlement/entitlement.module";
 import { createWebAppModule } from "@/modules/web-app/web-app.module";
 import { createUserModule } from "@/modules/user/user.module";
 import { createNotificationModule } from "@/modules/notification/notification.module";
@@ -51,6 +53,7 @@ interface ModuleRoutes {
   webAppUser: Router;
   categoryAdmin: Router;
   categoryUser: Router;
+  entitlementAdmin: Router;
 }
 
 /**
@@ -95,13 +98,15 @@ const mountRoutes = (app: Express, routes: ModuleRoutes): void => {
   v1Router.use(routes.webAppUser);
   v1Router.use(routes.categoryAdmin);
   v1Router.use(routes.categoryUser);
+  v1Router.use(routes.entitlementAdmin);
 
   app.use("/api/v1", v1Router);
 };
 
 export const loadModules = (
   app: Express,
-  emailDispatcher: EmailDispatcher
+  emailDispatcher: EmailDispatcher,
+  notificationDispatcher: NotificationDispatcher
 ): void => {
   const redisClient = instanceRedis.getClient() as RedisClientType;
 
@@ -114,14 +119,15 @@ export const loadModules = (
   const { userRouter, userAdminRouter, userService } = createUserModule(
     rateLimiter,
     authService,
-    emailDispatcher
+    emailDispatcher,
+    notificationDispatcher
   );
 
   const {
     loginHistoryService,
     loginHistoryUserRouter,
     loginHistoryAdminRouter
-  } = createLoginHistoryModule();
+  } = createLoginHistoryModule(notificationDispatcher);
 
   const { loginRouter, loginService } = createLoginModule(
     redisClient,
@@ -129,7 +135,8 @@ export const loadModules = (
     loginHistoryService,
     emailDispatcher,
     rateLimiter,
-    sessionService
+    sessionService,
+    notificationDispatcher
   );
 
   const { signupRouter } = createSignupModule(
@@ -166,6 +173,7 @@ export const loadModules = (
     authService,
     userService,
     emailDispatcher,
+    notificationDispatcher,
     rateLimiter
   );
 
@@ -175,15 +183,25 @@ export const loadModules = (
   const { categoryRepository, categoryAdminRouter, categoryUserRouter } =
     createCategoryModule(rateLimiter);
 
-  const { webAppAdminRouter, webAppUserRouter } =
-    createWebAppModule(categoryRepository);
+  const { accessPolicy, entitlementAdminRouter } = createEntitlementModule(
+    rateLimiter,
+    notificationDispatcher
+  );
+
+  const { webAppAdminRouter, webAppUserRouter } = createWebAppModule(
+    categoryRepository,
+    accessPolicy,
+    notificationDispatcher
+  );
 
   const { notificationUserRouter } = createNotificationModule();
 
-  const { favoriteRepository, favoriteUserRouter } = createFavoriteModule();
+  const { favoriteRepository, favoriteUserRouter } =
+    createFavoriteModule(accessPolicy);
 
   const { recentAppService, recentAppUserRouter } = createRecentAppModule(
     favoriteRepository,
+    accessPolicy,
     rateLimiter
   );
 
@@ -194,6 +212,7 @@ export const loadModules = (
     userService,
     loginHistoryService,
     recentAppService,
+    accessPolicy,
     rateLimiter
   );
 
@@ -221,7 +240,8 @@ export const loadModules = (
     webAppAdmin: webAppAdminRouter,
     webAppUser: webAppUserRouter,
     categoryAdmin: categoryAdminRouter,
-    categoryUser: categoryUserRouter
+    categoryUser: categoryUserRouter,
+    entitlementAdmin: entitlementAdminRouter
   });
 
   Logger.info("Modules loaded and routes mounted successfully");

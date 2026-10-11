@@ -277,3 +277,15 @@ totalPages 0`; `[A]` with count 1.
   1. Run `/oauth/authorize` (PKCE) on the session until a code is issued; list.
 - **Expected:** the history becomes exactly `[client app]` with `useCount` 1.
 - **Automated:** `tests/api/recently-used/recent-apps.api.ts`
+
+### TC-RECENT-029 — A revoked app drops out of the history and returns on re-grant
+
+- **Requirement:** REQ-RECENT-06
+- **Layer:** e2e · **Priority:** P2 · **Role:** throwaway user (+ admin API)
+- **Technique:** State Transition (used → revoked → restored)
+- **Preconditions:** throwaway account with one Notes launch recorded
+- **Steps:**
+  1. Revoke Notes; read `GET /users/me/recent-apps` and `/recently-used`; remove the override.
+- **Expected:** Notes absent from the API list and the page while revoked;
+  back in both afterwards.
+- **Automated:** `tests/e2e/apps/launcher-access.e2e.ts`

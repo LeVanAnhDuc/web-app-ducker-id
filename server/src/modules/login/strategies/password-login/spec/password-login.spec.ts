@@ -26,6 +26,7 @@ import {
 } from "@test/mocks/login-guards.mock";
 import { createLoginAuditServiceMock } from "@test/mocks/login-audit-service.mock";
 import { createLoginCompletionServiceMock } from "@test/mocks/login-completion-service.mock";
+import { createNotificationDispatcherMock } from "@test/mocks/notification-dispatcher.mock";
 import { buildUserWithAuth } from "@test/factories/user-with-auth.factory";
 import { PasswordLoginStrategy } from "../";
 import { ERROR_CODES } from "@/constants/error-code";
@@ -50,6 +51,7 @@ describe("PasswordLoginStrategy", () => {
   let failedAttemptsRepo: jest.Mocked<FailedAttemptsRepository>;
   let audit: jest.Mocked<LoginAuditService>;
   let completion: jest.Mocked<LoginCompletionService>;
+  let notifications: ReturnType<typeof createNotificationDispatcherMock>;
   let strategy: PasswordLoginStrategy;
 
   beforeEach(() => {
@@ -61,6 +63,7 @@ describe("PasswordLoginStrategy", () => {
     failedAttemptsRepo = createFailedAttemptsRepoMock();
     audit = createLoginAuditServiceMock();
     completion = createLoginCompletionServiceMock();
+    notifications = createNotificationDispatcherMock();
 
     strategy = new PasswordLoginStrategy(
       accountExists,
@@ -69,7 +72,8 @@ describe("PasswordLoginStrategy", () => {
       lockout,
       failedAttemptsRepo,
       audit,
-      completion
+      completion,
+      notifications
     );
 
     mockedWithRetry.mockImplementation(() => Promise.resolve());
@@ -149,6 +153,7 @@ describe("PasswordLoginStrategy", () => {
       req
     });
     expect(completion.complete).not.toHaveBeenCalled();
+    expect(notifications.notify).not.toHaveBeenCalled();
   });
 
   it("throws ACCOUNT_LOCKED when attempts reach threshold", async () => {
@@ -168,6 +173,12 @@ describe("PasswordLoginStrategy", () => {
     await expect(promise).rejects.toBeInstanceOf(TooManyRequestsError);
     await expect(promise).rejects.toMatchObject({
       code: ERROR_CODES.LOGIN_ACCOUNT_LOCKED
+    });
+    expect(notifications.notify).toHaveBeenCalledWith({
+      userId: "user-id-456",
+      type: "ACCOUNT_LOCKED",
+      params: { minutes: LOGIN_LOCKOUT.LOCKOUT_SECONDS / 60 },
+      link: "/login-history"
     });
   });
 

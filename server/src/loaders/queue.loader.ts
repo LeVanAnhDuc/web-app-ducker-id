@@ -1,8 +1,10 @@
 // types
 import type { Express } from "express";
 import type { SendEmailService } from "@/services/email/email.service";
+import type { NotificationDeliveryService } from "@/services/notification/notification.service";
 import type { QueueService } from "@/services/queue/queue.service";
 import type { EmailJobData } from "@/types/services/queue";
+import type { NotificationJobData } from "@/types/services/notification";
 // services
 import { createQueueModule } from "@/services/queue/queue.module";
 // others
@@ -12,16 +14,18 @@ const BULL_BOARD_PATH = "/admin/queues";
 
 export interface AppQueues {
   emailQueue: QueueService<EmailJobData> | null;
+  notificationQueue: QueueService<NotificationJobData> | null;
 }
 
 let closeQueuesFn: (() => Promise<void>) | null = null;
 
 export const loadQueues = (
   app: Express,
-  emailService: SendEmailService
+  emailService: SendEmailService,
+  notificationDelivery: NotificationDeliveryService
 ): AppQueues => {
-  const { emailQueue, bullBoardAdapter, closeQueues } =
-    createQueueModule(emailService);
+  const { emailQueue, notificationQueue, bullBoardAdapter, closeQueues } =
+    createQueueModule(emailService, notificationDelivery);
 
   closeQueuesFn = closeQueues;
 
@@ -31,7 +35,7 @@ export const loadQueues = (
 
   Logger.info("Queues loaded successfully");
 
-  return { emailQueue };
+  return { emailQueue, notificationQueue };
 };
 
 export const closeAllQueues = async (): Promise<void> => {

@@ -517,9 +517,24 @@ test.describe("Home — access", () => {
   );
 });
 
+/**
+ * The most recent instant (now or earlier) at which the clock in UTC+7 read
+ * `hh:mm`. Freezing the browser clock in the FUTURE makes the client treat the
+ * just-issued 15-minute access token as expired, and Home never renders — so
+ * the frozen time must never be ahead of the real one.
+ */
+function lastOccurrenceAt(hhmm: string): Date {
+  const today = new Date().toISOString().slice(0, 10);
+  const at = new Date(`${today}T${hhmm}:00+07:00`);
+  if (at.getTime() > Date.now()) at.setUTCDate(at.getUTCDate() - 1);
+  return at;
+}
+
 test.describe("Home — greeting", () => {
   // MORNING_ENDS = 12, AFTERNOON_ENDS = 18 (GreetingSection). Each time sits
-  // on one side of a boundary, in the browser's own timezone.
+  // on one side of a boundary, in the browser's timezone — pinned to UTC+7 so
+  // the result does not depend on the machine running the suite.
+  test.use({ timezoneId: "Asia/Ho_Chi_Minh" });
   const cases: [string, string, string][] = [
     ["00:00", "Chào buổi sáng", "first minute of the day"],
     ["11:59", "Chào buổi sáng", "last morning minute"],
@@ -533,8 +548,7 @@ test.describe("Home — greeting", () => {
       `greets by the local hour at ${time} (${label}) [BVA]`,
       { tag: "@TC-HOME-019" },
       async ({ page }) => {
-        const today = new Date().toISOString().slice(0, 10);
-        await page.clock.setFixedTime(new Date(`${today}T${time}:00+07:00`));
+        await page.clock.setFixedTime(lastOccurrenceAt(time));
         await stubStats(page);
         await page.goto(HOME_PATH);
         await expect(
@@ -555,8 +569,7 @@ test.describe("Home — greeting", () => {
       const fullName = me.ok()
         ? ((await me.json()) as { data: { fullName?: string } }).data.fullName
         : undefined;
-      const today = new Date().toISOString().slice(0, 10);
-      await page.clock.setFixedTime(new Date(`${today}T09:00:00+07:00`));
+      await page.clock.setFixedTime(lastOccurrenceAt("09:00"));
       await stubStats(page);
       await page.goto(HOME_EN);
       const heading = page.getByRole("heading", {

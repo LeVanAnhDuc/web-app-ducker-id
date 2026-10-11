@@ -7,8 +7,10 @@ import { ConflictRequestError, NotFoundError } from "@/common/exceptions";
 // dtos
 import { toAdminAppDto } from "../dtos";
 // others
+import { announceApp } from "./shared/announce-app";
 import { assertCategoriesExist } from "./shared/assert-categories-exist";
 import { toInternalStatus } from "../helpers";
+import { WEB_APP_STATUSES } from "../constants";
 import { ERROR_CODES } from "@/constants/error-code";
 
 export const updateApp = async (
@@ -69,6 +71,14 @@ export const updateApp = async (
       i18nMessage: (t) => t("webApp:errors.notFound"),
       code: ERROR_CODES.WEB_APP_NOT_FOUND
     });
+  }
+
+  // Only a hidden app being published is news; editing a live one is not.
+  if (
+    existing.status !== WEB_APP_STATUSES.ACTIVE &&
+    updated.status === WEB_APP_STATUSES.ACTIVE
+  ) {
+    await announceApp(deps, updated);
   }
 
   return toAdminAppDto(updated);

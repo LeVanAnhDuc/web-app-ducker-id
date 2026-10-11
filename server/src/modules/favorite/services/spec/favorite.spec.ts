@@ -2,10 +2,12 @@
 import type { FavoriteRepository } from "../../repository/favorite.repository";
 import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
 import type { AppFavoritableGuard } from "../../guards";
+import type { EntitlementRepository } from "@/modules/entitlement/repository/entitlement.repository";
 // commons
 import { NotFoundError } from "@/common/exceptions";
 // modules
 import { FavoriteService } from "../";
+import { AccessPolicy } from "@/modules/entitlement/services/access-policy";
 import { RequestContext } from "@/utils/request-context";
 
 const USER = "507f1f77bcf86cd799439011";
@@ -34,13 +36,19 @@ const makeDeps = () => {
   const guard = {
     assert: jest.fn().mockResolvedValue(undefined)
   };
+  // The real policy over a stubbed store, so the access rule itself runs.
+  const entitlementRepo = { findByUser: jest.fn().mockResolvedValue([]) };
+  const accessPolicy = new AccessPolicy(
+    entitlementRepo as unknown as EntitlementRepository
+  );
   const makeService = () =>
     new FavoriteService({
       favoriteRepo: favoriteRepo as unknown as FavoriteRepository,
       webAppRepo: webAppRepo as unknown as WebAppRepository,
-      favoritableGuard: guard as unknown as AppFavoritableGuard
+      favoritableGuard: guard as unknown as AppFavoritableGuard,
+      accessPolicy
     });
-  return { favoriteRepo, webAppRepo, guard, makeService };
+  return { favoriteRepo, webAppRepo, guard, entitlementRepo, makeService };
 };
 
 describe("FavoriteService", () => {
@@ -58,7 +66,7 @@ describe("FavoriteService", () => {
 
     await svc.add("app1");
 
-    expect(guard.assert).toHaveBeenCalledWith("app1", "user");
+    expect(guard.assert).toHaveBeenCalledWith("app1", USER, "user");
     expect(favoriteRepo.add).toHaveBeenCalledWith(USER, "app1");
   });
 
@@ -100,7 +108,7 @@ describe("FavoriteService", () => {
     expect(res.items.map((i) => i._id)).toEqual(["a", "b", "c"]);
     expect(res.items.every((i) => i.isFavorite)).toBe(true);
     expect(webAppRepo.findActiveByIds).toHaveBeenCalledWith(["a", "b", "c"], {
-      role: "user",
+      access: { role: "user", allowIds: [], denyIds: [] },
       search: undefined,
       categoryId: undefined
     });

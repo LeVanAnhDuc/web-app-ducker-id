@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 // types
 import type { AdminUser } from "@/types/AdminUsers";
 import type { WebApp } from "@/types/AdminApps";
+import type { UserAccess } from "@/types/AdminEntitlements";
 // components
 import {
   Table,
@@ -20,16 +21,16 @@ const EntitlementMatrixTable = ({
   users,
   apps,
   isEditing,
-  grantsByUser,
+  accessByUser,
   onCheckAllToggle
 }: {
   users: AdminUser[];
   apps: WebApp[];
   isEditing: boolean;
-  grantsByUser: Record<string, string[]>;
+  accessByUser: Record<string, UserAccess>;
   onCheckAllToggle: (
     user: AdminUser,
-    eligibleAppIds: string[],
+    appIds: string[],
     nextGranted: boolean
   ) => void;
 }) => {
@@ -65,7 +66,7 @@ const EntitlementMatrixTable = ({
               user={user}
               apps={apps}
               isEditing={isEditing}
-              grantedAppIds={grantsByUser[user._id] ?? []}
+              access={accessByUser[user._id]}
               onCheckAllToggle={onCheckAllToggle}
             />
           ))}

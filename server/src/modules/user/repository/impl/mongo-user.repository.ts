@@ -1,3 +1,5 @@
+// libs
+import { Types } from "mongoose";
 // types
 import type {
   UserDocument,
@@ -7,7 +9,8 @@ import type {
   PublicUserRecord,
   UserWithAuth,
   AdminUserAggregateRow,
-  AdminUsersFilter
+  AdminUsersFilter,
+  UserRole
 } from "@/modules/user/types";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { PaginationOptions } from "@/types/common";
@@ -220,6 +223,34 @@ export class MongoUserRepository implements UserRepository {
         .lean<{ authId: { toString(): string }; email: string }>()
         .exec();
       return doc ? { authId: doc.authId.toString(), email: doc.email } : null;
+    });
+  }
+
+  async findRolesByIds(userIds: string[]): Promise<UserRole[]> {
+    return asyncDatabaseHandler("findRolesByIds", async () => {
+      if (userIds.length === 0) return [];
+      const rows = await UserModel.aggregate<{
+        _id: Types.ObjectId;
+        role: string;
+      }>([
+        {
+          $match: { _id: { $in: userIds.map((id) => new Types.ObjectId(id)) } }
+        },
+        {
+          $lookup: {
+            from: "auths",
+            localField: "authId",
+            foreignField: "_id",
+            as: "auth"
+          }
+        },
+        { $unwind: "$auth" },
+        { $project: { _id: 1, role: "$auth.roles" } }
+      ]).exec();
+      return rows.map((row) => ({
+        userId: row._id.toString(),
+        role: row.role
+      }));
     });
   }
 }

@@ -43,9 +43,16 @@ suất) — in that order.
 
 ### Other
 
-- **Notifications** — 26 rows for `user@test.com`, titles padded with a unique
-  `(#N)` suffix and `isRead = (N-1) % 2 === 0`, so every padded title is
-  deterministically read or unread. See `helpers/notifications.ts`.
+- **Notifications** — 26 rows each for `user@test.com` and `admin@test.com`,
+  stored as `type + params + link` (no text). Rows 1–5 cover LOGIN_ANOMALY,
+  APP_AVAILABLE, PASSWORD_CHANGED (admin / self) and ACCOUNT_LOCKED; rows 6–26
+  are APP_AVAILABLE for "Seed App N", read when N is odd, so each renders a
+  unique sentence. The notifications suite reads #10 / #11 and consumes #12 /
+  #14 (put back to unread afterwards). See `helpers/notifications.ts`.
+- **Entitlement overrides** — `user2@test.com` (John Doe) is denied Notes and
+  allowed Operations Console (`entitlements.ts`); everyone else is on the role
+  default. Tests that write overrides do it to a throwaway account — every
+  grant / revoke notifies the user for real.
 - **Support requests** — 10, statuses mixed `new` / `processing` / `resolved`,
   one with no email.
 

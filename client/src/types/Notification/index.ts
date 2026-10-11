@@ -2,28 +2,32 @@
 import type { LucideIcon } from "lucide-react";
 // others
 import type NOTIF_GROUP from "@/constants/notifGroup";
+import type NOTIFICATION from "@/constants/notification";
 
-export type NotificationListTabValue = "unread" | "read";
+type ValueOf<T> = T[keyof T];
 
-export type NotificationPanelTab = "all" | "unread";
+export type ApiNotificationType = ValueOf<typeof NOTIFICATION.TYPE>;
+
+export type NotificationCategory = ValueOf<typeof NOTIFICATION.CATEGORY>;
+
+export type NotificationStatusTab = ValueOf<typeof NOTIFICATION.STATUS_TAB>;
+
+export type NotificationCategoryFilter =
+  | NotificationCategory
+  | typeof NOTIFICATION.CATEGORY_FILTER_ALL;
+
+export type NotificationPanelTab = Exclude<NotificationStatusTab, "read">;
 
 export type NotifGroup = (typeof NOTIF_GROUP)[keyof typeof NOTIF_GROUP];
 
-export type ApiNotificationType =
-  | "LOGIN_ANOMALY"
-  | "ACCOUNT_LOCKED"
-  | "APP_AVAILABLE"
-  | "ENTITLEMENT_GRANTED"
-  | "ENTITLEMENT_REVOKED"
-  | "PASSWORD_CHANGED"
-  | "SYSTEM_ANNOUNCEMENT";
+export type NotificationParams = Record<string, string | number>;
 
 export interface ApiNotification {
   id: string;
   type: ApiNotificationType;
-  title: string;
-  message: string;
-  meta: Record<string, unknown> | null;
+  category: NotificationCategory;
+  params: NotificationParams;
+  link: string | null;
   isRead: boolean;
   readAt: string | null;
   createdAt: string;
@@ -35,10 +39,16 @@ export interface NotificationListParams {
   page?: number;
   limit?: number;
   isRead?: boolean;
+  category?: NotificationCategory;
 }
 
 export interface NotificationVisual {
   icon: LucideIcon;
   iconBg: string;
   iconColor: string;
+}
+
+export interface NotificationCategoryOption {
+  value: NotificationCategoryFilter;
+  labelKey: "all" | NotificationCategory;
 }

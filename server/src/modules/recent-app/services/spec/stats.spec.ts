@@ -3,8 +3,10 @@ import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repo
 import type { FavoriteRepository } from "@/modules/favorite/repository/favorite.repository";
 import type { RecentAppRepository } from "../../repository/recent-app.repository";
 import type { RecentAppUsage } from "../../types";
+import type { EntitlementRepository } from "@/modules/entitlement/repository/entitlement.repository";
 // modules
 import { RecentAppService } from "../";
+import { AccessPolicy } from "@/modules/entitlement/services/access-policy";
 import { RECENT_APP_STATS } from "../../constants";
 import { RequestContext } from "@/utils/request-context";
 
@@ -67,7 +69,10 @@ const makeDeps = () => {
   const service = new RecentAppService({
     recentAppRepo: recentAppRepo as unknown as RecentAppRepository,
     webAppRepo: webAppRepo as unknown as WebAppRepository,
-    favoriteRepo: favoriteRepo as unknown as FavoriteRepository
+    favoriteRepo: favoriteRepo as unknown as FavoriteRepository,
+    accessPolicy: new AccessPolicy({
+      findByUser: jest.fn().mockResolvedValue([])
+    } as unknown as EntitlementRepository)
   });
   return { recentAppRepo, webAppRepo, service };
 };
@@ -108,7 +113,7 @@ describe("RecentAppService.stats", () => {
     const result = await service.stats({});
 
     expect(webAppRepo.findActiveByIds).toHaveBeenCalledWith([APP_A, APP_B], {
-      role: "user"
+      access: { role: "user", allowIds: [], denyIds: [] }
     });
     expect(recentAppRepo.findUsages).toHaveBeenCalledWith(USER, [APP_A]);
     expect(result.totalApps).toBe(1);

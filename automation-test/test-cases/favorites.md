@@ -307,3 +307,15 @@ cannot see (inactive, or admin-only for a user) is 404
   1. `search=<name>`, `search=zzz…`, `categoryId=<id>`.
 - **Expected:** the named app; `[]`; only favourites carrying the category.
 - **Automated:** `tests/api/favorites/favorites.api.ts`
+
+### TC-FAV-029 — A revoked favourite is hidden, not deleted, and returns on re-grant
+
+- **Requirement:** REQ-FAV-04
+- **Layer:** e2e · **Priority:** P2 · **Role:** throwaway user (+ admin API)
+- **Technique:** State Transition (starred → revoked → restored)
+- **Preconditions:** throwaway account with Notes starred
+- **Steps:**
+  1. Revoke Notes; open `/favorites`; remove the override; reload.
+- **Expected:** no Notes card and `GET /users/me/favorites` empty while
+  revoked; afterwards the card is back and the favourite still holds Notes.
+- **Automated:** `tests/e2e/apps/launcher-access.e2e.ts`

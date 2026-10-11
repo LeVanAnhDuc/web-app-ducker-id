@@ -96,7 +96,7 @@
 
 - Admin gán: `User × App → granted`.
 - Mỗi App có `requiredRoles` mặc định; admin có thể override per-user (grant ngoại lệ hoặc revoke).
-- Danh sách app ở `/apps` hiển thị app `ACTIVE` **lọc theo role** (auth-guarded): admin thấy toàn bộ catalog active; user thường chỉ thấy app có `user` trong `requiredRoles` (app admin-only bị ẩn). Lọc theo **per-user entitlement** (grant/revoke cá biệt) và **gating quyền launch** vẫn là follow-up — chưa áp ở list vòng này.
+- ✅ **Xong 05.10.2026** (`docs/specs/access-control/design.md`): quyền = mặc định theo role (admin đủ điều kiện mọi app) + override per-user `allow` / `deny`. Cùng một quy tắc áp ở `/apps`, header search, favorite, recent, thống kê home và `/oauth/authorize` — app bị revoke biến khỏi launcher và SSO trả `access_denied`.
 
 ### G6 — Asymmetric session lifecycle
 
@@ -147,7 +147,7 @@ Rõ ràng **KHÔNG** thuộc scope của Ducker ID:
 | Unlock               | `/auth/unlock/{request,verify}`                                                                                                                                                            | ✅ có                                  |
 | User Profile         | `GET/PATCH /users/me`, `POST /users/me/avatar`, `GET /users/:id`                                                                                                                           | ✅ có                                  |
 | **OAuth/OIDC**       | `/oauth/authorize`, `/oauth/token`, `/oauth/introspect`, `/oauth/revoke`, `/.well-known/openid-configuration`, `/.well-known/jwks.json`, `/oauth/userinfo`, `/oauth/logout` (RP-initiated) | ⚠️ **Core xong 26.09.2026** — authorize (kèm `prompt=none`) · token (Authorization Code + PKCE) · userinfo · discovery · JWKS · logout. ❌ còn thiếu: introspect, revoke, refresh grant, consent screen, back-channel logout. Xem `docs/specs/oidc-provider/design.md` |
-| **App Registry**     | `GET /apps` (user — catalog tất cả app `ACTIVE`, auth-guarded), `CRUD /admin/apps`, `CRUD /admin/apps/:id/entitlements`                                                                                    | ✅ user list (catalog) · ❌ entitlement-gated launch + admin entitlements CRUD (MVP-2) |
+| **App Registry**     | `GET /apps` (user — catalog tất cả app `ACTIVE`, auth-guarded), `CRUD /admin/apps`, `GET` + `PATCH /admin/entitlements`                                                                                    | ✅ user list (catalog) · ✅ entitlement-gated list + SSO, admin entitlements matrix (05.10.2026) |
 | **Favorites/Recent** | `POST/DELETE /users/me/favorites/:appId`, `GET /users/me/recent-apps`, `GET /users/me/recent-apps/stats`                                                                                    | ✅ có — favorites (06.2026), recent-apps kèm record / soft delete / restore (10.2026), stats (10.2026) |
 | Login History        | `GET /login-history` (mình), `GET /login-history/stats` (`range` 7d/30d/90d + `tz`), `GET /admin/login-history`                                                                             | ✅ có                                  |
 | Contact Admin        | `POST /contact/submit`, admin CRUD                                                                                                                                                         | ✅ có                                  |
@@ -230,7 +230,7 @@ Chi tiết version: `.claude/techstack/frontend.md`, `.claude/techstack/backend.
 | **MVP-1**   | OAuth/OIDC server                                                                                                               | Đủ Authorization Code + PKCE + consent + JWKS + introspection + RP-initiated logout + back-channel logout. Test bằng client giả lập.         | —                               |
 | **MVP-2**   | App registry + entitlement                                                                                                      | App model + admin CRUD UI + per-user entitlement + dashboard hiển thị app theo entitlement + Favorites/RecentlyUsed wired.                   | MVP-1 (để có client_id mapping) |
 | **MVP-3**   | Tách Blog thành satellite                                                                                                       | Scaffold project blog mới, migrate `apps/blog/*` ra src riêng, đăng ký Blog vào Ducker ID như app vệ tinh đầu tiên, validate end-to-end SSO flow. | MVP-1, MVP-2                    |
-| **MVP-4**   | UI polish + Admin tools                                                                                                         | Hoàn thiện admin force-logout, lock/unlock, reset-password override. ~~Loại bỏ Categories hardcoded~~ ✅ (04.10.2026, `category-management`). Notifications wire vào event thật.        | MVP-2                           |
+| **MVP-4**   | UI polish + Admin tools                                                                                                         | Hoàn thiện admin force-logout, lock/unlock, reset-password override. ~~Loại bỏ Categories hardcoded~~ ✅ (04.10.2026, `category-management`). ~~Notifications wire vào event thật~~ ✅ (05.10.2026, `notification-events` — realtime + admin announcements là hai feature tiếp theo).        | MVP-2                           |
 | **Backlog** | Discover algorithm, Billing thực, Anomaly detection nâng cao, OAuth provider khác (Google/GitHub login social) | —                                                                                                                                            | —                               |
 
 ---
@@ -240,7 +240,7 @@ Chi tiết version: `.claude/techstack/frontend.md`, `.claude/techstack/backend.
 - Payment gateway thực (Billing UI giữ làm placeholder).
 - Team collaboration (mời thành viên, vai trò owner/admin/member): **Non-Goal** — trái mô hình single-tenant (§5). Placeholder UI `/team` đã được gỡ bỏ.
 - Social login (Google/GitHub) — sẽ vào backlog sau MVP-4.
-- Push notification real-time (WebSocket/SSE) — Notifications hiện chỉ là inbox.
+- Push notification real-time (WebSocket/SSE) — Notifications sinh từ sự kiện thật nhưng client vẫn polling 60s; push là feature `notification-realtime`.
 - Mobile native app.
 - Multi-tenant / workspace isolation.
 - SCIM / directory sync với hệ thống ngoài.

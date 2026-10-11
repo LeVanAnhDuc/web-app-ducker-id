@@ -23,8 +23,9 @@ export const stats = async (
   const limit = query.limit ?? RECENT_APP_STATS.TOP_APPS_DEFAULT_LIMIT;
 
   const usedIds = await deps.recentAppRepo.findVisibleWebAppIds(userId);
+  const access = await deps.accessPolicy.resolveScope(userId, role);
   const apps = usedIds.length
-    ? await deps.webAppRepo.findActiveByIds(usedIds, { role })
+    ? await deps.webAppRepo.findActiveByIds(usedIds, { access })
     : [];
 
   const usages = await deps.recentAppRepo.findUsages(

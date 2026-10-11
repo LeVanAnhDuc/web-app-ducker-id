@@ -8,7 +8,10 @@ import CONSTANTS from "@/constants";
 const useUnreadCount = () =>
   useQuery({
     queryKey: [CONSTANTS.QUERY_KEYS.NOTIFICATIONS_UNREAD_COUNT],
-    queryFn: getUnreadCount
+    queryFn: getUnreadCount,
+    staleTime: 0,
+    refetchInterval: CONSTANTS.NOTIFICATION.UNREAD_POLL_MS,
+    refetchOnWindowFocus: true
   });
 
 export default useUnreadCount;

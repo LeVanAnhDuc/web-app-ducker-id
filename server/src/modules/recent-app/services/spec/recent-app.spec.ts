@@ -3,10 +3,12 @@ import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repo
 import type { FavoriteRepository } from "@/modules/favorite/repository/favorite.repository";
 import type { RecentAppRepository } from "../../repository/recent-app.repository";
 import type { RecentAppUsage } from "../../types";
+import type { EntitlementRepository } from "@/modules/entitlement/repository/entitlement.repository";
 // commons
 import { NotFoundError } from "@/common/exceptions";
 // modules
 import { RecentAppService } from "../";
+import { AccessPolicy } from "@/modules/entitlement/services/access-policy";
 import { RECENT_APP_CONFIG } from "../../constants";
 import { PAGINATION } from "@/common/pagination";
 import { RequestContext } from "@/utils/request-context";
@@ -53,12 +55,18 @@ const makeDeps = () => {
   const favoriteRepo = {
     findFavoritedAppIds: jest.fn().mockResolvedValue(new Set<string>())
   };
+  // The real policy over a stubbed store, so the access rule itself runs.
+  const entitlementRepo = { findByUser: jest.fn().mockResolvedValue([]) };
+  const accessPolicy = new AccessPolicy(
+    entitlementRepo as unknown as EntitlementRepository
+  );
   const service = new RecentAppService({
     recentAppRepo: recentAppRepo as unknown as RecentAppRepository,
     webAppRepo: webAppRepo as unknown as WebAppRepository,
-    favoriteRepo: favoriteRepo as unknown as FavoriteRepository
+    favoriteRepo: favoriteRepo as unknown as FavoriteRepository,
+    accessPolicy
   });
-  return { recentAppRepo, webAppRepo, favoriteRepo, service };
+  return { recentAppRepo, webAppRepo, favoriteRepo, entitlementRepo, service };
 };
 
 describe("RecentAppService", () => {
@@ -94,7 +102,7 @@ describe("RecentAppService", () => {
       await service.list({ search: "blo", page: 2, limit: 5 });
 
       expect(webAppRepo.findActiveByIds).toHaveBeenCalledWith([APP_A, APP_B], {
-        role: "user",
+        access: { role: "user", allowIds: [], denyIds: [] },
         search: "blo"
       });
       expect(recentAppRepo.findPage).toHaveBeenCalledWith(USER, [APP_A], {
@@ -133,6 +141,7 @@ describe("RecentAppService", () => {
     it("records an active app visible to the user", async () => {
       const { recentAppRepo, webAppRepo, service } = makeDeps();
       webAppRepo.findById.mockResolvedValue({
+        _id: { toString: () => APP_A },
         status: "ACTIVE",
         requiredRoles: ["user"]
       });
@@ -149,8 +158,22 @@ describe("RecentAppService", () => {
 
     it.each([
       ["missing", null],
-      ["inactive", { status: "INACTIVE", requiredRoles: ["user"] }],
-      ["admin-only", { status: "ACTIVE", requiredRoles: ["admin"] }]
+      [
+        "inactive",
+        {
+          _id: { toString: () => APP_A },
+          status: "INACTIVE",
+          requiredRoles: ["user"]
+        }
+      ],
+      [
+        "admin-only",
+        {
+          _id: { toString: () => APP_A },
+          status: "ACTIVE",
+          requiredRoles: ["admin"]
+        }
+      ]
     ])("rejects a %s app with NotFound and records nothing", async (_, app) => {
       const { recentAppRepo, webAppRepo, service } = makeDeps();
       webAppRepo.findById.mockResolvedValue(app);
@@ -159,6 +182,42 @@ describe("RecentAppService", () => {
         NotFoundError
       );
       expect(recentAppRepo.record).not.toHaveBeenCalled();
+    });
+
+    it("rejects an app the role grants once an override denies it", async () => {
+      const { recentAppRepo, webAppRepo, entitlementRepo, service } =
+        makeDeps();
+      webAppRepo.findById.mockResolvedValue({
+        _id: { toString: () => APP_A },
+        status: "ACTIVE",
+        requiredRoles: ["user"]
+      });
+      entitlementRepo.findByUser.mockResolvedValue([
+        { userId: USER, webAppId: APP_A, effect: "deny" }
+      ]);
+
+      await expect(service.recordLaunch(APP_A)).rejects.toBeInstanceOf(
+        NotFoundError
+      );
+      expect(entitlementRepo.findByUser).toHaveBeenCalledWith(USER);
+      expect(recentAppRepo.record).not.toHaveBeenCalled();
+    });
+
+    it("records an admin-only app granted to the user by an override", async () => {
+      const { recentAppRepo, webAppRepo, entitlementRepo, service } =
+        makeDeps();
+      webAppRepo.findById.mockResolvedValue({
+        _id: { toString: () => APP_A },
+        status: "ACTIVE",
+        requiredRoles: ["admin"]
+      });
+      entitlementRepo.findByUser.mockResolvedValue([
+        { userId: USER, webAppId: APP_A, effect: "allow" }
+      ]);
+
+      await service.recordLaunch(APP_A);
+
+      expect(recentAppRepo.record).toHaveBeenCalled();
     });
   });
 

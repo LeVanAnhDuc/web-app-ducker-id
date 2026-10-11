@@ -8,14 +8,17 @@ import { useTranslations } from "next-intl";
 // types
 import type { AdminUser } from "@/types/AdminUsers";
 import type { WebApp } from "@/types/AdminApps";
-import type { EntitlementMatrixFormValues } from "@/types/AdminEntitlements";
+import type {
+  EntitlementMatrixFormValues,
+  UserAccess
+} from "@/types/AdminEntitlements";
 // components
 import { TableCell, TableRow } from "@/components/ui/table";
 import CustomButton from "@/components/CustomButton";
 import EntitlementCell from "../EntitlementCell";
 // others
 import { cn } from "@/libs/utils";
-import { isAppEligibleForUser } from "@/utils";
+import { isRoleDefaultGranted } from "@/utils";
 
 const STICKY_USER_CELL_CLASS =
   "bg-card sticky left-0 z-10 border-r shadow-[2px_0_4px_-2px_rgba(0,0,0,0.15)]";
@@ -24,16 +27,16 @@ const EntitlementUserRow = ({
   user,
   apps,
   isEditing,
-  grantedAppIds,
+  access,
   onCheckAllToggle
 }: {
   user: AdminUser;
   apps: WebApp[];
   isEditing: boolean;
-  grantedAppIds: string[];
+  access: UserAccess | undefined;
   onCheckAllToggle: (
     user: AdminUser,
-    eligibleAppIds: string[],
+    appIds: string[],
     nextGranted: boolean
   ) => void;
 }) => {
@@ -44,16 +47,11 @@ const EntitlementUserRow = ({
     name: `grants.${user._id}` as FieldPath<EntitlementMatrixFormValues>
   }) as Record<string, boolean> | undefined;
 
-  const eligibleAppIds = apps
-    .filter((app) => isAppEligibleForUser(user, app))
-    .map((app) => app._id);
-  const hasEligibleApps = eligibleAppIds.length > 0;
-  const allEligibleChecked =
-    hasEligibleApps &&
-    eligibleAppIds.every((appId) => Boolean(rowValues?.[appId]));
+  const appIds = apps.map((app) => app._id);
+  const allChecked = appIds.every((appId) => Boolean(rowValues?.[appId]));
 
   const handleCheckAllToggle = () => {
-    onCheckAllToggle(user, eligibleAppIds, !allEligibleChecked);
+    onCheckAllToggle(user, appIds, !allChecked);
   };
 
   return (
@@ -81,8 +79,7 @@ const EntitlementUserRow = ({
               variant="ghost"
               size="icon-sm"
               className="ml-auto"
-              disabled={!hasEligibleApps}
-              aria-label={t(allEligibleChecked ? "uncheckAll" : "checkAll")}
+              aria-label={t(allChecked ? "uncheckAll" : "checkAll")}
               onClick={handleCheckAllToggle}
             >
               <CheckCheck className="size-4" aria-hidden="true" />
@@ -94,8 +91,8 @@ const EntitlementUserRow = ({
         <TableCell key={app._id} className="text-center">
           <EntitlementCell
             isEditing={isEditing}
-            granted={grantedAppIds.includes(app._id)}
-            eligible={isAppEligibleForUser(user, app)}
+            granted={access?.grantedAppIds.includes(app._id) ?? false}
+            roleDefault={isRoleDefaultGranted(access, app._id)}
             fieldName={`grants.${user._id}.${app._id}`}
             appName={app.displayName}
             userName={user.fullName}

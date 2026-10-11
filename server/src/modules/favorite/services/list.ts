@@ -19,8 +19,9 @@ export const list = async (
   const orderedIds = await deps.favoriteRepo.findWebAppIdsByUser(userId);
   if (orderedIds.length === 0) return { items: [] };
 
+  const access = await deps.accessPolicy.resolveScope(userId, role);
   const docs = await deps.webAppRepo.findActiveByIds(orderedIds, {
-    role,
+    access,
     search: query.search,
     categoryId: query.categoryId
   });

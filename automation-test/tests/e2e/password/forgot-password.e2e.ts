@@ -1,4 +1,5 @@
 import { test, expect } from "@fixtures";
+import { isDevBuild } from "@helpers/build";
 import type { Page } from "@playwright/test";
 import { createAccount, KNOWN_OTP } from "@helpers/accounts";
 import { plantCode } from "@helpers/redis";
@@ -365,13 +366,15 @@ test.describe("Forgot password — by magic link", () => {
     "opening a magic link verifies it exactly once",
     { tag: ["@TC-PWD-063"] },
     async ({ page }) => {
-      // BUG: BUG-005 — useForgotPasswordReset verifies the link in a mount effect with
-      // no once-guard; React StrictMode (dev) fires it twice, the two calls
-      // race (second may 401 → "link expired", or mint a second reset token
-      // that invalidates the first).
-      test.fail();
       const account = await createAccount({ tag: "fpui-once" });
       await page.goto(optionsUrl(account.email));
+      // BUG: BUG-005 — useForgotPasswordReset verifies the link in a mount effect with
+      // no once-guard; React StrictMode fires it twice, the two calls race
+      // (second may 401 → "link expired", or mint a second reset token that
+      // invalidates the first). StrictMode double effects exist in `next dev`
+      // only, so the defect is expected against a dev client and absent from
+      // a production build.
+      test.fail(await isDevBuild(page), "BUG-005 — dev-only double verify");
       await chooseOption(
         page,
         EN.magicOption,

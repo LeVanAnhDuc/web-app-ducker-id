@@ -7,6 +7,7 @@ import { ConflictRequestError } from "@/common/exceptions";
 // dtos
 import { toAdminAppCreatedDto } from "../dtos";
 // others
+import { announceApp } from "./shared/announce-app";
 import { assertCategoriesExist } from "./shared/assert-categories-exist";
 import {
   toInternalStatus,
@@ -61,6 +62,8 @@ export const createApp = async (
     tokenEndpointAuthMethod: authMethod,
     scopes: body.scopes ?? [...WEB_APP_DEFAULT_SCOPES]
   });
+
+  await announceApp(deps, doc);
 
   return toAdminAppCreatedDto(doc, clientSecret);
 };

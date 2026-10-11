@@ -655,3 +655,37 @@ checked by the server (see TC-OIDC-031).
 - **Expected:** the browser lands on the redirect URI with
   `error=login_required` and the state; `/login` is never navigated to.
 - **Automated:** `tests/e2e/oidc/sign-in.e2e.ts`
+
+### TC-OIDC-050 — Signing in to a revoked app is refused, and allowed after reset
+
+- **Requirement:** REQ-OIDC-10
+- **Layer:** e2e · **Priority:** P1 · **Role:** throwaway user (+ admin API)
+- **Technique:** Decision Table (role-granted × deny override)
+- **Preconditions:** throwaway account signed in; Notes revoked
+- **Steps:**
+  1. `GET /oauth/authorize` for Notes (PKCE S256); remove the override; repeat.
+- **Expected:** 302 with `error=access_denied`; then 302 to the redirect URI with a `code`.
+- **Automated:** `tests/e2e/apps/launcher-access.e2e.ts`
+
+### TC-OIDC-051 — An app granted beyond the role lets SSO through
+
+- **Requirement:** REQ-OIDC-10
+- **Layer:** e2e · **Priority:** P2 · **Role:** throwaway user (+ admin API)
+- **Technique:** Decision Table (role-withheld × allow override)
+- **Preconditions:** throwaway account signed in
+- **Steps:**
+  1. `GET /oauth/authorize` for Operations Console; grant it; repeat.
+- **Expected:** `error=access_denied`; then a `code`.
+- **Automated:** `tests/e2e/apps/launcher-access.e2e.ts`
+
+### TC-OIDC-052 — An admin signs in to a user-only app
+
+- **Requirement:** REQ-OIDC-10
+- **Layer:** e2e · **Priority:** P2 · **Role:** admin
+- **Technique:** Decision Table (role admin × app `[user]`)
+- **Preconditions:** admin session
+- **Steps:**
+  1. `GET /oauth/authorize` for Blog (`[user]` only).
+- **Expected:** 302 to `https://blog.example.com/auth/callback?code=…` — an
+  admin qualifies for every app (it used to get `access_denied`).
+- **Automated:** `tests/e2e/admin-entitlements/admin-sso.e2e.ts`

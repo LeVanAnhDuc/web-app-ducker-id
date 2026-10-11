@@ -65,7 +65,12 @@ const queryClient = new QueryClient({
     onError: queryErrorHandler
   }),
   mutationCache: new MutationCache({
-    onError: queryErrorHandler
+    // A mutation that shows its own, more specific error opts out with
+    // `meta: { skipGlobalErrorToast: true }` so the user does not get two.
+    onError: (error, _variables, _context, mutation) => {
+      if (mutation.meta?.skipGlobalErrorToast) return;
+      queryErrorHandler(error);
+    }
   }),
   defaultOptions: {
     queries: {

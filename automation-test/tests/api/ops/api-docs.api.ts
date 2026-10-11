@@ -89,7 +89,7 @@ test(
   "the OpenAPI document covers every mounted API module",
   { tag: "@TC-OPS-006" },
   async () => {
-    // BUG: BUG-024 — openapi.ts never registers login-history, notification, favorite, admin contacts or unlock — their routes are missing from /api-docs.
+    // BUG: BUG-024 — openapi.ts never registers login-history, favorite, admin contacts or unlock — their routes are missing from /api-docs.
     test.fail();
     const documented = Object.keys((await spec()).paths);
     const modules = [

@@ -25,7 +25,8 @@ icon, failure) stub `GET /apps` with `page.route`.
 **Server facts the cases rely on.** Page size 20 (client), `limit` 1…100,
 `page` ≥ 1 (Joi `integer().min(1)`), `search` ≤ 200 characters, `categoryId`
 must be a 24-hex ObjectId, unknown query keys are stripped. A user sees ACTIVE
-apps whose `requiredRoles` contain `user`; an admin sees every ACTIVE app.
+apps whose `requiredRoles` contain `user` (or are empty), adjusted by any
+per-user exception an admin made (TC-APPS-060…062); an admin sees every ACTIVE app.
 Header search asks for 5 results (`HEADER_SEARCH_RESULT_LIMIT`) after a 300 ms
 debounce. An empty result is `totalPages: 0`.
 
@@ -699,3 +700,42 @@ debounce. An empty result is `totalPages: 0`.
   1. List the catalogue.
 - **Expected:** every category has non-empty `name.en` and `name.vi`.
 - **Automated:** `tests/api/apps/apps.api.ts`
+
+## Access control (per-user exceptions)
+
+These run on a throwaway account (role `user`) whose overrides are written
+through the admin API and removed after every test — see
+`admin-entitlements.md` for how the role default and the exceptions combine.
+
+### TC-APPS-060 — A revoked app leaves /apps and returns when the override is removed
+
+- **Requirement:** REQ-APPS-01
+- **Layer:** e2e · **Priority:** P1 · **Role:** throwaway user (+ admin API)
+- **Technique:** State Transition (granted → revoked → default)
+- **Preconditions:** throwaway account on the role default
+- **Steps:**
+  1. Open `/apps`; revoke Notes; reload; remove the override; reload.
+- **Expected:** Notes shows, then is gone while Blog stays, then shows again.
+- **Automated:** `tests/e2e/apps/launcher-access.e2e.ts`
+
+### TC-APPS-061 — Searching for a revoked app finds nothing
+
+- **Requirement:** REQ-APPS-06, REQ-APPS-02
+- **Layer:** e2e · **Priority:** P2 · **Role:** throwaway user (+ admin API)
+- **Technique:** EP (exact name of a revoked app)
+- **Preconditions:** Notes revoked for the account
+- **Steps:**
+  1. Open `/apps?search=Notes`.
+- **Expected:** no Notes card.
+- **Automated:** `tests/e2e/apps/launcher-access.e2e.ts`
+
+### TC-APPS-062 — An admin-only app granted beyond the role appears
+
+- **Requirement:** REQ-APPS-01
+- **Layer:** e2e · **Priority:** P2 · **Role:** throwaway user (+ admin API)
+- **Technique:** Decision Table (role-withheld × allow override)
+- **Preconditions:** throwaway account on the role default
+- **Steps:**
+  1. Open `/apps`; grant Operations Console; reload.
+- **Expected:** no Operations Console card before the grant; its card after.
+- **Automated:** `tests/e2e/apps/launcher-access.e2e.ts`

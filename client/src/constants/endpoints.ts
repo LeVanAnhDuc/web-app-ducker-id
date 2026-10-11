@@ -60,6 +60,9 @@ const END_POINTS = {
   RECENT_APP_BY_APP_ID: "/users/me/recent-apps/:appId",
   RECENT_APP_RESTORE: "/users/me/recent-apps/:appId/restore",
 
+  // Entitlements (admin)
+  ADMIN_ENTITLEMENTS: "/admin/entitlements",
+
   // Users (admin)
   ADMIN_USERS: "/admin/users",
   ADMIN_USER_LOCK: "/admin/users/:id/lock",

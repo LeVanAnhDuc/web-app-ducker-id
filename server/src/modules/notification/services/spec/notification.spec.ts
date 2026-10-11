@@ -6,10 +6,11 @@ import { RequestContext } from "@/utils/request-context";
 
 const baseDoc = {
   _id: { toString: () => "n1" },
-  type: "SYSTEM_ANNOUNCEMENT",
-  title: "T",
-  message: "M",
-  meta: null,
+  type: "APP_AVAILABLE",
+  category: "app",
+  params: { appName: "Atlas" },
+  link: "/apps?search=Atlas",
+  dedupeKey: "app:1",
   isRead: false,
   readAt: null,
   createdAt: new Date("2026-06-09T00:00:00Z")
@@ -47,6 +48,32 @@ describe("NotificationService", () => {
     await svc.list({ isRead: false });
     expect(repo.findByUser).toHaveBeenCalledWith(
       { userId: USER, isRead: false },
+      expect.anything()
+    );
+  });
+
+  it("maps a document to the DTO without internal fields", async () => {
+    const repo = makeRepo();
+    const svc = new NotificationService(repo);
+    const res = await svc.list({});
+    expect(res.items[0]).toEqual({
+      id: "n1",
+      type: "APP_AVAILABLE",
+      category: "app",
+      params: { appName: "Atlas" },
+      link: "/apps?search=Atlas",
+      isRead: false,
+      readAt: null,
+      createdAt: "2026-06-09T00:00:00.000Z"
+    });
+  });
+
+  it("passes the category filter through", async () => {
+    const repo = makeRepo();
+    const svc = new NotificationService(repo);
+    await svc.list({ category: "security" });
+    expect(repo.findByUser).toHaveBeenCalledWith(
+      { userId: USER, category: "security" },
       expect.anything()
     );
   });

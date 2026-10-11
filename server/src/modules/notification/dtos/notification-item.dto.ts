@@ -1,15 +1,17 @@
 // types
 import type {
+  NotificationCategory,
   NotificationDocument,
+  NotificationParams,
   NotificationType
 } from "@/modules/notification/types";
 
 export interface NotificationItemDto {
   id: string;
   type: NotificationType;
-  title: string;
-  message: string;
-  meta: Record<string, unknown> | null;
+  category: NotificationCategory;
+  params: NotificationParams;
+  link: string | null;
   isRead: boolean;
   readAt: string | null;
   createdAt: string;
@@ -20,9 +22,9 @@ export const toNotificationItemDto = (
 ): NotificationItemDto => ({
   id: doc._id.toString(),
   type: doc.type,
-  title: doc.title,
-  message: doc.message,
-  meta: doc.meta,
+  category: doc.category,
+  params: doc.params ?? {},
+  link: doc.link ?? null,
   isRead: doc.isRead,
   readAt: doc.readAt ? doc.readAt.toISOString() : null,
   createdAt: doc.createdAt.toISOString()
