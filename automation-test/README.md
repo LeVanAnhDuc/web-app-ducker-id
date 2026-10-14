@@ -1,88 +1,64 @@
-# Ducker ID — automation tests
+# web-app-ducker-id-automation-test
 
-The regression suite for Ducker ID: UI end-to-end tests in a real browser and
-API tests over HTTP, both with Playwright, both against the real stack (Next.js
-client, Express API, MongoDB, Redis). It runs **when you ask it to** — it is not
-wired to CI or to commits.
+Bộ regression E2E Playwright cho **Ducker ID**: test UI trên trình duyệt thật và test API qua HTTP, cả hai chạy với stack
+thật (client Next.js, API Express, MongoDB, Redis) trên một database seed riêng. Chỉ chạy **khi bạn gọi** — không gắn
+vào CI hay commit. Unit test của server nằm cạnh code (`cd server && pnpm test`).
 
-Server unit tests are not here; they live beside the code (`cd server && pnpm test`).
+Quy ước đầy đủ (cấu trúc, phân lớp, tag, format, luật cứng): `CLAUDE.md`. Mỗi thư mục trong `src/` có `README.md` riêng.
 
-## Quick start
+## Bắt đầu
 
 ```bash
-# 1. the app (two terminals) + seed data
-cd server && pnpm dev            # API on :5000
-cd client && pnpm dev            # client on :3000
-cd server && pnpm seed
-
-# 2. the suite
-cd automation-test
 pnpm install --frozen-lockfile
 pnpm exec playwright install chromium
-cp .env.example .env             # REDIS_URL / MONGO_URL = the server's
-
-pnpm test                        # everything
-pnpm test:smoke                  # @smoke only, a few minutes
-pnpm report                      # last HTML report
+cp .env.example .env          # chỉ override: cổng 3600/5600, DB_NAME=ducker-id-e2e
+pnpm test:unit                # config đọc được từ client + server
+pnpm test:smoke               # cần stack e2e đang chạy — src/docs/test-plan.md §1
 ```
 
-| Command                         | What                                                           |
-| ------------------------------- | -------------------------------------------------------------- |
-| `pnpm test`                     | setup → e2e + api → cleanup                                    |
-| `pnpm test:e2e` / `test:api`    | one layer                                                      |
-| `pnpm test tests/e2e/<module>`  | one module                                                     |
-| `pnpm test -g "@TC-AUTH-014"`   | one test case                                                  |
-| `pnpm test:headed` / `test:ui`  | visible browser / Playwright UI mode                           |
-| `pnpm coverage:check [--write]` | requirement ↔ test case ↔ spec check, regenerates the matrix |
-| `pnpm type-check`               | TypeScript                                                     |
+URL, API prefix, Redis, MongoDB và tài khoản seed **không khai ở đây**: suite đọc từ `client/.env(.local)`,
+`server/.env` (hoặc `.env.example` của chúng) và seeder `server/src/database/seeders/data/users.ts`.
 
-## Layout
+Viết test cho một module: mở Claude Code trong thư mục này rồi gõ `/write-tests <module>`.
+
+## Bố cục
 
 ```
-automation-test/
-├── docs/
-│   ├── test-strategy.md          scope, levels, environments, entry/exit criteria, risks
-│   ├── test-plan.md              running, triage, reporting, keeping the suite current
-│   ├── requirements.md           REQ-<MODULE>-NN — what must be proven
-│   ├── traceability-matrix.md    REQ ↔ TC ↔ spec (generated)
-│   ├── test-design-techniques.md coverage rubric + EP / BVA / DT / ST / EG
-│   ├── test-data.md              seed accounts and data, throwaway accounts, planted codes
-│   └── conventions.md            naming, roles, tags, test-case format
-├── test-cases/<module>.md        TC-<MODULE>-NNN, one file per module
-├── defects/bug-log.md            app defects found, open and fixed
-├── reports/                      run summaries (TEMPLATE.md); html/ is gitignored
-├── fixtures/index.ts             role fixtures: user / admin / guest, page and API
-├── helpers/                      env, Redis (planted codes, rate limits), accounts, domain helpers
-├── scripts/coverage-check.ts
-├── tests/
-│   ├── setup/                    log in user + admin once; cleanup afterwards
-│   ├── e2e/<module>/*.e2e.ts
-│   └── api/<module>/*.api.ts
-└── playwright.config.ts
+src/docs/       requirements/<module>.md (REQ-*), decisions/<module>.md, traceability-matrix.md (sinh tự động),
+                test-strategy, test-plan, test-design-techniques, test-data, runs/
+src/test-cases/ <module>.md (TC-*)
+src/defects/    <module>.md (BUG-*, đang mở / đã sửa)
+src/config/ utils/ data/ api/ components/ pages/ fixtures/    code test, phân lớp theo CLAUDE.md
+src/tests/      e2e/<module>/*.e2e.ts · api/<module>/*.api.ts · setup/ · seed.spec.ts
 ```
 
-## Writing a test
+## Viết một test
 
 ```ts
-import { test, expect } from "@fixtures";
+import { test, expect } from "@/fixtures";
 
-test.use({ role: "admin" }); // default "user"; "guest" = no session
+test.use({ role: "guest" });
 
 test(
-  "admin locks an account",
-  { tag: ["@TC-ADMUSERS-010", "@smoke"] },
-  async ({ page, guestApi }) => {
-    // …
+  "a wrong password and an unknown email get the same answer",
+  { tag: ["@TC-AUTH-027"] },
+  async ({ newApi }) => {
+    const api = await newApi();
+    const res = await api.auth.login("nobody@e2e.example.com", "Wrong@1234");
+    expect(res.status()).toBe(401);
   }
 );
 ```
 
-Read `docs/conventions.md` before adding one: seeded accounts are read-only,
-state-changing tests use `createAccount()`, and every test is tagged with the
-test case it proves.
+Mỗi test gắn mã test case nó chứng minh; `pnpm coverage:check` kiểm REQ ↔ TC ↔ spec ↔ bug và `@smoke` ⇔ P0.
 
-## Feature work
-
-A feature branch adds its requirements to `docs/requirements.md`, its test
-cases to `test-cases/<module>.md` and its specs under `tests/` — in the same PR
-as the code. See `docs/test-plan.md` → "Keeping the suite current".
+| Lệnh                               | Chạy gì                        |
+| ---------------------------------- | ------------------------------ |
+| `pnpm test`                        | session → e2e + api → teardown |
+| `pnpm test:smoke`                  | chỉ `@smoke` (mọi case P0)     |
+| `pnpm test:e2e` / `pnpm test:api`  | một tầng                       |
+| `pnpm test src/tests/e2e/<module>` | một module                     |
+| `pnpm test -g "@TC-AUTH-014"`      | một test case                  |
+| `pnpm test:unit`                   | unit test `config/`, `utils/`  |
+| `pnpm coverage:check [--write]`    | truy vết, sinh lại matrix      |
+| `pnpm typecheck` / `pnpm report`   | TypeScript / HTML report       |
