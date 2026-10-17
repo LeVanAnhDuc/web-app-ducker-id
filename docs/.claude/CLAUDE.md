@@ -28,5 +28,5 @@ Folder `docs/` chứa 4 nhóm tài liệu source-of-truth:
 
 - `specs/<feature-name>/` chứa tài liệu thiết kế 1 feature: `design.md` (brainstorm) + `plan.md` + `security-report.md` (khi cần)
 - Source-of-truth cho scope/flow từng feature; mọi feature mới tạo folder ở đây
-- **Test không nằm ở đây nữa** (từ 2026-10-10): requirement, test case, spec và bug log của feature ghi vào `automation-test/` — `docs/requirements.md`, `test-cases/<module>.md`, `tests/{e2e,api}/<module>/`, `defects/bug-log.md`. `design.md` chỉ link tới các TC ID. Không tạo `e2e.md` / `e2e-bugs.md` mới.
+- **Test không nằm ở đây nữa** (từ 2026-10-10): requirement, test case, spec và bug log của feature ghi vào `automation-test/src/` — `docs/requirements/<module>.md`, `test-cases/<module>.md`, `tests/{e2e,api}/<module>/`, `defects/<module>.md` (quy ước: `automation-test/CLAUDE.md`). `design.md` chỉ link tới các TC ID. Không tạo `e2e.md` / `e2e-bugs.md` mới.
 - Lifecycle artifact (design → plan → security-report) do skill / superpowers flow sinh ra — xem `.claude/CLAUDE.md` và skill `e2e-scenario-coverage`.

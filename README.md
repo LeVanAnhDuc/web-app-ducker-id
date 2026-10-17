@@ -103,7 +103,7 @@ These have a user interface but no working backend, or are named in `docs/projec
 | --------- | ------------------------------------------------------------------------------------------------------------------------ |
 | Client    | Next.js 15.3 (App Router) · React 19 · TypeScript 5 · Tailwind CSS v4 · shadcn/ui + Radix · TanStack Query 5 · Zustand 5 · React Hook Form 7 + Zod 4 · next-intl 4 · Axios · Framer Motion |
 | Server    | Node.js · Express 4 · TypeScript 5 · MongoDB with Mongoose 8 · Redis + BullMQ · JWT + bcrypt · Joi 17 · i18next · Nodemailer + React Email · Winston · Swagger UI |
-| Testing   | Jest 30 + ts-jest on the server — **86 suites / 672 tests, all passing**. Playwright 1.60 in `automation-test/` — **1069 tests** (701 UI E2E + 368 API) proving 808 test cases over 100 requirements; last full run 2026-10-11: 0 unexpected failures, 37 expected failures marking open bugs (needs a running client, server, MongoDB and Redis — see `automation-test/README.md`) |
+| Testing   | Jest 30 + ts-jest on the server — **86 suites / 672 tests, all passing**. Playwright 1.60 in `automation-test/` — **1306 tests** (776 UI E2E + 529 API + seed) proving 992 test cases over 149 requirements, plus 32 unit tests of its own config; last run 2026-10-15, module by module: 0 unexpected failures, 63 expected failures marking 53 open bugs (needs a running client, server, MongoDB and Redis — see `automation-test/README.md`) |
 | Tooling   | pnpm · ESLint · Prettier · Husky pre-commit running lint-staged in both `client/` and `server/`                 |
 
 ## Running
@@ -144,8 +144,8 @@ cd server && pnpm test     # Jest unit tests — no database needed
 
 cd automation-test         # Playwright regression suite — needs client, server, MongoDB and Redis up and the DB seeded
 pnpm install && pnpm exec playwright install chromium
-cp .env.example .env       # REDIS_URL / MONGO_URL = the server's
-pnpm test                  # or test:smoke, test:e2e, test:api — see automation-test/README.md
+cp .env.example .env       # overrides only — URLs, Redis and Mongo are read from client/ and server/
+pnpm test                  # or test:smoke, test:e2e, test:api, test:unit — see automation-test/README.md
 ```
 
 ## Project structure
@@ -186,11 +186,9 @@ pnpm test                  # or test:smoke, test:e2e, test:api — see automatio
 │   ├── test/                   # Jest factories, helpers and mocks
 │   └── postman-collection.json
 ├── automation-test/            # Playwright regression suite: UI e2e + API, run on request
-│   ├── docs/                   # Test strategy, plan, requirements, traceability, conventions
-│   ├── test-cases/             # Test cases per module (TC-<MODULE>-NNN)
-│   ├── tests/{setup,e2e,api}/  # Specs
-│   ├── fixtures/ helpers/      # Role fixtures; Redis/Mongo test-data helpers
-│   └── defects/ reports/       # Bug log; run summaries
+│   ├── CLAUDE.md               # Suite conventions (layers, tags, formats, hard rules)
+│   └── src/                    # docs/ (requirements + decisions per module), test-cases/, defects/,
+│                               # config/ utils/ data/ api/ stores/ pages/ components/ fixtures/, tests/{setup,e2e,api}/
 ├── docs/
 │   ├── project-goals.md        # Scope, goals, non-goals, MVP roadmap
 │   ├── erd.md                  # Target MongoDB schema

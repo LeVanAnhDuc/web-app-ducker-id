@@ -1,19 +1,21 @@
 {
   "name": "web-app-ducker-id-automation-test",
   "private": true,
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Ducker ID regression suite — UI E2E and API tests (Playwright)",
   "packageManager": "pnpm@10.32.1",
   "scripts": {
-    "test": "playwright test",
-    "test:e2e": "playwright test --project=e2e",
-    "test:api": "playwright test --project=api",
-    "test:smoke": "playwright test --grep @smoke",
+    "test": "playwright test --project=app*",
+    "test:smoke": "playwright test --project=app* --grep @smoke",
+    "test:full": "cross-env FULL=1 playwright test --project=app*",
+    "test:e2e": "playwright test --project=app* src/tests/e2e",
+    "test:api": "playwright test --project=app* src/tests/api",
+    "test:unit": "playwright test --project=unit",
     "test:ui": "playwright test --ui",
-    "test:headed": "playwright test --project=e2e --headed",
-    "report": "playwright show-report reports/html",
+    "test:headed": "playwright test --project=app* src/tests/e2e --headed",
     "coverage:check": "tsx scripts/coverage-check.ts",
-    "type-check": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "report": "playwright show-report",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
@@ -33,6 +35,7 @@
     "prettier": "3.5.3",
     "redis": "4.7.1",
     "tsx": "4.20.6",
-    "typescript": "5.8.3"
+    "typescript": "5.8.3",
+    "cross-env": "7.0.3"
   }
 }

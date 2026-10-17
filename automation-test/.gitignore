@@ -2,5 +2,7 @@ node_modules/
 .env
 .auth/
 test-results/
-reports/html/
+playwright-report/
+blob-report/
 playwright/.cache/
+.playwright-mcp/

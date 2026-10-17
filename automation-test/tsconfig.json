@@ -11,11 +11,9 @@
     "types": ["node"],
     "baseUrl": ".",
     "paths": {
-      "@fixtures": ["fixtures/index.ts"],
-      "@helpers/*": ["helpers/*"],
-      "@data/*": ["data/*"]
+      "@/*": ["src/*"]
     }
   },
   "include": ["**/*.ts"],
-  "exclude": ["node_modules", "reports", "test-results"]
+  "exclude": ["node_modules", "playwright-report", "test-results"]
 }
