@@ -7,6 +7,7 @@ import type {
   SubmitContactBody
 } from "../types";
 import type {
+  AdminContactDetailItemDto,
   ContactDetailItemDto,
   ContactListItemDto,
   SubmitContactResponseDto,
@@ -24,8 +25,11 @@ import { updateContactStatus } from "./update-contact-status";
 export class ContactAdminService {
   constructor(private readonly contactRepo: ContactRepository) {}
 
-  submitContact(body: SubmitContactBody): Promise<SubmitContactResponseDto> {
-    return submitContact(this.contactRepo, body);
+  submitContact(
+    body: SubmitContactBody,
+    ipAddress: string | null
+  ): Promise<SubmitContactResponseDto> {
+    return submitContact(this.contactRepo, body, ipAddress);
   }
 
   getContactList(
@@ -34,7 +38,7 @@ export class ContactAdminService {
     return getContactList(this.contactRepo, query);
   }
 
-  getContactDetail(id: string): Promise<ContactDetailItemDto> {
+  getContactDetail(id: string): Promise<AdminContactDetailItemDto> {
     return getContactDetail(this.contactRepo, id);
   }
 

@@ -333,9 +333,8 @@ test.describe("PKCE and code lifecycle", () => {
     "A token request that leaves out redirect_uri is refused",
     { tag: ["@TC-OIDC-054", "@needs-session"] },
     async () => {
-      // /oauth/token only compares redirect_uri when the request sends one, so leaving it out redeems the code (RFC 6749 §4.1.3: REQUIRED when the authorize request carried it).
-      // BUG: defects/oidc.md#bug-oidc-06
-      test.fail();
+      // RFC 6749 §4.1.3: redirect_uri is REQUIRED when the authorize request
+      // carried it (fixed BUG-OIDC-06).
       const got = await obtainCode(me.ctx, conf);
       // Everything a valid exchange carries except redirect_uri.
       const res = await me.api.oauth.token({
@@ -424,9 +423,8 @@ test.describe("code_verifier length follows RFC 7636 (43…128)", () => {
       `a ${length}-character verifier is rejected`,
       { tag: ["@TC-OIDC-031", "@needs-session"] },
       async () => {
-        // the server never checks code_verifier length (RFC 7636 §4.1: 43–128) — any length redeems.
-        // BUG: defects/oidc.md#bug-oidc-03
-        test.fail();
+        // RFC 7636 §4.1: a code_verifier is 43–128 characters
+        // (fixed BUG-OIDC-03).
         const got = await obtainCode(me.ctx, pub, {}, makeVerifier(length));
         const res = await me.api.oauth.exchangeCode({
           client: pub,

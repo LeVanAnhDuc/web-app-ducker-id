@@ -80,7 +80,8 @@
   "link": {
     "forgotPassword": "Quên mật khẩu?",
     "descriptionSignUp": "Chưa có tài khoản",
-    "signUp": "Tạo tài khoản"
+    "signUp": "Tạo tài khoản",
+    "unlockAccount": "Mở khoá tài khoản"
   },
   "announce": {
     "signingIn": "Đang đăng nhập...",
@@ -93,6 +94,22 @@
     "linkSendError": "Không thể gửi magic link.",
     "verifying": "Đang xác thực...",
     "verifyingLink": "Đang xác thực magic link...",
-    "linkInvalid": "Link không hợp lệ hoặc đã hết hạn. Đang chuyển về trang đăng nhập..."
+    "linkInvalid": "Link không hợp lệ hoặc đã hết hạn. Đang chuyển về trang đăng nhập...",
+    "unlockSending": "Đang gửi email mở khoá...",
+    "unlockSent": "Đã gửi email mở khoá. Hãy kiểm tra hộp thư.",
+    "unlocking": "Đang mở khoá tài khoản..."
+  },
+  "unlock": {
+    "title": "Mở khoá tài khoản",
+    "description": "Tài khoản bị khoá do nhập sai mật khẩu quá nhiều lần. Chúng tôi có thể gửi mật khẩu tạm qua email để mở khoá.",
+    "sentDescription": "Nhập mật khẩu tạm đã gửi tới email của bạn. Bạn sẽ đặt mật khẩu mới ngay sau đó.",
+    "labelTempPassword": "Mật khẩu tạm",
+    "placeholderTempPassword": "Nhập mật khẩu tạm",
+    "button": {
+      "request": "Gửi mật khẩu tạm qua email",
+      "verify": "Mở khoá và đăng nhập",
+      "resend": "Gửi lại email",
+      "backToLogin": "Quay lại đăng nhập"
+    }
   }
 }

@@ -14,12 +14,18 @@
     "messageTooShort": "Message must be at least 20 characters",
     "messageTooLong": "Message must not exceed 5000 characters",
     "ticketGenerationFailed": "Unable to generate ticket number. Please try again",
-    "notFound": "Contact request not found"
+    "notFound": "Contact request not found",
+    "invalidId": "Invalid contact request id",
+    "statusRequired": "Status is required",
+    "statusInvalid": "Invalid contact status"
   },
   "success": {
     "submitted": "Your request has been submitted successfully",
     "updateContactCategory": "Category updated successfully",
     "getMyContacts": "Contacts retrieved successfully",
-    "getMyContactDetail": "Contact detail retrieved successfully"
+    "getMyContactDetail": "Contact detail retrieved successfully",
+    "getContactList": "Contact requests retrieved successfully",
+    "getContactDetail": "Contact request retrieved successfully",
+    "updateContactStatus": "Contact status updated successfully"
   }
 }

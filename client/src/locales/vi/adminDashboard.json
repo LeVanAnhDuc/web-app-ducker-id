@@ -7,6 +7,10 @@
       "title": "Đăng ký ứng dụng",
       "description": "Đăng ký app vệ tinh, quản lý client credential và redirect URI."
     },
+    "categories": {
+      "title": "Danh mục",
+      "description": "Tạo, đổi tên và sắp xếp danh mục dùng để phân loại ứng dụng trong launcher."
+    },
     "entitlements": {
       "title": "Phân quyền truy cập",
       "description": "Cấp hoặc thu hồi quyền truy cập app theo từng người dùng."

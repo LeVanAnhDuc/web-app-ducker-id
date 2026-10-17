@@ -183,8 +183,8 @@ const AdminAppsTable = () => {
         hasActiveFilters={hasActiveFilters}
         onClearFilters={query.clearFilters}
         skeleton={<AdminAppsLoading />}
-        emptyTitle={tTable("empty")}
-        emptyDescription={tTable("emptyCta")}
+        emptyTitle={hasActiveFilters ? undefined : tTable("empty")}
+        emptyDescription={hasActiveFilters ? undefined : tTable("emptyCta")}
       >
         <CustomTable
           fullHeight

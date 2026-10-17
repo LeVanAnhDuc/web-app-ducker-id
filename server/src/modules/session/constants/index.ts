@@ -32,3 +32,12 @@ export const SESSION_COOKIE_OPTIONS: CookieOptions = {
   maxAge: SESSION_CONFIG.TTL_SECONDS * 1000,
   path: "/"
 } as const;
+
+/**
+ * Same attributes minus `maxAge`. Express 4's clearCookie lets a passed
+ * `maxAge` override its own `expires: new Date(1)`, which would send
+ * "sid=; Max-Age=604800" — an empty cookie living 7 more days (BUG-OIDC-05).
+ */
+const { maxAge: _sessionMaxAge, ...sessionClearOptions } =
+  SESSION_COOKIE_OPTIONS;
+export const SESSION_CLEAR_COOKIE_OPTIONS: CookieOptions = sessionClearOptions;

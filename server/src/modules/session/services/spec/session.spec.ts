@@ -3,7 +3,11 @@ import type { Response } from "express";
 import type { SessionRecord } from "../../types";
 import type { SessionRepository } from "../../repository/session.repository";
 // others
-import { SESSION_COOKIE, SESSION_COOKIE_OPTIONS } from "../../constants";
+import {
+  SESSION_COOKIE,
+  SESSION_COOKIE_OPTIONS,
+  SESSION_CLEAR_COOKIE_OPTIONS
+} from "../../constants";
 import { makeMockRequest } from "@test/helpers/request.helper";
 import { SessionService } from "../";
 
@@ -191,7 +195,7 @@ describe("SessionService.end", () => {
     expect(repo.destroy).toHaveBeenCalledWith(SID);
     expect(res.clearCookie).toHaveBeenCalledWith(
       SESSION_COOKIE,
-      SESSION_COOKIE_OPTIONS
+      SESSION_CLEAR_COOKIE_OPTIONS
     );
   });
 
@@ -204,7 +208,18 @@ describe("SessionService.end", () => {
     expect(repo.destroy).not.toHaveBeenCalled();
     expect(res.clearCookie).toHaveBeenCalledWith(
       SESSION_COOKIE,
-      SESSION_COOKIE_OPTIONS
+      SESSION_CLEAR_COOKIE_OPTIONS
     );
+  });
+
+  it("clears the cookie without a maxAge, so it expires now", async () => {
+    const { service } = setup();
+    const res = makeRes();
+
+    await service.end(withCookies({ [SESSION_COOKIE]: SID }), res);
+
+    const [, options] = res.clearCookie.mock.calls[0];
+    expect(options).not.toHaveProperty("maxAge");
+    expect(options).toMatchObject({ httpOnly: true, path: "/" });
   });
 });

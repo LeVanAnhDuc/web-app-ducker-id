@@ -240,9 +240,7 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/settings.md
 - **Tiền điều kiện:** notification đã seed
 - **Bước:**
   1. Mở `/notifications`; kiểm tra article đầu tiên.
-- **Mong đợi:** một `time[datetime]`. **Bug đã biết** — thời gian tương đối là
-  một `<span>` trơn (việc tiếp theo mà feature locale-time-format đã ghi nhận
-  nhưng chưa bao giờ làm); spec đánh dấu `test.fail`.
+- **Mong đợi:** một `time[datetime]`. BUG-SETTINGS-01 (đã sửa 2026-10-15) — thời gian tương đối từng là một `<span>` trơn.
 - **Automated:** `tests/e2e/settings/datetime-format.e2e.ts`
 
 ### TC-SETTINGS-034 — The app language decides the date format, not the browser's

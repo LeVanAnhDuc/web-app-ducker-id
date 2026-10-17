@@ -1,3 +1,5 @@
+// libs
+import type { ReactNode } from "react";
 // others
 import { cn } from "@/libs/utils";
 
@@ -11,7 +13,7 @@ const NotificationItemText = ({
   titleId: string;
   title: string;
   body: string;
-  time: string;
+  time: ReactNode;
   isRead: boolean;
 }) => (
   <div className="min-w-0 flex-1">

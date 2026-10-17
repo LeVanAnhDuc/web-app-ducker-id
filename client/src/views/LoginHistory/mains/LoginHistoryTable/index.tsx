@@ -5,6 +5,7 @@ import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 // types
 import type { LoginHistoryQueryParams } from "@/types/LoginHistory";
+import type { LeafKeyOf, LoginHistoryMessages } from "@/types/libs";
 // components
 import PageShell from "@/components/PageContainer/PageShell";
 import PageToolbar from "@/components/PageContainer/PageToolbar";
@@ -30,6 +31,8 @@ import {
   isLoginHistoryDeviceType
 } from "@/utils";
 
+type LoginFailReasonKey = LeafKeyOf<LoginHistoryMessages["failReason"]>;
+
 const LoginHistoryTable = () => {
   const tTable = useTranslations("loginHistory.table");
   const tStatus = useTranslations("loginHistory.status");
@@ -38,6 +41,7 @@ const LoginHistoryTable = () => {
   const tLocation = useTranslations("loginHistory.location");
   const tApp = useTranslations("loginHistory.app");
   const tDevice = useTranslations("loginHistory.deviceType");
+  const tFailReason = useTranslations("loginHistory.failReason");
   const appOptions = useLoginAppOptions();
 
   const filterDefs = useMemo(
@@ -49,8 +53,19 @@ const LoginHistoryTable = () => {
   );
 
   const columns = useMemo(
-    () => buildLoginHistoryColumns(tTable, tStatus, tMethod, tLocation, tApp),
-    [tTable, tStatus, tMethod, tLocation, tApp]
+    () =>
+      buildLoginHistoryColumns(
+        tTable,
+        tStatus,
+        tMethod,
+        tLocation,
+        tApp,
+        (reason) =>
+          tFailReason.has(reason as LoginFailReasonKey)
+            ? tFailReason(reason as LoginFailReasonKey)
+            : reason
+      ),
+    [tTable, tStatus, tMethod, tLocation, tApp, tFailReason]
   );
 
   const query = useListQuery(filterDefs);

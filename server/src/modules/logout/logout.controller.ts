@@ -5,8 +5,10 @@ import type { LogoutService } from "./services";
 // common
 import { NoContentSuccess } from "@/common/responses";
 // modules
-import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/modules/token/constants";
-import { REFRESH_TOKEN } from "@/modules/token/constants";
+import {
+  REFRESH_TOKEN,
+  REFRESH_TOKEN_CLEAR_COOKIE_OPTIONS
+} from "@/modules/token/constants";
 
 export class LogoutController {
   constructor(private readonly service: LogoutService) {}
@@ -14,7 +16,7 @@ export class LogoutController {
   logout = async (req: LogoutRequest, res: Response): Promise<void> => {
     await this.service.logout(req, res);
 
-    res.clearCookie(REFRESH_TOKEN, REFRESH_TOKEN_COOKIE_OPTIONS);
+    res.clearCookie(REFRESH_TOKEN, REFRESH_TOKEN_CLEAR_COOKIE_OPTIONS);
 
     new NoContentSuccess().send(req, res);
   };

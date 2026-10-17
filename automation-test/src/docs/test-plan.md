@@ -33,8 +33,10 @@ URL, API prefix, Redis, MongoDB và tài khoản seed **không khai trong `autom
 `user.setup.ts` dừng lượt chạy trước khi ghi bất cứ gì nếu database không phải seed (không có category `content` /
 app `blog`) hoặc không phải database mà API đang test đọc (`assertSeededDatabase`). **Dùng bản production build của
 client cho một lượt chạy đầy đủ.** `next dev` giữ mọi route đã compile trong bộ nhớ và vượt 3 GB chỉ trong một lô UI;
-trên máy 16 GB, cả stack bị kill. `next dev` vẫn ổn khi chạy một module. Hành vi duy nhất chỉ có ở dev mà suite biết —
-effect chạy hai lần của React StrictMode — được phát hiện theo từng test (`isDevBuild` trong `src/tests/e2e/password/helpers.ts`; BUG-PASSWORD-03).
+trên máy 16 GB, cả stack bị kill. `next dev` vẫn ổn khi chạy một module. Hiện không còn hành vi nào chỉ có ở dev mà
+suite phải phân biệt: effect chạy hai lần của React StrictMode từng làm trang reset verify magic link hai lần
+(BUG-PASSWORD-03, đã sửa 2026-10-15). Helper `isDevBuild` trong `src/tests/e2e/password/helpers.ts` vẫn còn cho
+trường hợp cần phân biệt dev / production build về sau.
 
 Thêm hai quy tắc, đều học được qua thực tế:
 

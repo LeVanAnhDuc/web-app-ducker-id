@@ -38,7 +38,8 @@
     "action": "Actions",
     "viewDetail": "View",
     "viewDetailFor": "View details for {name}",
-    "app": "App"
+    "app": "App",
+    "anomalyFlag": "Unusual sign-in"
   },
   "filters": {
     "title": "Filters",
@@ -130,5 +131,20 @@
     "interactive": "Manual (credentials entered)",
     "sourceIdp": "Ducker ID (identity provider)",
     "sourceOauth": "Satellite app (OIDC)"
+  },
+  "failReason": {
+    "invalid_credentials": "Wrong email or password",
+    "invalid_password": "Wrong password",
+    "account_locked": "Account locked",
+    "account_inactive": "Account inactive",
+    "email_not_verified": "Email not verified",
+    "invalid_otp": "Wrong one-time code",
+    "otp_expired": "One-time code expired",
+    "invalid_magic_link": "Invalid sign-in link",
+    "magic_link_expired": "Sign-in link expired",
+    "rate_limited": "Too many attempts",
+    "passwordless_account": "Account has no password",
+    "invalid_reset_token": "Invalid reset link",
+    "not_entitled": "No access to this app"
   }
 }

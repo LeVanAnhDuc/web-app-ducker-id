@@ -66,6 +66,11 @@ const ContactSchema = new Schema<ContactDocument>(
       type: Schema.Types.ObjectId,
       ref: MODEL_NAMES.USER,
       default: null
+    },
+    // Where the request came from, shown to admins on the detail page.
+    ipAddress: {
+      type: String,
+      default: null
     }
   },
   {

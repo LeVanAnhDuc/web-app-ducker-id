@@ -6,6 +6,7 @@ import type {
   AccountExistsGuard,
   AccountActiveGuard,
   EmailVerifiedGuard,
+  PasswordLockoutGuard,
   OtpLockoutGuard,
   OtpCooldownGuard
 } from "../../../guards";
@@ -28,6 +29,7 @@ import {
   createAccountExistsGuardMock,
   createAccountActiveGuardMock,
   createEmailVerifiedGuardMock,
+  createPasswordLockoutGuardMock,
   createOtpLockoutGuardMock,
   createOtpCooldownGuardMock
 } from "@test/mocks/login-guards.mock";
@@ -50,6 +52,7 @@ describe("OtpLoginStrategy", () => {
   let accountExists: jest.Mocked<AccountExistsGuard>;
   let accountActive: jest.Mocked<AccountActiveGuard>;
   let emailVerified: jest.Mocked<EmailVerifiedGuard>;
+  let passwordLockout: jest.Mocked<PasswordLockoutGuard>;
   let otpLockout: jest.Mocked<OtpLockoutGuard>;
   let otpCooldown: jest.Mocked<OtpCooldownGuard>;
   let otpRepo: jest.Mocked<OtpLoginRepository>;
@@ -63,6 +66,7 @@ describe("OtpLoginStrategy", () => {
     accountExists = createAccountExistsGuardMock();
     accountActive = createAccountActiveGuardMock();
     emailVerified = createEmailVerifiedGuardMock();
+    passwordLockout = createPasswordLockoutGuardMock();
     otpLockout = createOtpLockoutGuardMock();
     otpCooldown = createOtpCooldownGuardMock();
     otpRepo = createOtpLoginRepoMock();
@@ -74,6 +78,7 @@ describe("OtpLoginStrategy", () => {
       accountExistsGuard: accountExists,
       accountActiveGuard: accountActive,
       emailVerifiedGuard: emailVerified,
+      passwordLockoutGuard: passwordLockout,
       otpLockoutGuard: otpLockout,
       otpCooldownGuard: otpCooldown,
       otpLoginRepo: otpRepo,
@@ -128,6 +133,18 @@ describe("OtpLoginStrategy", () => {
         code: ERROR_CODES.LOGIN_OTP_RESEND_LIMIT
       });
       expect(otpRepo.createAndStoreOtp).not.toHaveBeenCalled();
+      expect(emailDispatcher.send).not.toHaveBeenCalled();
+    });
+
+    it("throws OTP_RESEND_LIMIT for an unknown address too (no enumeration leak)", async () => {
+      accountExists.tryFind.mockResolvedValue(null);
+      accountExists.isLoginEligible.mockReturnValue(false);
+      otpRepo.hasExceededResendLimit.mockResolvedValue(true);
+
+      await expect(
+        strategy.sendCode({ email: EMAIL }, req)
+      ).rejects.toMatchObject({ code: ERROR_CODES.LOGIN_OTP_RESEND_LIMIT });
+      expect(otpRepo.hasExceededResendLimit).toHaveBeenCalledWith(EMAIL);
       expect(emailDispatcher.send).not.toHaveBeenCalled();
     });
 
@@ -207,6 +224,7 @@ describe("OtpLoginStrategy", () => {
       );
 
       expect(otpLockout.assert).toHaveBeenCalledWith(EMAIL);
+      expect(passwordLockout.assert).toHaveBeenCalledWith(EMAIL);
       expect(accountActive.assertWithAudit).toHaveBeenCalledWith(
         fixture.auth,
         EMAIL,
@@ -232,6 +250,24 @@ describe("OtpLoginStrategy", () => {
         idToken: "i",
         expiresIn: 3600
       });
+    });
+
+    it("refuses a password-locked account before checking the code", async () => {
+      passwordLockout.assert.mockRejectedValue(
+        new TooManyRequestsError({
+          message: "locked",
+          code: ERROR_CODES.LOGIN_ACCOUNT_LOCKED
+        })
+      );
+
+      const promise = strategy.verifyCode({ email: EMAIL, otp: OTP_CODE }, req);
+
+      await expect(promise).rejects.toBeInstanceOf(TooManyRequestsError);
+      await expect(promise).rejects.toMatchObject({
+        code: ERROR_CODES.LOGIN_ACCOUNT_LOCKED
+      });
+      expect(otpRepo.verify).not.toHaveBeenCalled();
+      expect(completion.complete).not.toHaveBeenCalled();
     });
 
     it("short-circuits when accountActive fails (user disabled between send and verify)", async () => {

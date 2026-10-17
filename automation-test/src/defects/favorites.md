@@ -2,11 +2,9 @@
 
 ## Đang mở
 
-| Bug                                   | Mức        | TC               | Tóm tắt                                                                     |
-| ------------------------------------- | ---------- | ---------------- | --------------------------------------------------------------------------- |
-| [BUG-FAVORITES-01](#bug-favorites-01) | Trung bình | TC-FAVORITES-035 | Tải `/favorites` lỗi hiện empty state thay cho thông báo lỗi                |
-| [BUG-FAVORITES-02](#bug-favorites-02) | Thấp       | TC-FAVORITES-038 | Bỏ sao bằng bàn phím trên `/favorites` làm focus rơi về body                |
-| [BUG-FAVORITES-03](#bug-favorites-03) | Trung bình | TC-FAVORITES-039 | Bấm trái tim trên Home không gửi request, báo "Failed to update favorites." |
+_(không có)_
+
+## Đã sửa
 
 ### BUG-FAVORITES-01
 
@@ -19,6 +17,7 @@
 - **Thực tế:** `FavoritesGrid` đặt `<p role="alert">{t("error")}</p>` **bên trong** `PageContent`, mà `PageContent`
   trả `PageEmptyState` khi `isEmpty` (`items` rỗng vì không có data) — user thấy "You haven't favorited any apps yet."
   như thể chưa gắn sao gì; chỉ toast toàn cục "Server error" báo lỗi.
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — `FavoritesGrid` không coi query lỗi là rỗng, nên `favorites.error` hiện thay cho empty state
 
 ### BUG-FAVORITES-02
 
@@ -29,6 +28,7 @@
   vào body").
 - **Thực tế:** `useToggleFavorite` gỡ card khỏi cache ngay (optimistic) và không ai dời focus; nút đang focus bị gỡ khỏi
   DOM nên `document.activeElement` là `<body>`, người dùng bàn phím phải Tab lại từ đầu trang.
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — bỏ sao trên `/favorites` đưa focus vào lưới (`tabIndex=-1`) rồi, khi toggle xong, sang trái tim của card kế bên (ghost `FocusNextFavorite`)
 
 ### BUG-FAVORITES-03
 
@@ -42,7 +42,4 @@
   nhưng `QuickAccessSection` của Home cache `[recentApps, { limit: 4 }]` dạng trang thường `{ items, meta }` →
   `old.pages` là `undefined`, `onMutate` ném TypeError, mutation thất bại trước khi `mutationFn` chạy. Mọi trái tim trên
   Home (cả khi lịch sử rỗng — query vẫn có trong cache) đều hỏng; `/apps` và `/recently-used` mở thẳng thì không.
-
-## Đã sửa
-
-_(chưa có)_
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — `useToggleFavorite` vá cả cache `[recentApps]` dạng trang thường `{ items, meta }` (Home) lẫn `InfiniteData` (`/recently-used`)

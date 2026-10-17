@@ -199,9 +199,6 @@ test(
   "Detail shows who filed a signed-in request",
   { tag: "@TC-ADMINCONTACT-027" },
   async ({ adminContactDetailPage: detail, userApi }) => {
-    // the contact stores userId, but the admin detail DTO (toContactDetailItemDto) drops it, so the card's "User ID" field never renders.
-    // BUG: defects/admin-contact.md#bug-admincontact-01
-    test.fail();
     const c = await fileTicket(userApi, "signed-in");
     const userId = await ownUserId(userApi);
     await detail.goto(c.id);

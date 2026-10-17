@@ -14,6 +14,7 @@ test.use({ role: "admin" });
 const cards = copy.adminDashboard.cards;
 const CARDS = [
   { title: cards.apps.title, href: "/admin/apps" },
+  { title: cards.categories.title, href: "/admin/categories" },
   { title: cards.entitlements.title, href: "/admin/entitlements" },
   { title: cards.users.title, href: "/admin/users" },
   { title: cards.contacts.title, href: "/admin/contact" },
@@ -66,9 +67,6 @@ test(
   "The landing page links to the categories area",
   { tag: "@TC-AUTHZ-016" },
   async ({ adminDashboardPage: dashboard }) => {
-    // /admin has no Categories card — ADMIN_DASHBOARD_CARDS lists 5 of the 6 admin areas (the sidebar has all 6).
-    // BUG: defects/authz.md#bug-authz-03
-    test.fail();
     await dashboard.goto();
     await expect(dashboard.areaLink("/admin/categories")).toHaveCount(1, {
       timeout: 3_000

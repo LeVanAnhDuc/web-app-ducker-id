@@ -2,6 +2,7 @@
 
 // libs
 import { useMemo, useState } from "react";
+import type { MouseEvent } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Plus, Tags } from "lucide-react";
 // types
@@ -23,7 +24,12 @@ import DeleteCategoryDialog from "../DeleteCategoryDialog";
 // ghosts
 import MoveFocusEffect from "../../ghosts/MoveFocusEffect";
 // hooks
-import { useAdminCategories, useAnnounce, useLocalizedName } from "@/hooks";
+import {
+  useAdminCategories,
+  useAnnounce,
+  useLocalizedName,
+  useReturnFocus
+} from "@/hooks";
 import useMoveCategory from "../../hooks/useMoveCategory";
 // dataSources
 import { buildAdminCategoriesColumns } from "@/dataSources/AdminCategories";
@@ -38,6 +44,7 @@ const AdminCategoriesBoard = () => {
   const { announce } = useAnnounce();
   const { data: categories = [], isLoading } = useAdminCategories();
   const moveMutation = useMoveCategory();
+  const returnFocus = useReturnFocus();
 
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<AdminCategory | null>(null);
@@ -78,7 +85,8 @@ const AdminCategoriesBoard = () => {
     [tTable, localize, locale, categories, moveMutation.isPending]
   );
 
-  const openCreate = () => {
+  const openCreate = (event: MouseEvent<HTMLButtonElement>) => {
+    returnFocus.remember(event.currentTarget);
     setEditing(null);
     setFormOpen(true);
   };
@@ -129,6 +137,7 @@ const AdminCategoriesBoard = () => {
       <CategoryFormSheet
         open={formOpen}
         editing={editing}
+        onCloseAutoFocus={returnFocus.onCloseAutoFocus}
         onClose={() => {
           setFormOpen(false);
           setEditing(null);

@@ -211,9 +211,6 @@ test.describe("app, date range and combined filters", () => {
     "Device filter reaches the API",
     { tag: "@TC-ADMINLOGINHISTORY-009" },
     async ({ page, adminLoginHistoryPage: list }) => {
-      // the admin list offers a Device filter (buildLoginHistoryFilterDefs) but AdminLoginHistoryTable never puts deviceType into the request params — choosing it changes nothing.
-      // BUG: defects/admin-login-history.md#bug-adminloginhistory-01
-      test.fail();
       const cap = captureListRequests(page);
       await list.goto("?deviceType=MOBILE");
       await expect(page).toHaveURL(/deviceType=MOBILE/);

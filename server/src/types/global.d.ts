@@ -34,6 +34,9 @@ declare global {
     sub: string;
     authId: string;
     roles: string;
+    // Present (true) only on a temporary-password session; authGuard refuses
+    // such a token outside change-password and logout.
+    mustChangePassword?: boolean;
   }
 
   interface IdTokenPayload extends BaseTokenClaims {

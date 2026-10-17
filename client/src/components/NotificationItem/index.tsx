@@ -8,9 +8,10 @@ import { useTranslations } from "next-intl";
 import type { ApiNotification } from "@/types/Notification";
 // components
 import CustomButton from "@/components/CustomButton";
+import FormatTime from "@/components/FormatTime";
 import NotificationItemText from "@/components/NotificationItemText";
 // hooks
-import { useFormatTime, useNotificationText } from "@/hooks";
+import { useNotificationText } from "@/hooks";
 // dataSources
 import { NOTIFICATION_VISUALS } from "@/dataSources/Notifications";
 // others
@@ -31,7 +32,6 @@ const NotificationItem = ({
   isMarking?: boolean;
 }) => {
   const t = useTranslations("notifications.actions");
-  const ft = useFormatTime();
   const renderText = useNotificationText();
   const titleId = useId();
   const { title, body } = renderText(notification);
@@ -45,7 +45,7 @@ const NotificationItem = ({
       titleId={titleId}
       title={title}
       body={body}
-      time={ft("relative", notification.createdAt)}
+      time={<FormatTime value={notification.createdAt} variant="relative" />}
       isRead={notification.isRead}
     />
   );

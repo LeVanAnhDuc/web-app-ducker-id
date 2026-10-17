@@ -7,5 +7,8 @@ export { toContactListItemDto } from "./contact-list-item.dto";
 export type { ContactDetailItemDto } from "./contact-detail-item.dto";
 export { toContactDetailItemDto } from "./contact-detail-item.dto";
 
+export type { AdminContactDetailItemDto } from "./admin-contact-detail-item.dto";
+export { toAdminContactDetailItemDto } from "./admin-contact-detail-item.dto";
+
 export type { UpdateContactStatusDto } from "./update-contact-status.dto";
 export { toUpdateContactStatusDto } from "./update-contact-status.dto";

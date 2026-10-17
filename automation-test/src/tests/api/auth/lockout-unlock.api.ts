@@ -232,10 +232,8 @@ test(
   "A password-locked account cannot sign in with a code or a magic link",
   { tag: ["@TC-AUTH-064"] },
   async () => {
-    // Only the password strategy runs PasswordLockoutGuard; the OTP and
-    // magic-link strategies never look at the lock (decisions Q3).
-    // BUG: defects/auth.md#bug-auth-06
-    test.fail();
+    // A password lockout locks the account: the OTP and magic-link verifies run
+    // PasswordLockoutGuard too (fixed BUG-AUTH-06).
     const account = await createAccount({ tag: "auth-lock-bypass" });
     await lockAccount(account.email);
 

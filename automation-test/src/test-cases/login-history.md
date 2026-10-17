@@ -193,8 +193,7 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/login-history.md
 - **Bước:**
   1. Mở `/login-history`.
 - **Mong đợi:** dòng hiện "Failed", lý do và hệ điều hành.
-- **Ghi chú:** spec đánh dấu `test.fail()`: **bug của app** — `buildLoginHistoryColumns` không có
-  cột lý do, OS hay cờ bất thường dù README / REQ-LOGINHISTORY-01 hứa có.
+- **Ghi chú:** BUG-LOGINHISTORY-01 (đã sửa 2026-10-15) — `buildLoginHistoryColumns` từng không có lý do, OS hay cờ bất thường.
 - **Automated:** `tests/e2e/login-history/filters.e2e.ts`
 
 ### TC-LOGINHISTORY-018 — A guest is sent to the login screen
@@ -243,8 +242,7 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/login-history.md
 - **Bước:**
   1. `GET /login-history`.
 - **Mong đợi:** mọi dòng có `isAnomaly` kiểu boolean.
-- **Ghi chú:** spec đánh dấu `test.fail()`: **bug của app** — `MyHistoryItemDto` bỏ mất `isAnomaly`
-  (chỉ DTO của admin có).
+- **Ghi chú:** BUG-LOGINHISTORY-01 (đã sửa 2026-10-15) — `MyHistoryItemDto` từng bỏ mất `isAnomaly` (chỉ DTO của admin có).
 - **Automated:** `tests/api/login-history/my-history.api.ts`
 
 ### TC-LOGINHISTORY-023 — Filters on the server
@@ -415,8 +413,8 @@ interactive: false, app: { id, name } }`; `webAppId` và `interactive=false`
 - **Bước:**
   1. Gửi từng tham số không hợp lệ với `Accept-Language: en`.
 - **Mong đợi:** 400 `VALIDATION_ERROR`; `errors` có mục cho trường đó với message đã dịch (không phải `<field>.invalid`).
-- **Ghi chú:** các dòng `method`, `deviceType`, `clientType`, `fromDate`, `toDate`, khoảng ngày đánh `test.fail()`:
-  BUG-LOGINHISTORY-02.
+- **Ghi chú:** từng là BUG-ADMINLOGINHISTORY-02 (đã sửa 2026-10-15) — `validation.json` từng thiếu key của `method`,
+  `deviceType`, `clientType`, `fromDate`, `toDate` và khoảng ngày.
 - **Automated:** `tests/api/login-history/my-history.api.ts`
 
 ### TC-LOGINHISTORY-037 — Text filters stop at 200 characters and query operators are refused

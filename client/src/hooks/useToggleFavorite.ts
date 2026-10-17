@@ -19,6 +19,23 @@ import CONSTANTS from "@/constants";
 
 const { QUERY_KEYS } = CONSTANTS;
 
+// `/recently-used` caches an infinite list, Home's "Jump back in" a single
+// `{ items, meta }` page under the same key prefix — both must be patched.
+type RecentAppsCache = InfiniteData<RecentAppsResponse> | RecentAppsResponse;
+
+const setRecentFavorite = (
+  old: RecentAppsCache | undefined,
+  appId: string,
+  isFavorite: boolean
+): RecentAppsCache | undefined => {
+  if (!old) return old;
+  const patch = (page: RecentAppsResponse): RecentAppsResponse => ({
+    ...page,
+    items: page.items.map((a) => (a._id === appId ? { ...a, isFavorite } : a))
+  });
+  return "pages" in old ? { ...old, pages: old.pages.map(patch) } : patch(old);
+};
+
 const useToggleFavorite = () => {
   const queryClient = useQueryClient();
   const t = useTranslations("favorites");
@@ -43,9 +60,9 @@ const useToggleFavorite = () => {
       const prevFavs = queryClient.getQueriesData<FavoritesResponse>({
         queryKey: [QUERY_KEYS.FAVORITES]
       });
-      const prevRecent = queryClient.getQueriesData<
-        InfiniteData<RecentAppsResponse>
-      >({ queryKey: [QUERY_KEYS.RECENT_APPS] });
+      const prevRecent = queryClient.getQueriesData<RecentAppsCache>({
+        queryKey: [QUERY_KEYS.RECENT_APPS]
+      });
       queryClient.setQueriesData<PaginatedUserAppsResponse>(
         { queryKey: [QUERY_KEYS.APPS] },
         (old) =>
@@ -65,20 +82,9 @@ const useToggleFavorite = () => {
             ? { items: old.items.filter((a: UserApp) => a._id !== appId) }
             : old
       );
-      queryClient.setQueriesData<InfiniteData<RecentAppsResponse>>(
+      queryClient.setQueriesData<RecentAppsCache>(
         { queryKey: [QUERY_KEYS.RECENT_APPS] },
-        (old) =>
-          old
-            ? {
-                ...old,
-                pages: old.pages.map((page) => ({
-                  ...page,
-                  items: page.items.map((a) =>
-                    a._id === appId ? { ...a, isFavorite: next } : a
-                  )
-                }))
-              }
-            : old
+        (old) => setRecentFavorite(old, appId, next)
       );
       return { prevApps, prevFavs, prevRecent };
     },

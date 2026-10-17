@@ -80,7 +80,8 @@
   "link": {
     "forgotPassword": "Forgot Password?",
     "descriptionSignUp": "Don't have an account",
-    "signUp": "Sign up"
+    "signUp": "Sign up",
+    "unlockAccount": "Unlock your account"
   },
   "announce": {
     "signingIn": "Signing in...",
@@ -93,6 +94,22 @@
     "linkSendError": "Failed to send magic link.",
     "verifying": "Verifying...",
     "verifyingLink": "Verifying magic link...",
-    "linkInvalid": "Link is invalid or expired. Redirecting to login..."
+    "linkInvalid": "Link is invalid or expired. Redirecting to login...",
+    "unlockSending": "Sending the unlock email...",
+    "unlockSent": "Unlock email sent. Check your inbox.",
+    "unlocking": "Unlocking your account..."
+  },
+  "unlock": {
+    "title": "Unlock your account",
+    "description": "Too many wrong passwords locked this account. We can email you a temporary password to unlock it.",
+    "sentDescription": "Enter the temporary password we emailed you. You will choose a new password right after.",
+    "labelTempPassword": "Temporary password",
+    "placeholderTempPassword": "Enter the temporary password",
+    "button": {
+      "request": "Email me a temporary password",
+      "verify": "Unlock and sign in",
+      "resend": "Send another email",
+      "backToLogin": "Back to sign in"
+    }
   }
 }

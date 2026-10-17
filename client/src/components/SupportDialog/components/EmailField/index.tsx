@@ -1,6 +1,7 @@
 "use client";
 
 // libs
+import { useFormContext } from "react-hook-form";
 import { useTranslations } from "next-intl";
 // types
 import type { SupportFormValues } from "@/types/Support";
@@ -9,12 +10,11 @@ import FormFieldMessage from "@/components/FormFieldMessage";
 import {
   FormControl,
   FormDescription,
+  FormField,
   FormItem,
   FormLabel
 } from "@/components/ui/form";
 import CustomInput from "@/components/CustomInput";
-// hooks
-import useFieldProps from "@/hooks/useFieldProps";
 // others
 import CONSTANTS from "@/constants";
 
@@ -30,7 +30,7 @@ const EmailField = ({
   disabled?: boolean;
 }) => {
   const t = useTranslations("support.form.input");
-  const { field } = useFieldProps<SupportFormValues>(EMAIL);
+  const { control } = useFormContext<SupportFormValues>();
 
   const hintKey = readOnly
     ? "labelEmailReadOnlyHint"
@@ -39,22 +39,28 @@ const EmailField = ({
       : "labelEmailHint";
 
   return (
-    <FormItem>
-      <FormLabel>{t("labelEmail")}</FormLabel>
-      <FormControl>
-        <CustomInput
-          {...field}
-          type="email"
-          autoComplete="email"
-          placeholder="email@example.com"
-          readOnly={readOnly}
-          disabled={disabled}
-          aria-readonly={readOnly}
-        />
-      </FormControl>
-      <FormDescription>{t(hintKey)}</FormDescription>
-      <FormFieldMessage />
-    </FormItem>
+    <FormField
+      control={control}
+      name={EMAIL}
+      render={({ field }) => (
+        <FormItem>
+          <FormLabel>{t("labelEmail")}</FormLabel>
+          <FormControl>
+            <CustomInput
+              {...field}
+              type="email"
+              autoComplete="email"
+              placeholder="email@example.com"
+              readOnly={readOnly}
+              disabled={disabled}
+              aria-readonly={readOnly}
+            />
+          </FormControl>
+          <FormDescription>{t(hintKey)}</FormDescription>
+          <FormFieldMessage />
+        </FormItem>
+      )}
+    />
   );
 };
 

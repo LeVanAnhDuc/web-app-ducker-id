@@ -19,6 +19,10 @@ export const verifyLink = async (
 ): Promise<LoginResponseDto> => {
   const { email, token } = body;
 
+  // A password lockout locks the ACCOUNT, not only the password method —
+  // otherwise a magic link is a way around it (BUG-AUTH-06).
+  await deps.passwordLockoutGuard.assert(email);
+
   const { auth, user } = await deps.accountExistsGuard.assert(email);
 
   deps.accountActiveGuard.assertWithAudit(

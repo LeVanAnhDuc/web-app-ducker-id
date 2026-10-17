@@ -85,9 +85,9 @@ export interface MyContactsPage {
 export type AdminContactItem = MyContactItem;
 
 /**
- * GET /admin/contacts/:id → data (server ContactDetailItemDto). `userId` and
- * `ipAddress` are what the admin card renders when present; the DTO sends
- * neither today (defects/admin-contact.md#bug-admincontact-01).
+ * GET /admin/contacts/:id → data (server AdminContactDetailItemDto): the
+ * owner's detail plus `userId` and `ipAddress`, which the admin card renders
+ * when present (null for a guest / for requests stored before IPs were kept).
  */
 export interface AdminContactDetail extends MyContactDetail {
   userId?: string | null;

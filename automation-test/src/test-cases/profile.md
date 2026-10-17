@@ -182,8 +182,8 @@ gender, avatar, createdAt`; không có password, authId hay tokenVersion.
 - **Bước:**
   1. Xoá First Name; Save.
 - **Mong đợi:** trường bị đánh dấu không hợp lệ với thông báo đọc được.
-- **Ghi chú:** **bug đã biết** — `common.validation` không có mục `firstName`/`lastName`,
-  nên hiện key zod thô "required"; spec đánh dấu `test.fail`.
+- **Ghi chú:** BUG-PROFILE-04 (đã sửa 2026-10-15) — `common.validation` từng không có mục `firstName`/`lastName`, nên hiện key zod
+  thô "required".
 - **Automated:** `tests/e2e/profile/personal-info.e2e.ts`
 
 ### TC-PROFILE-016 — The date of birth is only taken inside 13–120 years
@@ -206,8 +206,8 @@ gender, avatar, createdAt`; không có password, authId hay tokenVersion.
 - **Bước:**
   1. Đổi first name; Save.
 - **Mong đợi:** "Profile updated successfully".
-- **Ghi chú:** **bug đã biết** — form luôn gửi lại dateOfBirth và cả zod lẫn Joi đều chặn
-  ở 100 năm, nên lần lưu bị từ chối với "Date must be in the past and within 100 years"; spec đánh dấu `test.fail`.
+- **Ghi chú:** form luôn gửi lại dateOfBirth; trước 2026-10-15 cả zod lẫn Joi chặn ở 100 năm (BUG-PROFILE-01, đã
+  sửa — profile giờ dùng cùng khoảng 13–120 năm với sign-up).
 - **Automated:** `tests/e2e/profile/personal-info.e2e.ts`
 
 ### TC-PROFILE-018 — Editing in Vietnamese
@@ -231,8 +231,8 @@ gender, avatar, createdAt`; không có password, authId hay tokenVersion.
 - **Bước:**
   1. Xoá trống Phone; Save.
 - **Mong đợi:** thành công và `phone: null`.
-- **Ghi chú:** **bug đã biết** — các trường tuỳ chọn để trống bị bỏ khỏi body PATCH, số
-  điện thoại cũ được giữ và điền lại, vậy mà toast thành công vẫn hiện; spec đánh dấu `test.fail`.
+- **Ghi chú:** BUG-PROFILE-02 (đã sửa 2026-10-15) — trường tuỳ chọn để trống từng bị bỏ khỏi body PATCH; giờ gửi `null` và server
+  `$unset`.
 - **Automated:** `tests/e2e/profile/personal-info.e2e.ts`
 
 ### TC-PROFILE-020 — The header shows the new name right after saving
@@ -244,8 +244,7 @@ gender, avatar, createdAt`; không có password, authId hay tokenVersion.
 - **Bước:**
   1. Đổi First Name thành "Hoa"; Save.
 - **Mong đợi:** header của hồ sơ hiện "Hoa Tran Thi".
-- **Ghi chú:** **bug đã biết** — header đọc tên từ idToken, vốn không được cấp lại;
-  nó giữ "Linh Tran Thi" cho tới lần refresh kế tiếp; spec đánh dấu `test.fail`.
+- **Ghi chú:** BUG-PROFILE-03 (đã sửa 2026-10-15) — header từng đọc tên từ idToken, vốn không được cấp lại sau khi lưu.
 - **Automated:** `tests/e2e/profile/personal-info.e2e.ts`
 
 ### TC-PROFILE-021 — A server failure keeps the edits
@@ -292,8 +291,7 @@ gender, avatar, createdAt`; không có password, authId hay tokenVersion.
   2. First Name 51 ký tự; Save.
 - **Mong đợi:** 50 lưu được (`fullName` = 50 ký tự + " Tran Thi"); 51 bị chặn ở client (trường `aria-invalid`, không
   gửi PATCH) với thông báo đọc được, không phải key thô "maxLength".
-- **Ghi chú:** **bug đã biết** — cùng nguyên nhân với TC-PROFILE-015 (`common.validation` không có `firstName`);
-  test 51 ký tự đánh dấu `test.fail` (BUG-PROFILE-04).
+- **Ghi chú:** cùng nguyên nhân với TC-PROFILE-015 — BUG-PROFILE-04 (đã sửa 2026-10-15).
 - **Automated:** `tests/e2e/profile/personal-info.e2e.ts`
 
 ### TC-PROFILE-050 — A first name the server refuses keeps the edits and saves nothing
@@ -356,13 +354,13 @@ gender, avatar, createdAt`; không có password, authId hay tokenVersion.
 
 - **Requirement:** REQ-PROFILE-02
 - **Layer:** api · **Priority:** P1 · **Vai trò:** throwaway
-- **Kỹ thuật:** giá trị biên (BVA) (ngày mai, 99 / 101 năm trước), phân vùng tương đương (EP) (không phải ISO)
+- **Kỹ thuật:** giá trị biên (BVA) (ngày mai, 12 / 119 / 121 năm trước), phân vùng tương đương (EP) (không phải ISO)
 - **Tiền điều kiện:** một session của tài khoản dùng một lần
 - **Bước:**
   1. PATCH từng giá trị.
-- **Mong đợi:** ngày mai, 101 năm, "15/03/1990" → 400 trên `dateOfBirth`; 99 và 30 năm → 200.
-- **Ghi chú:** quan sát từ schema, không assert: khác với mức tối thiểu 13 năm của
-  sign-up, PATCH nhận bất kỳ ngày nào trong quá khứ.
+- **Mong đợi:** ngày mai, 12 năm, 121 năm, "15/03/1990" → 400 trên `dateOfBirth`; 119 và 30 năm → 200.
+- **Ghi chú:** cùng khoảng tuổi 13–120 với sign-up (BUG-PROFILE-01 đã sửa 2026-10-15; trước đó trần là 100 năm và
+  không có mức tối thiểu 13 năm).
 - **Automated:** `tests/api/profile/profile.api.ts`
 
 ### TC-PROFILE-037 — gender rules
@@ -407,9 +405,8 @@ gender, avatar, createdAt`; không có password, authId hay tokenVersion.
 - **Bước:**
   1. PATCH chỉ tên; PATCH tên kèm dateOfBirth đã lưu.
 - **Mong đợi:** cả hai 200.
-- **Ghi chú:** **bug đã biết** — lần thứ hai trả 400 `date.tooOld`
-  (sign-up cho 120 năm, profile 100); spec đánh dấu `test.fail`. Là nguyên nhân gốc
-  của TC-PROFILE-017.
+- **Ghi chú:** BUG-PROFILE-01 (đã sửa 2026-10-15) — lần thứ hai từng trả 400 `date.tooOld` (sign-up cho 120 năm, profile 100).
+  Là nguyên nhân gốc của TC-PROFILE-017.
 - **Automated:** `tests/api/profile/profile.api.ts`
 
 ### TC-PROFILE-044 — Wrong types and injection shapes are refused without a server error
@@ -432,8 +429,7 @@ gender, avatar, createdAt`; không có password, authId hay tokenVersion.
 - **Bước:**
   1. PATCH `fullName: "   "`.
 - **Mong đợi:** 400 `VALIDATION_ERROR` trên `fullName` (quyết định Q5).
-- **Ghi chú:** **bug đã biết** — schema không trim và pattern cho phép `\s`, nên tên trống được lưu; spec đánh dấu
-  `test.fail` (BUG-PROFILE-05).
+- **Ghi chú:** BUG-PROFILE-05 (đã sửa 2026-10-15) — schema từng không trim, nên tên trống được lưu; giờ `.trim()` rồi mới kiểm.
 - **Automated:** `tests/api/profile/profile.api.ts`
 
 ### TC-PROFILE-046 — An empty update changes nothing

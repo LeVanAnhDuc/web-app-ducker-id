@@ -5,6 +5,7 @@ jest.mock("@/utils/request-context", () => ({
 // types
 import type { Response } from "express";
 import type { SessionService } from "@/modules/session/services";
+import type { TokenService } from "@/modules/token/services";
 // common
 import { UnauthorizedError } from "@/common/exceptions";
 // others
@@ -23,7 +24,15 @@ const setup = () => {
     end: jest.fn().mockResolvedValue(undefined)
   } as unknown as jest.Mocked<SessionService>;
 
-  return { sessionService, service: new LogoutService(sessionService) };
+  const tokenService = {
+    revokeRefreshToken: jest.fn().mockResolvedValue(undefined)
+  } as unknown as jest.Mocked<TokenService>;
+
+  return {
+    sessionService,
+    tokenService,
+    service: new LogoutService(sessionService, tokenService)
+  };
 };
 
 const res = {} as Response;
@@ -40,8 +49,30 @@ describe("LogoutService.logout", () => {
     expect(sessionService.end).toHaveBeenCalledWith(req, res);
   });
 
+  it("revokes the refresh token the request carries (BUG-AUTH-01)", async () => {
+    const { tokenService, service } = setup();
+    const req = makeMockRequest();
+    req.cookies = { refreshToken: "the-refresh-token" };
+
+    await service.logout(req, res);
+
+    expect(tokenService.revokeRefreshToken).toHaveBeenCalledWith(
+      "the-refresh-token"
+    );
+  });
+
+  it("still ends the session when there is no refresh cookie", async () => {
+    const { sessionService, tokenService, service } = setup();
+    const req = makeMockRequest();
+
+    await service.logout(req, res);
+
+    expect(tokenService.revokeRefreshToken).toHaveBeenCalledWith(undefined);
+    expect(sessionService.end).toHaveBeenCalledWith(req, res);
+  });
+
   it("does not touch the session when there is no authenticated user", async () => {
-    const { sessionService, service } = setup();
+    const { sessionService, tokenService, service } = setup();
     mockedRequireUserId.mockImplementation(() => {
       throw new UnauthorizedError({ message: "no user" });
     });
@@ -50,6 +81,7 @@ describe("LogoutService.logout", () => {
       UnauthorizedError
     );
     expect(sessionService.end).not.toHaveBeenCalled();
+    expect(tokenService.revokeRefreshToken).not.toHaveBeenCalled();
   });
 
   it("propagates a failure to destroy the session", async () => {

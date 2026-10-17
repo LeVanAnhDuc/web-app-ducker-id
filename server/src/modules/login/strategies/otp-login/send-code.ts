@@ -24,6 +24,18 @@ export const sendCode = async (
 
   await deps.otpCooldownGuard.assert(email);
 
+  // The cap is checked BEFORE the eligibility branch: the ineligible path
+  // counts its sends too (setRateLimits), so a 4th send answers 400 for a
+  // real account and an unknown address alike — no account enumeration.
+  const exceeded = await deps.otpLoginRepo.hasExceededResendLimit(email);
+  if (exceeded) {
+    Logger.warn("Login OTP resend limit exceeded", { email });
+    throw new BadRequestError({
+      i18nMessage: (t) => t("login:errors.otpResendLimitExceeded"),
+      code: ERROR_CODES.LOGIN_OTP_RESEND_LIMIT
+    });
+  }
+
   const result = await deps.accountExistsGuard.tryFind(email);
   const isEligible = deps.accountExistsGuard.isLoginEligible(result);
 
@@ -37,15 +49,6 @@ export const sendCode = async (
       deps.otpLoginRepo.OTP_EXPIRY_SECONDS,
       deps.otpLoginRepo.OTP_COOLDOWN_SECONDS
     );
-  }
-
-  const exceeded = await deps.otpLoginRepo.hasExceededResendLimit(email);
-  if (exceeded) {
-    Logger.warn("Login OTP resend limit exceeded", { email });
-    throw new BadRequestError({
-      i18nMessage: (t) => t("login:errors.otpResendLimitExceeded"),
-      code: ERROR_CODES.LOGIN_OTP_RESEND_LIMIT
-    });
   }
 
   const otp = await deps.otpLoginRepo.createAndStoreOtp(email);

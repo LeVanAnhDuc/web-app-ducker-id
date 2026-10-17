@@ -118,8 +118,9 @@ describe("deleteCategoryBodySchema", () => {
     });
   });
 
-  it("rejects the same app twice", () => {
-    const result = deleteCategoryBodySchema.validate(
+  // The service answers a repeated appId with CATEGORY_REASSIGN_INVALID.
+  it("lets the same app twice through to the service", () => {
+    const { error } = deleteCategoryBodySchema.validate(
       {
         reassignments: [
           { appId: ID, categoryId: ID2 },
@@ -128,9 +129,7 @@ describe("deleteCategoryBodySchema", () => {
       },
       OPTIONS
     );
-    expect(messagesOf(result)).toContain(
-      "category:validation.reassignments.duplicateApp"
-    );
+    expect(error).toBeUndefined();
   });
 
   it("rejects a non-ObjectId target", () => {

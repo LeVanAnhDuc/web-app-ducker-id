@@ -2,9 +2,9 @@
 
 ## Đang mở
 
-| Bug                         | Mức  | TC          | Tóm tắt                                                               |
-| --------------------------- | ---- | ----------- | --------------------------------------------------------------------- |
-| [BUG-HOME-01](#bug-home-01) | Thấp | TC-HOME-047 | `tz` dài quá 64 ký tự trả về message Joi thô, chưa dịch, kèm lỗi đúng |
+_(không có)_
+
+## Đã sửa
 
 ### BUG-HOME-01
 
@@ -18,7 +18,4 @@
   `validation.pipe.ts` (`abortEarly: false`) đẩy thêm một mục `string.max` mang câu tiếng Anh mặc định của Joi
   (`"tz" length must be less than or equal to 64 characters long`) — `req.t` không tìm thấy key nên trả nguyên câu,
   kể cả khi client xin tiếng Việt.
-
-## Đã sửa
-
-_(chưa có)_
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — `tz` của `loginHistoryStatsQuerySchema` khai key `validation:timezone.invalid` cho cả `string.base` / `string.empty` / `string.max`, nên mọi mục `errors[]` của `tz` đều là câu của catalogue.

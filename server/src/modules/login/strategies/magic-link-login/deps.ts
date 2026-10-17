@@ -5,6 +5,7 @@ import type {
   AccountExistsGuard,
   AccountActiveGuard,
   EmailVerifiedGuard,
+  PasswordLockoutGuard,
   MagicLinkCooldownGuard
 } from "../../guards";
 import type { LoginAuditService } from "../../services/login-audit";
@@ -14,6 +15,7 @@ export interface MagicLinkLoginStrategyDeps {
   accountExistsGuard: AccountExistsGuard;
   accountActiveGuard: AccountActiveGuard;
   emailVerifiedGuard: EmailVerifiedGuard;
+  passwordLockoutGuard: PasswordLockoutGuard;
   magicLinkCooldownGuard: MagicLinkCooldownGuard;
   magicLinkLoginRepo: MagicLinkLoginRepository;
   emailDispatcher: EmailDispatcher;

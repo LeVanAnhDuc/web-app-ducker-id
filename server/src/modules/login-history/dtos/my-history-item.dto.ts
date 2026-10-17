@@ -24,6 +24,7 @@ export interface MyHistoryItemDto extends LoginAppFieldsDto {
   os: string;
   browser: string;
   clientType: ClientType;
+  isAnomaly: boolean;
   createdAt: string;
 }
 
@@ -41,6 +42,7 @@ export const toMyHistoryItemDto = (
   os: doc.os,
   browser: doc.browser,
   clientType: doc.clientType,
+  isAnomaly: doc.isAnomaly ?? false,
   createdAt: doc.createdAt.toISOString(),
   ...toLoginAppFieldsDto(doc)
 });

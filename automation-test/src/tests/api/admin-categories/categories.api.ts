@@ -585,9 +585,6 @@ test.describe("delete and error contract", () => {
       "the same app twice is CATEGORY_REASSIGN_INVALID",
       { tag: "@TC-ADMINCATEGORIES-078" },
       async () => {
-        // A duplicated appId is refused by the Joi schema (unique("appId")) as a generic VALIDATION_ERROR, not the documented CATEGORY_REASSIGN_INVALID.
-        // BUG: defects/admin-categories.md#bug-admincategories-02
-        test.fail();
         const temp = await createCategory(api, {
           en: uniqueName("TwiceApp"),
           vi: "x"

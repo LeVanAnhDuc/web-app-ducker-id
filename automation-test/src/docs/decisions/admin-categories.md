@@ -39,7 +39,7 @@ Chuyển đổi từ E2E Scenario Matrix và các bổ sung của completeness-c
   (TC-ADMINCATEGORIES-071, -072).
 - Q7 (tự quyết 2026-10-14, cần user duyệt): design §3.4 ghi `appId` trùng trong `reassignments` → 400
   `CATEGORY_REASSIGN_INVALID`; code từ chối ở Joi (`unique("appId")`) với `VALIDATION_ERROR`. Theo docs hay theo code?
-  → Theo docs (status 400 giống nhau, chỉ khác mã); test đánh dấu BUG-ADMINCATEGORIES-02 → REQ-ADMINCATEGORIES-04
+  → Theo docs (status 400 giống nhau, chỉ khác mã); test đánh dấu BUG-ADMINCATEGORIES-02 (đã sửa 2026-10-15, fix/open-bugs) → REQ-ADMINCATEGORIES-04
   (TC-ADMINCATEGORIES-078).
 - Q8 (tự quyết 2026-10-14, cần user duyệt): Q4 ghi nhận hành vi đã ship khác ma trận thiết kế; lượt này có lật lại
   thành bug không? → Không: Q4 là quyết định đã chốt trước đó và kỳ vọng test cũ được giữ nguyên → REQ-ADMINCATEGORIES-04
@@ -66,7 +66,7 @@ Chuyển đổi từ E2E Scenario Matrix và các bổ sung của completeness-c
 
 ## Tech debt liên quan
 
-- BUG-ADMINCATEGORIES-01 (`../../defects/admin-categories.md`): đóng sheet bằng Escape để focus ở `<body>`;
-  TC-ADMINCATEGORIES-068 đang đánh dấu `test.fail()`.
-- BUG-ADMINCATEGORIES-02 (`../../defects/admin-categories.md`): `appId` trùng trả `VALIDATION_ERROR` thay vì
-  `CATEGORY_REASSIGN_INVALID`; TC-ADMINCATEGORIES-078 đánh dấu `test.fail()` cho test đó.
+- BUG-ADMINCATEGORIES-01 (`../../defects/admin-categories.md`): đóng sheet bằng Escape từng để focus ở `<body>`
+  (TC-ADMINCATEGORIES-068) (đã sửa 2026-10-15, fix/open-bugs).
+- BUG-ADMINCATEGORIES-02 (`../../defects/admin-categories.md`): `appId` trùng từng trả `VALIDATION_ERROR` thay vì
+  `CATEGORY_REASSIGN_INVALID` (TC-ADMINCATEGORIES-078) (đã sửa 2026-10-15, fix/open-bugs).

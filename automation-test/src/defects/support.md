@@ -2,20 +2,9 @@
 
 ## Đang mở
 
-| Bug                               | Mức        | TC             | Tóm tắt                                                                                                          |
-| --------------------------------- | ---------- | -------------- | ---------------------------------------------------------------------------------------------------------------- |
-| [BUG-SUPPORT-01](#bug-support-01) | Thấp       | TC-SUPPORT-036 | Support dialog: tiêu đề không hợp lệ chặn submit trong im lặng — không có thông báo, `aria-invalid` vẫn là false |
-| [BUG-SUPPORT-02](#bug-support-02) | Trung bình | TC-SUPPORT-049 | Server làm sạch tiêu đề / nội dung chỉ để kiểm độ dài rồi lưu bản thô kèm thẻ HTML                               |
-| [BUG-SUPPORT-03](#bug-support-03) | Thấp       | TC-SUPPORT-055 | Support dialog: email không hợp lệ chặn submit trong im lặng — không có thông báo                                |
-| [BUG-SUPPORT-04](#bug-support-04) | Trung bình | TC-SUPPORT-056 | Support dialog: double-click "Send request" gửi hai POST — tạo hai yêu cầu trùng                                 |
+_(không có)_
 
-### BUG-SUPPORT-01
-
-- **TC:** TC-SUPPORT-036 · **Requirement:** REQ-SUPPORT-01
-- **Mức:** Thấp · **Phát hiện:** 2026-10-10 · **Mã cũ:** BUG-019
-- **Bước tái hiện:** chạy test của TC-SUPPORT-036 — `tests/e2e/support/support-dialog.e2e.ts` (describe "Subject length errors are shown")
-- **Mong đợi:** hiện lỗi của field
-- **Thực tế:** Support dialog: tiêu đề không hợp lệ chặn submit trong im lặng — không có thông báo, `aria-invalid` vẫn là false
+## Đã sửa
 
 ### BUG-SUPPORT-02
 
@@ -27,6 +16,16 @@
 - **Thực tế:** `server/src/modules/contact-admin/services/submit-contact.ts` tính `sanitizedSubject` /
   `sanitizedMessage` chỉ để gọi `validateStringLength`, rồi `contactRepo.create({ subject, message })` với giá trị thô —
   thẻ HTML nằm nguyên trong DB, trong response và trong mọi màn hình / email đọc lại nó.
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — `submit-contact.ts` lưu `sanitizedSubject` / `sanitizedMessage`; `sanitizeText` giải mã entity trước khi bỏ thẻ để `&lt;img&gt;` không thành thẻ thật.
+
+### BUG-SUPPORT-01
+
+- **TC:** TC-SUPPORT-036 · **Requirement:** REQ-SUPPORT-01
+- **Mức:** Thấp · **Phát hiện:** 2026-10-10 · **Mã cũ:** BUG-019
+- **Bước tái hiện:** chạy test của TC-SUPPORT-036 — `tests/e2e/support/support-dialog.e2e.ts` (describe "Subject length errors are shown")
+- **Mong đợi:** hiện lỗi của field
+- **Thực tế:** Support dialog: tiêu đề không hợp lệ chặn submit trong im lặng — không có thông báo, `aria-invalid` vẫn là false
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — `SubjectField` bọc trong `FormField`, nên lỗi zod và `aria-invalid` tới được DOM
 
 ### BUG-SUPPORT-03
 
@@ -37,6 +36,7 @@
 - **Mong đợi:** không gửi gì và hiện "Invalid email format" dưới field email.
 - **Thực tế:** submit bị chặn trong im lặng. `EmailField` dựng input bằng `useFieldProps` và không bọc `FormField`, nên
   `FormFieldMessage` không đọc được lỗi của field (cùng gốc với BUG-SUPPORT-01).
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — `EmailField` bọc trong `FormField` như `SubjectField`
 
 ### BUG-SUPPORT-04
 
@@ -49,7 +49,4 @@
   disable nút qua `isPending` của `useMutation`, nhưng `methods.handleSubmit` validate zod bất đồng bộ nên cú bấm thứ hai
   lọt vào trước khi `isPending` kịp render; không có chốt nào khác (không kiểm `formState.isSubmitting`, không bỏ qua khi
   đang pending). Hậu quả: hai ticket trùng, và tốn 2 trong 5 lượt rate limit mỗi 15 phút.
-
-## Đã sửa
-
-_(chưa có)_
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — `SupportForm` chặn submit đồng bộ bằng `useSubmitGuard` (ref), nhả khi mutation settle

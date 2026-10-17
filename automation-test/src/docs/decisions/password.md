@@ -85,7 +85,7 @@
   60 s; lần gửi thứ 4 trong cửa sổ → 400 `…_RESEND_LIMIT`; 5 mã sai → 400 `FORGOT_PASSWORD_OTP_LOCKED` (15 phút).
   Rate limit: `otp/*` và `magic-link/*` 10 / IP và 5 / email mỗi 15 phút, `reset` 10 / IP — 429 `TOO_MANY_REQUESTS`.
 - **change-password:** `authGuard` → limiter 5 / 15 phút theo IP + authId (đếm mọi lần thử, trước validation) → Joi.
-- Message của change-password là key thô vì namespace `changePassword` không được nạp (BUG-PASSWORD-04).
+- Message của change-password từng là key thô vì namespace `changePassword` không được nạp (BUG-PASSWORD-04 (đã sửa 2026-10-15, fix/open-bugs)).
 
 ## Ngoài phạm vi
 

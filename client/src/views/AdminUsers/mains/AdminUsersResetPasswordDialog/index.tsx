@@ -20,10 +20,12 @@ import useResetAdminUserPassword from "../../hooks/useResetAdminUserPassword";
 
 const AdminUsersResetPasswordDialog = ({
   target,
-  onClose
+  onClose,
+  onCloseAutoFocus
 }: {
   target: AdminUser | null;
   onClose: () => void;
+  onCloseAutoFocus?: (event: Event) => void;
 }) => {
   const t = useTranslations("adminUsers.resetDialog");
   const tActions = useTranslations("adminUsers.actions");
@@ -43,7 +45,7 @@ const AdminUsersResetPasswordDialog = ({
 
   return (
     <Dialog open={target !== null} onOpenChange={(o) => !o && onClose()}>
-      <CustomDialogContent>
+      <CustomDialogContent onCloseAutoFocus={onCloseAutoFocus}>
         <DialogHeader>
           <DialogTitle>
             {target

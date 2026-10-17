@@ -283,9 +283,8 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/password.md
 - **Tiền điều kiện:** một session của tài khoản dùng một lần
 - **Bước:**
   1. Submit mật khẩu hiện tại sai.
-- **Mong đợi:** `message` là "Current password is incorrect". **Bug đã biết** —
-  server không bao giờ nạp namespace i18n `changePassword`, nên trả về
-  `errors.wrongCurrentPassword` (spec đánh dấu `test.fail`).
+- **Mong đợi:** `message` là "Current password is incorrect". (Từng là
+  BUG-PASSWORD-04, đã sửa 2026-10-15.)
 - **Automated:** `tests/api/password/change-password.api.ts`
 
 ### TC-PASSWORD-025 — Change password is throttled after five attempts
@@ -496,8 +495,9 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/password.md
 - **Tiền điều kiện:** một session dùng mật khẩu tạm
 - **Bước:**
   1. Gọi `GET /users/me/favorites` bằng session đó.
-- **Mong đợi:** 403. **Bug đã biết** — cờ chỉ được thực thi bởi gate phía client;
-  API trả 200 (spec đánh dấu `test.fail`).
+- **Mong đợi:** 403 `AUTH_PASSWORD_CHANGE_REQUIRED` — `authGuard` chỉ cho
+  session mật khẩu tạm gọi change-password và logout. (Từng là BUG-PASSWORD-01,
+  đã sửa 2026-10-15.)
 - **Automated:** `tests/api/password/admin-reset.api.ts`
 
 ## Quên mật khẩu trên trình duyệt (REQ-PASSWORD-01, REQ-PASSWORD-02)
@@ -586,8 +586,8 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/password.md
 - **Tiền điều kiện:** một tài khoản dùng một lần; link đọc từ email `MAGIC_LINK` trong queue
 - **Bước:**
   1. Yêu cầu magic link; mở URL trong email.
-- **Mong đợi:** "Set new password". **Bug đã biết** — email trỏ tới
-  `/reset-password?…`, một route client không có (404); spec đánh dấu `test.fail`.
+- **Mong đợi:** "Set new password" — link trỏ tới `/forgot-password/reset`.
+  (Từng là BUG-PASSWORD-02, đã sửa 2026-10-15.)
 - **Automated:** `tests/e2e/password/forgot-password.e2e.ts`
 
 ### TC-PASSWORD-057 — An invalid or used link shows the expired message
@@ -655,8 +655,8 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/password.md
 - **Bước:**
   1. Tìm card 2FA theo accessible name.
 - **Mong đợi:** tên "Two-Factor Authentication (2FA) - Unavailable" kèm
-  `aria-disabled="true"`. **Bug đã biết** — `FadeSlideLeft` làm rơi các prop aria;
-  spec đánh dấu `test.fail`.
+  `aria-disabled="true"`. BUG-PASSWORD-05 (đã sửa 2026-10-15) — `FadeSlideLeft` từng làm rơi
+  các prop aria.
 - **Automated:** `tests/e2e/password/forgot-password.e2e.ts`
 
 ### TC-PASSWORD-063 — Opening a magic link verifies it once
@@ -667,10 +667,8 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/password.md
 - **Tiền điều kiện:** một tài khoản dùng một lần có token link đã cài
 - **Bước:**
   1. Mở URL reset; đếm số request `magic-link/verify`.
-- **Mong đợi:** đúng một. **Bug đã biết** — verify chạy trong một mount effect
-  không có guard; dưới StrictMode của bản build dev nó chạy hai lần, và cuộc đua
-  hoặc hiện "link expired" hoặc tạo reset token thứ hai làm vô hiệu token đầu.
-  Spec đánh dấu `test.fail`.
+- **Mong đợi:** đúng một. BUG-PASSWORD-03 (đã sửa 2026-10-15) — verify từng chạy trong một mount effect không có guard;
+  dưới StrictMode của bản build dev nó chạy hai lần.
 - **Automated:** `tests/e2e/password/forgot-password.e2e.ts`
 
 ### TC-PASSWORD-087 — A signed-in user is kept out of the recovery pages

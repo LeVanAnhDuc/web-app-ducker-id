@@ -108,6 +108,18 @@ describe("CategoryService.remove", () => {
     expectNothingWritten(ctx);
   });
 
+  it("rejects the same app twice as CATEGORY_REASSIGN_INVALID", async () => {
+    const ctx = setup([APP_A]);
+
+    await expect(
+      ctx.service.remove(CATEGORY_ID, [
+        { appId: APP_A, categoryId: OTHER_ID },
+        { appId: APP_A, categoryId: THIRD_ID }
+      ])
+    ).rejects.toMatchObject({ code: "CATEGORY_REASSIGN_INVALID" });
+    expectNothingWritten(ctx);
+  });
+
   it("rejects the category itself as a target", async () => {
     const ctx = setup([APP_A]);
 

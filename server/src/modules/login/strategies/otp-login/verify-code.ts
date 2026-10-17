@@ -51,6 +51,9 @@ export const verifyCode = async (
   const { email, otp } = body;
 
   await deps.otpLockoutGuard.assert(email);
+  // A password lockout locks the ACCOUNT, not only the password method —
+  // otherwise a code is a way around it (BUG-AUTH-06).
+  await deps.passwordLockoutGuard.assert(email);
 
   const { auth, user } = await deps.accountExistsGuard.assert(email);
 

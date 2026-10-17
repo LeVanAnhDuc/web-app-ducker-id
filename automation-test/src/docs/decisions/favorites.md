@@ -40,13 +40,13 @@ layer api).
 - **Q3** (tự quyết 2026-10-14, cần user duyệt): `GET /users/me/favorites` lỗi thì `/favorites` hiện gì? `design.md` §4 +
   `plan.md` (`{isError ? <p role="alert">{t("error")}</p> : …}`) yêu cầu thông báo lỗi; code đặt thông báo lỗi bên trong
   `PageContent` nhưng `PageContent` trả empty state khi danh sách rỗng, nên user thấy "You haven't favorited any apps
-  yet." → giữ docs làm requirement, ghi bug BUG-FAVORITES-01 → REQ-FAVORITES-07 (TC-FAVORITES-035).
+  yet." → giữ docs làm requirement, ghi bug BUG-FAVORITES-01 (đã sửa 2026-10-15, fix/open-bugs) → REQ-FAVORITES-07 (TC-FAVORITES-035).
 - **Q4** (tự quyết 2026-10-14, cần user duyệt): gắn sao thành công có toast không? `design.md` §6 nhóm 1 nói "toast
   success"; `plan.md` (sau design) và code chỉ announce "Added to favorites." / "Removed from favorites." → theo
   `plan.md`: thành công chỉ announce, không toast → REQ-FAVORITES-08 (TC-FAVORITES-037).
 - **Q5** (tự quyết 2026-10-14, cần user duyệt): bỏ sao trên `/favorites` thì focus đi đâu? `design.md` §6 nhóm 12 yêu cầu
   "quản lý focus … không mất focus vào body"; code không xử lý focus, card bị gỡ cùng nút đang focus → giữ docs, ghi
-  bug BUG-FAVORITES-02 → REQ-FAVORITES-08 (TC-FAVORITES-038).
+  bug BUG-FAVORITES-02 (đã sửa 2026-10-15, fix/open-bugs) → REQ-FAVORITES-08 (TC-FAVORITES-038).
 - **Q6** (tự quyết 2026-10-14, cần user duyệt): search / category của `/favorites` lưu ở đâu? `design.md` §8 đề xuất
   in-memory; `CLAUDE.md` của repo ("List pages are one system: … URL query params as source of truth") và code
   (`useListQuery`) đặt chúng trên URL; sort là state cục bộ → giữ URL cho search + category (TC-FAVORITES-005, 006),

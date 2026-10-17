@@ -21,6 +21,9 @@ khác seeder mới đặt `E2E_USER_EMAIL` / `E2E_USER_PASSWORD` / `E2E_ADMIN_EM
 
 "Chỉ đọc" nghĩa là: không bao giờ khoá, nhập sai mật khẩu, reset hay đổi mật khẩu của các tài khoản này. Dữ liệu riêng
 của từng user (yêu thích, app dùng gần đây, cờ đã đọc) chỉ được đổi nếu test trả lại như cũ.
+Cũng không bao giờ đăng xuất bằng phiên dùng chung (`userPage` / `adminPage`, `userApi` / `adminApi`): từ
+2026-10-15 logout đưa refresh token vào denylist Redis (`revoked-refresh-token:<sha256>`), nên phiên do `setup` tạo
+chết cho mọi spec chạy sau. Test logout đăng nhập riêng (`loginOverApi`, tài khoản dùng một lần).
 
 ### App
 

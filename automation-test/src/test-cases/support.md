@@ -358,9 +358,8 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/support.md
   1. Gửi với từng tiêu đề không hợp lệ và một message hợp lệ.
 - **Mong đợi:** không gửi gì và hiện "Please enter subject" / "Subject must be
   at least 5 characters" / "Subject must not exceed 200 characters".
-- **Automated:** `tests/e2e/support/support-dialog.e2e.ts` — đánh dấu `test.fail()` (BUG-SUPPORT-01): submit bị chặn
-  trong im lặng — `SubjectField` không phải `FormField`, nên lỗi zod của nó không bao giờ được render và input giữ
-  `aria-invalid="false"`; chỉ có focus chuyển vào field.
+- **Automated:** `tests/e2e/support/support-dialog.e2e.ts` — BUG-SUPPORT-01 (đã sửa 2026-10-15): `SubjectField` từng không phải
+  `FormField`, nên lỗi zod của nó không được render và input giữ `aria-invalid="false"`.
 
 ### TC-SUPPORT-037 — An account with no requests sees the empty state
 
@@ -487,7 +486,7 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/support.md
 - **Bước:**
   1. POST với tiêu đề và nội dung chứa `<img src="x" onerror="alert(1)">`; đọc document đã lưu.
 - **Mong đợi:** 201; tiêu đề và nội dung đã lưu (và trong response) không còn thẻ `<img`.
-- **Automated:** `tests/api/support/contact.api.ts` — đánh dấu `test.fail()` (BUG-SUPPORT-02).
+- **Automated:** `tests/api/support/contact.api.ts` (từng là BUG-SUPPORT-02, đã sửa 2026-10-15: lưu bản đã làm sạch).
 
 ### TC-SUPPORT-050 — The body cannot set status, priority or owner
 
@@ -556,7 +555,7 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/support.md
 - **Bước:**
   1. Mở dialog từ `/login/alternative`; đổi email thành `not-an-email`; điền tiêu đề và nội dung hợp lệ; gửi.
 - **Mong đợi:** không gửi gì và hiện "Invalid email format".
-- **Automated:** `tests/e2e/support/support-dialog.e2e.ts` — đánh dấu `test.fail()` (BUG-SUPPORT-03).
+- **Automated:** `tests/e2e/support/support-dialog.e2e.ts` — BUG-SUPPORT-03 (đã sửa 2026-10-15).
 
 ### TC-SUPPORT-056 — Double-clicking Send request files one request
 

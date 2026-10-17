@@ -9,14 +9,23 @@ import { Card } from "@/components/ui/card";
 import StatBadge from "../../components/StatBadge";
 // hooks
 import useUserInfo from "@/hooks/useUserInfo";
+import useMyProfile from "../../hooks/useMyProfile";
 // others
 import { PROFILE_STATS_MOCK } from "@/mocks/Profile";
+import { getInitials } from "@/utils";
 
 const ProfileCard = () => {
   const t = useTranslations("account");
   const userInfo = useUserInfo();
+  // The idToken is not re-issued after a profile save — the profile query
+  // is, so it wins once loaded and the header follows the new name.
+  const { data: profile } = useMyProfile();
 
   if (!userInfo) return null;
+
+  const fullName = profile?.fullName ?? userInfo.fullName;
+  const avatar = profile ? profile.avatar : userInfo.avatar;
+  const initials = profile ? getInitials(profile.fullName) : userInfo.initials;
 
   return (
     <Card
@@ -26,13 +35,13 @@ const ProfileCard = () => {
       <div className="flex flex-col gap-4 px-8 pt-6 pb-6">
         <div className="flex items-end gap-5">
           <Avatar className="ring-card size-20 shrink-0 ring-4">
-            <AvatarImage src={userInfo.avatar ?? ""} alt={userInfo.fullName} />
+            <AvatarImage src={avatar ?? ""} alt={fullName} />
             <AvatarFallback className="bg-muted text-foreground text-xl font-bold">
-              {userInfo.initials}
+              {initials}
             </AvatarFallback>
           </Avatar>
           <div className="mb-2 min-w-0 flex-1">
-            <EntityName className="truncate">{userInfo.fullName}</EntityName>
+            <EntityName className="truncate">{fullName}</EntityName>
             <p className="text-muted-foreground truncate text-sm">
               {userInfo.email}
             </p>

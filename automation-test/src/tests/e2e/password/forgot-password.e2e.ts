@@ -10,8 +10,7 @@ import { plantCode } from "@/utils/redis";
 import {
   answerRepeatVerifyWithFirst,
   countMagicLinkVerifies,
-  countResets,
-  isDevBuild
+  countResets
 } from "./helpers";
 
 // Forgot password in the browser — options → OTP or magic link → new
@@ -64,11 +63,8 @@ test.describe("entry and options", () => {
     "The unavailable 2FA option is exposed as disabled",
     { tag: ["@TC-PASSWORD-062"] },
     async ({ forgotPasswordPage: options }) => {
-      // RecoveryOptionTwoFactor passes aria-label/aria-disabled to
-      // FadeSlideLeft, which drops every prop but className — the card has no
-      // accessible name or disabled state.
-      // BUG: defects/password.md#bug-password-05
-      test.fail();
+      // The accessible name and aria-disabled sit on a group inside
+      // FadeSlideLeft, which forwards only className (fixed BUG-PASSWORD-05).
       await options.goto("someone@e2e.example.com");
       await expect(options.twoFactorCard()).toHaveAttribute(
         "aria-disabled",
@@ -321,17 +317,9 @@ test.describe("by magic link", () => {
     }) => {
       const account = await createAccount({ tag: "fpui-once" });
       await options.goto(account.email);
-      // useForgotPasswordReset verifies the link in a mount effect with no
-      // once-guard; React StrictMode fires it twice, the two calls race
-      // (second may 401 → "link expired", or mint a second reset token that
-      // invalidates the first). StrictMode double effects exist in `next dev`
-      // only, so the defect is expected against a dev client and absent from
-      // a production build.
-      // BUG: defects/password.md#bug-password-03
-      test.fail(
-        await isDevBuild(page),
-        "BUG-PASSWORD-03 — dev-only double verify"
-      );
+      // useForgotPasswordReset verifies the link in a mount effect guarded to
+      // run once, so React StrictMode's double effect (`next dev` only) must
+      // not verify it a second time.
       expect((await options.chooseMagicLink()).status()).toBe(200);
       await plantCode(
         "forgotPasswordMagicLink",
@@ -354,11 +342,8 @@ test.describe("by magic link", () => {
       forgotPasswordPage: options,
       forgotPasswordResetPage: form
     }) => {
-      // The email links to `${CLIENT_URL}/reset-password?…` (server
-      // send-link.ts) but the client route is /forgot-password/reset, so the
-      // emailed link is a 404.
-      // BUG: defects/password.md#bug-password-02
-      test.fail();
+      // The emailed link points at the client route /forgot-password/reset
+      // (fixed BUG-PASSWORD-02).
       const account = await createAccount({ tag: "fpui-email" });
       await options.goto(account.email);
       expect((await options.chooseMagicLink()).status()).toBe(200);

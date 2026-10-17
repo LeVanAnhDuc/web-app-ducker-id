@@ -18,7 +18,8 @@
       "labelPassword": "Mật khẩu",
       "placeholderPassword": "Tối thiểu 8 ký tự",
       "labelPasswordConfirm": "Xác nhận mật khẩu",
-      "placeholderPasswordConfirm": "Nhập lại mật khẩu"
+      "placeholderPasswordConfirm": "Nhập lại mật khẩu",
+      "labelAcceptTerms": "Tôi đồng ý với Điều khoản dịch vụ (Terms) và Chính sách quyền riêng tư"
     },
     "button": {
       "submit": "Tạo tài khoản"

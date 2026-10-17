@@ -68,11 +68,14 @@ const PersonalInfoForm = ({ profile }: { profile: MyProfileResponse }) => {
       const fullName = [data.firstName, data.lastName]
         .filter(Boolean)
         .join(" ");
-      const payload: UpdateProfileData = { fullName };
-      if (data.phone) payload.phone = data.phone;
-      if (data.address) payload.address = data.address;
-      if (data.dateOfBirth) payload.dateOfBirth = data.dateOfBirth;
-      if (data.gender) payload.gender = data.gender as GenderEnum;
+      // An emptied optional field is sent as null so the server clears it.
+      const payload: UpdateProfileData = {
+        fullName,
+        phone: data.phone || null,
+        address: data.address || null,
+        dateOfBirth: data.dateOfBirth || null,
+        gender: (data.gender as GenderEnum) || null
+      };
       mutate(payload);
     });
 

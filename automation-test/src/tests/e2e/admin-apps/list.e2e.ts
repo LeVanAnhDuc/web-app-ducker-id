@@ -122,9 +122,6 @@ test.describe("Admin apps list — search", () => {
     "The no-match empty state says nothing matched",
     { tag: "@TC-ADMINAPPS-016" },
     async ({ adminAppsPage }) => {
-      // AdminAppsTable always passes emptyTitle "No apps registered yet." to PageContent, so a no-match search claims the registry is empty.
-      // BUG: defects/admin-apps.md#bug-adminapps-01
-      test.fail();
       await adminAppsPage.searchInput().fill("zz-no-such-app-zz");
       await expect(adminAppsPage.text(copy.list.noResultsTitle)).toBeVisible({
         timeout: 5_000

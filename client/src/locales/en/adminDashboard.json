@@ -7,6 +7,10 @@
       "title": "App Registry",
       "description": "Register satellite apps, manage client credentials and redirect URIs."
     },
+    "categories": {
+      "title": "Categories",
+      "description": "Create, rename and order the categories that group apps in the launcher."
+    },
     "entitlements": {
       "title": "Entitlements",
       "description": "Grant or revoke per-user access to satellite apps."

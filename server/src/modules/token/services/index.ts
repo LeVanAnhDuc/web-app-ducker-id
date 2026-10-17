@@ -1,61 +1,20 @@
 // types
 import type { RefreshTokenDto } from "../dtos";
-import type { AuthenticationService } from "@/modules/authentication/services";
-import type { UserService } from "@/modules/user/services";
-import type {
-  RefreshTokenPresentGuard,
-  RefreshTokenValidGuard,
-  AuthActiveGuard,
-  PasswordNotChangedGuard,
-  UserExistsGuard
-} from "../guards";
-// modules
-import { generateAuthTokensResponse } from "@/modules/authentication/helpers";
-// dtos
-import { toRefreshTokenDto } from "../dtos";
+import type { TokenServiceDeps } from "./deps";
 // others
-import { Logger } from "@/libs/logger";
+import { refreshAccessToken } from "./refresh-access-token";
+import { revokeRefreshToken } from "./revoke-refresh-token";
 
 export class TokenService {
-  constructor(
-    private readonly authService: AuthenticationService,
-    private readonly userService: UserService,
-    private readonly refreshTokenPresentGuard: RefreshTokenPresentGuard,
-    private readonly refreshTokenValidGuard: RefreshTokenValidGuard,
-    private readonly authActiveGuard: AuthActiveGuard,
-    private readonly passwordNotChangedGuard: PasswordNotChangedGuard,
-    private readonly userExistsGuard: UserExistsGuard
-  ) {}
+  constructor(private readonly deps: TokenServiceDeps) {}
 
-  async refreshAccessToken(
+  refreshAccessToken(
     refreshToken: string | undefined
   ): Promise<RefreshTokenDto> {
-    this.refreshTokenPresentGuard.assert(refreshToken);
-    const payload = this.refreshTokenValidGuard.assert(refreshToken);
+    return refreshAccessToken(this.deps, refreshToken);
+  }
 
-    const [auth, user] = await Promise.all([
-      this.authService.findById(payload.authId),
-      this.userService.findByAuthId(payload.authId)
-    ]);
-
-    this.authActiveGuard.assert(auth, payload.authId);
-    this.passwordNotChangedGuard.assert(auth, payload);
-    this.userExistsGuard.assert(user, payload.authId);
-
-    const authTokensResponse = generateAuthTokensResponse({
-      userId: user._id.toString(),
-      authId: auth._id.toString(),
-      email: user.email,
-      roles: auth.roles,
-      fullName: user.fullName,
-      avatar: user.avatar ?? null,
-      // Carry the auth's CURRENT version forward — refresh must not bump it.
-      tokenVersion: auth.tokenVersion ?? 0,
-      mustChangePassword: auth.mustChangePassword ?? false
-    });
-
-    Logger.info("Token refresh successful", { userId: user._id.toString() });
-
-    return toRefreshTokenDto(authTokensResponse);
+  revokeRefreshToken(refreshToken: string | undefined): Promise<void> {
+    return revokeRefreshToken(this.deps, refreshToken);
   }
 }

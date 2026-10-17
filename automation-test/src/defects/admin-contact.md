@@ -2,10 +2,9 @@
 
 ## Đang mở
 
-| Bug                                         | Mức  | TC                  | Tóm tắt                                                                                                                |
-| ------------------------------------------- | ---- | ------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| [BUG-ADMINCONTACT-01](#bug-admincontact-01) | Thấp | TC-ADMINCONTACT-027 | Trang chi tiết liên hệ của admin không bao giờ hiện ai đã gửi yêu cầu — DTO bỏ mất `userId`; IP không bao giờ được lưu |
-| [BUG-ADMINCONTACT-02](#bug-admincontact-02) | Thấp | TC-ADMINCONTACT-035 | API hộp thư trả key catalogue (`success.getContactList`, `contactAdmin:errors.invalidId`…) thay cho thông điệp đã dịch |
+_(không có)_
+
+## Đã sửa
 
 ### BUG-ADMINCONTACT-01
 
@@ -14,6 +13,7 @@
 - **Bước tái hiện:** chạy test của TC-ADMINCONTACT-027 — `tests/e2e/admin-contact/detail-status.e2e.ts:198`
 - **Mong đợi:** hiện User ID
 - **Thực tế:** trang chi tiết liên hệ của admin không bao giờ hiện ai đã gửi yêu cầu — DTO bỏ mất `userId`; IP không bao giờ được lưu
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — model lưu `ipAddress` (`req.ip`) khi gửi; `GET /admin/contacts/:id` trả `AdminContactDetailItemDto` (thêm `userId`, `ipAddress`), view của chủ sở hữu giữ nguyên; thẻ admin chỉ hiện IP khi có.
 
 ### BUG-ADMINCONTACT-02
 
@@ -30,7 +30,4 @@
   ([BUG-ADMINUSERS-04](admin-users.md#bug-adminusers-04)); `errors[].message` của id sai là `errors.invalidId` (mất tiền
   tố) vì namespace `contactAdmin` không được server i18n nạp
   ([BUG-ADMINLOGINHISTORY-03](admin-login-history.md#bug-adminloginhistory-03)).
-
-## Đã sửa
-
-_(chưa có)_
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — thêm `success.getContactList` / `getContactDetail` / `updateContactStatus` và `errors.invalidId` / `statusInvalid` / `statusRequired` vào `contactAdmin.json` (en, vi); success message được dịch nhờ bản sửa BUG-ADMINUSERS-04.

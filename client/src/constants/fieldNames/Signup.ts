@@ -3,7 +3,8 @@ const SIGNUP_FIELD_NAMES = {
   GENDER: "gender",
   BIRTHDAY: "birthday",
   PASSWORD: "password",
-  PASSWORD_CONFIRM: "passwordConfirm"
-};
+  PASSWORD_CONFIRM: "passwordConfirm",
+  ACCEPT_TERMS: "acceptTerms"
+} as const;
 
 export default SIGNUP_FIELD_NAMES;

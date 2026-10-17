@@ -2,10 +2,9 @@
 
 ## Đang mở
 
-| Bug                       | Mức        | TC                           | Tóm tắt                                                                                                                   |
-| ------------------------- | ---------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| [BUG-OPS-01](#bug-ops-01) | Thấp       | TC-OPS-006                   | `/api-docs.json` thiếu các path login-history, favourites, admin contacts và unlock (notifications đã có tài liệu từ #26) |
-| [BUG-OPS-02](#bug-ops-02) | Trung bình | TC-OPS-016, TC-ADMINAPPS-072 | Body JSON hỏng trả 500 `INTERNAL_SERVER_ERROR` thay vì 400                                                                |
+_(không có)_
+
+## Đã sửa
 
 ### BUG-OPS-01
 
@@ -14,6 +13,7 @@
 - **Bước tái hiện:** chạy test của TC-OPS-006 — `tests/api/ops/api-docs.api.ts:92`
 - **Mong đợi:** mọi route đã mount đều có tài liệu
 - **Thực tế:** `/api-docs.json` thiếu các path login-history, favourites, admin contacts và unlock (notifications đã có tài liệu từ #26)
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — thêm `swagger/` cho login-history (user + admin), favorite, unlock-account và các path `/admin/contacts*`, đăng ký trong `server/src/libs/swagger/openapi.ts`; spec `openapi.spec.ts` kiểm từng module và mọi `$ref`.
 
 ### BUG-OPS-02
 
@@ -26,7 +26,4 @@
 - **Thực tế:** `express.json()` ném `SyntaxError` (status 400, type `entity.parse.failed`); `handleError` trong
   `server/src/middlewares/filters/error.filter.ts` chỉ nhận `ErrorResponse` / lỗi Mongoose nên rơi vào nhánh cuối và
   trả 500 `INTERNAL_SERVER_ERROR`. Body > 10mb (413 `entity.too.large`) đi cùng nhánh.
-
-## Đã sửa
-
-_(chưa có)_
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — `handleError` nhận lỗi body-parser (`expose` + status 4xx): giữ status (400 `MALFORMED_BODY`, 413 `PAYLOAD_TOO_LARGE`, 415 `UNSUPPORTED_MEDIA_TYPE`) trong error envelope đã dịch, không lặp lại body; `requestId` và i18n chạy trước body parser trong `app.ts` để lỗi đó có `req.t` và `X-Request-Id`.

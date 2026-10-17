@@ -23,6 +23,7 @@ export interface ContactDocument extends Document {
   message: string;
   status: ContactStatus;
   userId?: Types.ObjectId | null;
+  ipAddress?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }

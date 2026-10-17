@@ -36,8 +36,8 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/admin-users.md
 - **Tiền điều kiện:** không có
 - **Bước:**
   1. Mở `/admin/users` với tư cách `user@test.com`.
-- **Mong đợi:** `GET /admin/users` trả 403, toast "Forbidden access" hiện ra
-  và không email nào của tài khoản khác được render.
+- **Mong đợi:** `GET /admin/users` bằng token của user trả 403; guard vai trò phía client đưa user ra khỏi
+  `/admin/users` và không email nào của tài khoản khác được render.
 - **Automated:** `tests/e2e/admin-users/list.e2e.ts`
 
 ### TC-ADMINUSERS-004 — Tampered URL params are sanitised
@@ -227,9 +227,7 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/admin-users.md
 - **Mong đợi:** sau hai lần retry của React Query toast "Server error.
   Please try again later." hiện ra, và trang hiện "Could not load users.
   Please try again." thay vì trạng thái rỗng "No users match".
-- **Automated:** `tests/e2e/admin-users/list.e2e.ts` — nửa trạng thái rỗng là
-  `test.fail()`: BUG-ADMINUSERS-01 — `AdminUsersTable` không có nhánh lỗi kể từ đợt
-  refactor unified-list, nên lần tải thất bại render "No users match".
+- **Automated:** `tests/e2e/admin-users/list.e2e.ts` (từng là BUG-ADMINUSERS-01, đã sửa 2026-10-15).
 
 ### TC-ADMINUSERS-020 — A skeleton shows while the list loads
 
@@ -251,8 +249,7 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/admin-users.md
 - **Bước:**
   1. Mở `/admin/users`.
 - **Mong đợi:** `#announcer` đọc "{total} users loaded".
-- **Automated:** `tests/e2e/admin-users/list.e2e.ts` — `test.fail()`: BUG-ADMINUSERS-02 —
-  danh sách không bao giờ thông báo; `adminUsers.announce.loaded` không được dùng.
+- **Automated:** `tests/e2e/admin-users/list.e2e.ts` (từng là BUG-ADMINUSERS-02, đã sửa 2026-10-15).
 
 ### TC-ADMINUSERS-022 — List API contract
 
@@ -600,7 +597,7 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/admin-users.md
 - **Bước:**
   1. Menu dòng → "Lock account" → "Cancel".
 - **Mong đợi:** dialog đóng và focus nằm trên nút "User actions" của dòng.
-- **Automated:** `tests/e2e/admin-users/lock-unlock.e2e.ts` — `test.fail()`: BUG-ADMINUSERS-03.
+- **Automated:** `tests/e2e/admin-users/lock-unlock.e2e.ts` (từng là BUG-ADMINUSERS-03, đã sửa 2026-10-15).
 
 ## Đặt lại mật khẩu — REQ-ADMINUSERS-03
 
@@ -735,7 +732,7 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/admin-users.md
 - **Bước:**
   1. Menu dòng → "Reset password" → "Cancel".
 - **Mong đợi:** dialog đóng và focus nằm trên nút "User actions" của dòng.
-- **Automated:** `tests/e2e/admin-users/reset-password.e2e.ts` — `test.fail()`: BUG-ADMINUSERS-03.
+- **Automated:** `tests/e2e/admin-users/reset-password.e2e.ts` (từng là BUG-ADMINUSERS-03, đã sửa 2026-10-15).
 
 ### TC-ADMINUSERS-067 — An admin can reset another admin
 

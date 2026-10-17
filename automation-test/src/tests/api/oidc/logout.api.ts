@@ -126,9 +126,8 @@ test(
 );
 
 test("Logout expires the sid cookie", { tag: "@TC-OIDC-044" }, async () => {
-  // clearCookie(SESSION_COOKIE, SESSION_COOKIE_OPTIONS) passes maxAge, so Express 4 sends "sid=; Max-Age=604800" — an empty cookie living 7 more days.
-  // BUG: defects/oidc.md#bug-oidc-05
-  test.fail();
+  // The sid cookie is cleared without maxAge, so Express sends an
+  // already-expired cookie (fixed BUG-OIDC-05).
   const res = await me!.api.oauth.logout();
   const header = setCookie(res, "sid");
   expect(header, "no Set-Cookie for sid").toBeTruthy();

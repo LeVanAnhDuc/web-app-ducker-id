@@ -198,9 +198,6 @@ test.describe("Favorites page (/favorites)", () => {
     "A failed load shows the error message, not the empty state",
     { tag: "@TC-FAVORITES-035" },
     async ({ favoritesPage }) => {
-      // BUG: defects/favorites.md#bug-favorites-01
-      test.fail();
-
       await setFavorites([idByName[A]]);
       await failListing(favoritesPage.page);
       await favoritesPage.goto();
@@ -217,9 +214,6 @@ test.describe("Favorites page (/favorites)", () => {
     "Unstarring from the keyboard keeps focus on the page",
     { tag: "@TC-FAVORITES-038" },
     async ({ page, favoritesPage }) => {
-      // BUG: defects/favorites.md#bug-favorites-02
-      test.fail();
-
       await setFavorites([idByName[A], idByName[B]]);
       await Promise.all([waitForFavoritesList(page), favoritesPage.goto()]);
       await expect(favoritesPage.cardTitle(A)).toBeVisible();

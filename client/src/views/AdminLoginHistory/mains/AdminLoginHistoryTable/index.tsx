@@ -24,7 +24,11 @@ import {
   toLoginAppQueryParams
 } from "@/dataSources/LoginHistory";
 // others
-import { isLoginHistoryStatus, isLoginHistoryMethod } from "@/utils";
+import {
+  isLoginHistoryStatus,
+  isLoginHistoryMethod,
+  isLoginHistoryDeviceType
+} from "@/utils";
 import CONSTANTS from "@/constants";
 
 const { ADMIN_LOGIN_HISTORY } = CONSTANTS.ROUTES;
@@ -64,6 +68,9 @@ const AdminLoginHistoryTable = () => {
     }),
     ...(isLoginHistoryMethod(query.filters.method) && {
       method: query.filters.method
+    }),
+    ...(isLoginHistoryDeviceType(query.filters.deviceType) && {
+      deviceType: query.filters.deviceType
     }),
     ...(query.filters.fromDate && { fromDate: query.filters.fromDate }),
     ...(query.filters.toDate && { toDate: query.filters.toDate }),

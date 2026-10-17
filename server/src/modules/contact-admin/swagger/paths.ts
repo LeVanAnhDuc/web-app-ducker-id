@@ -174,5 +174,188 @@ another owner.
         "404": { $ref: "#/components/responses/NotFound" }
       }
     }
+  },
+  "/admin/contacts": {
+    get: {
+      summary: "List every contact request (admin)",
+      tags: ["Contact Admin"],
+      security: [{ bearerAuth: [] }],
+      parameters: [
+        { name: "page", in: "query", schema: { type: "integer", minimum: 1 } },
+        {
+          name: "limit",
+          in: "query",
+          schema: { type: "integer", minimum: 1, maximum: 100 }
+        },
+        {
+          name: "status",
+          in: "query",
+          schema: { type: "string", enum: ["new", "processing", "resolved"] }
+        },
+        {
+          name: "priority",
+          in: "query",
+          schema: { type: "string", enum: ["low", "medium", "high"] }
+        },
+        { name: "email", in: "query", schema: { type: "string" } },
+        {
+          name: "search",
+          in: "query",
+          description: "Case-insensitive match on subject",
+          schema: { type: "string" }
+        },
+        {
+          name: "fromDate",
+          in: "query",
+          schema: { type: "string", format: "date" }
+        },
+        {
+          name: "toDate",
+          in: "query",
+          schema: { type: "string", format: "date" }
+        },
+        {
+          name: "sortBy",
+          in: "query",
+          schema: { type: "string", enum: ["createdAt", "priority", "status"] }
+        },
+        {
+          name: "sortOrder",
+          in: "query",
+          schema: { type: "string", enum: ["asc", "desc"] }
+        }
+      ],
+      responses: {
+        "200": {
+          description: "Contact requests retrieved successfully",
+          content: {
+            "application/json": {
+              schema: {
+                allOf: [
+                  { $ref: "#/components/schemas/SuccessResponse" },
+                  {
+                    type: "object",
+                    properties: {
+                      data: {
+                        type: "object",
+                        properties: {
+                          items: {
+                            type: "array",
+                            items: {
+                              $ref: "#/components/schemas/ContactListItem"
+                            }
+                          },
+                          meta: {
+                            $ref: "#/components/schemas/PaginationMeta"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "400": { $ref: "#/components/responses/ValidationError" },
+        "401": { $ref: "#/components/responses/Unauthorized" },
+        "403": { $ref: "#/components/responses/Forbidden" }
+      }
+    }
+  },
+  "/admin/contacts/{id}": {
+    get: {
+      summary: "Get any contact request (admin)",
+      tags: ["Contact Admin"],
+      security: [{ bearerAuth: [] }],
+      parameters: [
+        {
+          name: "id",
+          in: "path",
+          required: true,
+          schema: { type: "string", pattern: "^[a-fA-F0-9]{24}$" }
+        }
+      ],
+      responses: {
+        "200": {
+          description: "Contact request retrieved successfully",
+          content: {
+            "application/json": {
+              schema: {
+                allOf: [
+                  { $ref: "#/components/schemas/SuccessResponse" },
+                  {
+                    type: "object",
+                    properties: {
+                      data: { $ref: "#/components/schemas/ContactDetailItem" }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "400": { $ref: "#/components/responses/ValidationError" },
+        "401": { $ref: "#/components/responses/Unauthorized" },
+        "403": { $ref: "#/components/responses/Forbidden" },
+        "404": { $ref: "#/components/responses/NotFound" }
+      }
+    }
+  },
+  "/admin/contacts/{id}/status": {
+    patch: {
+      summary: "Move a contact request to another status (admin)",
+      tags: ["Contact Admin"],
+      security: [{ bearerAuth: [] }],
+      parameters: [
+        {
+          name: "id",
+          in: "path",
+          required: true,
+          schema: { type: "string", pattern: "^[a-fA-F0-9]{24}$" }
+        }
+      ],
+      requestBody: {
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              required: ["status"],
+              properties: {
+                status: {
+                  type: "string",
+                  enum: ["new", "processing", "resolved"]
+                }
+              }
+            }
+          }
+        }
+      },
+      responses: {
+        "200": {
+          description: "Contact status updated successfully",
+          content: {
+            "application/json": {
+              schema: {
+                allOf: [
+                  { $ref: "#/components/schemas/SuccessResponse" },
+                  {
+                    type: "object",
+                    properties: {
+                      data: { $ref: "#/components/schemas/ContactListItem" }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "400": { $ref: "#/components/responses/ValidationError" },
+        "401": { $ref: "#/components/responses/Unauthorized" },
+        "403": { $ref: "#/components/responses/Forbidden" },
+        "404": { $ref: "#/components/responses/NotFound" }
+      }
+    }
   }
 };

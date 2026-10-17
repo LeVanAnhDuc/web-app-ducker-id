@@ -131,6 +131,16 @@ export const exchangeToken = async (
     });
   }
 
+  // Checked before the code is consumed: a malformed verifier is a broken
+  // request, not a failed proof, and must not burn the code (BUG-OIDC-03).
+  if (!OAUTH_CONFIG.CODE_VERIFIER_PATTERN.test(body.code_verifier)) {
+    throw new OAuthError({
+      error: OAUTH_ERRORS.INVALID_REQUEST,
+      description:
+        "code_verifier must be 43-128 characters of [A-Za-z0-9-._~] (RFC 7636)"
+    });
+  }
+
   const record = await deps.oauthRepo.consumeCode(body.code);
 
   if (!record) {
@@ -149,7 +159,16 @@ export const exchangeToken = async (
     });
   }
 
-  if (body.redirect_uri && body.redirect_uri !== record.redirectUri) {
+  // RFC 6749 §4.1.3: REQUIRED whenever the authorize request carried one —
+  // and /oauth/authorize always requires it (BUG-OIDC-06).
+  if (!body.redirect_uri) {
+    throw new OAuthError({
+      error: OAUTH_ERRORS.INVALID_REQUEST,
+      description: "redirect_uri is required"
+    });
+  }
+
+  if (body.redirect_uri !== record.redirectUri) {
     throw new OAuthError({
       error: OAUTH_ERRORS.INVALID_GRANT,
       description: "redirect_uri does not match the authorization request"

@@ -45,9 +45,9 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/admin-entitlements
 - **Kỹ thuật:** bảng quyết định (role user × tìm user / catalog app)
 - **Tiền điều kiện:** session và token của user đã seed
 - **Bước:**
-  1. Mở trang với tư cách user, focus và gõ vào ô tìm kiếm.
+  1. Mở trang với tư cách user.
   2. `GET /admin/apps` bằng token của user.
-- **Mong đợi:** `/admin/users` trả 403, picker hiện "No users found" và không liệt kê ai (không bao giờ có `admin@test.com`), không xuất hiện nút Edit hay cột ma trận; lời gọi catalog trả 403.
+- **Mong đợi:** `/admin/users` trả 403; guard vai trò phía client đưa user ra khỏi trang nên picker không render và không liệt kê ai (không bao giờ có `admin@test.com`), không xuất hiện nút Edit hay cột ma trận; lời gọi catalog trả 403.
 - **Automated:** `tests/e2e/admin-entitlements/picker.e2e.ts`
 
 ### TC-ADMINENTITLEMENTS-005 — A search with no match says so

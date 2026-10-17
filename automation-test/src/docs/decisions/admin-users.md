@@ -45,7 +45,7 @@ chưa có requirement.
   REQ-ADMINUSERS-06, TC-ADMINUSERS-061.
 - Q3 (tự quyết 2026-10-14, cần user duyệt): focus sau khi đóng dialog khoá / reset về `<body>` trước đây ghi là tech
   debt "không assert"; hai design doc yêu cầu "focus về trigger khi đóng". → tài liệu thắng code: thành requirement
-  (thuộc REQ-02 / REQ-03), test viết kỳ vọng đúng kèm `test.fail()` → BUG-ADMINUSERS-03, TC-ADMINUSERS-065, -066.
+  (thuộc REQ-02 / REQ-03), test viết kỳ vọng đúng kèm `test.fail()` → BUG-ADMINUSERS-03, TC-ADMINUSERS-065, -066 (đã sửa 2026-10-15, fix/open-bugs).
 - Q4 (tự quyết 2026-10-14, cần user duyệt): seed chỉ có 5 tài khoản nên thanh phân trang không chắc hiện. Có tạo 21
   tài khoản để có trang 2 thật không? → không; test cho response danh sách đi qua thật nhưng nâng `meta.totalPages`
   lên tối thiểu 2, rồi kiểm click "Go to next page" gọi `page=2` thật và ghi URL. Hành vi phân trang phía server đã
@@ -107,8 +107,8 @@ readTempPassword`).
 
 ## Tech debt liên quan
 
-- `AdminUsersTable` không có nhánh lỗi (BUG-ADMINUSERS-01) và không thông báo khi tải xong (BUG-ADMINUSERS-02) kể từ
-  đợt refactor unified-list.
-- Dialog khoá / reset mở từ `DropdownMenuItem` đã unmount nên focus khi đóng rơi về `<body>` (BUG-ADMINUSERS-03).
+- `AdminUsersTable` từng không có nhánh lỗi (BUG-ADMINUSERS-01) và không thông báo khi tải xong (BUG-ADMINUSERS-02) kể từ
+  đợt refactor unified-list (đã sửa 2026-10-15, fix/open-bugs).
+- Dialog khoá / reset mở từ `DropdownMenuItem` đã unmount nên focus khi đóng từng rơi về `<body>` (BUG-ADMINUSERS-03) (đã sửa 2026-10-15, fix/open-bugs).
 - Hai locator giữ nguyên từ bộ test cũ vì markup không cho gì tốt hơn: skeleton `.animate-pulse`
   (`UsersTableSkeleton` không có role / testid) và panel Filters `[data-slot="popover-content"]`.

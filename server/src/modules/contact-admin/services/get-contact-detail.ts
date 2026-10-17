@@ -1,17 +1,17 @@
 // types
-import type { ContactDetailItemDto } from "../dtos";
+import type { AdminContactDetailItemDto } from "../dtos";
 import type { ContactRepository } from "../repository/contact-admin.repository";
 // common
 import { NotFoundError } from "@/common/exceptions";
 // dtos
-import { toContactDetailItemDto } from "../dtos";
+import { toAdminContactDetailItemDto } from "../dtos";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 
 export const getContactDetail = async (
   contactRepo: ContactRepository,
   id: string
-): Promise<ContactDetailItemDto> => {
+): Promise<AdminContactDetailItemDto> => {
   const doc = await contactRepo.findById(id);
 
   if (!doc) {
@@ -21,5 +21,5 @@ export const getContactDetail = async (
     });
   }
 
-  return toContactDetailItemDto(doc);
+  return toAdminContactDetailItemDto(doc);
 };

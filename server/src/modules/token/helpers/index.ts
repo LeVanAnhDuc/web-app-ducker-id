@@ -1,5 +1,5 @@
 // libs
-import jwt, { type Secret } from "jsonwebtoken";
+import jwt, { JsonWebTokenError, type Secret } from "jsonwebtoken";
 // types
 import type { StringValue } from "ms";
 // common
@@ -162,12 +162,40 @@ export interface OAuthAccessTokenPayload {
 /**
  * Verify access token do luồng OAuth phát ra. Khác verifyAccessToken ở chỗ
  * KHÔNG ép audience về issuer — token này mang aud = clientId của app vệ tinh.
- * Caller tự quyết định chấp nhận audience nào.
+ *
+ * Cùng khoá và issuer còn ký hai loại token khác, nên chữ ký hợp lệ chưa đủ:
+ * - access token first-party mang aud = issuer → không phát cho OAuth client
+ *   nào (BUG-OIDC-01);
+ * - id_token không có `scope` / `authId` → không phải access token
+ *   (BUG-OIDC-02 — trước đây lọt qua rồi nổ 500 khi load claim).
+ * Cả hai bị từ chối như một token không hợp lệ.
  */
 export const verifyOAuthAccessToken = (
   token: string
-): OAuthAccessTokenPayload =>
-  jwt.verify(token, getVerificationKey(), {
+): OAuthAccessTokenPayload => {
+  const payload = jwt.verify(token, getVerificationKey(), {
     algorithms: [SIGNING_ALGORITHM],
     issuer: ENV.OIDC_ISSUER
-  }) as OAuthAccessTokenPayload;
+  });
+
+  if (typeof payload === "string") {
+    throw new JsonWebTokenError("access token payload must be a JSON object");
+  }
+
+  const audiences = Array.isArray(payload.aud) ? payload.aud : [payload.aud];
+
+  if (audiences.includes(ENV.OIDC_ISSUER)) {
+    throw new JsonWebTokenError("first-party token is not an OAuth token");
+  }
+
+  const isAccessToken =
+    typeof payload.sub === "string" &&
+    typeof payload.authId === "string" &&
+    typeof payload.scope === "string";
+
+  if (!isAccessToken) {
+    throw new JsonWebTokenError("token is not an OAuth access token");
+  }
+
+  return payload as unknown as OAuthAccessTokenPayload;
+};

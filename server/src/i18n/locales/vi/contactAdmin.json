@@ -14,12 +14,18 @@
     "messageTooShort": "Nội dung phải có ít nhất 20 ký tự",
     "messageTooLong": "Nội dung không được vượt quá 5000 ký tự",
     "ticketGenerationFailed": "Không thể tạo mã ticket. Vui lòng thử lại",
-    "notFound": "Không tìm thấy yêu cầu liên hệ"
+    "notFound": "Không tìm thấy yêu cầu liên hệ",
+    "invalidId": "Mã yêu cầu liên hệ không hợp lệ",
+    "statusRequired": "Trạng thái là bắt buộc",
+    "statusInvalid": "Trạng thái liên hệ không hợp lệ"
   },
   "success": {
     "submitted": "Yêu cầu của bạn đã được gửi thành công",
     "updateContactCategory": "Cập nhật danh mục thành công",
     "getMyContacts": "Lấy danh sách liên hệ thành công",
-    "getMyContactDetail": "Lấy chi tiết liên hệ thành công"
+    "getMyContactDetail": "Lấy chi tiết liên hệ thành công",
+    "getContactList": "Lấy danh sách yêu cầu liên hệ thành công",
+    "getContactDetail": "Lấy chi tiết yêu cầu liên hệ thành công",
+    "updateContactStatus": "Cập nhật trạng thái liên hệ thành công"
   }
 }

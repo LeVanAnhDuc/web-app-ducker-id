@@ -327,13 +327,19 @@ test.describe("validation", () => {
           field: "dateOfBirth"
         },
         {
-          label: "99 years ago",
-          body: { dateOfBirth: isoDateFromToday(-99) },
+          label: "12 years ago",
+          body: { dateOfBirth: isoDateFromToday(-12) },
+          ok: false,
+          field: "dateOfBirth"
+        },
+        {
+          label: "119 years ago",
+          body: { dateOfBirth: isoDateFromToday(-119) },
           ok: true
         },
         {
-          label: "101 years ago",
-          body: { dateOfBirth: isoDateFromToday(-101) },
+          label: "121 years ago",
+          body: { dateOfBirth: isoDateFromToday(-121) },
           ok: false,
           field: "dateOfBirth"
         },
@@ -413,10 +419,8 @@ test.describe("validation", () => {
     "A whitespace-only full name is refused",
     { tag: ["@TC-PROFILE-045"] },
     async ({ newApi }) => {
-      // updateProfileSchema neither trims nor requires a letter: "   " is
-      // three characters of the allowed set, so a blank name is stored.
-      // BUG: defects/profile.md#bug-profile-05
-      test.fail();
+      // updateProfileSchema trims before it checks, so "   " is an empty
+      // name (fixed BUG-PROFILE-05).
       const users = await usersOf(
         newApi,
         await createAccount({ tag: "pfa-blank" })
@@ -457,11 +461,9 @@ test.describe("validation", () => {
     "A date of birth accepted at sign-up is accepted again",
     { tag: ["@TC-PROFILE-040"] },
     async ({ newApi }) => {
-      // sign-up allows ages 13–120 (validators/schemas/base.ts) but
-      // updateProfileSchema caps dateOfBirth at 100 years, so resending the
-      // stored value — what the profile form does on every save — is a 400.
-      // BUG: defects/profile.md#bug-profile-01
-      test.fail();
+      // sign-up and updateProfileSchema share the 13–120 range, so resending
+      // the stored value — what the profile form does on every save — is
+      // accepted (fixed BUG-PROFILE-01).
       const account = await createAccount({
         tag: "pfa-elder",
         fullName: "Elder Tester",

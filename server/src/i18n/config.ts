@@ -36,10 +36,13 @@ i18next.use(Backend).init({
     "unlockAccount",
     "sendEmail",
     "forgotPassword",
+    "changePassword",
     "contactAdmin",
+    "loginHistory",
     "user",
     "webApp",
     "favorite",
+    "notification",
     "recentApp",
     "category",
     "entitlement"

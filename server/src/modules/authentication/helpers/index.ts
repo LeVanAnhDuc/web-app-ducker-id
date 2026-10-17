@@ -31,7 +31,10 @@ export const generateAuthTokensResponse = ({
     accessToken: generateAccessToken({
       sub: userId,
       authId: authId,
-      roles: roles
+      roles: roles,
+      // The API enforces the forced change from this claim (authGuard); it is
+      // left out entirely on a normal session.
+      ...(mustChangePassword ? { mustChangePassword: true } : {})
     }),
     refreshToken: generateRefreshToken({
       sub: userId,

@@ -20,10 +20,12 @@ import useForceLogoutAdminUser from "../../hooks/useForceLogoutAdminUser";
 
 const AdminUsersForceLogoutDialog = ({
   target,
-  onClose
+  onClose,
+  onCloseAutoFocus
 }: {
   target: AdminUser | null;
   onClose: () => void;
+  onCloseAutoFocus?: (event: Event) => void;
 }) => {
   const t = useTranslations("adminUsers.forceLogoutDialog");
   const tActions = useTranslations("adminUsers.actions");
@@ -43,7 +45,7 @@ const AdminUsersForceLogoutDialog = ({
 
   return (
     <Dialog open={target !== null} onOpenChange={(o) => !o && onClose()}>
-      <CustomDialogContent>
+      <CustomDialogContent onCloseAutoFocus={onCloseAutoFocus}>
         <DialogHeader>
           <DialogTitle>
             {target

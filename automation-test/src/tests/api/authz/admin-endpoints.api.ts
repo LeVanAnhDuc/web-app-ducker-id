@@ -147,9 +147,7 @@ test(
   "The Bull Board queue dashboard requires an admin",
   { tag: ["@TC-AUTHZ-012", "@smoke"] },
   async ({ ops }) => {
-    // /admin/queues (Bull Board) is mounted in server/src/loaders/queue.loader.ts with no guard — a guest gets 200.
-    // BUG: defects/authz.md#bug-authz-01
-    test.fail();
+    // /admin/queues (Bull Board) sits behind adminGuard (fixed BUG-AUTHZ-01).
     // Served only on the API origin (the `ops` client); the client does not proxy it.
     const res = await ops.queues();
     expect([401, 403, 302]).toContain(res.status());

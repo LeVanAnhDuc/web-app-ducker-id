@@ -7,8 +7,12 @@
     "validationFailed": "Validation failed",
     "unauthorized": "Unauthorized access",
     "forbidden": "Forbidden access",
+    "passwordChangeRequired": "You must change your password before continuing",
     "duplicateKey": "Value for '{{field}}' already exists",
     "duplicateKeyGeneric": "Duplicate value",
-    "invalidObjectId": "Invalid ID format"
+    "invalidObjectId": "Invalid ID format",
+    "malformedBody": "The request body is not valid JSON",
+    "payloadTooLarge": "The request body is too large",
+    "unsupportedMediaType": "The request body encoding is not supported"
   }
 }

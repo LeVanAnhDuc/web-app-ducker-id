@@ -170,9 +170,8 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/apps.md
 - **Bước:**
   1. Mở `/vi/apps` và chờ hết hai lần retry của React Query.
 - **Mong đợi:** một `role="alert"` với nội dung "Không thể tải ứng dụng. Vui lòng thử lại."
-- **Ghi chú:** spec đánh dấu `test.fail()`: **bug của app** — alert được render bên
-  trong children của `PageContent`, mà children này bị thay bằng trạng thái rỗng khi
-  query lỗi không có item; user thấy "No apps found" thay vì thông báo lỗi.
+- **Ghi chú:** BUG-APPS-01 (đã sửa 2026-10-15) — alert được render bên trong children của `PageContent`, mà children này từng
+  bị thay bằng trạng thái rỗng khi query lỗi không có item.
 - **Automated:** `tests/e2e/apps/catalog.e2e.ts`
 
 ### TC-APPS-015 — Opening a tile records the launch

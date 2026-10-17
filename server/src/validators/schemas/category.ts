@@ -106,12 +106,12 @@ export const deleteCategoryBodySchema: Joi.ObjectSchema<DeleteCategoryBody> =
           categoryId: objectId("targetId")
         })
       )
-      .unique("appId")
+      // A repeated appId is not checked here: the contract answers it with
+      // CATEGORY_REASSIGN_INVALID, which the service raises.
       .max(CATEGORY_CONFIG.MAX_REASSIGNMENTS)
       .default([])
       .messages({
         "array.base": "category:validation.reassignments.invalid",
-        "array.unique": "category:validation.reassignments.duplicateApp",
         "array.max": "category:validation.reassignments.tooMany"
       })
   }).default();

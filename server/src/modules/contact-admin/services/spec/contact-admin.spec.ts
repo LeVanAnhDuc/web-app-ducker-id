@@ -46,10 +46,13 @@ describe("ContactAdminService", () => {
       contactRepo.create.mockResolvedValue(makeDoc({ userId: USER }));
       const svc = makeService();
 
-      await svc.submitContact({
-        subject: "Cannot login",
-        message: "This is a long enough message for validation to pass."
-      });
+      await svc.submitContact(
+        {
+          subject: "Cannot login",
+          message: "This is a long enough message for validation to pass."
+        },
+        null
+      );
 
       expect(contactRepo.create).toHaveBeenCalledWith(
         expect.objectContaining({ userId: USER })
@@ -62,13 +65,102 @@ describe("ContactAdminService", () => {
       contactRepo.create.mockResolvedValue(makeDoc({ userId: null }));
       const svc = makeService();
 
-      await svc.submitContact({
-        subject: "Cannot login",
-        message: "This is a long enough message for validation to pass."
-      });
+      await svc.submitContact(
+        {
+          subject: "Cannot login",
+          message: "This is a long enough message for validation to pass."
+        },
+        null
+      );
 
       expect(contactRepo.create).toHaveBeenCalledWith(
         expect.objectContaining({ userId: null })
+      );
+    });
+    it("stores the subject and message with their markup stripped", async () => {
+      jest.spyOn(RequestContext, "getUserId").mockReturnValue(undefined);
+      const { contactRepo, makeService } = makeDeps();
+      contactRepo.create.mockResolvedValue(makeDoc());
+      const svc = makeService();
+      const markup = '<img src="x" onerror="alert(1)">';
+
+      await svc.submitContact(
+        {
+          subject: `  Cannot login ${markup}`,
+          message: `This is a long enough message &lt;script&gt;x&lt;/script&gt; ${markup}`
+        },
+        null
+      );
+
+      expect(contactRepo.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          subject: "Cannot login",
+          message: "This is a long enough message x"
+        })
+      );
+    });
+
+    it("stores the request IP it is given", async () => {
+      jest.spyOn(RequestContext, "getUserId").mockReturnValue(undefined);
+      const { contactRepo, makeService } = makeDeps();
+      contactRepo.create.mockResolvedValue(makeDoc());
+      const svc = makeService();
+
+      await svc.submitContact(
+        {
+          subject: "Cannot login",
+          message: "This is a long enough message for validation to pass."
+        },
+        "203.0.113.7"
+      );
+
+      expect(contactRepo.create).toHaveBeenCalledWith(
+        expect.objectContaining({ ipAddress: "203.0.113.7" })
+      );
+    });
+  });
+
+  describe("getContactDetail", () => {
+    it("tells the admin who filed the request and from where", async () => {
+      const { contactRepo, makeService } = makeDeps();
+      contactRepo.findById.mockResolvedValue(
+        makeDoc({
+          id: "c1",
+          userId: { toString: () => USER },
+          ipAddress: "203.0.113.7"
+        })
+      );
+      const svc = makeService();
+
+      const res = await svc.getContactDetail("c1");
+
+      expect(res).toEqual(
+        expect.objectContaining({
+          _id: "c1",
+          userId: USER,
+          ipAddress: "203.0.113.7"
+        })
+      );
+    });
+
+    it("answers null for a guest request filed before IPs were stored", async () => {
+      const { contactRepo, makeService } = makeDeps();
+      contactRepo.findById.mockResolvedValue(makeDoc({ id: "c1" }));
+      const svc = makeService();
+
+      const res = await svc.getContactDetail("c1");
+
+      expect(res.userId).toBeNull();
+      expect(res.ipAddress).toBeNull();
+    });
+
+    it("throws NotFoundError when the request does not exist", async () => {
+      const { contactRepo, makeService } = makeDeps();
+      contactRepo.findById.mockResolvedValue(null);
+      const svc = makeService();
+
+      await expect(svc.getContactDetail("c1")).rejects.toBeInstanceOf(
+        NotFoundError
       );
     });
   });
@@ -113,7 +205,7 @@ describe("ContactAdminService", () => {
     it("returns the contact detail when it belongs to the caller", async () => {
       const { contactRepo, makeService } = makeDeps();
       contactRepo.findByIdForUser.mockResolvedValue(
-        makeDoc({ id: "c1", userId: USER })
+        makeDoc({ id: "c1", userId: USER, ipAddress: "203.0.113.7" })
       );
       const svc = makeService();
 
@@ -121,6 +213,8 @@ describe("ContactAdminService", () => {
 
       expect(contactRepo.findByIdForUser).toHaveBeenCalledWith("c1", USER);
       expect(res._id).toBe("c1");
+      // The IP is for admins only — the owner's view never carries it.
+      expect(res).not.toHaveProperty("ipAddress");
     });
 
     it("throws NotFoundError (no leak) when contact belongs to another user or is absent", async () => {

@@ -45,7 +45,7 @@ thời điểm viết.
 
 - **Q1** Một ngày sinh đã được sign-up chấp nhận thì hồ sơ có phải chấp nhận lại không? → Có: sign-up và hồ sơ
   phải dùng chung một khoảng tuổi. Hiện sign-up cho 120 năm còn hồ sơ chỉ 100 năm, nên TC-PROFILE-017 và
-  TC-PROFILE-040 được đánh dấu `test.fail` (BUG-PROFILE-01). → REQ-PROFILE-02
+  TC-PROFILE-040 được đánh dấu `test.fail` (BUG-PROFILE-01 (đã sửa 2026-10-15, fix/open-bugs): cả hai dùng 13–120). → REQ-PROFILE-02
 - **Q2** Rule từng trường chứng minh ở tầng nào? → Biên và tổ hợp input ở tầng `api` (TC-PROFILE-033 … -037);
   tầng `e2e` kiểm thông báo của form và luồng lưu. → REQ-PROFILE-02
 
@@ -58,10 +58,10 @@ thời điểm viết.
   (`user:errors.rateLimitExceeded`). → REQ-PROFILE-04 (TC-PROFILE-043)
 - **Q5** (tự quyết 2026-10-14, cần user duyệt): họ tên chỉ toàn khoảng trắng (`"   "`) có được chấp nhận không? →
   Không: "có kiểm tra hợp lệ" của REQ-PROFILE-02 không thể cho lưu một tên trống; schema hiện không trim và pattern
-  cho phép `\s` nên app đang nhận → BUG-PROFILE-05. → REQ-PROFILE-02 (TC-PROFILE-045)
+  cho phép `\s` nên app đang nhận → BUG-PROFILE-05 (đã sửa 2026-10-15, fix/open-bugs). → REQ-PROFILE-02 (TC-PROFILE-045)
 - **Q6** (tự quyết 2026-10-14, cần user duyệt): First Name quá 50 ký tự (rule chỉ có ở client) phải hiện gì? → Một
   thông báo đọc được, như mọi trường khác; hiện là key thô "maxLength" — cùng nguyên nhân với "required" nên gộp vào
-  BUG-PROFILE-04 thay vì mở bug mới. → REQ-PROFILE-02 (TC-PROFILE-049)
+  BUG-PROFILE-04 (đã sửa 2026-10-15, fix/open-bugs) thay vì mở bug mới. → REQ-PROFILE-02 (TC-PROFILE-049)
 - **Q7** (tự quyết 2026-10-14, cần user duyệt): First Name có chữ số (client cho qua, server chặn) — toast chung
   "Validation failed" của server có chấp nhận được không? → Chấp nhận như hành vi hiện tại (không ghi bug): kỳ vọng
   là không lưu gì, giữ nguyên giá trị đã sửa và báo lỗi bằng message của server. → REQ-PROFILE-02 (TC-PROFILE-050)

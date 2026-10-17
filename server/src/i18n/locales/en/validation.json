@@ -82,5 +82,33 @@
   },
   "interactive": {
     "invalid": "interactive must be a boolean"
+  },
+  "address": {
+    "invalid": "Address contains invalid characters",
+    "tooLong": "Address must not exceed 500 characters"
+  },
+  "method": {
+    "invalid": "Invalid sign-in method filter."
+  },
+  "deviceType": {
+    "invalid": "Invalid device type filter."
+  },
+  "clientType": {
+    "invalid": "Invalid client type filter."
+  },
+  "userId": {
+    "invalid": "Invalid user id."
+  },
+  "priority": {
+    "invalid": "Invalid priority filter."
+  },
+  "fromDate": {
+    "invalid": "Invalid start date."
+  },
+  "toDate": {
+    "invalid": "Invalid end date."
+  },
+  "dateRange": {
+    "invalid": "The end date must not be before the start date."
   }
 }

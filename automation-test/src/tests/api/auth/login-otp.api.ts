@@ -169,10 +169,8 @@ test(
   "The code-send cap answers an unknown address the same way",
   { tag: ["@TC-AUTH-063"] },
   async () => {
-    // The cap (LOGIN_OTP_CONFIG.MAX_RESEND_ATTEMPTS) is only checked for an
-    // eligible account, so the 4th send tells a real address from a ghost.
-    // BUG: defects/auth.md#bug-auth-05
-    test.fail();
+    // The cap is checked before the eligibility branch, so a real address and a
+    // ghost get the same 4th answer (fixed BUG-AUTH-05).
     test.slow(); // eight sends, each several round trips to the cloud Redis
     const account = await createAccount({ tag: "auth-otp-capenum" });
     const ghost = throwawayEmail("auth-otp-capghost");

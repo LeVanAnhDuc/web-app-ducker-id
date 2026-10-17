@@ -46,7 +46,7 @@ _(trước 2026-10-14 chưa có quyết định qua hỏi đáp — kỳ vọng 
   không nhắc → vẫn là tính năng đã ship → REQ-HOME-09 (TC-HOME-015, 040).
 - Q6 (tự quyết 2026-10-14, cần user duyệt): lỗi validation của hai endpoint stats phải mang message của catalogue theo
   ngôn ngữ request (CLAUDE.md gốc: message là key i18next dịch theo request)? → có, kể cả lỗi độ dài `tz`; app hiện trả
-  câu Joi thô cho `tz` > 64 ký tự → BUG-HOME-01 → REQ-HOME-03 (TC-HOME-046, 047).
+  câu Joi thô cho `tz` > 64 ký tự → BUG-HOME-01 (đã sửa 2026-10-15, fix/open-bugs) → REQ-HOME-03 (TC-HOME-046, 047).
 - Q7 (tự quyết 2026-10-14, cần user duyệt): "mặc định 5 app" (TC-HOME-049) cần catalogue ≥ 6 app mới chứng minh được biên
   trên; seeder `web-apps.ts` chỉ cho user 3 app (Blog, IDMS Portal, Notes) nhưng database e2e còn app do các spec admin
   tạo → test mở tối đa 6 app và kỳ vọng `min(5, số app đã mở)`; khi catalogue < 6 app, biên trên không được chứng minh

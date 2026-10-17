@@ -1,19 +1,12 @@
 "use client";
 
-// libs
-import { useQuery } from "@tanstack/react-query";
 // components
 import PersonalInfoForm from "@/views/Profile/components/PersonalInfoForm";
-// requests
-import { getMyProfile } from "@/requests/user";
-// others
-import CONSTANTS from "@/constants";
+// hooks
+import useMyProfile from "../../hooks/useMyProfile";
 
 const PersonalInfoCard = () => {
-  const { data: profile } = useQuery({
-    queryKey: [CONSTANTS.QUERY_KEYS.MY_PROFILE],
-    queryFn: getMyProfile
-  });
+  const { data: profile } = useMyProfile();
 
   if (!profile) return null;
 

@@ -34,3 +34,9 @@ export const REFRESH_TOKEN_COOKIE_OPTIONS: CookieOptions = {
   maxAge: TOKEN_EXPIRY.NUMBER_REFRESH_TOKEN,
   path: "/"
 } as const;
+
+/** Same attributes minus `maxAge`, so clearCookie really expires the cookie. */
+const { maxAge: _refreshMaxAge, ...refreshClearOptions } =
+  REFRESH_TOKEN_COOKIE_OPTIONS;
+export const REFRESH_TOKEN_CLEAR_COOKIE_OPTIONS: CookieOptions =
+  refreshClearOptions;

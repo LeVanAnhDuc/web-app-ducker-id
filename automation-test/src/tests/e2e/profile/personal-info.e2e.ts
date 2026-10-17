@@ -227,10 +227,8 @@ test.describe("field validation", () => {
     "An empty first name shows a translated message",
     { tag: ["@TC-PROFILE-015"] },
     async ({ newApi, profilePage }) => {
-      // common.validation has no firstName/lastName keys, so
-      // FormFieldMessage falls back to the raw zod message "required".
-      // BUG: defects/profile.md#bug-profile-04
-      test.fail();
+      // common.validation has firstName/lastName keys, so the raw zod
+      // message "required" never shows (fixed BUG-PROFILE-04).
       const account = await accountWithProfile(newApi, "pf-name");
       await openProfileAs(profilePage, account);
       await profilePage.firstNameInput().fill("");
@@ -268,10 +266,8 @@ test.describe("field validation", () => {
         newApi,
         profilePage
       }) => {
-        // Same gap as TC-PROFILE-015: no common.validation.firstName entry, so
-        // the raw zod key "maxLength" is what the field shows.
-        // BUG: defects/profile.md#bug-profile-04
-        test.fail();
+        // Same as TC-PROFILE-015: the raw zod key "maxLength" must not
+        // show (fixed BUG-PROFILE-04).
         const account = await accountWithProfile(newApi, "pf-first51");
         await openProfileAs(profilePage, account);
         const updates = countProfileUpdates(page);
@@ -339,11 +335,9 @@ test.describe("field validation", () => {
     "A user born 101–120 years ago can still edit the profile",
     { tag: ["@TC-PROFILE-017"] },
     async ({ profilePage }) => {
-      // sign-up accepts ages up to 120 and the picker offers them, but the
-      // profile zod/Joi rules cap the date at 100 years and the form always
-      // resends dateOfBirth — such a user can never save any profile edit.
-      // BUG: defects/profile.md#bug-profile-01
-      test.fail();
+      // sign-up accepts ages up to 120 and the form always resends
+      // dateOfBirth, so the profile rules must take the same range (fixed
+      // BUG-PROFILE-01).
       const account = await createAccount({
         tag: "pf-elder",
         fullName: "Elder Tester",
@@ -364,11 +358,8 @@ test.describe("error guessing", () => {
     "Clearing the phone removes it",
     { tag: ["@TC-PROFILE-019"] },
     async ({ newApi, profilePage }) => {
-      // PersonalInfoForm drops empty optional fields from the PATCH body
-      // and the success refetch puts the old phone back — an optional field
-      // can never be cleared, yet the user sees "Profile updated".
-      // BUG: defects/profile.md#bug-profile-02
-      test.fail();
+      // An emptied optional field is sent as null and cleared on the
+      // server (fixed BUG-PROFILE-02).
       const account = await accountWithProfile(newApi, "pf-clear");
       await openProfileAs(profilePage, account);
       await profilePage.phoneInput().fill("");
@@ -382,11 +373,8 @@ test.describe("error guessing", () => {
     "The header shows the new name right after saving",
     { tag: ["@TC-PROFILE-020"] },
     async ({ newApi, profilePage }) => {
-      // ProfileCard reads the name from the idToken (useUserInfo), which
-      // is not re-issued after PATCH /users/me — the header keeps the old
-      // name until the next token refresh or reload.
-      // BUG: defects/profile.md#bug-profile-03
-      test.fail();
+      // The idToken is not re-issued after PATCH /users/me, so ProfileCard
+      // reads the name from the profile query (fixed BUG-PROFILE-03).
       const account = await accountWithProfile(newApi, "pf-header");
       await openProfileAs(profilePage, account);
       await profilePage.firstNameInput().fill("Hoa");

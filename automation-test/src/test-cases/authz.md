@@ -13,11 +13,8 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/authz.md
 - **Bước:**
   1. Mở từng trang danh sách admin.
   2. Gọi endpoint mà trang đọc, kèm Bearer token của user.
-- **Mong đợi:** URL vẫn ở route admin (không có guard phía client), trang
-  dừng ở trạng thái rỗng ("No users match", "No apps registered yet.",
-  "No login history found", "No categories yet", "No contact requests found";
-  bộ chọn entitlement trả lời "No users found"), `admin@test.com` không bao giờ
-  được render, và endpoint trả 403 `AUTH_ADMIN_ONLY`.
+- **Mong đợi:** guard vai trò phía client đưa user ra khỏi `/admin/*` (về trang chủ), "Admin Mode" và bộ chọn
+  entitlement không render, `admin@test.com` không bao giờ được render, và endpoint trả 403 `AUTH_ADMIN_ONLY`.
 - **Automated:** `tests/e2e/authz/admin-routes-denied.e2e.ts`
 
 ### TC-AUTHZ-002 — A non-admin cannot lock, unlock or reset an account
@@ -138,11 +135,9 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/authz.md
 - **Tiền điều kiện:** API chạy cùng Redis (queue bật)
 - **Bước:**
   1. Không có session nào, `GET /admin/queues` trên **API origin** (`:5000`).
-- **Mong đợi:** 401 / redirect về login. **Thực tế (2026-10-10): 200 — dashboard
-  được mount trong `server/src/loaders/queue.loader.ts` không có guard, nên ai
-  tới được API cũng đọc và retry được email job.** Bug đang mở, bằng chứng
-  `curl http://localhost:5000/admin/queues` → 200.
-- **Automated:** `tests/api/authz/admin-endpoints.api.ts` (gọi API origin qua `API_URL`; đánh dấu `test.fail()` tới khi sửa)
+- **Mong đợi:** 401 / 403 / redirect về login — dashboard nằm sau `adminGuard`. (Từng là BUG-AUTHZ-01, đã sửa
+  2026-10-15.)
+- **Automated:** `tests/api/authz/admin-endpoints.api.ts` (gọi API origin qua `API_URL`)
 
 ### TC-AUTHZ-013 — A guest opening any admin page lands on login
 
@@ -164,9 +159,9 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/authz.md
 - **Tiền điều kiện:** session admin
 - **Bước:**
   1. Mở `/admin`.
-- **Mong đợi:** heading "Admin Console"; các card App Registry, Entitlements,
+- **Mong đợi:** heading "Admin Console"; các card App Registry, Categories, Entitlements,
   Users, Contact Inbox, Login History, mỗi card có link "Open" tới
-  `/admin/apps`, `/admin/entitlements`, `/admin/users`, `/admin/contact`,
+  `/admin/apps`, `/admin/categories`, `/admin/entitlements`, `/admin/users`, `/admin/contact`,
   `/admin/login-history`.
 - **Automated:** `tests/e2e/authz/admin-landing.e2e.ts`
 
@@ -190,9 +185,7 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/authz.md
 - **Tiền điều kiện:** session admin
 - **Bước:**
   1. Mở `/admin` và tìm link tới `/admin/categories`.
-- **Mong đợi:** có card Categories giống các khu vực khác. **Thực tế: thiếu** —
-  `client/src/dataSources/AdminDashboard` chỉ liệt kê 5 trên 6 khu vực (sidebar
-  có đủ 6). Đánh dấu `test.fail()` tới khi sửa.
+- **Mong đợi:** có card Categories giống các khu vực khác. (Từng là BUG-AUTHZ-03, đã sửa 2026-10-15.)
 - **Automated:** `tests/e2e/authz/admin-landing.e2e.ts`
 
 ### TC-AUTHZ-017 — The landing page renders in Vietnamese
@@ -215,9 +208,7 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/authz.md
 - **Bước:**
   1. Mở `/admin`.
 - **Mong đợi:** user bị redirect hoặc thấy trang forbidden; "Admin Mode"
-  không bao giờ render. **Thực tế:** toàn bộ admin shell, sidebar và các card
-  landing đều render — không có guard vai trò phía client (dữ liệu vẫn được bảo
-  vệ, xem TC-AUTHZ-001). Đánh dấu `test.fail()` tới khi sửa.
+  không bao giờ render. (Từng là BUG-AUTHZ-02, đã sửa 2026-10-15: `AdminGuardLayout` đưa non-admin về trang chủ.)
 - **Automated:** `tests/e2e/authz/admin-routes-denied.e2e.ts`
 
 ### TC-AUTHZ-019 — A user who rewrites the roles claim of their own token is refused

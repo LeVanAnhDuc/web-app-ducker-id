@@ -99,12 +99,14 @@ const ContactDetailCard = ({ id }: { id: string }) => {
             <dd className="mt-1 font-mono text-xs">{contact.userId}</dd>
           </div>
         )}
-        <div>
-          <dt className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-            {t("fields.ipAddress")}
-          </dt>
-          <dd className="mt-1 font-mono text-xs">{contact.ipAddress}</dd>
-        </div>
+        {contact.ipAddress && (
+          <div>
+            <dt className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+              {t("fields.ipAddress")}
+            </dt>
+            <dd className="mt-1 font-mono text-xs">{contact.ipAddress}</dd>
+          </div>
+        )}
         <div>
           <dt className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
             {t("fields.updatedAt")}

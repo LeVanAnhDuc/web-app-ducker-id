@@ -38,7 +38,8 @@
     "action": "Thao tác",
     "viewDetail": "Xem",
     "viewDetailFor": "Xem chi tiết cho {name}",
-    "app": "Ứng dụng"
+    "app": "Ứng dụng",
+    "anomalyFlag": "Đăng nhập bất thường"
   },
   "filters": {
     "title": "Bộ lọc",
@@ -130,5 +131,20 @@
     "interactive": "Thủ công (đã nhập thông tin đăng nhập)",
     "sourceIdp": "Ducker ID (nhà cung cấp định danh)",
     "sourceOauth": "Ứng dụng vệ tinh (OIDC)"
+  },
+  "failReason": {
+    "invalid_credentials": "Sai email hoặc mật khẩu",
+    "invalid_password": "Sai mật khẩu",
+    "account_locked": "Tài khoản bị khoá",
+    "account_inactive": "Tài khoản không hoạt động",
+    "email_not_verified": "Email chưa xác minh",
+    "invalid_otp": "Sai mã một lần",
+    "otp_expired": "Mã một lần đã hết hạn",
+    "invalid_magic_link": "Link đăng nhập không hợp lệ",
+    "magic_link_expired": "Link đăng nhập đã hết hạn",
+    "rate_limited": "Thử quá nhiều lần",
+    "passwordless_account": "Tài khoản không có mật khẩu",
+    "invalid_reset_token": "Link đặt lại không hợp lệ",
+    "not_entitled": "Không có quyền vào ứng dụng này"
   }
 }

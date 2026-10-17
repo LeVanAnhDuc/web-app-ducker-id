@@ -4,6 +4,7 @@ import type { TokenRequest } from "./types";
 import type { OAuthService } from "./services";
 // common
 import { OAuthError } from "@/common/exceptions";
+import { STATUS_CODES } from "@/common/http";
 // others
 import ENV from "@/constants/env";
 import { getPublicJwk, SIGNING_ALGORITHM } from "@/libs/jwks";
@@ -22,6 +23,31 @@ import { verifyOAuthAccessToken } from "@/modules/token/helpers";
  * shape chuẩn. Bọc thêm envelope sẽ làm mọi thư viện OIDC client không parse
  * được. Đây là ngoại lệ duy nhất trong codebase.
  */
+/**
+ * Lỗi của /oauth/userinfo theo RFC 6750 §3.1: 401 kèm `WWW-Authenticate:
+ * Bearer`. Thiếu token thì header KHÔNG mang mã lỗi (§3.1 — request không có
+ * thông tin xác thực); token hỏng thì mang `error="invalid_token"`. Header
+ * đặt lên `res` trước khi ném, handleOAuthError chỉ thêm status + body.
+ */
+const rejectBearer = (
+  res: Response,
+  description: string,
+  hasToken: boolean
+): OAuthError => {
+  res.set(
+    "WWW-Authenticate",
+    hasToken
+      ? `Bearer error="${OAUTH_ERRORS.INVALID_TOKEN}", error_description="${description}"`
+      : "Bearer"
+  );
+
+  return new OAuthError({
+    error: OAUTH_ERRORS.INVALID_TOKEN,
+    description,
+    status: STATUS_CODES.UNAUTHORIZED
+  });
+};
+
 export class OAuthController {
   constructor(private readonly service: OAuthService) {}
 
@@ -46,10 +72,7 @@ export class OAuthController {
     const header = req.headers.authorization;
 
     if (!header?.startsWith("Bearer ")) {
-      throw new OAuthError({
-        error: OAUTH_ERRORS.INVALID_REQUEST,
-        description: "Bearer access token is required"
-      });
+      throw rejectBearer(res, "Bearer access token is required", false);
     }
 
     let payload;
@@ -57,10 +80,7 @@ export class OAuthController {
     try {
       payload = verifyOAuthAccessToken(header.slice(7));
     } catch {
-      throw new OAuthError({
-        error: OAUTH_ERRORS.INVALID_GRANT,
-        description: "Access token is invalid or expired"
-      });
+      throw rejectBearer(res, "Access token is invalid or expired", true);
     }
 
     const info = await this.service.getUserInfo(

@@ -181,9 +181,7 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/admin-apps.md
 - **Bước:**
   1. Tìm "zz-no-such-app-zz".
 - **Mong đợi:** "No results found" (`list.noResultsTitle`), không phải "No apps registered yet.".
-- **Ghi chú:** thực tế `AdminAppsTable` luôn truyền `emptyTitle` = "No apps registered yet." vào
-  `PageContent`, nên tìm không khớp lại báo danh sách đang trống. Đánh dấu
-  `test.fail()` cho tới khi sửa.
+- **Ghi chú:** từng là BUG-ADMINAPPS-01 (đã sửa 2026-10-15).
 - **Automated:** `tests/e2e/admin-apps/list.e2e.ts`
 
 ### TC-ADMINAPPS-017 — Tampered filter values in the URL do not break the page
@@ -501,7 +499,7 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/admin-apps.md
 - **Tiền điều kiện:** session và token của user seed
 - **Bước:**
   1. `PATCH /admin/apps/:id` bằng token của user; mở `/admin/apps`.
-- **Mong đợi:** 403; trang hiện "No apps registered yet.", không có dòng ứng dụng nào và không có nút "App actions".
+- **Mong đợi:** 403; guard vai trò phía client đưa user ra khỏi `/admin/apps`, không có dòng ứng dụng nào và không có nút "App actions".
 - **Automated:** `tests/e2e/admin-apps/edit-app.e2e.ts`
 
 ### TC-ADMINAPPS-040 — Each field reports its own validation error
@@ -794,8 +792,8 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/admin-apps.md
 - **Bước:**
   1. `POST /admin/apps` với body `{"name": "e2e-broken", `.
 - **Mong đợi:** 400.
-- **Ghi chú:** đọc code thấy lỗi parse của `express.json` rơi xuống `handleError` như một lỗi lạ → 500
-  (BUG-ADMINAPPS-02). Đánh dấu `test.fail()` cho tới khi sửa.
+- **Ghi chú:** từng là BUG-OPS-02 (đã sửa 2026-10-15) — lỗi parse của `express.json` từng rơi xuống `handleError` như
+  một lỗi lạ → 500; giờ trả 400 `MALFORMED_BODY`.
 - **Automated:** `tests/api/admin-apps/validation.api.ts`
 
 ## Xác nhận thao tác (REQ-ADMINAPPS-07)

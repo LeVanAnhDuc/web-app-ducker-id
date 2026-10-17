@@ -39,7 +39,8 @@ Chuyển đổi từ `docs/specs/login-history-app-source/e2e.md` và các dòng
 - **Q4** (tự quyết 2026-10-14, cần user duyệt): lỗi validation của `method`, `deviceType`, `clientType`, `fromDate`,
   `toDate` và khoảng ngày trả về key i18n thô vì `validation.json` thiếu key (cùng gốc với BUG-ADMINLOGINHISTORY-02) —
   chấp nhận hay bug? → Bug: `CLAUDE.md` của repo app nói message lỗi là key i18next **được dịch** theo request, và các
-  trường khác của cùng schema đều có bản dịch. Ghi BUG-LOGINHISTORY-02, test đánh `test.fail()`. → REQ-LOGINHISTORY-07
+  trường khác của cùng schema đều có bản dịch. Ghi BUG-LOGINHISTORY-02, test đánh `test.fail()` (sau gộp vào BUG-ADMINLOGINHISTORY-02 (đã sửa 2026-10-15, fix/open-bugs)). →
+  REQ-LOGINHISTORY-07
 - **Q5** (tự quyết 2026-10-14, cần user duyệt): che IP công khai chỉ được mô tả trong
   `docs/specs/login-history-ip-country/design.md`, không có trong README — có là requirement không? → Có: design.md là
   nguồn tài liệu đã chốt cho feature (docs > code); README chỉ nói "IP". Môi trường e2e chạy local nên dòng thật chỉ có
@@ -92,8 +93,8 @@ Chuyển đổi từ `docs/specs/login-history-app-source/e2e.md` và các dòng
 
 - Bảng trên trang của user mang caption "Admin login audit history" (`loginHistory.table.caption`, dùng chung với
   admin) — Q8.
-- `server/src/i18n/locales/{en,vi}/validation.json` thiếu các key `method` / `deviceType` / `clientType` / `fromDate` /
-  `toDate` / `dateRange` — BUG-LOGINHISTORY-02 (cùng gốc BUG-ADMINLOGINHISTORY-02).
+- `server/src/i18n/locales/{en,vi}/validation.json` từng thiếu các key `method` / `deviceType` / `clientType` / `fromDate` /
+  `toDate` / `dateRange` — BUG-LOGINHISTORY-02 (gộp vào BUG-ADMINLOGINHISTORY-02) (đã sửa 2026-10-15, fix/open-bugs).
 
 - BUG-LOGINHISTORY-01 (`../../defects/login-history.md`): `buildLoginHistoryColumns` không có cột lý do, OS hay cờ bất
-  thường, và `MyHistoryItemDto` bỏ mất `isAnomaly` (chỉ DTO của admin có) — TC-LOGINHISTORY-017, -022.
+  thường, và `MyHistoryItemDto` bỏ mất `isAnomaly` (chỉ DTO của admin có) — TC-LOGINHISTORY-017, -022 (đã sửa 2026-10-15, fix/open-bugs).

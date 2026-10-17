@@ -16,7 +16,9 @@ export const OAUTH_CONFIG = {
   ACCESS_TOKEN_TTL_SECONDS: 15 * SECONDS_PER_MINUTE,
   NONCE_MAX_LENGTH: 255,
   STATE_MAX_LENGTH: 512,
-  CODE_CHALLENGE_MAX_LENGTH: 128
+  CODE_CHALLENGE_MAX_LENGTH: 128,
+  /** RFC 7636 §4.1: code_verifier = 43–128 ký tự [A-Z a-z 0-9 - . _ ~]. */
+  CODE_VERIFIER_PATTERN: /^[A-Za-z0-9\-._~]{43,128}$/
 } as const;
 
 export const OAUTH_RESPONSE_TYPE = "code" as const;
@@ -44,6 +46,8 @@ export const OAUTH_ERRORS = {
   INVALID_CLIENT: "invalid_client",
   INVALID_GRANT: "invalid_grant",
   UNSUPPORTED_GRANT_TYPE: "unsupported_grant_type",
+  /** RFC 6750 §3.1 — lỗi của resource server (userinfo), không phải §5.2. */
+  INVALID_TOKEN: "invalid_token",
   LOGIN_REQUIRED: "login_required",
   CONSENT_REQUIRED: "consent_required",
   INTERACTION_REQUIRED: "interaction_required"

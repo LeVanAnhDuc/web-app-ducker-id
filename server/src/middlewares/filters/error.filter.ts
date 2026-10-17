@@ -13,6 +13,22 @@ import {
   isMongooseCastError,
   extractValidationErrors
 } from "@/utils/mongo-errors";
+import { isBodyParserError } from "@/utils/http-errors";
+
+const BODY_ERRORS: Record<number, { code: string; key: I18n.Key }> = {
+  [STATUS_CODES.REQUEST_TOO_LONG]: {
+    code: ERROR_CODES.PAYLOAD_TOO_LARGE,
+    key: "common:errors.payloadTooLarge"
+  },
+  [STATUS_CODES.UNSUPPORTED_MEDIA_TYPE]: {
+    code: ERROR_CODES.UNSUPPORTED_MEDIA_TYPE,
+    key: "common:errors.unsupportedMediaType"
+  }
+};
+const MALFORMED_BODY = {
+  code: ERROR_CODES.MALFORMED_BODY,
+  key: "common:errors.malformedBody"
+} as const;
 
 export const handleNotFound = (
   req: Request,
@@ -86,6 +102,15 @@ export const handleError = (
     };
 
     return res.status(STATUS_CODES.BAD_REQUEST).json(body);
+  }
+
+  // The body never reached a route: keep body-parser's 4xx status, answer in
+  // the envelope. Its own message can echo the body, so it is not forwarded.
+  if (isBodyParserError(err)) {
+    const { code, key } = BODY_ERRORS[err.status] ?? MALFORMED_BODY;
+    const body: ErrorPattern = { code, message: req.t(key), ...baseBody };
+
+    return res.status(err.status).json(body);
   }
 
   if (err instanceof ErrorResponse) {

@@ -79,8 +79,17 @@ export class MongoUserRepository implements UserRepository {
     userId: string,
     data: Partial<UpdateProfileData>
   ): Promise<UserDocument | null> {
+    // A null field is a cleared one: unset it rather than store null.
+    const $set: Record<string, unknown> = {};
+    const $unset: Record<string, ""> = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (value === null) $unset[key] = "";
+      else if (value !== undefined) $set[key] = value;
+    }
+    const update = Object.keys($unset).length ? { $set, $unset } : { $set };
+
     return asyncDatabaseHandler("updateById", () =>
-      UserModel.findByIdAndUpdate(userId, { $set: data }, { new: true })
+      UserModel.findByIdAndUpdate(userId, update, { new: true })
         .select(
           "email fullName phone avatar address dateOfBirth gender createdAt"
         )

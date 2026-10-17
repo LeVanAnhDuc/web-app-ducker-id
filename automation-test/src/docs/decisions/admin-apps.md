@@ -41,7 +41,7 @@ Các dòng của ma trận cũ không có test case riêng:
   cả registry rồi sắp xếp phía client, registry nhỏ, không màn hình nào cần trang → REQ-ADMINAPPS-01 (TC-ADMINAPPS-065).
 - **Q6** (tự quyết 2026-10-14, cần user duyệt): body không phải JSON hợp lệ hiện trả 500 (đọc code) — docs không nói;
   lăng kính 6 của suite là "không có 5xx" → kỳ vọng **400**, ghi BUG-ADMINAPPS-02 thay vì uốn kỳ vọng theo code →
-  REQ-ADMINAPPS-06 (TC-ADMINAPPS-072).
+  REQ-ADMINAPPS-06 (TC-ADMINAPPS-072). BUG-ADMINAPPS-02 sau đó gộp vào BUG-OPS-02 (đã sửa 2026-10-15, fix/open-bugs).
 - **Q7** (tự quyết 2026-10-14, cần user duyệt): hợp đồng lỗi của server (400 `VALIDATION_ERROR` với `errors[]` theo
   trường, message theo `Accept-Language`, không 5xx với input sai kiểu) chưa có requirement riêng — thành requirement? →
   **có**, REQ-ADMINAPPS-06 mới, theo `validation.pipe.ts` + `webApp.json` (en / vi) (TC-ADMINAPPS-062, -071, -072).
@@ -88,9 +88,9 @@ Các dòng của ma trận cũ không có test case riêng:
 ## Tech debt liên quan
 
 - BUG-ADMINAPPS-01 (`../../defects/admin-apps.md`): `AdminAppsTable` luôn truyền `emptyTitle` = "No apps registered
-  yet." vào `PageContent`, nên tìm kiếm không khớp lại báo danh sách trống (TC-ADMINAPPS-016).
+  yet." vào `PageContent`, nên tìm kiếm không khớp lại báo danh sách trống (TC-ADMINAPPS-016) (đã sửa 2026-10-15, fix/open-bugs).
 - BUG-ADMINAPPS-02 (`../../defects/admin-apps.md`): body JSON hỏng → 500 (TC-ADMINAPPS-072); lỗi nằm ở tầng chung của
-  server nên mọi endpoint nhận JSON cùng bị.
+  server nên mọi endpoint nhận JSON cùng bị. Gộp vào BUG-OPS-02 (đã sửa 2026-10-15, fix/open-bugs): giờ trả 400 `MALFORMED_BODY`.
 - Mỗi lượt kích hoạt một app có role `user` (TC-ADMINAPPS-061) broadcast APP_AVAILABLE tới user seed; `deleteE2EApps`
   xoá các dòng đó theo `dedupeKey` `app:<id>`, nhưng worker ghi bất đồng bộ nên có thể còn sót — spec notifications
   không nên dựa vào số dòng của user seed.

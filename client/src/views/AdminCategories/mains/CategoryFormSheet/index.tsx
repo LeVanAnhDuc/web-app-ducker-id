@@ -43,11 +43,13 @@ const { CATEGORY_NAME_TAKEN, CATEGORY_NOT_FOUND } = CONSTANTS.ERROR_CODES;
 const CategoryFormSheet = ({
   open,
   editing,
-  onClose
+  onClose,
+  onCloseAutoFocus
 }: {
   open: boolean;
   editing: AdminCategory | null;
   onClose: () => void;
+  onCloseAutoFocus?: (event: Event) => void;
 }) => {
   const t = useTranslations("adminCategories");
   const tFields = useTranslations("adminCategories.form.fields");
@@ -96,7 +98,10 @@ const CategoryFormSheet = ({
 
   return (
     <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
-      <SheetContent className="flex w-full flex-col gap-0 p-0 sm:max-w-md">
+      <SheetContent
+        className="flex w-full flex-col gap-0 p-0 sm:max-w-md"
+        onCloseAutoFocus={onCloseAutoFocus}
+      >
         <FormProvider {...methods}>
           <CategoryFormResetEffect open={open} editing={editing} />
           <form

@@ -273,9 +273,8 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/auth.md
 - **Kỹ thuật:** đoán lỗi (error guessing) (requirement so với màn hình)
 - **Bước:**
   1. Mở bước info.
-- **Mong đợi:** hiện checkbox chấp nhận điều khoản. **Bug đã biết** — không có
-  checkbox nào; `InfoStepForm` luôn gửi `acceptTerms: true` (test đánh dấu
-  `test.fail`).
+- **Mong đợi:** hiện checkbox chấp nhận điều khoản. BUG-AUTH-04 (đã sửa 2026-10-15) — trước đó không có
+  checkbox nào và `InfoStepForm` luôn gửi `acceptTerms: true`.
 - **Automated:** `tests/e2e/auth/sign-up.e2e.ts`
 
 ### TC-AUTH-023 — A freshly signed-up user stays signed in after a reload
@@ -285,9 +284,8 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/auth.md
 - **Kỹ thuật:** chuyển trạng thái (vừa tạo tài khoản → reload)
 - **Bước:**
   1. Đăng ký qua UI; reload trang chủ; mở user menu.
-- **Mong đợi:** vẫn đăng nhập bằng địa chỉ mới. **Bug đã biết** —
-  `/signup/complete` không bao giờ đặt cookie `refreshToken`, nên reload làm
-  user bị đăng xuất (test đánh dấu `test.fail`).
+- **Mong đợi:** vẫn đăng nhập bằng địa chỉ mới — `/signup/complete` đặt cookie `refreshToken` như đăng nhập.
+  (Từng là BUG-AUTH-02, đã sửa 2026-10-15.)
 - **Automated:** `tests/e2e/auth/sign-up.e2e.ts`
 
 ### TC-AUTH-024 — A user signs in with email and password and lands on home
@@ -598,8 +596,8 @@ HttpOnly; SameSite=Lax; Path=/` và một `sid` HttpOnly.
 - **Bước:**
   1. Submit bước mật khẩu.
 - **Mong đợi:** cạnh message khoá có link hoặc nút mở khoá.
-  **Bug đã biết** — client không có màn hình, route hay link mở khoá nào (test đánh dấu
-  `test.fail`).
+  BUG-AUTH-03 (đã sửa 2026-10-15) — trước đó client không có màn hình, route hay link mở khoá; giờ là link "Unlock your
+  account" tới `/login/unlock`.
 - **Automated:** `tests/e2e/auth/lockout.e2e.ts`
 
 ### TC-AUTH-049 — Account status × sign-in method decision table
@@ -708,8 +706,8 @@ HttpOnly; SameSite=Lax; Path=/` và một `sid` HttpOnly.
   1. Đăng nhập và giữ lại refresh token; logout; refresh bằng cookie jar;
      refresh bằng token đã giữ.
 - **Mong đợi:** logout 204 xoá rỗng `refreshToken` và `sid`; refresh bằng jar →
-  401; token đã giữ → bị từ chối. **Bug đã biết** — logout không bao giờ thu hồi
-  refresh JWT, nên token đã giữ vẫn trả 200 (test đánh dấu `test.fail`).
+  401; token đã giữ → bị từ chối (logout đưa refresh token vào denylist Redis). (Từng là BUG-AUTH-01, đã sửa
+  2026-10-15.)
 - **Automated:** `tests/api/auth/session.api.ts`
 
 ### TC-AUTH-057 — Logout requires a signed-in caller
@@ -795,8 +793,8 @@ not-a-jwt`.
 - **Kỹ thuật:** đoán lỗi (error guessing) (dò tài khoản qua giới hạn gửi), bảng quyết định (tồn tại × lần gửi thứ 4)
 - **Bước:**
   1. Lặp bốn lần gửi của TC-AUTH-062 cho một tài khoản dùng một lần và cho một địa chỉ không tồn tại.
-- **Mong đợi:** lần gửi thứ tư của hai địa chỉ có cùng status và cùng error code. **Bug đã biết** — tài khoản thật nhận
-  400 `LOGIN_OTP_RESEND_LIMIT`, địa chỉ không tồn tại nhận 200 (test đánh dấu `test.fail`).
+- **Mong đợi:** lần gửi thứ tư của hai địa chỉ có cùng status và cùng error code (400 `LOGIN_OTP_RESEND_LIMIT`).
+  (Từng là BUG-AUTH-05, đã sửa 2026-10-15.)
 - **Automated:** `tests/api/auth/login-otp.api.ts`
 
 ### TC-AUTH-064 — A password-locked account cannot sign in with a code or a magic link
@@ -808,8 +806,8 @@ not-a-jwt`.
 - **Bước:**
   1. Send + plant + verify mã đăng nhập.
   2. Send + plant + verify magic link.
-- **Mong đợi:** cả hai verify → 429 `LOGIN_ACCOUNT_LOCKED`, không có cookie `refreshToken`. **Bug đã biết** — chỉ bước
-  mật khẩu kiểm khoá, mã và magic link vẫn đăng nhập được (test đánh dấu `test.fail`).
+- **Mong đợi:** cả hai verify → 429 `LOGIN_ACCOUNT_LOCKED`, không có cookie `refreshToken`. (Từng là BUG-AUTH-06, đã
+  sửa 2026-10-15.)
 - **Automated:** `tests/api/auth/lockout-unlock.api.ts`
 
 ### TC-AUTH-065 — Refresh is refused once the account is deactivated
@@ -830,8 +828,8 @@ not-a-jwt`.
 - **Kỹ thuật:** đoán lỗi (error guessing) (so hợp đồng refresh với hợp đồng đăng nhập)
 - **Bước:**
   1. Đăng nhập; `POST /auth/token/refresh` bằng cookie jar.
-- **Mong đợi:** 200; `data` có đúng `accessToken`, `idToken`, `expiresIn` — không có `refreshToken`. **Bug đã biết** —
-  refresh trả cả `refreshToken` trong body (test đánh dấu `test.fail`).
+- **Mong đợi:** 200; `data` có đúng `accessToken`, `idToken`, `expiresIn` — không có `refreshToken`. (Từng là
+  BUG-AUTH-07, đã sửa 2026-10-15.)
 - **Automated:** `tests/api/auth/session.api.ts`
 
 ### TC-AUTH-067 — check-email is limited to 10 requests per IP per minute
@@ -912,8 +910,8 @@ not-a-jwt`.
 - **Bước:**
   1. Trên `/login` nhập một địa chỉ chưa đăng ký → `/signup/otp`.
   2. Bấm **Change email**; nhập lại đúng địa chỉ đó trong vòng 60 s.
-- **Mong đợi:** lại tới `/signup/otp?email=…` với heading "Verify Email". **Bug đã biết** — `send-otp` trả 400
-  `SIGNUP_OTP_COOLDOWN` và user đứng lại ở `/login` với toast (test đánh dấu `test.fail`).
+- **Mong đợi:** lại tới `/signup/otp?email=…` với heading "Verify Email". BUG-AUTH-08 (đã sửa 2026-10-15) — `send-otp` trả 400
+  `SIGNUP_OTP_COOLDOWN` và user từng đứng lại ở `/login` với toast.
 - **Automated:** `tests/e2e/auth/sign-up.e2e.ts`
 
 ### TC-AUTH-074 — Submitting the info step with an expired session shows the error and stays on the step

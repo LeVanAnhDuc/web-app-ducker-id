@@ -39,3 +39,7 @@ export const OAUTH = {
   CODE: "oauth-code",
   PENDING_REQUEST: "oauth-req"
 };
+
+export const TOKEN = {
+  REVOKED_REFRESH: "revoked-refresh-token"
+};
