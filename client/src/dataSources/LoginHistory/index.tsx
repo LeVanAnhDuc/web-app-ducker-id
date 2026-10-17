@@ -130,7 +130,8 @@ export const buildLoginHistoryColumns = (
   tStatus: (key: LeafKeyOf<LoginHistoryMessages["status"]>) => string,
   tMethod: (key: LeafKeyOf<LoginHistoryMessages["method"]>) => string,
   tLocation: (key: LeafKeyOf<LoginHistoryMessages["location"]>) => string,
-  tApp: TApp
+  tApp: TApp,
+  formatFailReason: (reason: string) => string
 ): CustomTableColumn<LoginHistoryItem>[] => [
   {
     id: "createdAt",
@@ -168,7 +169,7 @@ export const buildLoginHistoryColumns = (
     id: "status",
     header: tTable("status"),
     cell: (item) => (
-      <span className="inline-flex items-center gap-1.5">
+      <span className="inline-flex flex-wrap items-center gap-1.5">
         <span
           className={cn(
             "size-1.5 rounded-full",
@@ -184,16 +185,32 @@ export const buildLoginHistoryColumns = (
         >
           {tStatus(item.status)}
         </span>
+        {item.failReason && (
+          <span className="text-muted-foreground text-xs">
+            · {formatFailReason(item.failReason)}
+          </span>
+        )}
+        {item.isAnomaly && (
+          <CustomBadge variant="warning" className="text-xs">
+            {tTable("anomalyFlag")}
+          </CustomBadge>
+        )}
       </span>
     )
   },
   {
     id: "deviceType",
     header: tTable("deviceType"),
-    cell: (item) =>
-      item.deviceType !== DEVICE_TYPE.UNKNOWN
-        ? `${item.deviceType} · ${item.browser}`
-        : item.browser
+    cell: (item) => (
+      <>
+        <span className="block">
+          {item.deviceType !== DEVICE_TYPE.UNKNOWN
+            ? `${item.deviceType} · ${item.browser}`
+            : item.browser}
+        </span>
+        <span className="text-muted-foreground block text-xs">{item.os}</span>
+      </>
+    )
   },
   {
     id: "ip",

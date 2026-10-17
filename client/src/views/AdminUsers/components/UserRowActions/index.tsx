@@ -1,6 +1,7 @@
 "use client";
 
 // libs
+import { useRef } from "react";
 import { KeyRound, Lock, LogOut, MoreHorizontal, Unlock } from "lucide-react";
 import { useTranslations } from "next-intl";
 // types
@@ -22,17 +23,21 @@ const UserRowActions = ({
   onForceLogout
 }: {
   user: AdminUser;
-  onResetPassword: (user: AdminUser) => void;
-  onLockToggle: (user: AdminUser) => void;
-  onForceLogout: (user: AdminUser) => void;
+  onResetPassword: (user: AdminUser, trigger: HTMLElement | null) => void;
+  onLockToggle: (user: AdminUser, trigger: HTMLElement | null) => void;
+  onForceLogout: (user: AdminUser, trigger: HTMLElement | null) => void;
 }) => {
   const t = useTranslations("adminUsers.actions");
   const tTable = useTranslations("adminUsers.table");
+  // The dialogs these items open have no DialogTrigger, so they return focus
+  // to this button themselves (useReturnFocus).
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <CustomButton
+          ref={triggerRef}
           variant="ghost"
           size="icon-sm"
           aria-label={tTable("rowMenuLabel")}
@@ -43,14 +48,14 @@ const UserRowActions = ({
       <DropdownMenuContent align="end" className="w-52">
         <DropdownMenuItem
           className="cursor-pointer gap-2"
-          onSelect={() => onResetPassword(user)}
+          onSelect={() => onResetPassword(user, triggerRef.current)}
         >
           <KeyRound className="size-4" aria-hidden="true" />
           <span>{t("resetPassword")}</span>
         </DropdownMenuItem>
         <DropdownMenuItem
           className="cursor-pointer gap-2"
-          onSelect={() => onLockToggle(user)}
+          onSelect={() => onLockToggle(user, triggerRef.current)}
         >
           {user.isActive ? (
             <Lock className="size-4" aria-hidden="true" />
@@ -63,7 +68,7 @@ const UserRowActions = ({
         <DropdownMenuItem
           variant="destructive"
           className="cursor-pointer gap-2"
-          onSelect={() => onForceLogout(user)}
+          onSelect={() => onForceLogout(user, triggerRef.current)}
         >
           <LogOut className="size-4" aria-hidden="true" />
           <span>{t("forceLogout")}</span>

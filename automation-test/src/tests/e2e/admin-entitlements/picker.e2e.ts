@@ -53,9 +53,9 @@ test.describe("guest", () => {
   );
 });
 
-// A non-admin gets the page shell (there is no client-side role guard — see
-// TC-AUTHZ-018) but /admin/users and /admin/apps answer 403, so the picker
-// never lists anyone and the matrix can never open.
+// A non-admin is sent away from the page by the client-side role guard
+// (TC-AUTHZ-018), and /admin/users and /admin/apps answer 403 regardless, so
+// no account is ever listed and the matrix can never open.
 test(
   "A non-admin can neither find users nor open the matrix",
   { tag: ["@TC-ADMINENTITLEMENTS-004", "@smoke"] },
@@ -64,22 +64,18 @@ test(
       403
     );
 
+    const users = await createApiClient(userApi).adminUsers.list({
+      search: "admin"
+    });
+    expect(users.status()).toBe(403);
+
     const ent = new AdminEntitlementsPage(userPage);
-    const denied = userPage.waitForResponse(
-      (r) => r.url().includes("/admin/users") && r.status() === 403
-    );
     await ent.goto();
-    await expect(ent.noUsersSelected()).toBeVisible();
-    await ent.pickerSearch(/Search users/i).click();
-    await denied;
-    await ent.pickerSearch(/Search users/i).fill("admin");
-    await expect(ent.noResults()).toBeVisible();
+    await expect(userPage).not.toHaveURL(/\/admin/);
+    await expect(ent.pickerSearch(/Search users/i)).toHaveCount(0);
     await expect(ent.options()).toHaveCount(0);
     await expect(ent.text(ADMIN.email)).toHaveCount(0);
     await expect(ent.editButton(/^Edit$/)).toHaveCount(0);
-
-    await ent.pickerSearch().fill(USER.email);
-    await expect(ent.noResults()).toBeVisible();
     await expect(ent.userColumnHeader()).toHaveCount(0);
   }
 );

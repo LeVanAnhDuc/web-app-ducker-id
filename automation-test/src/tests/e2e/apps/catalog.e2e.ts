@@ -298,11 +298,8 @@ test.describe("Apps catalog — states", () => {
     "A failing catalogue request shows the error alert",
     { tag: "@TC-APPS-014" },
     async ({ page }) => {
-      // AppsBoard renders its role="alert" inside PageContent's children,
-      // but an errored query has no items, so PageContent shows the empty
-      // state instead and the error never reaches the user.
-      // BUG: defects/apps.md#bug-apps-01
-      test.fail();
+      // An errored query is not "empty", so PageContent renders the
+      // role="alert" instead of the empty state (fixed BUG-APPS-01).
       await page.route(APPS_LIST_URL, (route) =>
         fulfillJson(route, serverError("boom"), 500)
       );

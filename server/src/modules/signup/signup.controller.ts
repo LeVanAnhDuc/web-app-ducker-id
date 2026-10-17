@@ -10,6 +10,11 @@ import type {
 import type { SignupService } from "./services";
 // common
 import { OkSuccess, CreatedSuccess } from "@/common/responses";
+// modules
+import {
+  REFRESH_TOKEN,
+  REFRESH_TOKEN_COOKIE_OPTIONS
+} from "@/modules/token/constants";
 
 export class SignupController {
   constructor(private readonly service: SignupService) {}
@@ -36,9 +41,18 @@ export class SignupController {
     req: CompleteSignupRequest,
     res: Response
   ): Promise<void> => {
-    const data = await this.service.completeSignup(req.body);
+    const {
+      tokens: { refreshToken, ...tokens },
+      ...account
+    } = await this.service.completeSignup(req.body);
+
+    // Same as login: the refresh token goes only into the HttpOnly cookie, so
+    // the new session survives a reload (BUG-AUTH-02) and page script never
+    // sees it.
+    res.cookie(REFRESH_TOKEN, refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
+
     new CreatedSuccess({
-      data,
+      data: { ...account, tokens },
       message: "signup:success.signupCompleted"
     }).send(req, res);
   };

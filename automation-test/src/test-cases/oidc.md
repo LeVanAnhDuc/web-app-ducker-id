@@ -392,9 +392,7 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/oidc.md
 - **Bước:**
   1. Với mỗi độ dài, authorize với challenge S256 tương ứng rồi đổi code.
 - **Mong đợi:** 43 và 128 → 200; 42 và 129 → 400 `invalid_request`
-  (RFC 7636 §4.1). **Hiện đang fail:** server chấp nhận mọi độ dài — biên
-  43/128 được kiểm như một test pass, các giá trị ngoài khoảng được đánh dấu
-  `test.fail` (BUG).
+  (RFC 7636 §4.1). (Từng là BUG-OIDC-03, đã sửa 2026-10-15.)
 - **Automated:** `tests/api/oidc/token.api.ts`
 
 ### TC-OIDC-032 — The ID token is RS256-signed by a key in the JWKS
@@ -492,8 +490,7 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/oidc.md
 - **Bước:**
   1. Gọi userinfo không có token và với token không hợp lệ.
 - **Mong đợi:** 401 với header `WWW-Authenticate: Bearer`; token không hợp lệ →
-  `error=invalid_token`. **Hiện đang fail** (BUG): 400 `invalid_request` /
-  400 `invalid_grant`, không có `WWW-Authenticate`.
+  `error=invalid_token`. (Từng là BUG-OIDC-04, đã sửa 2026-10-15.)
 - **Automated:** `tests/api/oidc/userinfo.api.ts`
 
 ### TC-OIDC-040 — An ID token presented to userinfo is refused cleanly
@@ -504,9 +501,8 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/oidc.md
 - **Tiền điều kiện:** một bộ token
 - **Bước:**
   1. Gọi userinfo với `id_token` làm Bearer token.
-- **Mong đợi:** 401 `invalid_token`, không có claim. **Hiện đang fail** (BUG):
-  ID token qua được kiểm tra chữ ký/issuer, không có `authId`, và server trả
-  500 `server_error`.
+- **Mong đợi:** 401 `invalid_token`, không có claim. (Từng là BUG-OIDC-02, đã
+  sửa 2026-10-15.)
 - **Automated:** `tests/api/oidc/userinfo.api.ts`
 
 ### TC-OIDC-041 — A first-party Ducker ID access token is not accepted by userinfo
@@ -518,8 +514,7 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/oidc.md
 - **Bước:**
   1. Gọi userinfo với access token first-party.
 - **Mong đợi:** 401, không có claim — `aud` của nó là issuer, không phải một client.
-  **Hiện đang fail** (BUG): 200 `{ sub }` — `verifyOAuthAccessToken` chỉ kiểm
-  issuer, không bao giờ kiểm audience.
+  (Từng là BUG-OIDC-01, đã sửa 2026-10-15.)
 - **Automated:** `tests/api/oidc/userinfo.api.ts`
 
 ### TC-OIDC-042 — /oauth/logout ends the identity-provider session
@@ -558,10 +553,8 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/oidc.md
 - **Tiền điều kiện:** session IdP
 - **Bước:**
   1. Đọc header `Set-Cookie: sid=…` của `/oauth/logout`.
-- **Mong đợi:** `Expires` ở quá khứ (hoặc `Max-Age=0`). **Hiện đang fail**
-  (BUG): `res.clearCookie(SESSION_COOKIE, SESSION_COOKIE_OPTIONS)` truyền
-  `maxAge`, nên Express 4 ghi `sid=; Max-Age=604800` — một cookie rỗng sống
-  thêm 7 ngày. Hiện vô hại (sid rỗng = không có session) nhưng không phải là xoá.
+- **Mong đợi:** `Expires` ở quá khứ (hoặc `Max-Age=0`). (Từng là BUG-OIDC-05,
+  đã sửa 2026-10-15.)
 - **Automated:** `tests/api/oidc/logout.api.ts`
 
 ### TC-OIDC-045 — Signing out of Ducker ID also ends the SSO session
@@ -687,8 +680,7 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/oidc.md
   1. `POST /oauth/token` với `grant_type`, `code`, `code_verifier`, `client_id`, `client_secret` đúng nhưng
      không có `redirect_uri`.
 - **Mong đợi:** 400 `invalid_request` (hoặc `invalid_grant`), không có token — `redirect_uri` bắt buộc khi
-  request authorize đã gửi nó. **Hiện đang fail** (BUG): server chỉ so `redirect_uri` khi request có gửi, nên
-  bỏ nó đi thì đổi được code.
+  request authorize đã gửi nó. (Từng là BUG-OIDC-06, đã sửa 2026-10-15.)
 - **Automated:** `tests/api/oidc/token.api.ts`
 
 ### TC-OIDC-055 — Repeated and extra-spaced scope values are normalised, not rejected

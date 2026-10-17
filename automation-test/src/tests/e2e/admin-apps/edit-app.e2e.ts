@@ -114,12 +114,9 @@ test.describe("Admin Apps — AuthN", () => {
 // ── AuthZ ──
 // `userPage` / `userApi` are the seeded regular user (role fixtures).
 //
-// There is NO client-side role guard: for a signed-in non-admin the admin
-// shell and the "App Registry" heading DO render, so the heading is not
-// asserted absent. Authorization is enforced by the API (403); the admin-only
-// DATA never loads, so the table shows its empty state and no app row or
-// "App actions" menu renders. That data-absence is asserted (stable) rather
-// than the transient permission toast (flaky).
+// The client-side role guard (AdminGuardLayout) sends a signed-in non-admin
+// away from /admin/*, so the "App Registry" page never renders; the API
+// enforces the same rule with 403.
 test.describe("Admin Apps — AuthZ", () => {
   test(
     "A non-admin cannot update apps or see them",
@@ -133,13 +130,13 @@ test.describe("Admin Apps — AuthZ", () => {
       );
       expect(res.status()).toBe(403);
 
-      // (2) UI: the admin-only list GET 403s, so no seeded row or row menu renders.
+      // (2) UI: the role guard redirects, so no seeded row or row menu renders.
       const asUser = new AdminAppsPage(userPage);
       await asUser.goto();
-      await expect(asUser.heading()).toBeVisible();
+      await expect(userPage).not.toHaveURL(/\/admin/);
+      await expect(asUser.heading()).toHaveCount(0);
       await expect(asUser.rowMenuButtons()).toHaveCount(0);
       await expect(asUser.row(TARGET_APP.displayName)).toHaveCount(0);
-      await expect(asUser.text(t.table.empty)).toBeVisible();
     }
   );
 });

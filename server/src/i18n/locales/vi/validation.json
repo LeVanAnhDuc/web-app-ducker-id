@@ -82,5 +82,33 @@
   },
   "interactive": {
     "invalid": "interactive phải là giá trị boolean"
+  },
+  "address": {
+    "invalid": "Địa chỉ chứa ký tự không hợp lệ",
+    "tooLong": "Địa chỉ không được vượt quá 500 ký tự"
+  },
+  "method": {
+    "invalid": "Bộ lọc phương thức đăng nhập không hợp lệ."
+  },
+  "deviceType": {
+    "invalid": "Bộ lọc loại thiết bị không hợp lệ."
+  },
+  "clientType": {
+    "invalid": "Bộ lọc loại client không hợp lệ."
+  },
+  "userId": {
+    "invalid": "Mã người dùng không hợp lệ."
+  },
+  "priority": {
+    "invalid": "Bộ lọc mức ưu tiên không hợp lệ."
+  },
+  "fromDate": {
+    "invalid": "Ngày bắt đầu không hợp lệ."
+  },
+  "toDate": {
+    "invalid": "Ngày kết thúc không hợp lệ."
+  },
+  "dateRange": {
+    "invalid": "Ngày kết thúc không được trước ngày bắt đầu."
   }
 }

@@ -56,6 +56,18 @@ export const getDateOfBirthBounds = () => {
   return { minDate, maxDate };
 };
 
+/**
+ * A `YYYY-MM-DD` value as LOCAL midnight. `new Date("2013-10-17")` is UTC
+ * midnight, which east of UTC lands after the local-midnight bounds of
+ * `getDateOfBirthBounds` — turning someone's 13th birthday into "too young".
+ */
+export const parseDateOnly = (value: string): Date => {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
+  return match
+    ? new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]))
+    : new Date(value);
+};
+
 export const confirmErrorToast = (message: string): Promise<void> =>
   new Promise((resolve) => {
     toast.error(message, {

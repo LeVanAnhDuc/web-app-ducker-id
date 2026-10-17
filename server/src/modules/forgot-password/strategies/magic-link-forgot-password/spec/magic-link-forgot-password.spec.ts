@@ -95,6 +95,8 @@ describe("MagicLinkForgotPasswordStrategy.sendLink", () => {
     expect(payload.data.magicLinkUrl).toContain("token=a-token");
     expect(payload.data.magicLinkUrl).toContain(encodeURIComponent(EMAIL));
     expect(payload.data.magicLinkUrl).toContain("method=magic-link");
+    // Must be the real client route (BUG-PASSWORD-02: was /reset-password, a 404).
+    expect(payload.data.magicLinkUrl).toContain("/forgot-password/reset?");
     expect(result).toEqual({
       success: true,
       expiresIn: EXPIRY,

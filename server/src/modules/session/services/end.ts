@@ -3,7 +3,7 @@ import type { Request, Response } from "express";
 import type { SessionRepository } from "../repository/session.repository";
 // others
 import { Logger } from "@/libs/logger";
-import { SESSION_COOKIE, SESSION_COOKIE_OPTIONS } from "../constants";
+import { SESSION_COOKIE, SESSION_CLEAR_COOKIE_OPTIONS } from "../constants";
 import { readSid } from "../helpers";
 
 export const end = async (
@@ -18,5 +18,5 @@ export const end = async (
     Logger.info("IdP session ended", { sid });
   }
 
-  res.clearCookie(SESSION_COOKIE, SESSION_COOKIE_OPTIONS);
+  res.clearCookie(SESSION_COOKIE, SESSION_CLEAR_COOKIE_OPTIONS);
 };

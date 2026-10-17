@@ -10,13 +10,14 @@ import type {
   AccountExistsGuard,
   AccountActiveGuard,
   EmailVerifiedGuard,
+  PasswordLockoutGuard,
   MagicLinkCooldownGuard
 } from "../../../guards";
 import type { LoginAuditService } from "../../../services/login-audit";
 import type { LoginCompletionService } from "../../../services/login-completion";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 // common
-import { UnauthorizedError } from "@/common/exceptions";
+import { TooManyRequestsError, UnauthorizedError } from "@/common/exceptions";
 // modules
 import { LOGIN_METHODS } from "@/modules/login-history/constants";
 // others
@@ -27,6 +28,7 @@ import {
   createAccountExistsGuardMock,
   createAccountActiveGuardMock,
   createEmailVerifiedGuardMock,
+  createPasswordLockoutGuardMock,
   createMagicLinkCooldownGuardMock
 } from "@test/mocks/login-guards.mock";
 import { createLoginAuditServiceMock } from "@test/mocks/login-audit-service.mock";
@@ -47,6 +49,7 @@ describe("MagicLinkLoginStrategy", () => {
   let accountExists: jest.Mocked<AccountExistsGuard>;
   let accountActive: jest.Mocked<AccountActiveGuard>;
   let emailVerified: jest.Mocked<EmailVerifiedGuard>;
+  let passwordLockout: jest.Mocked<PasswordLockoutGuard>;
   let cooldown: jest.Mocked<MagicLinkCooldownGuard>;
   let magicLinkRepo: jest.Mocked<MagicLinkLoginRepository>;
   let emailDispatcher: jest.Mocked<EmailDispatcher>;
@@ -59,6 +62,7 @@ describe("MagicLinkLoginStrategy", () => {
     accountExists = createAccountExistsGuardMock();
     accountActive = createAccountActiveGuardMock();
     emailVerified = createEmailVerifiedGuardMock();
+    passwordLockout = createPasswordLockoutGuardMock();
     cooldown = createMagicLinkCooldownGuardMock();
     magicLinkRepo = createMagicLinkLoginRepoMock();
     emailDispatcher = createEmailDispatcherMock();
@@ -69,6 +73,7 @@ describe("MagicLinkLoginStrategy", () => {
       accountExistsGuard: accountExists,
       accountActiveGuard: accountActive,
       emailVerifiedGuard: emailVerified,
+      passwordLockoutGuard: passwordLockout,
       magicLinkCooldownGuard: cooldown,
       magicLinkLoginRepo: magicLinkRepo,
       emailDispatcher,
@@ -209,6 +214,24 @@ describe("MagicLinkLoginStrategy", () => {
         idToken: "i",
         expiresIn: 3600
       });
+    });
+
+    it("refuses a password-locked account before checking the link", async () => {
+      passwordLockout.assert.mockRejectedValue(
+        new TooManyRequestsError({
+          message: "locked",
+          code: ERROR_CODES.LOGIN_ACCOUNT_LOCKED
+        })
+      );
+
+      const promise = strategy.verifyLink({ email: EMAIL, token: TOKEN }, req);
+
+      await expect(promise).rejects.toBeInstanceOf(TooManyRequestsError);
+      await expect(promise).rejects.toMatchObject({
+        code: ERROR_CODES.LOGIN_ACCOUNT_LOCKED
+      });
+      expect(magicLinkRepo.verifyToken).not.toHaveBeenCalled();
+      expect(completion.complete).not.toHaveBeenCalled();
     });
 
     it("short-circuits when emailVerified fails (user unverified between send and verify)", async () => {

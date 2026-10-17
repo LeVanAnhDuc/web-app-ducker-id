@@ -269,8 +269,6 @@ test(
   "Another user's id is answered exactly like an unknown id",
   { tag: "@TC-NOTIFICATIONS-058" },
   async ({ newApi }) => {
-    // BUG: defects/admin-login-history.md#bug-adminloginhistory-03
-    test.fail();
     const alice = await owner(newApi, "notif-enum-a", [{ name: "Alice only" }]);
     const bob = await owner(newApi, "notif-enum-b", [{ name: "Bob only" }]);
     const foreign = await bob.notifications.markRead(alice.ids[0]);

@@ -10,6 +10,7 @@ import SubjectField from "../../components/SubjectField";
 import MessageField from "../../components/MessageField";
 import SubmitButton from "../../components/SubmitButton";
 // hooks
+import { useSubmitGuard } from "@/hooks";
 import useSupportSubmit from "../../hooks/useSupportSubmit";
 // forms
 import { supportFormProps } from "@/forms/Support";
@@ -37,7 +38,12 @@ const SupportForm = ({
     }
   });
 
-  const onSubmit = (data: SupportFormValues) => submit(data);
+  // A double click lands while zod is still validating the first one, before
+  // isPending disables the button — the ref guard drops the second submit.
+  const { run, release } = useSubmitGuard();
+
+  const onSubmit = (data: SupportFormValues) =>
+    run(() => submit(data, { onSettled: release }));
 
   return (
     <FormProvider {...methods}>

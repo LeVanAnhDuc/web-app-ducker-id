@@ -89,6 +89,18 @@ export const contactAdminSwaggerSchemas: Record<
         enum: ["new", "processing", "resolved"],
         example: "new"
       },
+      userId: {
+        type: "string",
+        nullable: true,
+        description: "Admin view only: the account that filed the request",
+        example: "507f1f77bcf86cd799439012"
+      },
+      ipAddress: {
+        type: "string",
+        nullable: true,
+        description: "Admin view only: the IP the request was filed from",
+        example: "203.0.113.7"
+      },
       createdAt: { type: "string", format: "date-time" },
       updatedAt: { type: "string", format: "date-time" }
     }

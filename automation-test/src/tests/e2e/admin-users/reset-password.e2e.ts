@@ -329,13 +329,11 @@ test.describe(
 );
 
 // Design (admin-reset-password, row 12): closing the dialog returns focus to
-// the trigger. Same root cause as the lock dialog (TC-ADMINUSERS-065).
+// the trigger, the same way as the lock dialog (TC-ADMINUSERS-065).
 test(
   "Closing the reset dialog returns focus to the row menu button",
   { tag: "@TC-ADMINUSERS-066" },
   async ({ adminUsersPage: users }) => {
-    // BUG: defects/admin-users.md#bug-adminusers-03
-    test.fail();
     await users.gotoRow(target.email);
     await users.startReset(target.email);
     await expect(users.dialog()).toBeVisible();

@@ -228,11 +228,6 @@ test(
   "Change-password errors are translated",
   { tag: ["@TC-PASSWORD-024"] },
   async ({ newApi }) => {
-    // server i18n never loads the `changePassword` namespace
-    // (server/src/i18n/config.ts `ns` list), so messages come back as the
-    // raw key "errors.wrongCurrentPassword".
-    // BUG: defects/password.md#bug-password-04
-    test.fail();
     const account = await createAccount({ tag: "cp-i18n" });
     const me = await signedIn(await newApi(), account.email, account.password);
     const res = await me.changePassword.submit({

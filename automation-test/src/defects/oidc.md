@@ -2,14 +2,9 @@
 
 ## Đang mở
 
-| Bug                         | Mức        | TC          | Tóm tắt                                                                                               |
-| --------------------------- | ---------- | ----------- | ----------------------------------------------------------------------------------------------------- |
-| [BUG-OIDC-01](#bug-oidc-01) | Trung bình | TC-OIDC-041 | `/oauth/userinfo` chấp nhận access token first-party của Ducker ID (kiểm issuer, không kiểm audience) |
-| [BUG-OIDC-02](#bug-oidc-02) | Trung bình | TC-OIDC-040 | Gửi `id_token` làm Bearer tới `/oauth/userinfo` → 500 `server_error`                                  |
-| [BUG-OIDC-03](#bug-oidc-03) | Thấp       | TC-OIDC-031 | Không kiểm độ dài `code_verifier` (42 và 129 ký tự vẫn đổi được)                                      |
-| [BUG-OIDC-04](#bug-oidc-04) | Thấp       | TC-OIDC-039 | Lỗi của `/oauth/userinfo` là 400 và không có `WWW-Authenticate`                                       |
-| [BUG-OIDC-05](#bug-oidc-05) | Thấp       | TC-OIDC-044 | `/oauth/logout` xoá `sid` với `Max-Age=604800` — một cookie rỗng sống 7 ngày                          |
-| [BUG-OIDC-06](#bug-oidc-06) | Thấp       | TC-OIDC-054 | `/oauth/token` đổi được code khi request không gửi `redirect_uri`                                     |
+_(không có)_
+
+## Đã sửa
 
 ### BUG-OIDC-01
 
@@ -18,6 +13,7 @@
 - **Bước tái hiện:** chạy test của TC-OIDC-041 — `tests/api/oidc/userinfo.api.ts`
 - **Mong đợi:** 401 với token không được cấp cho một OAuth client
 - **Thực tế:** `/oauth/userinfo` chấp nhận access token first-party của Ducker ID (kiểm issuer, không kiểm audience)
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — `verifyOAuthAccessToken` từ chối token có `aud` = issuer (token first-party) → userinfo 401 `invalid_token`.
 
 ### BUG-OIDC-02
 
@@ -26,6 +22,7 @@
 - **Bước tái hiện:** chạy test của TC-OIDC-040 — `tests/api/oidc/userinfo.api.ts`
 - **Mong đợi:** 401 invalid_token
 - **Thực tế:** Gửi `id_token` làm Bearer tới `/oauth/userinfo` → 500 `server_error`
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — `verifyOAuthAccessToken` đòi `sub`, `authId`, `scope` là chuỗi — id_token không có nên bị từ chối trước khi load claim → 401 `invalid_token` thay vì 500.
 
 ### BUG-OIDC-03
 
@@ -34,6 +31,7 @@
 - **Bước tái hiện:** chạy test của TC-OIDC-031 — `tests/api/oidc/token.api.ts`
 - **Mong đợi:** 400 khi ngoài khoảng 43–128 (RFC 7636 §4.1)
 - **Thực tế:** Không kiểm độ dài `code_verifier` (42 và 129 ký tự vẫn đổi được)
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — `exchangeToken` kiểm `code_verifier` theo `^[A-Za-z0-9\-._~]{43,128}$` (RFC 7636 §4.1) trước khi tiêu code → 400 `invalid_request`.
 
 ### BUG-OIDC-04
 
@@ -42,6 +40,7 @@
 - **Bước tái hiện:** chạy test của TC-OIDC-039 — `tests/api/oidc/userinfo.api.ts`
 - **Mong đợi:** 401 invalid_token (RFC 6750 §3.1)
 - **Thực tế:** Lỗi của `/oauth/userinfo` là 400 và không có `WWW-Authenticate`
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — lỗi của `/oauth/userinfo` là 401 `invalid_token` kèm `WWW-Authenticate: Bearer` (thiếu token) hoặc `Bearer error="invalid_token", …` (token hỏng).
 
 ### BUG-OIDC-05
 
@@ -50,6 +49,7 @@
 - **Bước tái hiện:** chạy test của TC-OIDC-044 — `tests/api/oidc/logout.api.ts`
 - **Mong đợi:** cookie hết hạn
 - **Thực tế:** `/oauth/logout` xoá `sid` với `Max-Age=604800` — một cookie rỗng sống 7 ngày
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — `SessionService.end` xoá `sid` bằng `SESSION_CLEAR_COOKIE_OPTIONS` (không có `maxAge`) nên Express gửi `Expires` 1970; logout first-party xoá `refreshToken` theo cùng cách.
 
 ### BUG-OIDC-06
 
@@ -60,7 +60,4 @@
   token request khi authorize request đã gửi nó
 - **Thực tế:** `services/exchange-token.ts` chỉ so `redirect_uri` khi `body.redirect_uri` có giá trị, nên bỏ hẳn tham
   số thì code vẫn đổi ra token (200)
-
-## Đã sửa
-
-_(chưa có)_
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — `exchangeToken` bắt buộc `redirect_uri` (authorize luôn yêu cầu nó) → thiếu thì 400 `invalid_request`, khác thì `invalid_grant` như cũ.

@@ -33,6 +33,7 @@ export interface LoginHistoryItem {
   os: string;
   browser: string;
   clientType: ClientType;
+  isAnomaly: boolean;
   createdAt: string;
   source: LoginHistorySource;
   // null when the row is a sign-in to Ducker ID itself
@@ -46,7 +47,6 @@ export interface LoginHistoryAdminItem extends LoginHistoryItem {
   usernameAttempted: string;
   userAgent: string;
   timezoneOffset: string | null;
-  isAnomaly: boolean;
   anomalyReasons: string[];
 }
 

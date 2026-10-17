@@ -9,7 +9,16 @@ interface SuccessResponsePattern<T> extends ResponsePattern<T> {
 
 interface RequestLike {
   originalUrl: string;
+  // Absent only when a response is sent before the i18n middleware ran.
+  t?: TranslateFunction;
 }
+
+// Controllers pass an i18next key ("user:success.getAdminUsers"); the body
+// carries its translation for the request's Accept-Language, the same way the
+// error filter translates error keys. A literal with no catalogue entry (the
+// health checks) comes back unchanged.
+const translate = (req: RequestLike, message: string): string =>
+  message && req.t ? req.t(message as I18n.Key) : message;
 
 abstract class SuccessResponse<T> {
   private readonly status: number;
@@ -26,7 +35,7 @@ abstract class SuccessResponse<T> {
     const body: ResponsePattern<T> = {
       timestamp: new Date().toISOString(),
       path: req.originalUrl,
-      message: this.message,
+      message: translate(req, this.message),
       data: this.data
     };
     res.status(this.status).json(body);

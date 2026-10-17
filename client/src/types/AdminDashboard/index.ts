@@ -3,6 +3,7 @@ import type { LucideIcon } from "lucide-react";
 
 export type AdminDashboardCardKey =
   | "apps"
+  | "categories"
   | "entitlements"
   | "users"
   | "contacts"

@@ -1,7 +1,7 @@
 "use client";
 // libs
 import { ArrowUpDown, ChevronDown } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 // types
 import type { FavoritesSortKey } from "@/types/Apps";
@@ -19,6 +19,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu";
+// ghosts
+import FocusNextFavorite from "../../ghosts/FocusNextFavorite";
 // hooks
 import {
   useAppCategories,
@@ -79,6 +81,22 @@ const FavoritesGrid = () => {
   const { data, isLoading, isError } = useFavorites(params);
   const toggleFavorite = useToggleFavorite();
   const items = data?.items ?? [];
+  const gridRef = useRef<HTMLDivElement>(null);
+  const [focusTarget, setFocusTarget] = useState<string | null>(null);
+
+  const handleToggle = (index: number) => {
+    const app = items[index];
+    const neighbourId = (items[index + 1] ?? items[index - 1])?._id ?? null;
+    if (app.isFavorite) gridRef.current?.focus();
+    toggleFavorite.mutate(
+      { appId: app._id, isFavorite: app.isFavorite },
+      {
+        onSettled: () => {
+          if (app.isFavorite) setFocusTarget(neighbourId);
+        }
+      }
+    );
+  };
 
   const hasActiveFilters =
     query.activeFilterCount > 0 || Boolean(query.appliedSearch);
@@ -122,19 +140,23 @@ const FavoritesGrid = () => {
       />
       <PageContent
         isLoading={isLoading}
-        isEmpty={items.length === 0}
+        isEmpty={!isError && items.length === 0}
         hasActiveFilters={hasActiveFilters}
         onClearFilters={query.clearFilters}
         skeleton={<FavoritesGridSkeleton />}
         emptyTitle={t("empty")}
       >
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div
+          ref={gridRef}
+          tabIndex={-1}
+          className="focus-visible:ring-ring grid grid-cols-1 gap-4 rounded-xl focus-visible:ring-2 focus-visible:outline-none sm:grid-cols-2 lg:grid-cols-3"
+        >
           {isError && (
             <p className="text-destructive col-span-full text-sm" role="alert">
               {t("error")}
             </p>
           )}
-          {items.map((app) => (
+          {items.map((app, index) => (
             <AppCard
               key={app._id}
               id={app._id}
@@ -148,16 +170,17 @@ const FavoritesGrid = () => {
               addFavoriteLabel={t("card.add")}
               removeFavoriteLabel={t("card.remove")}
               togglePending={toggleFavorite.isPending}
-              onToggleFavorite={() =>
-                toggleFavorite.mutate({
-                  appId: app._id,
-                  isFavorite: app.isFavorite
-                })
-              }
+              onToggleFavorite={() => handleToggle(index)}
             />
           ))}
         </div>
       </PageContent>
+      <FocusNextFavorite
+        gridRef={gridRef}
+        appId={focusTarget}
+        pending={toggleFavorite.isPending}
+        onDone={() => setFocusTarget(null)}
+      />
     </PageShell>
   );
 };

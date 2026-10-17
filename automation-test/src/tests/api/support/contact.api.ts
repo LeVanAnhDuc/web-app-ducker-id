@@ -347,10 +347,6 @@ test(
   "Markup is stripped before a request is stored",
   { tag: "@TC-SUPPORT-049" },
   async ({ guestApi }) => {
-    // The server computes the sanitised subject / message only to check their
-    // length and stores the raw values (submit-contact.ts).
-    // BUG: defects/support.md#bug-support-02
-    test.fail();
     const markup = '<img src="x" onerror="alert(1)">';
     const subject = `${supportSubject("markup")} ${markup}`;
     const res = await createApiClient(guestApi).contact.submit({

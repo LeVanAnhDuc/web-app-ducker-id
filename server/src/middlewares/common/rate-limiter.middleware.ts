@@ -13,6 +13,17 @@ import { RequestContext } from "@/utils/request-context";
 type RedisClient = ReturnType<typeof createClient>;
 type RateLimitHandler = (req: Request, res: Response) => void;
 
+/**
+ * Per-email limiters run before `bodyPipe`, so the body is still unvalidated:
+ * `email` may be a number, a boolean or an array. Anything but a non-empty
+ * string shares the "unknown" bucket and is then refused by validation (400),
+ * instead of throwing here and surfacing as a 500.
+ */
+export const emailRateLimitKey = (req: Request): string => {
+  const email: unknown = req.body?.email;
+  return typeof email === "string" && email ? email.toLowerCase() : "unknown";
+};
+
 export class RateLimiterMiddleware {
   private readonly redisClient: RedisClient;
 
@@ -77,7 +88,7 @@ export class RateLimiterMiddleware {
       ),
       standardHeaders: true,
       legacyHeaders: false,
-      keyGenerator: (req) => req.body.email?.toLowerCase() || "unknown",
+      keyGenerator: emailRateLimitKey,
       handler: this.createRateLimitExceededHandler(
         "signup:errors.rateLimitExceeded"
       )
@@ -114,7 +125,7 @@ export class RateLimiterMiddleware {
       store: this.createRedisStore(RATE_LIMIT_CONFIG.LOGIN.OTP.PER_EMAIL.KEY),
       standardHeaders: true,
       legacyHeaders: false,
-      keyGenerator: (req) => req.body.email?.toLowerCase() || "unknown",
+      keyGenerator: emailRateLimitKey,
       handler: this.createRateLimitExceededHandler(
         "login:errors.rateLimitExceeded"
       )
@@ -142,7 +153,7 @@ export class RateLimiterMiddleware {
       ),
       standardHeaders: true,
       legacyHeaders: false,
-      keyGenerator: (req) => req.body.email?.toLowerCase() || "unknown",
+      keyGenerator: emailRateLimitKey,
       handler: this.createRateLimitExceededHandler(
         "login:errors.rateLimitExceeded"
       )
@@ -171,7 +182,7 @@ export class RateLimiterMiddleware {
       ),
       standardHeaders: true,
       legacyHeaders: false,
-      keyGenerator: (req) => req.body.email?.toLowerCase() || "unknown",
+      keyGenerator: emailRateLimitKey,
       handler: this.createRateLimitExceededHandler(
         "forgotPassword:errors.rateLimitExceeded"
       )
@@ -202,7 +213,7 @@ export class RateLimiterMiddleware {
       ),
       standardHeaders: true,
       legacyHeaders: false,
-      keyGenerator: (req) => req.body.email?.toLowerCase() || "unknown",
+      keyGenerator: emailRateLimitKey,
       handler: this.createRateLimitExceededHandler(
         "forgotPassword:errors.rateLimitExceeded"
       )

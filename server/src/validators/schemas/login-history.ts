@@ -189,7 +189,12 @@ export const loginHistoryStatsQuerySchema = Joi.object({
       isSupportedTimeZone(value) ? value : helpers.error("any.only")
     )
     .optional()
+    // Every rule needs a key: validation.pipe collects all errors, and one
+    // without a key ships Joi's raw English sentence next to the right one.
     .messages({
+      "string.base": "validation:timezone.invalid",
+      "string.empty": "validation:timezone.invalid",
+      "string.max": "validation:timezone.invalid",
       "any.only": "validation:timezone.invalid"
     })
 });

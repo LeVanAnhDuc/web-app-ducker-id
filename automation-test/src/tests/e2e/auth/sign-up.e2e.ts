@@ -188,10 +188,8 @@ test(
   "The info step asks the user to accept the terms",
   { tag: ["@TC-AUTH-022"] },
   async ({ signupInfoPage }) => {
-    // REQ-AUTH-04 requires accepting the terms, but the info step has no
-    // terms control — InfoStepForm always sends `acceptTerms: true`.
-    // BUG: defects/auth.md#bug-auth-04
-    test.fail();
+    // REQ-AUTH-04 requires accepting the terms: the info step has a
+    // required terms checkbox (fixed BUG-AUTH-04).
     await signupInfoPage.goto("0".repeat(64), throwawayEmail("auth-ui-terms"));
     await expect(signupInfoPage.heading()).toBeVisible();
     await expect(signupInfoPage.termsCheckbox()).toBeVisible({
@@ -204,11 +202,8 @@ test(
   "A freshly signed-up user stays signed in after a reload",
   { tag: ["@TC-AUTH-023"] },
   async ({ page, loginPage, signupOtpPage, signupInfoPage }) => {
-    // POST /auth/signup/complete returns the tokens in the body but never
-    // sets the refreshToken cookie (SignupController.completeSignup), so the
-    // session cannot be restored by SessionGate after a reload.
-    // BUG: defects/auth.md#bug-auth-02
-    test.fail();
+    // signup/complete sets the refreshToken cookie like login, so SessionGate
+    // restores the session (fixed BUG-AUTH-02).
     const email = throwawayEmail("auth-ui-reload");
     await signUpViaUi(loginPage, signupOtpPage, signupInfoPage, email);
 
@@ -227,11 +222,9 @@ test(
   "Re-entering an unknown email during the code cooldown still continues to verification",
   { tag: ["@TC-AUTH-073"] },
   async ({ page, loginPage, signupOtpPage }) => {
-    // useLoginEmail sends a fresh code on every submit; inside the 60 s
-    // cooldown send-otp answers 400 SIGNUP_OTP_COOLDOWN and the email step
-    // stays put with a toast (decisions Q6).
-    // BUG: defects/auth.md#bug-auth-08
-    test.fail();
+    // Inside the 60 s cooldown send-otp answers 400 SIGNUP_OTP_COOLDOWN;
+    // useLoginEmail treats that as "code already sent" and continues
+    // (decisions Q6, fixed BUG-AUTH-08).
     const email = throwawayEmail("auth-ui-reenter");
     await startSignup(loginPage, email);
 

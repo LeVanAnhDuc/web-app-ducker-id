@@ -23,12 +23,13 @@ export type PublicProfileResponse = {
   gender: GenderEnum | null;
 };
 
+// null clears an optional field
 export type UpdateProfileData = {
   fullName?: string;
-  phone?: string;
-  address?: string;
-  dateOfBirth?: string;
-  gender?: GenderEnum;
+  phone?: string | null;
+  address?: string | null;
+  dateOfBirth?: string | null;
+  gender?: GenderEnum | null;
 };
 
 export type AuthenticationRole =

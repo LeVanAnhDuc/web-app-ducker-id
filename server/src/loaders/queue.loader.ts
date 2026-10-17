@@ -7,6 +7,8 @@ import type { EmailJobData } from "@/types/services/queue";
 import type { NotificationJobData } from "@/types/services/notification";
 // services
 import { createQueueModule } from "@/services/queue/queue.module";
+// middlewares
+import { adminGuard } from "@/middlewares";
 // others
 import { Logger } from "@/libs/logger";
 
@@ -30,7 +32,10 @@ export const loadQueues = (
   closeQueuesFn = closeQueues;
 
   if (bullBoardAdapter) {
-    app.use(BULL_BOARD_PATH, bullBoardAdapter.getRouter());
+    // Admin only (REQ-AUTHZ-02): job payloads carry one-time codes and
+    // temporary passwords in plaintext (BUG-AUTHZ-01). A failed guard reaches
+    // the global error filter, which loadErrorHandlers mounts after this.
+    app.use(BULL_BOARD_PATH, adminGuard, bullBoardAdapter.getRouter());
   }
 
   Logger.info("Queues loaded successfully");

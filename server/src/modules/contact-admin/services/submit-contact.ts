@@ -13,7 +13,8 @@ import { RequestContext } from "@/utils/request-context";
 
 export const submitContact = async (
   contactRepo: ContactRepository,
-  body: SubmitContactBody
+  body: SubmitContactBody,
+  ipAddress: string | null
 ): Promise<SubmitContactResponseDto> => {
   const { message, subject, email } = body;
 
@@ -39,10 +40,12 @@ export const submitContact = async (
 
   const contact = await contactRepo.create({
     email,
-    subject,
-    message,
+    // What was length-checked is what gets stored: never the raw markup.
+    subject: sanitizedSubject,
+    message: sanitizedMessage,
     status: CONTACT_STATUSES.NEW,
-    userId
+    userId,
+    ipAddress
   });
 
   return toSubmitContactResponseDto(contact);

@@ -64,11 +64,8 @@ test(
   "A locked user is offered the self-service unlock from the sign-in screen",
   { tag: ["@TC-AUTH-048"] },
   async ({ loginPasswordPage }) => {
-    // README / REQ-AUTH-10 promise "request an unlock code by email and
-    // verify it", and the API exists (/auth/unlock/*), but the client
-    // has no unlock screen, route or link — a locked user only sees the toast.
-    // BUG: defects/auth.md#bug-auth-03
-    test.fail();
+    // REQ-AUTH-10: a locked user is linked to /login/unlock, which requests
+    // and verifies the emailed temporary password (fixed BUG-AUTH-03).
     const account = await createAccount({ tag: "auth-ui-unlock" });
     await lockAccount(account.email);
 

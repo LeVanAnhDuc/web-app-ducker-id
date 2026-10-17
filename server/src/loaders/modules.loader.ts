@@ -147,8 +147,12 @@ export const loadModules = (
     rateLimiter
   );
 
-  const { logoutRouter } = createLogoutModule(sessionService);
-  const { tokenRouter } = createTokenModule(authService, userService);
+  const { tokenRouter, tokenService } = createTokenModule(
+    redisClient,
+    authService,
+    userService
+  );
+  const { logoutRouter } = createLogoutModule(sessionService, tokenService);
 
   const { unlockAccountRouter } = createUnlockAccountModule(
     redisClient,

@@ -760,7 +760,7 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/admin-categories.m
 - **Tiền điều kiện:** không có
 - **Bước:**
   1. Mở "New category"; nhấn Escape.
-- **Mong đợi:** "Name (English)" có focus khi mở; sheet đóng và "New category" nhận lại focus. **Thực tế:** focus rơi vào `<body>` sau Escape. Đánh dấu `test.fail()` cho tới khi sửa.
+- **Mong đợi:** "Name (English)" có focus khi mở; sheet đóng và "New category" nhận lại focus. (Từng là BUG-ADMINCATEGORIES-01, đã sửa 2026-10-15.)
 - **Automated:** `tests/e2e/admin-categories/categories-sheet.e2e.ts`
 
 ### TC-ADMINCATEGORIES-069 — A rate-limited create shows the server's message and keeps the values
@@ -880,7 +880,7 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/admin-categories.m
 - **Bước:**
   1. `DELETE` với đích `000…0`; với Team Calendar hai lần; với thêm Blog (không thuộc category).
 - **Mong đợi:** 400 `CATEGORY_REASSIGN_INVALID`; 400 `CATEGORY_REASSIGN_INVALID`; 409 `CATEGORY_IMPACT_CHANGED` — kèm
-  message đã dịch. **Thực tế:** app lặp trả `VALIDATION_ERROR` (BUG-ADMINCATEGORIES-02).
+  message đã dịch. (Từng là BUG-ADMINCATEGORIES-02, đã sửa 2026-10-15: kiểm app lặp chuyển vào service.)
 - **Automated:** `tests/api/admin-categories/categories.api.ts`
 
 ### TC-ADMINCATEGORIES-079 — Changing only the letter case of the English name keeps the slug

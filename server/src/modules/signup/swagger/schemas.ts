@@ -105,7 +105,7 @@ const CompleteSignupResponseSchema: OpenAPIV3.SchemaObject = {
       type: "object",
       properties: {
         accessToken: { type: "string", example: "eyJhbGciOiJIUzI1NiIs..." },
-        refreshToken: { type: "string", example: "eyJhbGciOiJIUzI1NiIs..." },
+        idToken: { type: "string", example: "eyJhbGciOiJIUzI1NiIs..." },
         expiresIn: { type: "integer", example: 900 }
       }
     }

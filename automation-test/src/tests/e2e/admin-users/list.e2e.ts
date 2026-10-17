@@ -1,7 +1,8 @@
 import { test, expect } from "@/fixtures";
+import { createApiClient } from "@/api";
 import { adminUsersRoutes } from "@/api/admin-users.client";
 import { ADMIN_EMAIL, USER_EMAIL } from "@/config/accounts";
-import { copy, copyVi, serverMessage } from "@/data/copy";
+import { copy, copyVi } from "@/data/copy";
 import { SERVER_ERROR_TOAST } from "@/data/test-data";
 import { AdminUsersPage } from "@/pages/admin/admin-users.page";
 
@@ -66,23 +67,19 @@ test(
   }
 );
 
-// There is no client-side role guard on /admin/* — a non-admin is not
-// redirected. The API refuses the list with 403, the global error handler
-// toasts the server's message (common:errors.forbidden), and no account data
-// reaches the page.
+// A non-admin is sent away from /admin/* by the client-side role guard
+// (AdminGuardLayout), and the API refuses the list with 403 regardless, so no
+// account data reaches the page.
 test(
   "A non-admin gets a refusal and no account data",
   { tag: ["@TC-ADMINUSERS-003", "@smoke"] },
-  async ({ userPage }) => {
+  async ({ userPage, userApi }) => {
+    const res = await createApiClient(userApi).adminUsers.list();
+    expect(res.status()).toBe(403);
+
     const users = new AdminUsersPage(userPage);
-    const denied = userPage.waitForResponse(
-      (r) => LIST_API.test(r.url()) && r.request().method() === "GET"
-    );
     await users.goto();
-    expect((await denied).status()).toBe(403);
-    await expect(
-      users.text(serverMessage.common.errors.forbidden, true)
-    ).toBeVisible();
+    await expect(userPage).not.toHaveURL(/\/admin/);
     await expect(users.email(ADMIN_EMAIL)).toHaveCount(0);
   }
 );
@@ -504,9 +501,6 @@ test.describe(
       page,
       adminUsersPage: users
     }) => {
-      // since the unified-list refactor AdminUsersTable has no isError branch — a failed load renders the "No users match" empty state and adminUsers.table.error is never shown.
-      // BUG: defects/admin-users.md#bug-adminusers-01
-      test.fail();
       await page.route(LIST_API, (route) => route.fulfill(serverError));
       await users.goto();
       await expect(users.text(SERVER_ERROR_TOAST, true)).toBeVisible({
@@ -522,9 +516,6 @@ test(
   "A finished load is announced to screen readers",
   { tag: "@TC-ADMINUSERS-021" },
   async ({ adminUsersPage: users }) => {
-    // the list never calls useAnnounce on load — adminUsers.announce.loaded ("{total} users loaded") is unused since the unified-list refactor.
-    // BUG: defects/admin-users.md#bug-adminusers-02
-    test.fail();
     await users.goto();
     await expect(users.email(ADMIN_EMAIL)).toBeVisible();
     await expect(users.announcer()).toContainText(/\d+ users loaded/, {

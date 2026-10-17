@@ -2,11 +2,9 @@
 
 ## Đang mở
 
-| Bug                                                   | Mức        | TC                                             | Tóm tắt                                                                                                                        |
-| ----------------------------------------------------- | ---------- | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| [BUG-ADMINLOGINHISTORY-01](#bug-adminloginhistory-01) | Trung bình | TC-ADMINLOGINHISTORY-009                       | Bộ lọc Device ở lịch sử đăng nhập admin có hiển thị nhưng không bao giờ được gửi lên API                                       |
-| [BUG-ADMINLOGINHISTORY-02](#bug-adminloginhistory-02) | Thấp       | TC-ADMINLOGINHISTORY-043, TC-LOGINHISTORY-036  | Lỗi validation của method, deviceType, clientType, userId, fromDate, toDate và khoảng ngày trả về key i18n thô thay vì message |
-| [BUG-ADMINLOGINHISTORY-03](#bug-adminloginhistory-03) | Thấp       | TC-ADMINLOGINHISTORY-037, TC-NOTIFICATIONS-058 | Namespace `loginHistory` không được nạp vào i18next nên lỗi id chi tiết trả key thô (`errors.invalidId`)                       |
+_(không có)_
+
+## Đã sửa
 
 ### BUG-ADMINLOGINHISTORY-01
 
@@ -15,6 +13,7 @@
 - **Bước tái hiện:** chạy test của TC-ADMINLOGINHISTORY-009 — `tests/e2e/admin-login-history/list-filters.e2e.ts` ("Device filter reaches the API")
 - **Mong đợi:** bộ lọc được áp dụng
 - **Thực tế:** bộ lọc Device ở lịch sử đăng nhập admin có hiển thị nhưng không bao giờ được gửi lên API
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — `AdminLoginHistoryTable` đưa `deviceType` (đã kiểm bằng `isLoginHistoryDeviceType`) vào params gửi API, như trang lịch sử của user.
 
 ### BUG-ADMINLOGINHISTORY-02
 
@@ -30,6 +29,7 @@
   `validation:fromDate.invalid`, `validation:toDate.invalid`, `validation:dateRange.invalid`, nhưng
   `server/src/i18n/locales/{en,vi}/validation.json` không có key nào trong số đó, nên i18next trả lại chính key
   (`method.invalid`…). Schema user `/login-history` dùng chung các key này.
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — thêm `method`, `deviceType`, `clientType`, `userId`, `fromDate`, `toDate`, `dateRange` (cùng `priority`, `address` cũng đang thiếu) vào `server/src/i18n/locales/{en,vi}/validation.json`; spec `server/src/i18n/catalogue.spec.ts` kiểm mọi key `ns:key` trong code có ở cả hai locale.
 
 ### BUG-ADMINLOGINHISTORY-03
 
@@ -42,7 +42,4 @@
   nhưng danh sách `ns` trong `server/src/i18n/config.ts` không có `loginHistory` (cũng thiếu `changePassword`,
   `contactAdmin`, `notification`), nên namespace không bao giờ được nạp và i18next trả key bỏ tiền tố. Ảnh hưởng mọi
   key `loginHistory:*`, gồm cả `loginHistory:errors.notFound` của 404.
-
-## Đã sửa
-
-_(chưa có)_
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — `ns` trong `server/src/i18n/config.ts` thêm `loginHistory`, `changePassword`, `notification`; `catalogue.spec.ts` kiểm danh sách `ns` khớp đúng các file locale.

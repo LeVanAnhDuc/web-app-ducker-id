@@ -18,7 +18,7 @@ const sendMagicLinkEmail = (
   token: string,
   language: string
 ): void => {
-  const magicLinkUrl = `${ENV.CLIENT_URL}/reset-password?email=${encodeURIComponent(email)}&token=${token}&method=magic-link`;
+  const magicLinkUrl = `${ENV.CLIENT_URL}/forgot-password/reset?email=${encodeURIComponent(email)}&token=${token}&method=magic-link`;
   deps.emailDispatcher.send(EmailType.MAGIC_LINK, {
     email,
     data: {

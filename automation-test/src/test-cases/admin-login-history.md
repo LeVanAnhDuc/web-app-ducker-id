@@ -113,9 +113,8 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/admin-login-histor
 - **Bước:**
   1. Mở `?deviceType=MOBILE` (bộ lọc Device có trong panel).
 - **Mong đợi:** request danh sách mang `deviceType=MOBILE`.
-- **Automated:** `tests/e2e/admin-login-history/list-filters.e2e.ts` —
-  `test.fail()`: **BUG** — `AdminLoginHistoryTable` có bộ lọc Device
-  nhưng không bao giờ đưa `deviceType` vào request (bảng phía user thì có).
+- **Automated:** `tests/e2e/admin-login-history/list-filters.e2e.ts` (từng là BUG-ADMINLOGINHISTORY-01, đã sửa
+  2026-10-15).
 
 ### TC-ADMINLOGINHISTORY-013 — No match shows the empty state
 
@@ -532,9 +531,8 @@ totalPages }`; item có `_id`, `status`, `source`, `interactive`,
      sortOrder, country (201 ký tự).
 - **Mong đợi:** 400 `VALIDATION_ERROR`; `errors` có một mục cho đúng trường đó (khoảng ngày ngược: trường rỗng) với
   message đọc được — bằng chuỗi trong `validation.json` khi có, không bao giờ là key thô kiểu `method.invalid`.
-- **Automated:** `tests/api/admin-login-history/login-history.api.ts` —
-  `test.fail()` cho method, deviceType, clientType, userId, fromDate, toDate và khoảng ngày ngược:
-  **BUG** — `validation.json` của server không có các key đó.
+- **Automated:** `tests/api/admin-login-history/login-history.api.ts` (từng là BUG-ADMINLOGINHISTORY-02, đã sửa
+  2026-10-15: `validation.json` của server đã có key cho mọi tham số).
 
 ## Ngữ nghĩa bộ lọc — REQ-ADMINLOGINHISTORY-05
 

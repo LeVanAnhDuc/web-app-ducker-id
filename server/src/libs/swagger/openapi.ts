@@ -35,6 +35,15 @@ import {
   notificationSwaggerSchemas,
   notificationPaths
 } from "@/modules/notification/swagger";
+import {
+  loginHistorySwaggerSchemas,
+  loginHistoryPaths
+} from "@/modules/login-history/swagger";
+import { favoritePaths } from "@/modules/favorite/swagger";
+import {
+  unlockAccountSwaggerSchemas,
+  unlockAccountPaths
+} from "@/modules/unlock-account/swagger";
 // others
 import ENV from "@/constants/env";
 import { commonSchemas, commonResponses } from "./common.schemas";
@@ -55,7 +64,9 @@ const allSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   ...categorySwaggerSchemas,
   ...entitlementSwaggerSchemas,
   ...recentAppSwaggerSchemas,
-  ...notificationSwaggerSchemas
+  ...notificationSwaggerSchemas,
+  ...loginHistorySwaggerSchemas,
+  ...unlockAccountSwaggerSchemas
 };
 
 const allPaths: OpenAPIV3.PathsObject = {
@@ -71,7 +82,10 @@ const allPaths: OpenAPIV3.PathsObject = {
   ...categoryPaths,
   ...entitlementPaths,
   ...recentAppPaths,
-  ...notificationPaths
+  ...notificationPaths,
+  ...loginHistoryPaths,
+  ...favoritePaths,
+  ...unlockAccountPaths
 };
 
 export const openApiSpec: OpenAPIV3.Document = {
@@ -101,6 +115,10 @@ export const openApiSpec: OpenAPIV3.Document = {
       description: "Session management endpoints (logout, token refresh)"
     },
     {
+      name: "Auth - Unlock",
+      description: "Self-service unlock of an account locked by failed sign-ins"
+    },
+    {
       name: "Auth - Forgot Password",
       description: "Password recovery via OTP or magic link"
     },
@@ -125,6 +143,18 @@ export const openApiSpec: OpenAPIV3.Document = {
       name: "Notifications",
       description:
         "The signed-in user's inbox — written by domain events, rendered by the client in the reader's locale"
+    },
+    {
+      name: "Login History",
+      description: "The signed-in user's own sign-ins and statistics"
+    },
+    {
+      name: "Login History Admin",
+      description: "Every account's sign-ins, for admins"
+    },
+    {
+      name: "Favorites",
+      description: "The signed-in user's pinned apps"
     },
     {
       name: "Categories Admin",

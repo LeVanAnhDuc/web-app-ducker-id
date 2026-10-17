@@ -2,9 +2,9 @@
 
 ## Đang mở
 
-| Bug                                   | Mức  | TC               | Tóm tắt                                                                   |
-| ------------------------------------- | ---- | ---------------- | ------------------------------------------------------------------------- |
-| [BUG-ADMINAPPS-01](#bug-adminapps-01) | Thấp | TC-ADMINAPPS-016 | tìm kiếm không khớp trên `/admin/apps` lại hiện "No apps registered yet." |
+_(không có)_
+
+## Đã sửa
 
 ### BUG-ADMINAPPS-01
 
@@ -13,7 +13,4 @@
 - **Bước tái hiện:** chạy test của TC-ADMINAPPS-016 — `tests/e2e/admin-apps/list.e2e.ts`
 - **Mong đợi:** trạng thái rỗng dành cho tìm kiếm không khớp
 - **Thực tế:** tìm kiếm không khớp trên `/admin/apps` lại hiện "No apps registered yet."
-
-## Đã sửa
-
-_(chưa có)_
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — `AdminAppsTable` chỉ truyền `emptyTitle`/`emptyDescription` "registry rỗng" khi không có bộ lọc; có tìm kiếm/bộ lọc thì `PageEmptyState` hiện "nothing matched" mặc định.

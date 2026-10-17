@@ -386,7 +386,6 @@ test.describe("query validation", () => {
     params: Record<string, string>;
     field: string;
     message?: string;
-    bug?: true;
   }[] = [
     {
       params: { page: "0" },
@@ -403,15 +402,15 @@ test.describe("query validation", () => {
       field: "status",
       message: serverMessage.validation.status.invalid
     },
-    { params: { method: "telepathy" }, field: "method", bug: true },
-    { params: { deviceType: "TOASTER" }, field: "deviceType", bug: true },
-    { params: { clientType: "FRIDGE" }, field: "clientType", bug: true },
+    { params: { method: "telepathy" }, field: "method" },
+    { params: { deviceType: "TOASTER" }, field: "deviceType" },
+    { params: { clientType: "FRIDGE" }, field: "clientType" },
     {
       params: { source: "sideways" },
       field: "source",
       message: serverMessage.validation.source.invalid
     },
-    { params: { userId: "not-an-id" }, field: "userId", bug: true },
+    { params: { userId: "not-an-id" }, field: "userId" },
     {
       params: { webAppId: "123" },
       field: "webAppId",
@@ -422,12 +421,11 @@ test.describe("query validation", () => {
       field: "interactive",
       message: serverMessage.validation.interactive.invalid
     },
-    { params: { fromDate: "yesterday" }, field: "fromDate", bug: true },
-    { params: { toDate: "yesterday" }, field: "toDate", bug: true },
+    { params: { fromDate: "yesterday" }, field: "fromDate" },
+    { params: { toDate: "yesterday" }, field: "toDate" },
     {
       params: { fromDate: "2026-02-01", toDate: "2026-01-01" },
-      field: "",
-      bug: true
+      field: ""
     },
     {
       params: { sortBy: "password" },
@@ -449,14 +447,10 @@ test.describe("query validation", () => {
     "Each invalid filter is named with a readable message",
     { tag: "@TC-ADMINLOGINHISTORY-043" },
     () => {
-      for (const { params, field, message, bug } of fieldErrors) {
+      for (const { params, field, message } of fieldErrors) {
         test(`${JSON.stringify(params)} → errors[${field || "(query)"}]`, async ({
           adminApi
         }) => {
-          if (bug) {
-            // BUG: defects/admin-login-history.md#bug-adminloginhistory-02
-            test.fail();
-          }
           const res = await historyOf(adminApi).list(params, EN);
           expect(res.status()).toBe(400);
           const { code, errors } = await errorOf(res);
@@ -527,8 +521,6 @@ test.describe("detail", () => {
     "Detail id errors carry their code and message",
     { tag: "@TC-ADMINLOGINHISTORY-037" },
     async ({ adminApi }) => {
-      // BUG: defects/admin-login-history.md#bug-adminloginhistory-03
-      test.fail();
       const bad = await historyOf(adminApi).detail("not-an-id", EN);
       expect(bad.status()).toBe(400);
       const badBody = await errorOf(bad);
@@ -557,8 +549,6 @@ test(
   "List and detail answer with their success message",
   { tag: "@TC-ADMINLOGINHISTORY-036" },
   async ({ adminApi }) => {
-    // BUG: defects/admin-users.md#bug-adminusers-04
-    test.fail();
     const history = historyOf(adminApi);
     const listRes = await history.list({ limit: 1 }, EN);
     expect(listRes.status()).toBe(200);

@@ -15,6 +15,8 @@ export interface SignupInfo {
   birthday: string;
   password: string;
   confirmPassword: string;
+  /** Tick the terms checkbox (REQ-AUTH-04); default true. */
+  acceptTerms?: boolean;
 }
 
 export class SignupInfoPage extends BasePage {
@@ -73,6 +75,7 @@ export class SignupInfoPage extends BasePage {
     await this.birthdayInput().fill(info.birthday);
     await this.passwordInput().fill(info.password);
     await this.confirmPasswordInput().fill(info.confirmPassword);
+    if (info.acceptTerms ?? true) await this.termsCheckbox().check();
   }
 
   async submit(): Promise<void> {

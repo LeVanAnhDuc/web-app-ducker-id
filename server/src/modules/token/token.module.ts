@@ -1,10 +1,14 @@
 // types
+import type { RedisClientType } from "redis";
 import type { AuthenticationService } from "@/modules/authentication/services";
 import type { UserService } from "@/modules/user/services";
+// repositories
+import { RedisRevokedRefreshTokenRepository } from "./repository/impl/redis-revoked-refresh-token.repository";
 // guards
 import {
   RefreshTokenPresentGuard,
   RefreshTokenValidGuard,
+  RefreshTokenNotRevokedGuard,
   AuthActiveGuard,
   PasswordNotChangedGuard,
   UserExistsGuard
@@ -15,24 +19,27 @@ import { TokenController } from "./token.controller";
 import { createTokenRoutes } from "./token.routes";
 
 export const createTokenModule = (
+  redisClient: RedisClientType,
   authService: AuthenticationService,
   userService: UserService
 ) => {
-  const refreshTokenPresentGuard = new RefreshTokenPresentGuard();
-  const refreshTokenValidGuard = new RefreshTokenValidGuard();
-  const authActiveGuard = new AuthActiveGuard();
-  const passwordNotChangedGuard = new PasswordNotChangedGuard();
-  const userExistsGuard = new UserExistsGuard();
+  const revokedRefreshTokenRepo = new RedisRevokedRefreshTokenRepository(
+    redisClient
+  );
 
-  const tokenService = new TokenService(
+  const tokenService = new TokenService({
     authService,
     userService,
-    refreshTokenPresentGuard,
-    refreshTokenValidGuard,
-    authActiveGuard,
-    passwordNotChangedGuard,
-    userExistsGuard
-  );
+    revokedRefreshTokenRepo,
+    refreshTokenPresentGuard: new RefreshTokenPresentGuard(),
+    refreshTokenValidGuard: new RefreshTokenValidGuard(),
+    refreshTokenNotRevokedGuard: new RefreshTokenNotRevokedGuard(
+      revokedRefreshTokenRepo
+    ),
+    authActiveGuard: new AuthActiveGuard(),
+    passwordNotChangedGuard: new PasswordNotChangedGuard(),
+    userExistsGuard: new UserExistsGuard()
+  });
   const tokenController = new TokenController(tokenService);
 
   return {

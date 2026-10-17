@@ -132,9 +132,6 @@ test(
   "A malformed JSON body answers 400 in the error envelope, not 500",
   { tag: "@TC-OPS-016" },
   async ({ api, urls }) => {
-    // express.json()'s parse error (status 400, type entity.parse.failed) is not an ErrorResponse, so handleError answers 500 INTERNAL_SERVER_ERROR.
-    // BUG: defects/ops.md#bug-ops-02
-    test.fail();
     const res = await api.call("post", "/auth/login", {
       headers: { "Content-Type": "application/json", "Accept-Language": "en" },
       data: '{"email": "user@test.com", "password":'

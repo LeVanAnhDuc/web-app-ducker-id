@@ -117,10 +117,8 @@ test(
   "Rows carry the anomaly flag",
   { tag: "@TC-LOGINHISTORY-022" },
   async ({ userApi }) => {
-    // REQ-LOGINHISTORY-01 lists an anomaly flag on the user's own history,
-    // but MyHistoryItemDto has no isAnomaly — only the admin DTO does.
-    // BUG: defects/login-history.md#bug-loginhistory-01
-    test.fail();
+    // REQ-LOGINHISTORY-01 lists an anomaly flag on the user's own history;
+    // MyHistoryItemDto carries isAnomaly (fixed BUG-LOGINHISTORY-01).
     const { items } = await rows(userApi, { limit: 5 });
     for (const r of items) expect(typeof r.isAnomaly).toBe("boolean");
   }
@@ -442,7 +440,6 @@ const fieldErrors: {
   params: MyLoginHistoryQuery;
   field: string;
   message?: string;
-  bug?: true;
 }[] = [
   {
     params: { page: "0" },
@@ -459,9 +456,9 @@ const fieldErrors: {
     field: "status",
     message: serverMessage.validation.status.invalid
   },
-  { params: { method: "telepathy" }, field: "method", bug: true },
-  { params: { deviceType: "TOASTER" }, field: "deviceType", bug: true },
-  { params: { clientType: "FRIDGE" }, field: "clientType", bug: true },
+  { params: { method: "telepathy" }, field: "method" },
+  { params: { deviceType: "TOASTER" }, field: "deviceType" },
+  { params: { clientType: "FRIDGE" }, field: "clientType" },
   {
     params: { source: "sideways" },
     field: "source",
@@ -477,12 +474,11 @@ const fieldErrors: {
     field: "interactive",
     message: serverMessage.validation.interactive.invalid
   },
-  { params: { fromDate: "yesterday" }, field: "fromDate", bug: true },
-  { params: { toDate: "yesterday" }, field: "toDate", bug: true },
+  { params: { fromDate: "yesterday" }, field: "fromDate" },
+  { params: { toDate: "yesterday" }, field: "toDate" },
   {
     params: { fromDate: "2026-02-01", toDate: "2026-01-01" },
-    field: "",
-    bug: true
+    field: ""
   },
   // An admin-only sort field is not a user sort field.
   {
@@ -511,14 +507,10 @@ test.describe(
   "Each invalid filter is named with a readable message",
   { tag: "@TC-LOGINHISTORY-036" },
   () => {
-    for (const { params, field, message, bug } of fieldErrors) {
+    for (const { params, field, message } of fieldErrors) {
       test(`${JSON.stringify(params).slice(0, 60)} → errors[${field || "(query)"}]`, async ({
         userApi
       }) => {
-        if (bug) {
-          // BUG: defects/admin-login-history.md#bug-adminloginhistory-02
-          test.fail();
-        }
         const res = await historyOf(userApi).list(params, EN);
         expect(res.status()).toBe(400);
         const { code, errors } = await errorOf(res);

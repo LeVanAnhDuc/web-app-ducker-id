@@ -167,10 +167,6 @@ test(
   "Wrong-typed sign-in and sign-up fields are a validation error, never a 5xx",
   { tag: ["@TC-AUTH-070"] },
   async () => {
-    // The per-email rate limiter runs before validation and calls
-    // `req.body.email?.toLowerCase()`, which throws on a non-string email.
-    // BUG: defects/auth.md#bug-auth-09
-    test.fail();
     // Bodies the typed client methods cannot express go through api.call.
     // A throwaway address: the seeded account only ever gets its own password.
     const email = throwawayEmail("auth-types");

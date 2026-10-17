@@ -108,7 +108,7 @@
     },
     "dateOfBirth": {
       "required": "Vui lòng chọn ngày sinh",
-      "invalid": "Ngày sinh phải là ngày trong quá khứ và không quá 100 năm"
+      "invalid": "Ngày sinh phải trong khoảng 13–120 tuổi"
     },
     "gender": {
       "required": "Vui lòng chọn giới tính",
@@ -130,6 +130,21 @@
       "required": "Vui lòng nhập nội dung",
       "minLength": "Nội dung phải có ít nhất 20 ký tự",
       "maxLength": "Nội dung không được vượt quá 5000 ký tự"
+    },
+    "firstName": {
+      "required": "Vui lòng nhập tên",
+      "maxLength": "Tên không được vượt quá 50 ký tự"
+    },
+    "lastName": {
+      "required": "Vui lòng nhập họ",
+      "maxLength": "Họ không được vượt quá 50 ký tự"
+    },
+    "tempPassword": {
+      "required": "Vui lòng nhập mật khẩu tạm",
+      "minLength": "Mật khẩu tạm có ít nhất 12 ký tự"
+    },
+    "acceptTerms": {
+      "required": "Vui lòng đồng ý với điều khoản để tạo tài khoản"
     }
   },
   "table": {

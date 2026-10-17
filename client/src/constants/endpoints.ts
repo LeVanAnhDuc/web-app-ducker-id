@@ -6,6 +6,8 @@ const END_POINTS = {
   AUTH_LOGIN_MAGIC_LINK_SEND: "/auth/login/magic-link/send",
   AUTH_LOGIN_MAGIC_LINK_VERIFY: "/auth/login/magic-link/verify",
   AUTH_LOGOUT: "/auth/logout",
+  AUTH_UNLOCK_REQUEST: "/auth/unlock/request",
+  AUTH_UNLOCK_VERIFY: "/auth/unlock/verify",
   AUTH_REFRESH: "/auth/token/refresh",
 
   // Signup

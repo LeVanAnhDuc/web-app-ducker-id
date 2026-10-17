@@ -71,11 +71,8 @@ test(
   "The API refuses a must-change session outside the change endpoint",
   { tag: ["@TC-PASSWORD-045"] },
   async ({ adminApi, newApi }) => {
-    // mustChangePassword is enforced only by the client gate
-    // (MustChangePasswordGate); the API serves a temp-password session
-    // normally, so the forced change can be skipped by calling it directly.
-    // BUG: defects/password.md#bug-password-01
-    test.fail();
+    // A temp-password access token carries mustChangePassword and authGuard
+    // refuses it outside change-password and logout (fixed BUG-PASSWORD-01).
     const account = await createAccount({ tag: "ar-bypass" });
     const temp = await adminResetAndReadTempPassword(adminApi, account.email);
     const tempLogin = await loginOverApi(account.email, temp);

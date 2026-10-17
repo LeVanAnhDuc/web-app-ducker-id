@@ -19,6 +19,7 @@ import {
   SAFE_ADDRESS_PATTERN,
   SEARCH_MAX_LENGTH
 } from "@/validators/constants";
+import { getDateOfBirthBounds } from "./base";
 
 const GENDER_VALUES = Object.values(GENDERS);
 const ADDRESS_MAX_LENGTH = 500;
@@ -26,6 +27,7 @@ const ADDRESS_MAX_LENGTH = 500;
 export const updateProfileSchema: Joi.ObjectSchema<UpdateProfileData> =
   Joi.object({
     fullName: Joi.string()
+      .trim()
       .min(FULLNAME_VALIDATION.MIN_LENGTH)
       .max(FULLNAME_VALIDATION.MAX_LENGTH)
       .pattern(SAFE_FULLNAME_PATTERN)
@@ -41,6 +43,7 @@ export const updateProfileSchema: Joi.ObjectSchema<UpdateProfileData> =
       .min(1)
       .max(20)
       .pattern(/^[\d\s()+-]+$/)
+      .allow(null)
       .optional()
       .messages({
         "string.empty": "validation:phone.invalid",
@@ -51,6 +54,7 @@ export const updateProfileSchema: Joi.ObjectSchema<UpdateProfileData> =
     address: Joi.string()
       .max(ADDRESS_MAX_LENGTH)
       .pattern(SAFE_ADDRESS_PATTERN)
+      .allow(null)
       .optional()
       .messages({
         "string.max": "validation:address.tooLong",
@@ -60,20 +64,21 @@ export const updateProfileSchema: Joi.ObjectSchema<UpdateProfileData> =
     dateOfBirth: Joi.string()
       .isoDate()
       .custom((value, helpers) => {
+        // Same 13–120 range as sign-up: a date accepted there must be
+        // accepted again, since the profile form resends it on every save.
         const date = new Date(value);
-        const now = new Date();
-        const hundredYearsAgo = new Date();
-        hundredYearsAgo.setFullYear(now.getFullYear() - 100);
+        const { minDate, maxDate } = getDateOfBirthBounds();
 
-        if (date > now) {
+        if (date > maxDate) {
           return helpers.error("date.future");
         }
-        if (date < hundredYearsAgo) {
+        if (date < minDate) {
           return helpers.error("date.tooOld");
         }
 
         return value;
       })
+      .allow(null)
       .optional()
       .messages({
         "string.isoDate": "validation:dateOfBirth.invalid",
@@ -83,6 +88,7 @@ export const updateProfileSchema: Joi.ObjectSchema<UpdateProfileData> =
 
     gender: Joi.string()
       .valid(...GENDER_VALUES)
+      .allow(null)
       .optional()
       .messages({
         "any.only": "validation:gender.invalid"

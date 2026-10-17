@@ -308,9 +308,6 @@ test(
   "Inbox responses carry translated messages, not catalogue keys",
   { tag: "@TC-ADMINCONTACT-035" },
   async ({ adminApi, guestApi }) => {
-    // contactAdmin.json has no success.getContactList / getContactDetail / updateContactStatus nor errors.invalidId / statusInvalid / statusRequired, so i18next answers the key itself.
-    // BUG: defects/admin-contact.md#bug-admincontact-02
-    test.fail();
     const admin = createApiClient(adminApi);
     const c = await fileTicket(guestApi, "api-messages");
     const responses = {

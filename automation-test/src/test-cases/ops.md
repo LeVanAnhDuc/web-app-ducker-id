@@ -79,9 +79,8 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/ops.md
   1. Kiểm `paths` có một route của mỗi module đã mount (auth login, users, admin
      apps, admin categories, recent apps, login history, admin login history,
      notifications, favorites, admin contacts, unlock).
-- **Mong đợi:** module nào cũng có ít nhất một path được tài liệu hoá. **Hiện
-  đang fail** (BUG-OPS-01, nợ đã biết trong `CLAUDE.md`): thiếu login-history,
-  favourites, admin contacts và unlock.
+- **Mong đợi:** module nào cũng có ít nhất một path được tài liệu hoá. (Từng là
+  BUG-OPS-01, đã sửa 2026-10-15.)
 - **Automated:** `tests/api/ops/api-docs.api.ts`
 
 ### TC-OPS-007 — An unknown route answers 404 in the error envelope, translated
@@ -157,11 +156,9 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/ops.md
 - **Bước:**
   1. `GET /admin/queues` và `GET /admin/queues/api/queues` trên API origin,
      không kèm credential.
-- **Mong đợi:** 401/403 (hoặc hoàn toàn không mount). **Hiện đang fail** (BUG,
-  mức S1): cả hai trả 200 cho bất kỳ ai, và JSON API trả payload của email job —
-  **mã OTP dạng plaintext** của đăng ký, đăng nhập và đặt lại mật khẩu — cho
-  mọi job gần đây. `queue.loader.ts` mount router không guard và không kiểm
-  môi trường.
+- **Mong đợi:** 401/403 (hoặc hoàn toàn không mount) — payload email job (chứa
+  mã OTP) không lộ ra cho người chưa đăng nhập. (Từng là BUG-AUTHZ-01, đã sửa
+  2026-10-15: Bull Board nằm sau `adminGuard`.)
 - **Automated:** `tests/api/ops/queues.api.ts`
 
 ### TC-OPS-013 — Every API response carries the Helmet security headers
@@ -211,7 +208,7 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/ops.md
 - **Bước:**
   1. `POST <API prefix>/auth/login` với `Content-Type: application/json` và body `{"email": "user@test.com", "password":`.
 - **Mong đợi:** 400 trong error envelope (`code`, `message`, `timestamp`, `path`), không phải
-  `INTERNAL_SERVER_ERROR`. **Hiện đang fail** (BUG-OPS-02): server trả 500.
+  `INTERNAL_SERVER_ERROR` (`MALFORMED_BODY`). (Từng là BUG-OPS-02, đã sửa 2026-10-15.)
 - **Automated:** `tests/api/ops/error-envelope.api.ts`
 
 ### TC-OPS-017 — A datastore that is down makes its health probe answer 500

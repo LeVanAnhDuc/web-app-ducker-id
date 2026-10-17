@@ -2,6 +2,8 @@
 import * as z from "zod";
 // constants
 import { GENDER_VALUES } from "@/constants/gender";
+// others
+import { getDateOfBirthBounds, parseDateOnly } from "@/utils";
 
 const SAFE_PHONE_PATTERN = /^[\d\s()+-]+$/;
 const SAFE_ADDRESS_PATTERN = /^[\p{L}\p{N}\s,.\-'/#]+$/u;
@@ -32,11 +34,10 @@ export const updatePersonalInfoValidation = z.object({
     .refine(
       (val) => {
         if (!val) return true;
-        const date = new Date(val);
-        const now = new Date();
-        const hundredYearsAgo = new Date();
-        hundredYearsAgo.setFullYear(now.getFullYear() - 100);
-        return date <= now && date >= hundredYearsAgo;
+        // Same 13–120 range as sign-up (birthdaySchema)
+        const date = parseDateOnly(val);
+        const { minDate, maxDate } = getDateOfBirthBounds();
+        return date >= minDate && date <= maxDate;
       },
       { message: "invalid" }
     )

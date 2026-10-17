@@ -237,8 +237,6 @@ test.describe("Favorite toggle — Apps catalog + cross-page", () => {
     "Starring from a Home tile shows up on `/favorites`",
     { tag: "@TC-FAVORITES-039" },
     async ({ page, homePage, favoritesPage }) => {
-      // BUG: defects/favorites.md#bug-favorites-03
-      test.fail();
       await homePage.goto();
       // Home shows the user's recent apps (or the first catalogue apps) and
       // Recommended apps — which ones depends on the run, so star the first

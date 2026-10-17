@@ -231,11 +231,8 @@ test(
   "Notification times are <time> elements",
   { tag: ["@TC-SETTINGS-016"] },
   async ({ notificationsPage, formattedTime }) => {
-    // NotificationItem renders useFormatTime output in a plain <span>, so
-    // assistive tech gets no machine-readable datetime (follow-up flagged in
-    // the locale-time-format feature, never done).
-    // BUG: defects/settings.md#bug-settings-01
-    test.fail();
+    // NotificationItem renders its time through FormatTime, a <time>
+    // with a machine-readable datetime (fixed BUG-SETTINGS-01).
     await notificationsPage.goto();
     const article = notificationsPage.rows().first();
     await expect(article).toBeVisible(LOAD);

@@ -131,9 +131,8 @@ test(
   "userinfo errors follow RFC 6750 (401 invalid_token)",
   { tag: "@TC-OIDC-039" },
   async ({ api }) => {
-    // userinfo answers 400 invalid_request / 400 invalid_grant with no WWW-Authenticate (RFC 6750 §3.1 wants 401 invalid_token).
-    // BUG: defects/oidc.md#bug-oidc-04
-    test.fail();
+    // RFC 6750 §3.1: 401 invalid_token with a WWW-Authenticate: Bearer
+    // challenge (fixed BUG-OIDC-04).
     const missing = await api.oauth.userinfo();
     expect(missing.status()).toBe(401);
     expect(missing.headers()["www-authenticate"]).toMatch(/^Bearer/);
@@ -151,9 +150,8 @@ test(
   "An ID token presented to userinfo is refused cleanly",
   { tag: "@TC-OIDC-040" },
   async () => {
-    // an id_token passes verifyOAuthAccessToken (same key + issuer, no typ/aud check), has no authId, and userinfo crashes with 500 server_error.
-    // BUG: defects/oidc.md#bug-oidc-02
-    test.fail();
+    // An id_token has no scope / authId, so verifyOAuthAccessToken refuses it
+    // (fixed BUG-OIDC-02).
     const tokens = await signedInTokens();
     const res = await me!.api.oauth.userinfo(`Bearer ${tokens.id_token}`);
     expect(res.status()).toBe(401);
@@ -165,9 +163,8 @@ test(
   "A first-party Ducker ID access token is not accepted by userinfo",
   { tag: "@TC-OIDC-041" },
   async () => {
-    // verifyOAuthAccessToken checks issuer but not audience, so a first-party token (aud = issuer) gets 200 { sub } from userinfo.
-    // BUG: defects/oidc.md#bug-oidc-01
-    test.fail();
+    // A first-party token carries aud = issuer, which verifyOAuthAccessToken
+    // refuses (fixed BUG-OIDC-01).
     me = await signedInUser("oidc-userinfo-fp");
     const res = await me.api.oauth.userinfo(`Bearer ${me.accessToken}`);
     expect(res.status()).toBe(401);

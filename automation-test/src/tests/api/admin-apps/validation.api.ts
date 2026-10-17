@@ -176,8 +176,6 @@ test(
   "A body that is not valid JSON is refused with 400, never a server error",
   { tag: "@TC-ADMINAPPS-072" },
   async () => {
-    // BUG: defects/ops.md#bug-ops-02
-    test.fail();
     const res = await admin.adminApps.create('{"name": "e2e-broken", ', {
       ...EN,
       "Content-Type": "application/json"

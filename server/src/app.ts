@@ -34,6 +34,17 @@ app.use(
   })
 );
 
+// requestId và i18n chạy TRƯỚC body parser: body JSON hỏng / quá lớn bị
+// express.json() từ chối ngay tại đây, và lỗi đó vẫn phải ra error envelope đã
+// dịch (req.t) kèm X-Request-Id. Cả hai chỉ đọc header, không cần body.
+// Middleware tự viết — gán một unique ID cho mỗi request (thường là UUID).
+// Dùng để tracing/debugging: khi log error có thể trace lại chính xác request nào gây lỗi.
+app.use(requestId);
+
+// Middleware xử lý internationalization — detect ngôn ngữ từ request (header Accept-Language hoặc query param)
+// và set ngôn ngữ cho response message. Cho phép API trả message lỗi/thành công theo ngôn ngữ của client.
+app.use(i18nMiddleware);
+
 // Parse request body dạng application/json. limit: "10mb" giới hạn kích thước body tối đa 10MB
 // — chống abuse gửi payload quá lớn gây tốn memory/DoS.
 app.use(express.json({ limit: "10mb" }));
@@ -48,17 +59,11 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 // Cần thiết cho JWT httpOnly cookie, session cookie, hoặc custom auth cookies.
 app.use(cookieParser());
 
-// Middleware tự viết — gán một unique ID cho mỗi request (thường là UUID).
-// Dùng để tracing/debugging: khi log error có thể trace lại chính xác request nào gây lỗi.
-app.use(requestId);
+// requestId đã gán ở trên, trước body parser.
 app.use(RequestContext.middleware());
 
 // Middleware tự viết — log thông tin mỗi request đến (method, URL, status code, thời gian xử lý...). Phục vụ monitoring và debug.
 app.use(requestLogger);
-
-// Middleware xử lý internationalization — detect ngôn ngữ từ request (header Accept-Language hoặc query param)
-// và set ngôn ngữ cho response message. Cho phép API trả message lỗi/thành công theo ngôn ngữ của client.
-app.use(i18nMiddleware);
 
 // Mount Swagger UI — tạo trang document API tự động, cho phép developer xem và test API trực tiếp trên trình duyệt.
 setupSwagger(app);

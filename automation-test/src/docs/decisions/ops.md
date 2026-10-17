@@ -42,7 +42,7 @@
   chỉ cần không có `Access-Control-Allow-Origin` — package `cors` luôn gửi `Allow-Credentials` bất kể origin, vô hại
   khi thiếu Allow-Origin, nên không assert. → REQ-OPS-06
 - **Q8** (tự quyết 2026-10-14, cần user duyệt): Body JSON hỏng trả gì? → 400 trong error envelope (lỗi của client,
-  không phải 5xx — lăng kính 6 "không có 5xx"); code cụ thể không ép. Code hiện trả 500 → BUG-OPS-02. → REQ-OPS-03
+  không phải 5xx — lăng kính 6 "không có 5xx"); code cụ thể không ép. Code khi đó trả 500 → BUG-OPS-02 (đã sửa 2026-10-15, fix/open-bugs): giờ 400 `MALFORMED_BODY`. → REQ-OPS-03
 - **Q9** (tự quyết 2026-10-14, cần user duyệt): Health khi một datastore sập (500 `MONGODB_UNHEALTHY` /
   `REDIS_UNHEALTHY` / `SERVICES_UNHEALTHY`) → TC manual: tắt MongoDB/Redis dùng chung sẽ làm hỏng mọi test khác trong
   lượt chạy. → REQ-OPS-01
@@ -59,9 +59,11 @@ Không dùng tài khoản nào — mọi case chạy với vai trò guest, khôn
 ## Ngoài phạm vi
 
 - Body vượt giới hạn 10mb của `express.json` (413): gửi > 10 MB qua stack e2e tốn và chậm; cùng nhánh lỗi với
-  BUG-OPS-02 (lỗi của body-parser rơi vào 500), sửa bug đó là phủ luôn.
-- Admin mở được Bull Board: hiện chưa có guard nào nên không biết admin sẽ xác thực bằng gì (cookie hay Bearer); phía
-  từ chối guest đã có TC-OPS-012 / TC-AUTHZ-012.
+  BUG-OPS-02 (lỗi của body-parser rơi vào 500) — bản sửa (đã sửa 2026-10-15, fix/open-bugs) map nó sang 413 `PAYLOAD_TOO_LARGE`, vẫn
+  không tự động hoá.
+- Admin mở được Bull Board: khi viết chưa có guard nào nên không biết admin sẽ xác thực bằng gì (cookie hay Bearer); phía
+  từ chối guest đã có TC-OPS-012 / TC-AUTHZ-012. Bull Board giờ nằm sau `adminGuard` (Bearer) — BUG-AUTHZ-01 (đã sửa 2026-10-15, fix/open-bugs);
+  trình duyệt không mở thẳng dashboard được nữa, phía admin vẫn chưa test.
 - Nội dung từng path trong OpenAPI (schema request/response đúng với route thật): thuộc từng module, không phải ops.
 
 ## Tech debt liên quan

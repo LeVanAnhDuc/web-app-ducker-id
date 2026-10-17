@@ -82,12 +82,15 @@ export const validateStringLength = (
   }
 };
 
+// Entities are decoded BEFORE tags are stripped, so an encoded tag
+// (`&lt;img onerror=…&gt;`) cannot come out of here as a real one. `&amp;` is
+// decoded last for the same reason: `&amp;lt;` stays the literal text `&lt;`.
 export const sanitizeText = (text: string): string =>
   text
-    .replace(/<[^>]*>/g, "")
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
-    .replace(/&amp;/g, "&")
     .replace(/&quot;/g, '"')
     .replace(/&#x27;/g, "'")
+    .replace(/<[^>]*>/g, "")
+    .replace(/&amp;/g, "&")
     .trim();

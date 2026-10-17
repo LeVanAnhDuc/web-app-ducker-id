@@ -2,9 +2,9 @@
 
 ## Đang mở
 
-| Bug                                 | Mức  | TC              | Tóm tắt                                                                   |
-| ----------------------------------- | ---- | --------------- | ------------------------------------------------------------------------- |
-| [BUG-SETTINGS-01](#bug-settings-01) | Thấp | TC-SETTINGS-016 | Thời gian của notification là `<span>` trơn, không phải `<time datetime>` |
+_(không có)_
+
+## Đã sửa
 
 ### BUG-SETTINGS-01
 
@@ -13,7 +13,4 @@
 - **Bước tái hiện:** chạy test của TC-SETTINGS-016 — `tests/e2e/settings/datetime-format.e2e.ts` ("Notification times are <time> elements")
 - **Mong đợi:** phần tử `<time>`
 - **Thực tế:** Thời gian của notification là `<span>` trơn, không phải `<time datetime>`
-
-## Đã sửa
-
-_(chưa có)_
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — `NotificationItem` render thời gian qua `FormatTime` (`<time dateTime>`)

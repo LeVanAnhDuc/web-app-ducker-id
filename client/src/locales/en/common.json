@@ -108,7 +108,7 @@
     },
     "dateOfBirth": {
       "required": "Please select date of birth",
-      "invalid": "Date must be in the past and within 100 years"
+      "invalid": "Date of birth must be between 13–120 years old"
     },
     "gender": {
       "required": "Please select gender",
@@ -130,6 +130,21 @@
       "required": "Please enter message",
       "minLength": "Message must be at least 20 characters",
       "maxLength": "Message must not exceed 5000 characters"
+    },
+    "firstName": {
+      "required": "Please enter first name",
+      "maxLength": "First name must not exceed 50 characters"
+    },
+    "lastName": {
+      "required": "Please enter last name",
+      "maxLength": "Last name must not exceed 50 characters"
+    },
+    "tempPassword": {
+      "required": "Please enter the temporary password",
+      "minLength": "The temporary password has at least 12 characters"
+    },
+    "acceptTerms": {
+      "required": "Please accept the terms to create your account"
     }
   },
   "table": {

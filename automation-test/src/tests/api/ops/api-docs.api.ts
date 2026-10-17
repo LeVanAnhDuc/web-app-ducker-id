@@ -103,9 +103,6 @@ test(
   "The OpenAPI document covers every mounted API module",
   { tag: "@TC-OPS-006" },
   async ({ ops }) => {
-    // openapi.ts never registers login-history, favorite, admin contacts or unlock — their routes are missing from /api-docs.
-    // BUG: defects/ops.md#bug-ops-01
-    test.fail();
     const documented = Object.keys((await spec(await ops.openApi())).paths);
     const modules = [
       "/auth/login",

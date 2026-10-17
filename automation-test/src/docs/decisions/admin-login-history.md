@@ -46,7 +46,7 @@ thời điểm viết.
 - **Q5** (tự quyết 2026-10-14, cần user duyệt): lỗi validation của `method`, `deviceType`, `clientType`, `userId`,
   `fromDate`, `toDate`, khoảng ngày trả về key i18n thô vì `validation.json` thiếu key — chấp nhận hay bug? → Bug:
   `CLAUDE.md` của repo app nói message lỗi là key i18next **được dịch** theo request; các trường khác của cùng schema đều
-  có bản dịch. Ghi BUG-ADMINLOGINHISTORY-02, test đánh `test.fail()`. → REQ-ADMINLOGINHISTORY-04
+  có bản dịch. Ghi BUG-ADMINLOGINHISTORY-02, test đánh `test.fail()` (đã sửa 2026-10-15, fix/open-bugs). → REQ-ADMINLOGINHISTORY-04
 - **Q6** (tự quyết 2026-10-14, cần user duyệt): toán tử truy vấn trong query (`status[$ne]=…`) phải bị từ chối ra sao? →
   400 `VALIDATION_ERROR` (Joi từ chối giá trị không phải chuỗi); không bao giờ 200 hay 5xx. → REQ-ADMINLOGINHISTORY-04
 - **Q7** (tự quyết 2026-10-14, cần user duyệt): bộ lọc `userId`, `ip`, `country`, `city`, `os`, `browser`, `clientType`,

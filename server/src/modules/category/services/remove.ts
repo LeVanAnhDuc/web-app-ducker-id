@@ -13,15 +13,20 @@ import {
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 
-/** Every target must be another category that still exists. */
+/**
+ * Each app is reassigned at most once, and every target must be another
+ * category that still exists.
+ */
 const assertTargetsValid = async (
   deps: CategoryServiceDeps,
   id: string,
   reassignments: CategoryReassignment[],
   session: ClientSession
 ): Promise<void> => {
+  const appIds = new Set(reassignments.map((r) => r.appId));
   const targets = [...new Set(reassignments.map((r) => r.categoryId))];
   const valid =
+    appIds.size === reassignments.length &&
     !targets.includes(id) &&
     (targets.length === 0 ||
       (await deps.categoryRepo.countByIds(targets, session)) ===

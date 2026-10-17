@@ -150,7 +150,7 @@ const AppsBoard = ({
       />
       <PageContent
         isLoading={isLoading}
-        isEmpty={items.length === 0}
+        isEmpty={!isError && items.length === 0}
         hasActiveFilters={hasActiveFilters}
         onClearFilters={clearFilters}
         skeleton={<AppsBoardSkeleton />}

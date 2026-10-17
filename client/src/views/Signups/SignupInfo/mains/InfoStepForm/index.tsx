@@ -10,6 +10,7 @@ import PasswordInput from "@/components/PasswordInput";
 import FullNameInput from "../../components/FullNameInput";
 import GenderSelect from "../../components/GenderSelect";
 import BirthdayInput from "../../components/BirthdayInput";
+import AcceptTermsCheckbox from "../../components/AcceptTermsCheckbox";
 import SubmitButton from "../../components/SubmitButton";
 // forms
 import { signupInfoFormProps } from "@/forms/Signup";
@@ -19,8 +20,14 @@ import { useSignupComplete } from "../../hooks/useSignupComplete";
 // others
 import CONSTANTS from "@/constants";
 
-const { PASSWORD, PASSWORD_CONFIRM, FULL_NAME, GENDER, BIRTHDAY } =
-  CONSTANTS.FIELD_NAMES.SIGNUP_FIELD_NAMES;
+const {
+  PASSWORD,
+  PASSWORD_CONFIRM,
+  FULL_NAME,
+  GENDER,
+  BIRTHDAY,
+  ACCEPT_TERMS
+} = CONSTANTS.FIELD_NAMES.SIGNUP_FIELD_NAMES;
 
 const InfoStepForm = ({
   email,
@@ -47,7 +54,8 @@ const InfoStepForm = ({
       labelPassword,
       placeholderPassword,
       labelPasswordConfirm,
-      placeholderPasswordConfirm
+      placeholderPasswordConfirm,
+      labelAcceptTerms
     },
     button: { submit }
   } = translations.infoStep;
@@ -63,7 +71,7 @@ const InfoStepForm = ({
           dateOfBirth: data[BIRTHDAY],
           password: data[PASSWORD],
           confirmPassword: data[PASSWORD_CONFIRM],
-          acceptTerms: true
+          acceptTerms: data[ACCEPT_TERMS]
         },
         { onSettled: release }
       );
@@ -105,6 +113,7 @@ const InfoStepForm = ({
           disabled={isPending}
           required
         />
+        <AcceptTermsCheckbox label={labelAcceptTerms} disabled={isPending} />
         <SubmitButton label={submit} loading={isPending} />
       </form>
     </FormProvider>

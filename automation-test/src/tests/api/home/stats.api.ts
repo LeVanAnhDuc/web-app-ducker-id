@@ -285,8 +285,6 @@ test(
   "An over-long timezone is refused with the translated message only",
   { tag: "@TC-HOME-047" },
   async ({ userApi }) => {
-    // BUG: defects/home.md#bug-home-01
-    test.fail();
     const res = await createApiClient(userApi).loginHistory.stats(
       { tz: "x".repeat(65) },
       EN

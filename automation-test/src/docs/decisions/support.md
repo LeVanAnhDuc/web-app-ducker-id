@@ -36,7 +36,7 @@ Các phân định rút ra từ header cũ của file test case:
 - **Q3** (tự quyết 2026-10-14, cần user duyệt): server tính `sanitizeText(subject/message)` (bỏ thẻ HTML, trim) chỉ để
   kiểm độ dài rồi lưu **giá trị thô** (`submit-contact.ts`). Design `my-contacts` ghi "giữ sanitize + validate hiện có";
   không rõ ý là lưu bản đã làm sạch hay chỉ kiểm độ dài → theo tài liệu: nội dung lưu xuống phải đã bỏ thẻ HTML; code hiện
-  tại lệch → BUG-SUPPORT-02 (TC-SUPPORT-049) → REQ-SUPPORT-04.
+  tại lệch → BUG-SUPPORT-02 (TC-SUPPORT-049) (đã sửa 2026-10-15, fix/open-bugs) → REQ-SUPPORT-04.
 - **Q4** (tự quyết 2026-10-14, cần user duyệt): độ dài tối thiểu tính sau khi bỏ thẻ và khoảng trắng (code làm vậy, dữ kiện
   server trong file này cũng ghi "sau khi sanitise") — coi là hành vi mong muốn → REQ-SUPPORT-04 (TC-SUPPORT-048).
 - **Q5** (tự quyết 2026-10-14, cần user duyệt): body gửi kèm `status` / `priority` / `userId` bị Joi `stripUnknown` bỏ;
@@ -44,11 +44,11 @@ Các phân định rút ra từ header cũ của file test case:
   from client body") — coi là hành vi mong muốn → REQ-SUPPORT-04 (TC-SUPPORT-050).
 - **Q6** (tự quyết 2026-10-14, cần user duyệt): `EmailField` dựng input giống `SubjectField` (`useFieldProps`, không bọc
   `FormField`) nên lỗi zod của email cũng không bao giờ hiện. Docs (design `my-contacts`, matrix dòng 4) muốn lỗi field
-  hiện ra → kỳ vọng hiện "Invalid email format"; code lệch → BUG-SUPPORT-03 (TC-SUPPORT-055) → REQ-SUPPORT-06.
+  hiện ra → kỳ vọng hiện "Invalid email format"; code lệch → BUG-SUPPORT-03 (TC-SUPPORT-055) (đã sửa 2026-10-15, fix/open-bugs) → REQ-SUPPORT-06.
 - **Q7** (tự quyết 2026-10-14, cần user duyệt): double-submit trong dialog phải chỉ tạo một request (design `my-contacts`
   dòng 11, `contact-ticket-id-display` dòng 11 "nút disable khi isPending"). Đọc code không chắc nút kịp disable trước cú
   bấm thứ hai (validate zod chạy async) → viết kỳ vọng đúng, không đánh dấu bug; lượt chạy sẽ phân loại → REQ-SUPPORT-06
-  (TC-SUPPORT-056). Chạy thật 2026-10-14: double-click gửi hai POST → BUG-SUPPORT-04.
+  (TC-SUPPORT-056). Chạy thật 2026-10-14: double-click gửi hai POST → BUG-SUPPORT-04 (đã sửa 2026-10-15, fix/open-bugs).
 - **Q8** (tự quyết 2026-10-14, cần user duyệt): user menu có mục "Support" cho cả guest (`UtilityMenuItems`); guest mở từ
   đây thấy email trống, sửa được, không bắt buộc (`labelEmailHint`) — README "support dialog anywhere in the app — as a
   signed-in user or as a guest" → REQ-SUPPORT-06 (TC-SUPPORT-054).
@@ -86,6 +86,6 @@ hình login; màn hình thành công hiện id dạng ShortId (`first 6 hex + ".
 
 ## Tech debt liên quan
 
-- `SubjectField` và `EmailField` không phải `FormField`, nên lỗi zod của chúng không được render (TC-SUPPORT-036,
-  BUG-SUPPORT-01; TC-SUPPORT-055, BUG-SUPPORT-03). Cũng vì `useFieldProps` đặt `id = name`, `<label>` của Subject và
+- `SubjectField` và `EmailField` từng không phải `FormField`, nên lỗi zod của chúng không được render (TC-SUPPORT-036,
+  BUG-SUPPORT-01; TC-SUPPORT-055, BUG-SUPPORT-03) (đã sửa 2026-10-15, fix/open-bugs). Cũng vì `useFieldProps` đặt `id = name`, `<label>` của Subject và
   Email không gắn với input — page object tìm field theo `name`.

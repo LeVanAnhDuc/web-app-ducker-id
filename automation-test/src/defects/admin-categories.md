@@ -2,10 +2,9 @@
 
 ## Đang mở
 
-| Bug                                               | Mức  | TC                     | Tóm tắt                                                                          |
-| ------------------------------------------------- | ---- | ---------------------- | -------------------------------------------------------------------------------- |
-| [BUG-ADMINCATEGORIES-01](#bug-admincategories-01) | Thấp | TC-ADMINCATEGORIES-068 | Đóng sheet category bằng Escape thì focus nằm lại ở `<body>`                     |
-| [BUG-ADMINCATEGORIES-02](#bug-admincategories-02) | Thấp | TC-ADMINCATEGORIES-078 | `appId` trùng khi xoá trả `VALIDATION_ERROR` thay vì `CATEGORY_REASSIGN_INVALID` |
+_(không có)_
+
+## Đã sửa
 
 ### BUG-ADMINCATEGORIES-01
 
@@ -14,6 +13,7 @@
 - **Bước tái hiện:** chạy test của TC-ADMINCATEGORIES-068 — `tests/e2e/admin-categories/categories-sheet.e2e.ts`
 - **Mong đợi:** focus quay về "New category"
 - **Thực tế:** đóng sheet category bằng Escape thì focus nằm lại ở `<body>`
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — sheet nhận `onCloseAutoFocus` từ hook mới `useReturnFocus`; "New category" được ghi nhớ khi mở và nhận lại focus khi sheet đóng.
 
 ### BUG-ADMINCATEGORIES-02
 
@@ -23,7 +23,4 @@
   app twice is CATEGORY_REASSIGN_INVALID" trong `tests/api/admin-categories/categories.api.ts`
 - **Mong đợi:** 400 `CATEGORY_REASSIGN_INVALID` (design `docs/specs/category-management/design.md` §3.4)
 - **Thực tế:** 400 `VALIDATION_ERROR` — `deleteCategoryBodySchema` chặn bằng `unique("appId")` trước khi tới service
-
-## Đã sửa
-
-_(chưa có)_
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — bỏ `unique("appId")` khỏi `deleteCategoryBodySchema`; `assertTargetsValid` trong `services/remove.ts` coi `appId` lặp là 400 `CATEGORY_REASSIGN_INVALID`.

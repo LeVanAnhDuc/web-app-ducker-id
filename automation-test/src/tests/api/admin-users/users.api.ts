@@ -275,8 +275,6 @@ test.describe(
       ((await (await res).json()) as { message: string }).message;
 
     test("success messages", async ({ adminApi }) => {
-      // BUG: defects/admin-users.md#bug-adminusers-04
-      test.fail();
       const admin = adminUsersOf(adminApi);
       const target = await createAccount({ tag: "adm-messages" });
       const id = await adminUserId(adminApi, target.email);

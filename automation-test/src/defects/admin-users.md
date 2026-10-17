@@ -2,12 +2,9 @@
 
 ## Đang mở
 
-| Bug                                     | Mức        | TC                                          | Tóm tắt                                                                                                  |
-| --------------------------------------- | ---------- | ------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| [BUG-ADMINUSERS-01](#bug-adminusers-01) | Trung bình | TC-ADMINUSERS-019                           | Danh sách Admin Users render trạng thái rỗng "No users match" khi tải thất bại                           |
-| [BUG-ADMINUSERS-02](#bug-adminusers-02) | Thấp       | TC-ADMINUSERS-021                           | Danh sách Admin Users không bao giờ thông báo đã tải xong (`adminUsers.announce.loaded` không được dùng) |
-| [BUG-ADMINUSERS-03](#bug-adminusers-03) | Thấp       | TC-ADMINUSERS-065, TC-ADMINUSERS-066        | Đóng dialog khoá / đặt lại mật khẩu, focus rơi về `<body>` thay vì nút menu của dòng                     |
-| [BUG-ADMINUSERS-04](#bug-adminusers-04) | Thấp       | TC-ADMINUSERS-063, TC-ADMINLOGINHISTORY-036 | Response thành công của mọi API trả nguyên key i18next (`user:success.getAdminUsers`), không dịch        |
+_(không có)_
+
+## Đã sửa
 
 ### BUG-ADMINUSERS-01
 
@@ -16,6 +13,7 @@
 - **Bước tái hiện:** chạy test của TC-ADMINUSERS-019 — `tests/e2e/admin-users/list.e2e.ts:505`
 - **Mong đợi:** trạng thái lỗi "Could not load users…"
 - **Thực tế:** Danh sách Admin Users render trạng thái rỗng "No users match" khi tải thất bại
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — `AdminUsersTable` đọc `isError`: lỗi thì không coi là rỗng và hiện `adminUsers.table.error` (role="alert") thay cho bảng.
 
 ### BUG-ADMINUSERS-02
 
@@ -24,6 +22,7 @@
 - **Bước tái hiện:** chạy test của TC-ADMINUSERS-021 — `tests/e2e/admin-users/list.e2e.ts:523`
 - **Mong đợi:** thông báo cho screen reader
 - **Thực tế:** Danh sách Admin Users không bao giờ thông báo đã tải xong (`adminUsers.announce.loaded` không được dùng)
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — `AdminUsersTable` gắn ghost `TableLoadedAnnouncer` với `meta.total` và `adminUsers.announce.loaded`.
 
 ### BUG-ADMINUSERS-03
 
@@ -36,6 +35,7 @@
 - **Thực tế:** dialog được mở từ một `DropdownMenuItem` đã unmount (`UserRowActions` → `setLockTarget` /
   `setResetTarget`), không có `DialogTrigger`, nên Radix trả focus về `<body>`. Trước đây ghi là tech debt "không
   assert" trong `decisions/admin-users.md`; từ 2026-10-14 coi là bug theo tài liệu (Q3).
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — `UserRowActions` truyền nút menu của dòng khi chọn item; bảng ghi nhớ nó bằng `useReturnFocus` và ba dialog trả focus về đó qua `onCloseAutoFocus`.
 
 ### BUG-ADMINUSERS-04
 
@@ -49,7 +49,4 @@
   namespace `user` được nạp; nguyên nhân là `SuccessResponse.send` (`server/src/common/responses/index.ts`) ghi
   thẳng `this.message` mà không gọi `req.t`, nên **mọi** response thành công của mọi module đều trả key thô (vd
   `GET /apps/categories` → `category:success.list`). Response lỗi thì được dịch (`error.filter.ts`).
-
-## Đã sửa
-
-_(chưa có)_
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — `SuccessResponse.send` (`server/src/common/responses/index.ts`) dịch `message` bằng `req.t` như error filter, nên mọi response thành công của mọi module trả câu đã dịch theo `Accept-Language`.

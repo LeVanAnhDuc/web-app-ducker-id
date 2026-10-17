@@ -155,11 +155,8 @@ test.describe("validation [BVA]", () => {
         `a ${label} is refused with its message before anything is sent`,
         { tag: "@TC-SUPPORT-036" },
         async ({ page, loginAlternativePage, supportDialog: dialog }) => {
-          // SubjectField is not a FormField (useFieldProps overrides the
-          // id and skips the field context), so a zod error on subject blocks
-          // the submit silently — no message, aria-invalid stays "false".
-          // BUG: defects/support.md#bug-support-01
-          test.fail();
+          // SubjectField is a FormField, so its zod error and aria-invalid
+          // reach the DOM (fixed BUG-SUPPORT-01).
           const seen = watchSubmits(page);
           await loginAlternativePage.goto(NOBODY);
           await loginAlternativePage.contactAdminOption().click();
@@ -177,10 +174,7 @@ test.describe("validation [BVA]", () => {
     "An invalid reply-to email is refused with its message",
     { tag: "@TC-SUPPORT-055" },
     async ({ page, loginAlternativePage, supportDialog: dialog }) => {
-      // EmailField builds its input like SubjectField (useFieldProps, no
-      // FormField), so its zod error is never rendered either.
-      // BUG: defects/support.md#bug-support-03
-      test.fail();
+      // EmailField is a FormField too (fixed BUG-SUPPORT-03).
       const seen = watchSubmits(page);
       await loginAlternativePage.goto(NOBODY);
       await loginAlternativePage.contactAdminOption().click();
@@ -280,8 +274,6 @@ test(
   "Double-clicking Send request files one request",
   { tag: "@TC-SUPPORT-056" },
   async ({ page, loginAlternativePage, supportDialog: dialog }) => {
-    // BUG: defects/support.md#bug-support-04
-    test.fail();
     // The stub answers late, so the second click lands while the first
     // request is still in flight.
     const seen = await stubSubmit(

@@ -21,10 +21,12 @@ import useUnlockAdminUser from "../../hooks/useUnlockAdminUser";
 
 const AdminUsersLockDialog = ({
   target,
-  onClose
+  onClose,
+  onCloseAutoFocus
 }: {
   target: AdminUser | null;
   onClose: () => void;
+  onCloseAutoFocus?: (event: Event) => void;
 }) => {
   const t = useTranslations("adminUsers.lockDialog");
   const tActions = useTranslations("adminUsers.actions");
@@ -56,7 +58,7 @@ const AdminUsersLockDialog = ({
 
   return (
     <Dialog open={target !== null} onOpenChange={(o) => !o && onClose()}>
-      <CustomDialogContent>
+      <CustomDialogContent onCloseAutoFocus={onCloseAutoFocus}>
         <DialogHeader>
           <DialogTitle>
             {target

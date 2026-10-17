@@ -426,14 +426,12 @@ test.describe(
 );
 
 // Design (admin-lock-unlock-user, row 12): closing the dialog returns focus to
-// the trigger. The dialog opens from a dropdown menuitem that unmounts, so
-// focus falls back to <body> instead.
+// the trigger. The dialog opens from a dropdown menuitem that unmounts, so the
+// table hands it the row's menu button to return to (useReturnFocus).
 test(
   "Closing the lock dialog returns focus to the row menu button",
   { tag: "@TC-ADMINUSERS-065" },
   async ({ adminUsersPage: users }) => {
-    // BUG: defects/admin-users.md#bug-adminusers-03
-    test.fail();
     await users.gotoRow(lockTarget.email);
     await users.startLock(lockTarget.email);
     await expect(users.dialog()).toBeVisible();

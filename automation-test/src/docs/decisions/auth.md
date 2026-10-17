@@ -34,19 +34,19 @@
 - **Q3** (tự quyết 2026-10-14, cần user duyệt): Tài khoản bị khoá vì sai mật khẩu có còn đăng nhập được bằng mã một lần
   hoặc magic link không? → **Không.** README nói "locks the account", và luồng tự mở khoá chỉ có nghĩa khi khoá chặn
   mọi cách vào; code hiện chỉ chặn bước mật khẩu (`PasswordLockoutGuard` không có trong strategy OTP / magic link) nên
-  test kỳ vọng 429 `LOGIN_ACCOUNT_LOCKED` cho cả hai và lộ bug (BUG-AUTH-06) → REQ-AUTH-09.
+  test kỳ vọng 429 `LOGIN_ACCOUNT_LOCKED` cho cả hai và lộ bug (BUG-AUTH-06 (đã sửa 2026-10-15, fix/open-bugs)) → REQ-AUTH-09.
 - **Q4** (tự quyết 2026-10-14, cần user duyệt): Giới hạn 3 lần gửi mã đăng nhập (`LOGIN_OTP_CONFIG.MAX_RESEND_ATTEMPTS`)
   là hành vi chỉ thấy trong code — mong muốn hay bug? → **Mong muốn**, ghi thành REQ-AUTH-16. Nhưng nó chỉ áp cho địa
   chỉ đủ điều kiện, nên lần gửi thứ 4 trả 400 cho tài khoản thật và 200 cho địa chỉ không tồn tại — lộ tài khoản, trái
   với "send hides whether the address exists" (TC-AUTH-034). Kỳ vọng: hai địa chỉ nhận cùng một câu trả lời
-  (BUG-AUTH-05) → REQ-AUTH-16, REQ-AUTH-06.
+  (BUG-AUTH-05 (đã sửa 2026-10-15, fix/open-bugs)) → REQ-AUTH-16, REQ-AUTH-06.
 - **Q5** (tự quyết 2026-10-14, cần user duyệt): `/auth/token/refresh` có được trả refresh token trong body không? →
   **Không.** Cùng hợp đồng với đăng nhập (TC-AUTH-026: refresh token chỉ nằm trong cookie HttpOnly); body đọc được bằng
-  script thì cookie HttpOnly mất tác dụng. Code trả `refreshToken` trong body (`token/dtos`) → BUG-AUTH-07 → REQ-AUTH-13.
+  script thì cookie HttpOnly mất tác dụng. Code trả `refreshToken` trong body (`token/dtos`) → BUG-AUTH-07 (đã sửa 2026-10-15, fix/open-bugs) → REQ-AUTH-13.
 - **Q6** (tự quyết 2026-10-14, cần user duyệt): Nhập lại một địa chỉ chưa đăng ký trong 60 s cooldown (vd bấm "Change
   email" rồi gõ lại đúng địa chỉ đó) thì sao? → **Vẫn đi tiếp vào `/signup/otp`** — README: "unknown ones are sent a
   sign-up code automatically and continue into registration", và mã đã gửi vẫn còn hạn 5 phút. Code gọi `send-otp`, nhận
-  400 `SIGNUP_OTP_COOLDOWN` và đứng lại ở `/login` với toast → BUG-AUTH-08 → REQ-AUTH-02.
+  400 `SIGNUP_OTP_COOLDOWN` và đứng lại ở `/login` với toast → BUG-AUTH-08 (đã sửa 2026-10-15, fix/open-bugs) → REQ-AUTH-02.
 - **Q7** (tự quyết 2026-10-14, cần user duyệt): Session đang mở của một tài khoản vừa bị vô hiệu hoá có phải dừng không?
   → **Có**, ở lần refresh kế tiếp (403 `REFRESH_TOKEN_INVALID`); code đang làm đúng vậy (`AuthActiveGuard`), ghi thành
   REQ-AUTH-17. Access token đã cấp vẫn sống tới khi hết hạn (xem Ngoài phạm vi).
@@ -90,7 +90,8 @@
 - **Đăng nhập Google / Facebook**: hai nút trên `/login` bị disable với nhãn "coming soon"; README không có tính năng
   này → không test.
 - **Access token sau logout**: JWT stateless, sống tới khi hết hạn; `docs/unfinished-features.md` ghi rõ hiện dựa vào
-  TTL của access token (chưa có `/oauth/revoke`, back-channel logout). Chỉ refresh token / cookie được kiểm sau logout.
+  TTL của access token (chưa có `/oauth/revoke`, back-channel logout). Chỉ refresh token / cookie được kiểm sau logout —
+  refresh token bị thu hồi qua denylist Redis từ khi sửa BUG-AUTH-01 (đã sửa 2026-10-15, fix/open-bugs).
 - **Link "Don't have an account? Sign up"** (`Login/components/SignUpLink`): component có trong code nhưng không trang nào
   render, `/signup` chỉ redirect về `/login` (TC-AUTH-005).
 - **Link "Forgot Password?"** trên bước mật khẩu và **"Contact administrator"** trên màn hình cách khác: đã phủ ở module

@@ -36,7 +36,7 @@ README tại thời điểm viết.
   / `getContactDetail` / `updateContactStatus`, và Joi dùng `contactAdmin:errors.invalidId` / `statusInvalid` /
   `statusRequired` — không key nào có trong `server/src/i18n/locales/{en,vi}/contactAdmin.json`, nên phản hồi mang
   nguyên key. `CLAUDE.md` của app: "error and success text is an i18next key translated per request" → theo tài liệu:
-  thông điệp phải được dịch; code lệch → BUG-ADMINCONTACT-02 (TC-ADMINCONTACT-035) → REQ-ADMINCONTACT-04 (mới).
+  thông điệp phải được dịch; code lệch → BUG-ADMINCONTACT-02 (TC-ADMINCONTACT-035) (đã sửa 2026-10-15, fix/open-bugs) → REQ-ADMINCONTACT-04 (mới).
 - **Q4** (tự quyết 2026-10-14, cần user duyệt): `docs/project-goals.md` ghi luồng `new → in-progress → resolved`, README
   và code dùng `processing` → theo README (tài liệu mới hơn, khớp hợp đồng API): giá trị là `processing`, nhãn
   "Processing" → REQ-ADMINCONTACT-03.
@@ -97,8 +97,8 @@ README tại thời điểm viết.
 ## Tech debt liên quan
 
 - Luồng `new → processing → resolved` của REQ-ADMINCONTACT-03 không được server hay UI ép buộc (xem Q1).
-- Trường "IP Address" ở thẻ chi tiết luôn trống: không có `ipAddress` nào được lưu hay trả về (xem
-  BUG-ADMINCONTACT-01).
-- Thông điệp của `/admin/contacts*` là key catalogue chưa khai (xem Q3, BUG-ADMINCONTACT-02).
+- Trường "IP Address" ở thẻ chi tiết từng luôn trống: không có `ipAddress` nào được lưu hay trả về (xem
+  BUG-ADMINCONTACT-01) (đã sửa 2026-10-15, fix/open-bugs).
+- Thông điệp của `/admin/contacts*` từng là key catalogue chưa khai (xem Q3, BUG-ADMINCONTACT-02) (đã sửa 2026-10-15, fix/open-bugs).
 - Nhãn filter của `ListFilterPanel` không gắn `htmlFor` với control nên `getByLabel` không dùng được (ghi chú a11y
   trong `tests/e2e/admin-contact/display.e2e.ts`).

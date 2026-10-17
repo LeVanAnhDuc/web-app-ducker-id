@@ -126,10 +126,7 @@ test(
   { tag: "@TC-LOGINHISTORY-017" },
   async ({ page, loginHistoryPage: list }) => {
     // REQ-LOGINHISTORY-01 / README promise the reason, OS and anomaly flag on
-    // the user's own list, but buildLoginHistoryColumns renders none of them
-    // (and GET /login-history does not even return isAnomaly).
-    // BUG: defects/login-history.md#bug-loginhistory-01
-    test.fail();
+    // the user's own list (fixed BUG-LOGINHISTORY-01).
     await stubList(page, [
       row(1, {
         status: "failed",

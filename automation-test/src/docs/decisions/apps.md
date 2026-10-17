@@ -104,6 +104,6 @@ phía user của `docs/specs/unified-list-experience/e2e.md`.
 ## Tech debt liên quan
 
 - BUG-APPS-01 (`../../defects/apps.md`): alert lỗi tải nằm trong children của `PageContent` và bị trạng thái rỗng thay
-  thế khi query lỗi không có item.
+  thế khi query lỗi không có item (đã sửa 2026-10-15, fix/open-bugs).
 - TC-ADMINENTITLEMENTS-041 (trong `tests/e2e/apps/launcher-access.e2e.ts`) chờ cố định 2 giây để chứng minh _không_
   có thông báo — không có sự kiện nào để chờ; giữ nguyên từ bộ cũ.

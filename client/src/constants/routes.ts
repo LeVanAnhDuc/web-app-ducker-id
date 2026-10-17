@@ -10,6 +10,7 @@ const ROUTES = {
   LOGIN_MAGIC_LINK: "/login/magic-link",
   LOGIN_ALTERNATIVE: "/login/alternative",
   LOGIN_VERIFY_MAGIC_LINK: "/login/verify-magic-link",
+  LOGIN_UNLOCK: "/login/unlock",
   SIGNUP: "/signup",
   SIGNUP_OTP: "/signup/otp",
   SIGNUP_INFO: "/signup/info",

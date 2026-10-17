@@ -18,7 +18,8 @@
       "labelPassword": "Password",
       "placeholderPassword": "At least 8 characters",
       "labelPasswordConfirm": "Confirm Password",
-      "placeholderPasswordConfirm": "Re-enter password"
+      "placeholderPasswordConfirm": "Re-enter password",
+      "labelAcceptTerms": "I agree to the Terms of Service and Privacy Policy"
     },
     "button": {
       "submit": "Create Account"

@@ -2,9 +2,9 @@
 
 ## Đang mở
 
-| Bug                         | Mức        | TC          | Tóm tắt                                                                                |
-| --------------------------- | ---------- | ----------- | -------------------------------------------------------------------------------------- |
-| [BUG-APPS-01](#bug-apps-01) | Trung bình | TC-APPS-014 | `/apps` không bao giờ hiện thông báo lỗi tải khi gặp 5xx — trạng thái rỗng thay chỗ nó |
+_(không có)_
+
+## Đã sửa
 
 ### BUG-APPS-01
 
@@ -13,7 +13,4 @@
 - **Bước tái hiện:** chạy test của TC-APPS-014 — `tests/e2e/apps/catalog.e2e.ts:297`
 - **Mong đợi:** hiện thông báo lỗi (`role="alert"`)
 - **Thực tế:** `/apps` không bao giờ hiện thông báo lỗi tải khi gặp 5xx — trạng thái rỗng thay chỗ nó
-
-## Đã sửa
-
-_(chưa có)_
+- **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — `AppsBoard` không coi query lỗi là rỗng (`isEmpty={!isError && …}`), nên alert lỗi tải hiện thay cho empty state

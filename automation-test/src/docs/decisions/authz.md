@@ -30,7 +30,8 @@
   đương trên token (không có / rác / sai scheme / không ký); đoán lỗi (Error Guessing) cho việc thiếu guard phía
   client; i18n `vi` trên trang landing và trên message từ chối của API. → REQ-AUTHZ-01, REQ-AUTHZ-02, REQ-AUTHZ-03
 - **Q2** Dữ liệu admin được bảo vệ ở tầng nào? → ở API (`adminGuard`); client không có guard vai trò, nên e2e kiểm rằng
-  non-admin không bao giờ thấy dữ liệu admin, còn việc chặn shell admin phía client là bug đang mở (TC-AUTHZ-018). →
+  non-admin không bao giờ thấy dữ liệu admin, còn việc chặn shell admin phía client là bug đang mở (TC-AUTHZ-018) — BUG-AUTHZ-02 (đã sửa 2026-10-15, fix/open-bugs): `AdminGuardLayout` đưa
+  non-admin về trang chủ. →
   REQ-AUTHZ-02
 
 - **Q3 (tự quyết 2026-10-14, cần user duyệt):** Bảng role × endpoint (TC-AUTHZ-007/008/010) có cần cả

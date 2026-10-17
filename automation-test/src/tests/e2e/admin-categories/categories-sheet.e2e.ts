@@ -16,9 +16,6 @@ test(
   "The sheet focuses the English field, closes on Escape and returns focus",
   { tag: "@TC-ADMINCATEGORIES-068" },
   async ({ adminCategoriesPage, page }) => {
-    // closing the category sheet with Escape drops focus on <body> instead of returning it to "New category" (design §6 row 12).
-    // BUG: defects/admin-categories.md#bug-admincategories-01
-    test.fail();
     const { sheet } = adminCategoriesPage;
     const trigger = adminCategoriesPage.createButtons().first();
     await adminCategoriesPage.goto();

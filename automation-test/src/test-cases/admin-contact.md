@@ -348,10 +348,8 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/admin-contact.md
 - **Bước:**
   1. Mở trang chi tiết của nó.
 - **Mong đợi:** có trường "User ID" chứa id của người gửi.
-- **Automated:** `tests/e2e/admin-contact/detail-status.e2e.ts` —
-  `test.fail()`: **BUG** — yêu cầu có lưu `userId`, nhưng
-  `toContactDetailItemDto` bỏ mất nó (và trường "IP Address" của thẻ luôn
-  trống: không có `ipAddress` nào được lưu hay trả về).
+- **Automated:** `tests/e2e/admin-contact/detail-status.e2e.ts` (từng là BUG-ADMINCONTACT-01, đã sửa 2026-10-15:
+  detail admin trả `userId` và `ipAddress`).
 
 ### TC-ADMINCONTACT-033 — Detail API contract and id errors
 
@@ -470,6 +468,5 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/admin-contact.md
   2. Gọi chi tiết với `not-a-ticket`, đổi trạng thái với `closed` và với body rỗng.
 - **Mong đợi:** (1) `message` của mỗi phản hồi 200 không phải key (`success.…`); (2) mọi `errors[].message` không phải
   key (`contactAdmin:errors.…`).
-- **Automated:** `tests/api/admin-contact/contacts.api.ts` — `test.fail()`: **BUG** BUG-ADMINCONTACT-02 — các key
-  `success.getContactList` / `getContactDetail` / `updateContactStatus` và `errors.invalidId` / `statusInvalid` /
-  `statusRequired` không có trong `contactAdmin.json`.
+- **Automated:** `tests/api/admin-contact/contacts.api.ts` (từng là BUG-ADMINCONTACT-02, đã sửa 2026-10-15: các key
+  `success.*` / `errors.*` của inbox đã có trong `contactAdmin.json`).

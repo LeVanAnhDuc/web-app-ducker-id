@@ -481,7 +481,7 @@ failed = total`; tổng các bucket bằng `total`.
 - **Bước:**
   1. `GET /login-history/stats?tz=<65 ký tự>` với `Accept-Language: en`.
 - **Mong đợi:** 400 `VALIDATION_ERROR`; mọi mục `errors` là `{ field: "tz", message: "Invalid timezone." }` — không có
-  câu Joi thô (BUG-HOME-01).
+  câu Joi thô. (Từng là BUG-HOME-01, đã sửa 2026-10-15.)
 - **Automated:** `tests/api/home/stats.api.ts`
 
 ### TC-HOME-048 — The ranking leaves out apps removed from the history or no longer allowed

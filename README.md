@@ -10,7 +10,7 @@ This repository is a monorepo: `client/` is the Next.js web UI, `server/` is the
   - Type your email on the login screen; known addresses go to the password step, unknown ones are sent a sign-up code automatically and continue into registration
 - **Sign up with email verification**
   - A one-time code is emailed to you, with a resend option, and must be verified before the account exists
-  - Finish by filling in your name and password
+  - Finish by filling in your name and password, and tick the required checkbox accepting the terms
 - **Three ways to sign in**
   - Email + password
   - One-time code sent to your email
@@ -18,11 +18,11 @@ This repository is a monorepo: `client/` is the Next.js web UI, `server/` is the
   - The alternative-methods screen lets you switch between them mid-flow
 - **Account lockout and self-service unlock**
   - Too many wrong passwords locks the account temporarily and the message says how long
-  - Request an unlock code by email and verify it to get back in
+  - The lock message links to the `/login/unlock` screen: get a temporary password by email, sign in with it, then set a new password
 - **Password recovery and change**
   - Forgot-password by one-time code or by magic link, then set a new password
   - Change your own password from the profile page
-  - After an admin resets your password you are sent to a forced change-password screen and cannot use the rest of the site until you set a new one
+  - After an admin resets your password you are sent to a forced change-password screen and cannot use the rest of the site until you set a new one — the API enforces this too, refusing that session everywhere except change-password and sign-out
 - **App launcher dashboard**
   - Home page greets you by time of day, and "Jump back in" shows the apps you actually opened last
   - Home page charts your sign-in activity per day over 7, 30 or 90 days, cut in your own timezone, and breaks it down by sign-in method and device
@@ -38,7 +38,7 @@ This repository is a monorepo: `client/` is the Next.js web UI, `server/` is the
   - Every Open button records the launch, and so does signing in to a satellite app through Ducker ID; `/recently-used` lists each app once, newest first, grouped by Today / Yesterday / This Week / Earlier with the last-opened time and open count
   - Search, infinite scroll, star an app from its row, remove one app with Undo, or clear the whole history after a confirmation
 - **Login history**
-  - Your own sign-in attempts with method, success/failure and reason, IP, country and city, device type, OS and browser, and an anomaly flag
+  - Your own sign-in attempts with method, success/failure and the reason a failed one was refused, IP, country and city, device type, OS and browser, and an "Unusual sign-in" badge on anomalous rows
   - Each row shows where you signed in — Ducker ID itself or a satellite app over OIDC — and automatic SSO sign-ins from an existing session are recorded too, marked with an "Auto" badge; filter by app or by the SSO method
 - **Notifications inbox**
   - Real events notify you: your password changed or was reset by an admin, your account was locked by wrong passwords, a sign-in came from a device or country you have not used before, or a new app joined your launcher
@@ -51,6 +51,7 @@ This repository is a monorepo: `client/` is the Next.js web UI, `server/` is the
   - `/contacts/me` lists the requests you submitted with their ticket ID and status, and a read-only detail page
 - **Your profile**
   - View and edit full name, phone, date of birth, gender and address
+  - Clearing an optional field and saving removes it, and it stays empty after a reload
 - **Language and appearance**
   - English and Vietnamese (Vietnamese pages under `/vi`), switched from the user menu
   - Light, dark or system theme
@@ -73,8 +74,9 @@ This repository is a monorepo: `client/` is the Next.js web UI, `server/` is the
   - Reset a user's password: a temporary password is issued and the user must change it at next sign-in
 - **Admin — login history and support inbox**
   - `/admin/login-history` shows sign-in attempts across all accounts, with a detail page per entry
-  - `/admin/contact` lists incoming support requests with a detail view and a `new → processing → resolved` status workflow
-  - `/admin` is a landing page linking to each admin area
+  - `/admin/contact` lists incoming support requests with a detail view and a `new → processing → resolved` status workflow; the detail shows who filed a signed-in request and the IP it came from
+  - `/admin` is a landing page linking to each admin area, Categories included
+  - Non-admins who open any `/admin` page are sent back to Home
 - **Single sign-on for satellite apps (OpenID Connect)**
   - `/oauth/authorize`, `/oauth/token` and `/oauth/userinfo`, plus the discovery document at `/.well-known/openid-configuration` and public keys at `/.well-known/jwks.json`
   - Authorization Code with PKCE (S256), required for every client — authorization codes live 60 seconds and are single-use
@@ -85,7 +87,7 @@ This repository is a monorepo: `client/` is the Next.js web UI, `server/` is the
 - **Operator tooling**
   - Swagger UI at `/api-docs` (and `/api-docs.json`) on the API
   - `/health` reports MongoDB and Redis status
-  - Bull Board email-queue dashboard at `/admin/queues`
+  - Bull Board email-queue dashboard at `/admin/queues`, admin-only — it needs an admin's Bearer token
 
 ### Not built yet
 
@@ -103,7 +105,7 @@ These have a user interface but no working backend, or are named in `docs/projec
 | --------- | ------------------------------------------------------------------------------------------------------------------------ |
 | Client    | Next.js 15.3 (App Router) · React 19 · TypeScript 5 · Tailwind CSS v4 · shadcn/ui + Radix · TanStack Query 5 · Zustand 5 · React Hook Form 7 + Zod 4 · next-intl 4 · Axios · Framer Motion |
 | Server    | Node.js · Express 4 · TypeScript 5 · MongoDB with Mongoose 8 · Redis + BullMQ · JWT + bcrypt · Joi 17 · i18next · Nodemailer + React Email · Winston · Swagger UI |
-| Testing   | Jest 30 + ts-jest on the server — **86 suites / 672 tests, all passing**. Playwright 1.60 in `automation-test/` — **1306 tests** (776 UI E2E + 529 API + seed) proving 992 test cases over 149 requirements, plus 32 unit tests of its own config; last run 2026-10-15, module by module: 0 unexpected failures, 63 expected failures marking 53 open bugs (needs a running client, server, MongoDB and Redis — see `automation-test/README.md`) |
+| Testing   | Jest 30 + ts-jest on the server — **101 suites / 762 tests, all passing**. Playwright 1.60 in `automation-test/` — **1306 tests** (776 UI E2E + 529 API + seed) proving 992 test cases over 149 requirements, plus 32 unit tests of its own config; last run 2026-10-15, module by module: 0 unexpected failures, 0 open bugs (the 53 it had logged were fixed on 2026-10-15) (needs a running client, server, MongoDB and Redis — see `automation-test/README.md`) |
 | Tooling   | pnpm · ESLint · Prettier · Husky pre-commit running lint-staged in both `client/` and `server/`                 |
 
 ## Running

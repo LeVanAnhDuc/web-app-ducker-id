@@ -1,6 +1,7 @@
 "use client";
 
 // libs
+import { isAxiosError } from "axios";
 import { FormProvider, useForm } from "react-hook-form";
 // types
 import type { PasswordStepFormValues } from "@/types/Login";
@@ -10,6 +11,7 @@ import CustomButton from "@/components/CustomButton";
 import PasswordInput from "@/components/PasswordInput";
 import ForgotPasswordLink from "../../components/ForgotPasswordLink";
 import TryAnotherButton from "../../components/TryAnotherButton";
+import UnlockAccountLink from "../../components/UnlockAccountLink";
 // forms
 import { passwordStepFormProps } from "@/forms/Login";
 // hooks
@@ -21,6 +23,7 @@ import CONSTANTS from "@/constants";
 
 const { PASSWORD } = CONSTANTS.FIELD_NAMES.LOGIN_FIELD_NAMES;
 const { LOGIN } = CONSTANTS.ROUTES;
+const { LOGIN_ACCOUNT_LOCKED } = CONSTANTS.ERROR_CODES;
 
 const PasswordStepForm = ({
   email,
@@ -29,7 +32,7 @@ const PasswordStepForm = ({
   email: string;
   translations: LoginMessages;
 }) => {
-  const { mutate: login, isPending } = usePasswordLogin();
+  const { mutate: login, isPending, error } = usePasswordLogin();
   const { run, release } = useSubmitGuard();
   const methods = useForm<PasswordStepFormValues>({ ...passwordStepFormProps });
 
@@ -37,7 +40,11 @@ const PasswordStepForm = ({
     input: { labelEnterPassword, placeholderPassword },
     button: { tryAnother, signIn, changeEmail }
   } = translations.form;
-  const { forgotPassword } = translations.link;
+  const { forgotPassword, unlockAccount } = translations.link;
+  // A locked account is offered the self-service unlock instead of a dead end
+  const isLocked =
+    isAxiosError<ErrorResponsePattern>(error) &&
+    error.response?.data?.code === LOGIN_ACCOUNT_LOCKED;
 
   const onSubmit = (data: PasswordStepFormValues) =>
     run(() => {
@@ -65,6 +72,7 @@ const PasswordStepForm = ({
         <CustomButton type="submit" loading={isPending} fullWidth>
           {signIn}
         </CustomButton>
+        {isLocked && <UnlockAccountLink email={email} label={unlockAccount} />}
         <div className="text-center">
           <Link
             href={LOGIN}

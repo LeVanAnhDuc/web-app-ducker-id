@@ -1,7 +1,7 @@
 "use client";
 
 // libs
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useTranslations } from "next-intl";
@@ -53,10 +53,14 @@ export const useForgotPasswordReset = ({
     }
   });
 
+  // A magic link is single-use: StrictMode's second mount effect must not
+  // verify it again (the ref survives the simulated remount).
+  const verifyStartedRef = useRef(false);
+
   useEffect(() => {
-    if (isMagicLink) {
-      verifyMagicLink();
-    }
+    if (!isMagicLink || verifyStartedRef.current) return;
+    verifyStartedRef.current = true;
+    verifyMagicLink();
   }, []);
 
   const { mutate: reset, isPending: isResetting } = useMutation({

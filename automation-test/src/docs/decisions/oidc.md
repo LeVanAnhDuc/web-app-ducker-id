@@ -40,7 +40,7 @@ Phạm vi ban đầu của module: đăng nhập một lần cho app vệ tinh �
   CLAUDE.md đặt giao thức OIDC ở tầng API. Giữ nguyên kỳ vọng (302 tới callback của Blog kèm `code=`) → REQ-OIDC-10.
 - Q5 (tự quyết 2026-10-14, cần user duyệt): `/oauth/token` không có `redirect_uri` vẫn đổi được code (server chỉ so khi
   request có gửi). Docs chỉ nói "khớp tuyệt đối chuỗi"; RFC 6749 §4.1.3 bắt buộc gửi lại khi authorize đã gửi → giữ RFC
-  làm kỳ vọng (cùng cách TC-OIDC-031 lấy RFC 7636), test đánh dấu bug BUG-OIDC-06 → REQ-OIDC-08 (TC-OIDC-054).
+  làm kỳ vọng (cùng cách TC-OIDC-031 lấy RFC 7636), test đánh dấu bug BUG-OIDC-06 (đã sửa 2026-10-15, fix/open-bugs) → REQ-OIDC-08 (TC-OIDC-054).
 - Q6 (tự quyết 2026-10-14, cần user duyệt): scope có khoảng trắng thừa / giá trị lặp (`"openid  openid email"`) — từ
   chối hay chấp nhận? → Chấp nhận và chuẩn hoá (tách theo khoảng trắng, bỏ trùng; RFC 6749 §3.3 coi scope là danh sách
   phân cách bằng khoảng trắng), như code đang làm → REQ-OIDC-02 (TC-OIDC-055).

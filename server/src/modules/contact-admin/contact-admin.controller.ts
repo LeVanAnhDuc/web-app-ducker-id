@@ -17,7 +17,7 @@ export class ContactAdminController {
   constructor(private readonly service: ContactAdminService) {}
 
   submit = async (req: SubmitContactRequest, res: Response): Promise<void> => {
-    const data = await this.service.submitContact(req.body);
+    const data = await this.service.submitContact(req.body, req.ip ?? null);
     new CreatedSuccess({
       data,
       message: "contactAdmin:success.submitted"

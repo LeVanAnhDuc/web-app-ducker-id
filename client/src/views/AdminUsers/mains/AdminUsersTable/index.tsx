@@ -22,8 +22,10 @@ import UsersTableSkeleton from "../../components/UsersTableSkeleton";
 import AdminUsersResetPasswordDialog from "../AdminUsersResetPasswordDialog";
 import AdminUsersLockDialog from "../AdminUsersLockDialog";
 import AdminUsersForceLogoutDialog from "../AdminUsersForceLogoutDialog";
+// ghosts
+import TableLoadedAnnouncer from "@/ghosts/TableLoadedAnnouncer";
 // hooks
-import { useListQuery } from "@/hooks";
+import { useListQuery, useReturnFocus } from "@/hooks";
 import useAdminUsersList from "../../hooks/useAdminUsersList";
 // dataSources
 import {
@@ -49,6 +51,7 @@ const AdminUsersTable = () => {
   const tToolbar = useTranslations("adminUsers.toolbar");
   const tRole = useTranslations("adminUsers.role");
   const tStatus = useTranslations("adminUsers.status");
+  const tAnnounce = useTranslations("adminUsers.announce");
 
   const filterDefs = useMemo(
     () => buildAdminUsersFilterDefs(tRole, tStatus, tToolbar),
@@ -71,7 +74,15 @@ const AdminUsersTable = () => {
     null
   );
 
-  const { data, isLoading } = useAdminUsersList(params);
+  const returnFocus = useReturnFocus();
+  const openFrom =
+    (setTarget: (user: AdminUser) => void) =>
+    (user: AdminUser, trigger: HTMLElement | null) => {
+      returnFocus.remember(trigger);
+      setTarget(user);
+    };
+
+  const { data, isLoading, isError } = useAdminUsersList(params);
   const items = data?.items ?? [];
   const meta = data?.meta;
 
@@ -89,29 +100,42 @@ const AdminUsersTable = () => {
       <PageContent
         fullHeight
         isLoading={isLoading}
-        isEmpty={items.length === 0}
+        isEmpty={!isError && items.length === 0}
         hasActiveFilters={hasActiveFilters}
         onClearFilters={query.clearFilters}
         skeleton={<UsersTableSkeleton />}
         emptyTitle={tTable("empty")}
         emptyDescription={tTable("emptyDescription")}
       >
-        <CustomTable
-          fullHeight
-          columns={columns}
-          rows={items}
-          getRowKey={(r) => r._id}
-          rowActions={(user) => (
-            <UserRowActions
-              user={user}
-              onResetPassword={setResetTarget}
-              onLockToggle={setLockTarget}
-              onForceLogout={setForceLogoutTarget}
-            />
-          )}
-          actionsLabel={tTable("actions")}
-        />
+        {isError ? (
+          <p
+            className="text-destructive px-6 py-16 text-center text-sm"
+            role="alert"
+          >
+            {tTable("error")}
+          </p>
+        ) : (
+          <CustomTable
+            fullHeight
+            columns={columns}
+            rows={items}
+            getRowKey={(r) => r._id}
+            rowActions={(user) => (
+              <UserRowActions
+                user={user}
+                onResetPassword={openFrom(setResetTarget)}
+                onLockToggle={openFrom(setLockTarget)}
+                onForceLogout={openFrom(setForceLogoutTarget)}
+              />
+            )}
+            actionsLabel={tTable("actions")}
+          />
+        )}
       </PageContent>
+      <TableLoadedAnnouncer
+        total={meta?.total}
+        message={tAnnounce("loaded", { total: meta?.total ?? 0 })}
+      />
       {(meta?.totalPages ?? 1) > 1 && (
         <CustomPagination
           page={meta?.page ?? query.page}
@@ -122,14 +146,17 @@ const AdminUsersTable = () => {
       <AdminUsersResetPasswordDialog
         target={resetTarget}
         onClose={() => setResetTarget(null)}
+        onCloseAutoFocus={returnFocus.onCloseAutoFocus}
       />
       <AdminUsersLockDialog
         target={lockTarget}
         onClose={() => setLockTarget(null)}
+        onCloseAutoFocus={returnFocus.onCloseAutoFocus}
       />
       <AdminUsersForceLogoutDialog
         target={forceLogoutTarget}
         onClose={() => setForceLogoutTarget(null)}
+        onCloseAutoFocus={returnFocus.onCloseAutoFocus}
       />
     </PageShell>
   );

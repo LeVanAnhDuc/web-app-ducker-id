@@ -2,7 +2,7 @@
 import * as z from "zod";
 // others
 import { GENDER_VALUES } from "@/constants/gender";
-import { getDateOfBirthBounds } from "@/utils";
+import { getDateOfBirthBounds, parseDateOnly } from "@/utils";
 
 const SAFE_EMAIL_PATTERN =
   // eslint-disable-next-line no-control-regex
@@ -23,7 +23,7 @@ export const profileDateOfBirthSchema = z
   .min(1, { message: "required" })
   .refine(
     (value) => {
-      const date = new Date(value);
+      const date = parseDateOnly(value);
       const today = new Date();
       const minDate = new Date(
         today.getFullYear() - 100,
@@ -40,7 +40,7 @@ export const birthdaySchema = z
   .min(1, { message: "required" })
   .refine(
     (value) => {
-      const date = new Date(value);
+      const date = parseDateOnly(value);
       const { minDate, maxDate } = getDateOfBirthBounds();
       return date >= minDate && date <= maxDate;
     },

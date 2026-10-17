@@ -5,6 +5,7 @@ import type {
   AccountExistsGuard,
   AccountActiveGuard,
   EmailVerifiedGuard,
+  PasswordLockoutGuard,
   OtpLockoutGuard,
   OtpCooldownGuard
 } from "../../guards";
@@ -15,6 +16,7 @@ export interface OtpLoginStrategyDeps {
   accountExistsGuard: AccountExistsGuard;
   accountActiveGuard: AccountActiveGuard;
   emailVerifiedGuard: EmailVerifiedGuard;
+  passwordLockoutGuard: PasswordLockoutGuard;
   otpLockoutGuard: OtpLockoutGuard;
   otpCooldownGuard: OtpCooldownGuard;
   otpLoginRepo: OtpLoginRepository;

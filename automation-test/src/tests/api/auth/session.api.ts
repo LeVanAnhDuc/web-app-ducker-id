@@ -26,8 +26,6 @@ test(
     expect(refreshed.status()).toBe(200);
     const { data } = await refreshed.json();
     expect(data.accessToken).toBeTruthy();
-    // NB: unlike /auth/login, refresh echoes `refreshToken` in the JSON body
-    // too (token/dtos) — reported as an observation, not asserted here.
     expect(jwtPayload<{ sub: string }>(data.accessToken).sub).toBe(
       jwtPayload<{ sub: string }>(first).sub
     );
@@ -57,11 +55,8 @@ test(
   "After logout the old refresh token no longer works",
   { tag: ["@TC-AUTH-056", "@smoke"] },
   async ({ newApi }) => {
-    // POST /auth/logout only destroys the IdP `sid` session and clears the
-    // cookie; the refresh JWT is never revoked (TokenService verifies the
-    // signature only), so a copy taken before logout still mints access tokens.
-    // BUG: defects/auth.md#bug-auth-01
-    test.fail();
+    // Logout puts the request's refresh token on a Redis denylist, so a copy
+    // taken before logout no longer mints access tokens (fixed BUG-AUTH-01).
 
     const account = await createAccount({ tag: "auth-logout" });
     const api = await newApi();
@@ -73,9 +68,7 @@ test(
 
     const out = await api.as({ accessToken }).auth.logout();
     expect(out.status()).toBe(204);
-    // Both cookies are overwritten with an empty value. (Express's
-    // clearCookie keeps the 7-day maxAge from the shared options, so the
-    // empty cookie is not expired — harmless, the value is what counts.)
+    // Both cookies are overwritten with an empty, already-expired value.
     expect(setCookie(out, "refreshToken")).toMatch(/^refreshToken=;/);
     expect(setCookie(out, "sid")).toMatch(/^sid=;/);
 
@@ -129,10 +122,8 @@ test(
   "Refresh keeps the refresh token out of the response body",
   { tag: ["@TC-AUTH-066"] },
   async ({ newApi }) => {
-    // toRefreshTokenDto (server/src/modules/token/dtos) echoes refreshToken
-    // into the JSON body, where page script can read it (decisions Q5).
-    // BUG: defects/auth.md#bug-auth-07
-    test.fail();
+    // The refresh token stays in its HttpOnly cookie; the body matches login's
+    // (fixed BUG-AUTH-07).
     const account = await createAccount({ tag: "auth-refresh-body" });
     const api = await newApi();
     expect(

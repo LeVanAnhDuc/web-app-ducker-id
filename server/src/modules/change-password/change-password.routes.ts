@@ -6,7 +6,7 @@ import type { ChangePasswordController } from "./change-password.controller";
 // validators
 import { changePasswordSchema } from "@/validators/schemas/change-password";
 // middlewares
-import { authGuard, bodyPipe } from "@/middlewares";
+import { passwordChangeAuthGuard, bodyPipe } from "@/middlewares";
 // others
 import { asyncHandler } from "@/utils/async-handler";
 
@@ -18,7 +18,8 @@ export const createChangePasswordRoutes = (
 
   router.patch(
     "/auth/change-password",
-    authGuard,
+    // The one way out of a temporary-password session — it must accept one.
+    passwordChangeAuthGuard,
     rl.changePasswordByIpAndUser,
     bodyPipe(changePasswordSchema),
     asyncHandler(controller.changePassword)

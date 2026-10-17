@@ -41,12 +41,13 @@ export interface UserRecord {
   fullName: string;
 }
 
+// null clears an optional field (it is $unset, not stored as null)
 export interface UpdateProfileData {
   fullName?: string;
-  phone?: string;
-  address?: string;
-  dateOfBirth?: string;
-  gender?: Gender;
+  phone?: string | null;
+  address?: string | null;
+  dateOfBirth?: string | null;
+  gender?: Gender | null;
 }
 
 export interface PublicUserRecord {

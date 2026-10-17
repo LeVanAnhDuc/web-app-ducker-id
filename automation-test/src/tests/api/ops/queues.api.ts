@@ -11,9 +11,8 @@ test(
   "The Bull Board queue dashboard requires an admin",
   { tag: ["@TC-OPS-012", "@smoke"] },
   async ({ ops }) => {
-    // /admin/queues and its JSON API answer 200 to anonymous callers and expose email job data, including plaintext OTP codes.
-    // BUG: defects/authz.md#bug-authz-01
-    test.fail();
+    // /admin/queues and its JSON API sit behind adminGuard
+    // (fixed BUG-AUTHZ-01).
     for (const subpath of [
       "",
       "/api/queues?activeQueue=email&status=completed"

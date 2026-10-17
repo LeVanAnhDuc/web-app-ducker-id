@@ -5,6 +5,7 @@ import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { AuthenticationService } from "@/modules/authentication/services";
 import type { UserService } from "@/modules/user/services";
 import type { RefreshTokenValidGuard } from "../../guards";
+import type { RevokedRefreshTokenRepository } from "../../repository/revoked-refresh-token.repository";
 // common
 import { ForbiddenError, UnauthorizedError } from "@/common/exceptions";
 // modules
@@ -12,6 +13,7 @@ import { generateAuthTokensResponse } from "@/modules/authentication/helpers";
 // others
 import {
   RefreshTokenPresentGuard,
+  RefreshTokenNotRevokedGuard,
   AuthActiveGuard,
   PasswordNotChangedGuard,
   UserExistsGuard
@@ -49,6 +51,7 @@ const setup = (
     auth?: AuthenticationDocument | null;
     user?: typeof userForToken | null;
     tokenVersion?: number;
+    revoked?: boolean;
   } = {}
 ) => {
   const payload = {
@@ -77,17 +80,33 @@ const setup = (
     assert: jest.fn().mockReturnValue(payload)
   } as unknown as jest.Mocked<RefreshTokenValidGuard>;
 
-  const service = new TokenService(
+  const revokedRefreshTokenRepo = {
+    revoke: jest.fn().mockResolvedValue(undefined),
+    isRevoked: jest.fn().mockResolvedValue(over.revoked ?? false)
+  } as jest.Mocked<RevokedRefreshTokenRepository>;
+
+  const service = new TokenService({
     authService,
     userService,
-    new RefreshTokenPresentGuard(),
+    revokedRefreshTokenRepo,
+    refreshTokenPresentGuard: new RefreshTokenPresentGuard(),
     refreshTokenValidGuard,
-    new AuthActiveGuard(),
-    new PasswordNotChangedGuard(),
-    new UserExistsGuard()
-  );
+    refreshTokenNotRevokedGuard: new RefreshTokenNotRevokedGuard(
+      revokedRefreshTokenRepo
+    ),
+    authActiveGuard: new AuthActiveGuard(),
+    passwordNotChangedGuard: new PasswordNotChangedGuard(),
+    userExistsGuard: new UserExistsGuard()
+  });
 
-  return { service, authService, userService, refreshTokenValidGuard, payload };
+  return {
+    service,
+    authService,
+    userService,
+    refreshTokenValidGuard,
+    revokedRefreshTokenRepo,
+    payload
+  };
 };
 
 describe("TokenService.refreshAccessToken", () => {
@@ -98,7 +117,31 @@ describe("TokenService.refreshAccessToken", () => {
 
     const result = await service.refreshAccessToken("a-refresh-token");
 
-    expect(result).toEqual(TOKENS);
+    const { refreshToken: _refreshToken, ...body } = TOKENS;
+    expect(result).toEqual(body);
+  });
+
+  it("never echoes the refresh token in the body (BUG-AUTH-07)", async () => {
+    const { service } = setup();
+
+    const result = await service.refreshAccessToken("a-refresh-token");
+
+    expect(result).not.toHaveProperty("refreshToken");
+  });
+
+  it("rejects a refresh token revoked by logout (BUG-AUTH-01)", async () => {
+    const { service, authService, revokedRefreshTokenRepo } = setup({
+      revoked: true
+    });
+
+    await expect(service.refreshAccessToken("a-refresh-token")).rejects.toThrow(
+      ForbiddenError
+    );
+    expect(revokedRefreshTokenRepo.isRevoked).toHaveBeenCalledWith(
+      "a-refresh-token"
+    );
+    expect(authService.findById).not.toHaveBeenCalled();
+    expect(mockedGenTokens).not.toHaveBeenCalled();
   });
 
   it("rejects a missing refresh token before looking anything up", async () => {

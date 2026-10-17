@@ -1,6 +1,6 @@
 jest.mock("@/models/user", () => ({
   __esModule: true,
-  default: { aggregate: jest.fn() }
+  default: { aggregate: jest.fn(), findByIdAndUpdate: jest.fn() }
 }));
 
 // types
@@ -10,6 +10,8 @@ import UserModel from "@/models/user";
 import { MongoUserRepository } from "../impl/mongo-user.repository";
 
 const mockedAggregate = UserModel.aggregate as unknown as jest.Mock;
+const mockedFindByIdAndUpdate =
+  UserModel.findByIdAndUpdate as unknown as jest.Mock;
 
 const options: PaginationOptions = {
   skip: 0,
@@ -65,5 +67,43 @@ describe("MongoUserRepository.findAdminUsers", () => {
     expect(filterMatch["auth.roles"]).toBe("admin");
     expect(filterMatch["auth.isActive"]).toBe(false);
     expect(filterMatch.$or).toBeDefined();
+  });
+});
+
+describe("MongoUserRepository.updateById", () => {
+  const chain = { select: jest.fn(), lean: jest.fn(), exec: jest.fn() };
+
+  beforeEach(() => {
+    chain.select.mockReturnValue(chain);
+    chain.lean.mockReturnValue(chain);
+    chain.exec.mockResolvedValue({ _id: "u1" });
+    mockedFindByIdAndUpdate.mockReturnValue(chain);
+  });
+
+  it("sets the given fields", async () => {
+    await new MongoUserRepository().updateById("u1", {
+      fullName: "Hoa Tran",
+      phone: "0901234567"
+    });
+
+    expect(mockedFindByIdAndUpdate).toHaveBeenCalledWith(
+      "u1",
+      { $set: { fullName: "Hoa Tran", phone: "0901234567" } },
+      { new: true }
+    );
+  });
+
+  it("unsets a field sent as null so it can be cleared", async () => {
+    await new MongoUserRepository().updateById("u1", {
+      fullName: "Hoa Tran",
+      phone: null,
+      address: null
+    });
+
+    expect(mockedFindByIdAndUpdate).toHaveBeenCalledWith(
+      "u1",
+      { $set: { fullName: "Hoa Tran" }, $unset: { phone: "", address: "" } },
+      { new: true }
+    );
   });
 });
