@@ -4,7 +4,7 @@ import type { UnlockRequestBody } from "../types";
 import type { UnlockRequestDto } from "../dtos";
 import type { UnlockAccountServiceDeps } from "./deps";
 // common
-import { BadRequestError } from "@/common/exceptions";
+import { BadRequestError } from "@/exceptions";
 // dtos
 import { toUnlockRequestDto } from "../dtos";
 // others

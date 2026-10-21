@@ -2,7 +2,7 @@
 import type { UserRole } from "@/modules/user/types";
 import type { EntitlementAdminServiceDeps } from "../deps";
 // common
-import { NotFoundError } from "@/common/exceptions";
+import { NotFoundError } from "@/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 

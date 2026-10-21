@@ -4,7 +4,7 @@ import type { OtpSendBody } from "../../types";
 import type { OtpSendDto } from "../../dtos";
 import type { OtpLoginStrategyDeps } from "./deps";
 // common
-import { BadRequestError } from "@/common/exceptions";
+import { BadRequestError } from "@/exceptions";
 // dtos
 import { toOtpSendDto } from "../../dtos";
 // others

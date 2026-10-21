@@ -2,7 +2,7 @@
 import type { AdminResetPasswordResult } from "@/modules/user/types";
 import type { UserServiceDeps } from "./deps";
 // common
-import { ForbiddenError, NotFoundError } from "@/common/exceptions";
+import { ForbiddenError, NotFoundError } from "@/exceptions";
 // modules
 import {
   NOTIFICATION_LINKS,

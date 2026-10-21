@@ -3,7 +3,7 @@ import type { FPMagicLinkVerifyRequest } from "../../types";
 import type { VerifyMagicLinkResponseDto } from "../../dtos";
 import type { MagicLinkForgotPasswordStrategyDeps } from "./deps";
 // common
-import { UnauthorizedError } from "@/common/exceptions";
+import { UnauthorizedError } from "@/exceptions";
 // dtos
 import { toVerifyMagicLinkResponseDto } from "../../dtos";
 // others

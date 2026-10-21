@@ -4,7 +4,7 @@ import { Router } from "express";
 import type { Request, Response } from "express";
 import type { RedisClientType } from "redis";
 // common
-import { InternalServerError } from "@/common/exceptions";
+import { InternalServerError } from "@/exceptions";
 import { OkSuccess } from "@/common/responses";
 // database
 import { isMongoHealthy } from "@/database/mongodb";

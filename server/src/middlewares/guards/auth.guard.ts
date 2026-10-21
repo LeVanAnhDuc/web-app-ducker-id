@@ -1,7 +1,7 @@
 // types
 import type { RequestHandler } from "express";
 // common
-import { ForbiddenError, UnauthorizedError } from "@/common/exceptions";
+import { ForbiddenError, UnauthorizedError } from "@/exceptions";
 // modules
 import { verifyAccessToken } from "@/modules/token/helpers";
 // others

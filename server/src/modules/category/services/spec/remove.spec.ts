@@ -15,7 +15,7 @@ import {
   BadRequestError,
   ConflictRequestError,
   NotFoundError
-} from "@/common/exceptions";
+} from "@/exceptions";
 // others
 import {
   CATEGORY_ID,

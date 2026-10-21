@@ -1,7 +1,7 @@
 // types
 import type { OtpForgotPasswordRepository } from "../repositories/otp-forgot-password.repository";
 // common
-import { BadRequestError } from "@/common/exceptions";
+import { BadRequestError } from "@/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";

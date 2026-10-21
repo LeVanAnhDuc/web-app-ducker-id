@@ -6,7 +6,7 @@ jest.mock("@/utils/request-context", () => ({
 // types
 import type { NextFunction, Request, Response } from "express";
 // common
-import { ForbiddenError, UnauthorizedError } from "@/common/exceptions";
+import { ForbiddenError, UnauthorizedError } from "@/exceptions";
 // modules
 import { verifyAccessToken } from "@/modules/token/helpers";
 // others

@@ -3,7 +3,7 @@ import type { Request, Response, NextFunction } from "express";
 import type { Schema } from "joi";
 import type { ValidationErrorItem } from "@/types/common";
 // common
-import { ValidationError } from "@/common/exceptions";
+import { ValidationError } from "@/exceptions";
 
 const validationPipe =
   (source: "body" | "params" | "query", schema: Schema) =>

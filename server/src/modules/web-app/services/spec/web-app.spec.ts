@@ -6,7 +6,7 @@ import {
   BadRequestError,
   ConflictRequestError,
   NotFoundError
-} from "@/common/exceptions";
+} from "@/exceptions";
 // others
 import { RequestContext } from "@/utils/request-context";
 import { createNotificationDispatcherMock } from "@test/mocks/notification-dispatcher.mock";

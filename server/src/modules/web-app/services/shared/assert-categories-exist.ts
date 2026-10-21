@@ -1,7 +1,7 @@
 // types
 import type { WebAppServiceDeps } from "../deps";
 // common
-import { BadRequestError } from "@/common/exceptions";
+import { BadRequestError } from "@/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 

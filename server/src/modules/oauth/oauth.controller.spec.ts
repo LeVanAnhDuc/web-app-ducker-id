@@ -6,7 +6,7 @@ jest.mock("@/modules/token/helpers", () => ({
 import type { Request, Response } from "express";
 import type { OAuthService } from "./services";
 // common
-import { OAuthError } from "@/common/exceptions";
+import { OAuthError } from "@/exceptions";
 // modules
 import { verifyOAuthAccessToken } from "@/modules/token/helpers";
 // others

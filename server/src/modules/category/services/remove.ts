@@ -9,7 +9,7 @@ import {
   BadRequestError,
   ConflictRequestError,
   NotFoundError
-} from "@/common/exceptions";
+} from "@/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 

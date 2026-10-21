@@ -2,7 +2,7 @@
 import type { Request } from "express";
 import type { FailedAttemptsRepository } from "../repositories/failed-attempts.repository";
 // common
-import { TooManyRequestsError } from "@/common/exceptions";
+import { TooManyRequestsError } from "@/exceptions";
 // others
 import { makeMockRequest } from "@test/helpers/request.helper";
 import { createFailedAttemptsRepoMock } from "@test/mocks/failed-attempts-repo.mock";

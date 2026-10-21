@@ -5,7 +5,7 @@ import type { CategoryMoveDirection } from "../types";
 import type { AdminCategoryDto } from "../dtos";
 import type { CategoryServiceDeps } from "./deps";
 // common
-import { NotFoundError } from "@/common/exceptions";
+import { NotFoundError } from "@/exceptions";
 // modules
 import { CATEGORY_MOVE_DIRECTIONS } from "../constants";
 // others

@@ -1,5 +1,5 @@
 // common
-import { InternalServerError } from "@/common/exceptions";
+import { ConfigError } from "@/exceptions";
 
 export const parseRequired = (
   name: string,
@@ -7,9 +7,7 @@ export const parseRequired = (
 ): string => {
   const value = raw?.trim();
   if (!value) {
-    throw new InternalServerError({
-      message: `Missing required environment variable ${name}`
-    });
+    throw new ConfigError(`Missing required environment variable ${name}`);
   }
   return value;
 };

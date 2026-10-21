@@ -2,7 +2,7 @@
 import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
 import type { AccessPolicy } from "@/modules/entitlement/services/access-policy";
 // commons
-import { NotFoundError } from "@/common/exceptions";
+import { NotFoundError } from "@/exceptions";
 // modules
 import { isAppVisibleTo } from "@/modules/web-app/helpers";
 // others

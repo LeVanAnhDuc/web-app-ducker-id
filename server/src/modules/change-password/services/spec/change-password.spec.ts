@@ -11,7 +11,7 @@ import type { UserService } from "@/modules/user/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 // common
-import { BadRequestError, UnauthorizedError } from "@/common/exceptions";
+import { BadRequestError, UnauthorizedError } from "@/exceptions";
 // modules
 import { generateAuthTokensResponse } from "@/modules/authentication/helpers";
 import { EmailType } from "@/types/services/email";

@@ -2,7 +2,7 @@
 import type { HistoryDetailItemDto } from "../dtos";
 import type { LoginHistoryServiceDeps } from "./deps";
 // common
-import { NotFoundError } from "@/common/exceptions";
+import { NotFoundError } from "@/exceptions";
 // dtos
 import { toHistoryDetailItemDto } from "../dtos";
 // others

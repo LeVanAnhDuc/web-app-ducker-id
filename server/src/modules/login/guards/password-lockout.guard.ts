@@ -1,7 +1,7 @@
 // types
 import type { FailedAttemptsRepository } from "../repositories/failed-attempts.repository";
 // common
-import { TooManyRequestsError } from "@/common/exceptions";
+import { TooManyRequestsError } from "@/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";

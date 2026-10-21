@@ -21,7 +21,7 @@ import {
   BadRequestError,
   ConflictRequestError,
   InternalServerError
-} from "@/common/exceptions";
+} from "@/exceptions";
 // modules
 import { generateAuthTokensResponse } from "@/modules/authentication/helpers";
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";

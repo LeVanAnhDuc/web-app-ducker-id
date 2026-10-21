@@ -1,5 +1,5 @@
 // common
-import { BadRequestError } from "@/common/exceptions";
+import { BadRequestError } from "@/exceptions";
 // others
 import { isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { ERROR_CODES } from "@/constants/error-code";

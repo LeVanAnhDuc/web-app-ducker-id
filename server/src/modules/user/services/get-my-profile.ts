@@ -2,7 +2,7 @@
 import type { MyProfileDto } from "../dtos";
 import type { UserServiceDeps } from "./deps";
 // common
-import { NotFoundError } from "@/common/exceptions";
+import { NotFoundError } from "@/exceptions";
 // dtos
 import { toMyProfileDto } from "../dtos";
 // others

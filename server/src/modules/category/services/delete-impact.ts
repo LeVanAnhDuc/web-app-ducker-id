@@ -2,7 +2,7 @@
 import type { DeleteImpactDto } from "../dtos";
 import type { CategoryServiceDeps } from "./deps";
 // common
-import { NotFoundError } from "@/common/exceptions";
+import { NotFoundError } from "@/exceptions";
 // dtos
 import { toDeleteImpactDto } from "../dtos";
 // others

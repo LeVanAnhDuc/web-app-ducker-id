@@ -7,7 +7,7 @@ import type {
 import type { EntitlementMatrixDto } from "../../dtos";
 import type { EntitlementAdminServiceDeps } from "./deps";
 // common
-import { NotFoundError } from "@/common/exceptions";
+import { NotFoundError } from "@/exceptions";
 // modules
 import {
   NOTIFICATION_LINKS,

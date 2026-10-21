@@ -1,5 +1,5 @@
 // common
-import { BadRequestError } from "@/common/exceptions";
+import { BadRequestError } from "@/exceptions";
 // others
 import { isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { WrongCurrentPasswordGuard } from "./wrong-current-password.guard";

@@ -4,7 +4,7 @@ import type { ResendOtpBody } from "../types";
 import type { ResendOtpDto } from "../dtos";
 import type { SignupServiceDeps } from "./deps";
 // common
-import { BadRequestError } from "@/common/exceptions";
+import { BadRequestError } from "@/exceptions";
 // dtos
 import { toResendOtpDto } from "../dtos";
 // others

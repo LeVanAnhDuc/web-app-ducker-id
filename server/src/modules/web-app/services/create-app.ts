@@ -3,7 +3,7 @@ import type { AdminAppCreateBody } from "../types";
 import type { AdminAppCreatedDto } from "../dtos";
 import type { WebAppServiceDeps } from "./deps";
 // common
-import { ConflictRequestError } from "@/common/exceptions";
+import { ConflictRequestError } from "@/exceptions";
 // dtos
 import { toAdminAppCreatedDto } from "../dtos";
 // others

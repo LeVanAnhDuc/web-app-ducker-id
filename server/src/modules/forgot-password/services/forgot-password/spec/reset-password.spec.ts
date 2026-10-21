@@ -6,7 +6,7 @@ import type { FPResetPasswordRequest } from "../../../types";
 import type { ResetTokenRepository } from "../../../repositories/reset-token.repository";
 import type { ForgotPasswordServiceDeps } from "../deps";
 // common
-import { UnauthorizedError } from "@/common/exceptions";
+import { UnauthorizedError } from "@/exceptions";
 // others
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { AuthExistsGuard, ResetTokenValidGuard } from "../../../guards";

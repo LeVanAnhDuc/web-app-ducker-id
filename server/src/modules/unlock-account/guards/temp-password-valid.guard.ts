@@ -1,7 +1,7 @@
 // types
 import type { UnlockAccountRepository } from "../repository/unlock-account.repository";
 // common
-import { UnauthorizedError } from "@/common/exceptions";
+import { UnauthorizedError } from "@/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";

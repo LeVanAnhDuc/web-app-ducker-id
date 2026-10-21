@@ -1,7 +1,7 @@
 // types
 import type { Request, Response, NextFunction } from "express";
 // common
-import { ForbiddenError } from "@/common/exceptions";
+import { ForbiddenError } from "@/exceptions";
 // modules
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 // others

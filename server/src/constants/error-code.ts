@@ -11,7 +11,7 @@ export const ERROR_CODES = {
 
   // ── Infrastructure ──
   DATABASE_ERROR: "DATABASE_ERROR",
-  REDIS_ERROR: "REDIS_ERROR",
+  CONFIG_ERROR: "CONFIG_ERROR",
 
   // ── Mongoose / MongoDB ──
   DUPLICATE_KEY: "DUPLICATE_KEY",

@@ -5,7 +5,7 @@ import type { RecentAppRepository } from "../../repository/recent-app.repository
 import type { RecentAppUsage } from "../../types";
 import type { EntitlementRepository } from "@/modules/entitlement/repository/entitlement.repository";
 // commons
-import { NotFoundError } from "@/common/exceptions";
+import { NotFoundError } from "@/exceptions";
 // modules
 import { RecentAppService } from "../";
 import { AccessPolicy } from "@/modules/entitlement/services/access-policy";
