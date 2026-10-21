@@ -83,7 +83,7 @@ const createUserAccount = async (
     if (isDuplicateKeyError(err) && getDuplicatedField(err) === "email") {
       Logger.warn("Signup email duplicate key (race condition)", { email });
       throw new ConflictRequestError({
-        i18nMessage: (t) => t("signup:errors.emailAlreadyExists"),
+        key: "signup:errors.emailAlreadyExists",
         code: ERROR_CODES.SIGNUP_EMAIL_EXISTS
       });
     }
@@ -104,7 +104,7 @@ export const completeSignup = async (
   if (!isValid) {
     Logger.warn("Invalid or expired signup session", { email });
     throw new BadRequestError({
-      i18nMessage: (t) => t("signup:errors.invalidSession"),
+      key: "signup:errors.invalidSession",
       code: ERROR_CODES.SIGNUP_SESSION_INVALID
     });
   }

@@ -16,7 +16,7 @@ export const getContactDetail = async (
 
   if (!doc) {
     throw new NotFoundError({
-      i18nMessage: (t) => t("contactAdmin:errors.notFound"),
+      key: "contactAdmin:errors.notFound",
       code: ERROR_CODES.CONTACT_NOT_FOUND
     });
   }

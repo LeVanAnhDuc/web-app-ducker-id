@@ -19,8 +19,8 @@ export class CooldownGuard {
       remainingSeconds: remaining
     });
     throw new BadRequestError({
-      i18nMessage: (t) =>
-        t("unlockAccount:errors.unlockCooldown", { seconds: remaining }),
+      key: "unlockAccount:errors.unlockCooldown",
+      params: { seconds: remaining },
       code: ERROR_CODES.UNLOCK_COOLDOWN
     });
   }

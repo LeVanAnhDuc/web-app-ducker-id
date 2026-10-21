@@ -33,7 +33,7 @@ const assertTargetsValid = async (
         targets.length);
   if (!valid) {
     throw new BadRequestError({
-      i18nMessage: (t) => t("category:errors.reassignInvalid"),
+      key: "category:errors.reassignInvalid",
       code: ERROR_CODES.CATEGORY_REASSIGN_INVALID
     });
   }
@@ -57,7 +57,7 @@ const assertCoversOrphans = async (
 
   if (orphanIds.size > 0 && reassignments.length === 0) {
     throw new BadRequestError({
-      i18nMessage: (t) => t("category:errors.reassignRequired"),
+      key: "category:errors.reassignRequired",
       code: ERROR_CODES.CATEGORY_REASSIGN_REQUIRED
     });
   }
@@ -67,7 +67,7 @@ const assertCoversOrphans = async (
     reassignments.every((r) => orphanIds.has(r.appId));
   if (!matches) {
     throw new ConflictRequestError({
-      i18nMessage: (t) => t("category:errors.impactChanged"),
+      key: "category:errors.impactChanged",
       code: ERROR_CODES.CATEGORY_IMPACT_CHANGED
     });
   }
@@ -85,7 +85,7 @@ export const remove = async (
       const category = await deps.categoryRepo.findById(id, session);
       if (!category) {
         throw new NotFoundError({
-          i18nMessage: (t) => t("category:errors.notFound"),
+          key: "category:errors.notFound",
           code: ERROR_CODES.CATEGORY_NOT_FOUND
         });
       }

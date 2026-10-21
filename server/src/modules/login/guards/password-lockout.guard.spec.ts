@@ -1,10 +1,8 @@
 // types
-import type { Request } from "express";
 import type { FailedAttemptsRepository } from "../repositories/failed-attempts.repository";
 // common
 import { TooManyRequestsError } from "@/exceptions";
 // others
-import { makeMockRequest } from "@test/helpers/request.helper";
 import { createFailedAttemptsRepoMock } from "@test/mocks/failed-attempts-repo.mock";
 import { PasswordLockoutGuard } from "./password-lockout.guard";
 import { ERROR_CODES } from "@/constants/error-code";
@@ -13,14 +11,10 @@ import { LOGIN_LOCKOUT } from "../constants";
 const EMAIL = "user@example.com";
 
 describe("PasswordLockoutGuard", () => {
-  let req: Request;
   let repo: jest.Mocked<FailedAttemptsRepository>;
   let guard: PasswordLockoutGuard;
-  let tSpy: jest.Mock;
 
   beforeEach(() => {
-    req = makeMockRequest();
-    tSpy = req.t as unknown as jest.Mock;
     repo = createFailedAttemptsRepoMock();
     guard = new PasswordLockoutGuard(repo);
   });
@@ -48,8 +42,10 @@ describe("PasswordLockoutGuard", () => {
     expect((error as TooManyRequestsError).code).toBe(
       ERROR_CODES.LOGIN_ACCOUNT_LOCKED
     );
-    (error as TooManyRequestsError).i18nMessage?.(req.t);
-    expect(tSpy).toHaveBeenCalledWith("login:errors.accountLocked", {
+    expect((error as TooManyRequestsError).key).toBe(
+      "login:errors.accountLocked"
+    );
+    expect((error as TooManyRequestsError).params).toEqual({
       attempts: LOGIN_LOCKOUT.MAX_ATTEMPTS,
       seconds: 1800
     });

@@ -19,7 +19,7 @@ export const getMyContactDetail = async (
     // Own vs. other-user's contact are indistinguishable to the caller —
     // both surface as 404 CONTACT_NOT_FOUND to avoid leaking existence.
     throw new NotFoundError({
-      i18nMessage: (t) => t("contactAdmin:errors.notFound"),
+      key: "contactAdmin:errors.notFound",
       code: ERROR_CODES.CONTACT_NOT_FOUND
     });
   }

@@ -40,7 +40,7 @@ export const resendOtp = async (
       maxResends: MAX_RESEND_COUNT
     });
     throw new BadRequestError({
-      i18nMessage: (t) => t("signup:errors.resendLimitExceeded"),
+      key: "signup:errors.resendLimitExceeded",
       code: ERROR_CODES.SIGNUP_RESEND_LIMIT
     });
   }

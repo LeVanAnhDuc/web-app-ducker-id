@@ -15,7 +15,7 @@ export class AccountActiveGuard {
     if (auth.isActive) return;
 
     throw new UnauthorizedError({
-      i18nMessage: (t) => t("login:errors.accountInactive"),
+      key: "login:errors.accountInactive",
       code: ERROR_CODES.LOGIN_ACCOUNT_INACTIVE
     });
   }
@@ -30,7 +30,7 @@ export class AccountActiveGuard {
 
     this.audit.recordInactiveAccount({ auth, email, method, req });
     throw new UnauthorizedError({
-      i18nMessage: (t) => t("login:errors.accountInactive"),
+      key: "login:errors.accountInactive",
       code: ERROR_CODES.LOGIN_ACCOUNT_INACTIVE
     });
   }

@@ -17,7 +17,7 @@ export const assertCategoriesExist = async (
   const found = await deps.categoryRepo.countByIds(categoryIds);
   if (found !== categoryIds.length) {
     throw new BadRequestError({
-      i18nMessage: (t) => t("webApp:validation.categoryIds.notFound"),
+      key: "webApp:validation.categoryIds.notFound",
       code: ERROR_CODES.WEB_APP_CATEGORY_NOT_FOUND
     });
   }

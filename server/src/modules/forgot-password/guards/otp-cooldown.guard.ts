@@ -19,8 +19,8 @@ export class OtpCooldownGuard {
       remaining
     });
     throw new BadRequestError({
-      i18nMessage: (t) =>
-        t("forgotPassword:errors.otpCooldown", { seconds: remaining }),
+      key: "forgotPassword:errors.otpCooldown",
+      params: { seconds: remaining },
       code: ERROR_CODES.FORGOT_PASSWORD_OTP_COOLDOWN
     });
   }

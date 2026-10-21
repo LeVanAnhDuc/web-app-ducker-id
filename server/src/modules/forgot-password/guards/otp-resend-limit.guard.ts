@@ -15,7 +15,7 @@ export class OtpResendLimitGuard {
 
     Logger.warn("Forgot password OTP resend limit exceeded", { email });
     throw new BadRequestError({
-      i18nMessage: (t) => t("forgotPassword:errors.otpResendLimitExceeded"),
+      key: "forgotPassword:errors.otpResendLimitExceeded",
       code: ERROR_CODES.FORGOT_PASSWORD_OTP_RESEND_LIMIT
     });
   }

@@ -21,7 +21,7 @@ export const updateApp = async (
   const existing = await deps.webAppRepo.findById(id);
   if (!existing) {
     throw new NotFoundError({
-      i18nMessage: (t) => t("webApp:errors.notFound"),
+      key: "webApp:errors.notFound",
       code: ERROR_CODES.WEB_APP_NOT_FOUND
     });
   }
@@ -30,7 +30,7 @@ export const updateApp = async (
     const taken = await deps.webAppRepo.existsByNameExcludingId(body.name, id);
     if (taken) {
       throw new ConflictRequestError({
-        i18nMessage: (t) => t("webApp:errors.nameExists"),
+        key: "webApp:errors.nameExists",
         code: ERROR_CODES.WEB_APP_NAME_EXISTS
       });
     }
@@ -68,7 +68,7 @@ export const updateApp = async (
   const updated = await deps.webAppRepo.updateById(id, updateInput);
   if (!updated) {
     throw new NotFoundError({
-      i18nMessage: (t) => t("webApp:errors.notFound"),
+      key: "webApp:errors.notFound",
       code: ERROR_CODES.WEB_APP_NOT_FOUND
     });
   }

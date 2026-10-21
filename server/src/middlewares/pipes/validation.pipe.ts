@@ -23,7 +23,7 @@ const validationPipe =
         }));
 
         throw new ValidationError({
-          i18nMessage: (t) => t("common:errors.validationFailed"),
+          key: "common:errors.validationFailed",
           errors
         });
       }

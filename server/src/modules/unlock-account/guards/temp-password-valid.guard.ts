@@ -27,7 +27,7 @@ export class TempPasswordValidGuard {
       email
     });
     throw new UnauthorizedError({
-      i18nMessage: (t) => t("unlockAccount:errors.invalidTempPassword"),
+      key: "unlockAccount:errors.invalidTempPassword",
       code: ERROR_CODES.UNLOCK_INVALID_TEMP_PASSWORD
     });
   }

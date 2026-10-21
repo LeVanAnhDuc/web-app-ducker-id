@@ -1,10 +1,8 @@
 // types
-import type { Request } from "express";
 import type { MagicLinkLoginRepository } from "../repositories/magic-link-login.repository";
 // common
 import { BadRequestError } from "@/exceptions";
 // others
-import { makeMockRequest } from "@test/helpers/request.helper";
 import { createMagicLinkLoginRepoMock } from "@test/mocks/magic-link-login-repo.mock";
 import { MagicLinkCooldownGuard } from "./magic-link-cooldown.guard";
 import { ERROR_CODES } from "@/constants/error-code";
@@ -12,14 +10,10 @@ import { ERROR_CODES } from "@/constants/error-code";
 const EMAIL = "user@example.com";
 
 describe("MagicLinkCooldownGuard", () => {
-  let req: Request;
-  let tSpy: jest.Mock;
   let repo: jest.Mocked<MagicLinkLoginRepository>;
   let guard: MagicLinkCooldownGuard;
 
   beforeEach(() => {
-    req = makeMockRequest();
-    tSpy = req.t as unknown as jest.Mock;
     repo = createMagicLinkLoginRepoMock();
     guard = new MagicLinkCooldownGuard(repo);
   });
@@ -39,8 +33,10 @@ describe("MagicLinkCooldownGuard", () => {
     expect((error as BadRequestError).code).toBe(
       ERROR_CODES.LOGIN_MAGIC_LINK_COOLDOWN
     );
-    (error as BadRequestError).i18nMessage?.(req.t);
-    expect(tSpy).toHaveBeenCalledWith("login:errors.magicLinkCooldown", {
+    expect((error as BadRequestError).key).toBe(
+      "login:errors.magicLinkCooldown"
+    );
+    expect((error as BadRequestError).params).toEqual({
       seconds: 77
     });
   });

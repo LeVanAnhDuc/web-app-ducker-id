@@ -26,8 +26,7 @@ export class PasswordNotChangedGuard {
         { authId: payload.authId }
       );
       throw new ForbiddenError({
-        i18nMessage: (t) =>
-          t("forgotPassword:errors.passwordChangedPleaseLogin"),
+        key: "forgotPassword:errors.passwordChangedPleaseLogin",
         code: ERROR_CODES.AUTH_PASSWORD_CHANGED
       });
     }

@@ -20,7 +20,7 @@ export class AuthExistsGuard {
     if (!result) {
       Logger.warn("Unlock verify failed - account not found", { email });
       throw new UnauthorizedError({
-        i18nMessage: (t) => t("unlockAccount:errors.invalidTempPassword"),
+        key: "unlockAccount:errors.invalidTempPassword",
         code: ERROR_CODES.UNLOCK_AUTH_NOT_FOUND
       });
     }

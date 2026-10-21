@@ -43,14 +43,14 @@ const verifyOtpOrFail = async (
 
   if (remaining > 0) {
     throw new BadRequestError({
-      i18nMessage: (t) =>
-        t("signup:errors.invalidOtpWithRemaining", { remaining }),
+      key: "signup:errors.invalidOtpWithRemaining",
+      params: { remaining },
       code: ERROR_CODES.SIGNUP_OTP_INVALID
     });
   }
 
   throw new BadRequestError({
-    i18nMessage: (t) => t("signup:errors.otpAttemptsExceeded"),
+    key: "signup:errors.otpAttemptsExceeded",
     code: ERROR_CODES.SIGNUP_OTP_LOCKED
   });
 };
@@ -72,7 +72,7 @@ export const verifyOtp = async (
       maxAttempts: MAX_FAILED_ATTEMPTS
     });
     throw new BadRequestError({
-      i18nMessage: (t) => t("signup:errors.otpAttemptsExceeded"),
+      key: "signup:errors.otpAttemptsExceeded",
       code: ERROR_CODES.SIGNUP_OTP_LOCKED
     });
   }

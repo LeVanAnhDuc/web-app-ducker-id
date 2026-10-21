@@ -42,7 +42,7 @@ export const verifyLink = async (
   if (!isValid) {
     deps.audit.recordInvalidMagicLink({ auth, email, req });
     throw new UnauthorizedError({
-      i18nMessage: (t) => t("login:errors.invalidMagicLink"),
+      key: "login:errors.invalidMagicLink",
       code: ERROR_CODES.LOGIN_MAGIC_LINK_INVALID
     });
   }

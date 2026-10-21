@@ -27,17 +27,17 @@ const handleInvalidOtp = async (
 
   if (remaining <= 0) {
     throw new BadRequestError({
-      i18nMessage: (t) =>
-        t("forgotPassword:errors.otpLocked", {
-          minutes: FORGOT_PASSWORD_OTP_CONFIG.LOCKOUT_DURATION_MINUTES
-        }),
+      key: "forgotPassword:errors.otpLocked",
+      params: {
+        minutes: FORGOT_PASSWORD_OTP_CONFIG.LOCKOUT_DURATION_MINUTES
+      },
       code: ERROR_CODES.FORGOT_PASSWORD_OTP_LOCKED
     });
   }
 
   throw new UnauthorizedError({
-    i18nMessage: (t) =>
-      t("forgotPassword:errors.invalidOtpWithRemaining", { remaining }),
+    key: "forgotPassword:errors.invalidOtpWithRemaining",
+    params: { remaining },
     code: ERROR_CODES.FORGOT_PASSWORD_OTP_INVALID
   });
 };

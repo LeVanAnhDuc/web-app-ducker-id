@@ -21,8 +21,8 @@ export class MagicLinkCooldownGuard {
       remaining
     });
     throw new BadRequestError({
-      i18nMessage: (t) =>
-        t("forgotPassword:errors.magicLinkCooldown", { seconds: remaining }),
+      key: "forgotPassword:errors.magicLinkCooldown",
+      params: { seconds: remaining },
       code: ERROR_CODES.FORGOT_PASSWORD_MAGIC_LINK_COOLDOWN
     });
   }

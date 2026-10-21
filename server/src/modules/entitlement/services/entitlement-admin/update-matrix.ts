@@ -91,7 +91,7 @@ export const updateMatrix = async (
   const appById = new Map(apps.map((app) => [app._id.toString(), app]));
   if (appById.size !== appIds.length) {
     throw new NotFoundError({
-      i18nMessage: (t) => t("entitlement:errors.appNotFound"),
+      key: "entitlement:errors.appNotFound",
       code: ERROR_CODES.ENTITLEMENT_APP_NOT_FOUND
     });
   }

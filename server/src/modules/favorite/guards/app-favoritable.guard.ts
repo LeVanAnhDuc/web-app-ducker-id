@@ -22,7 +22,7 @@ export class AppFavoritableGuard {
 
     if (!isAppVisibleTo(app, scope)) {
       throw new NotFoundError({
-        i18nMessage: (t) => t("favorite:errors.appNotFound"),
+        key: "favorite:errors.appNotFound",
         code: ERROR_CODES.FAVORITE_APP_NOT_FOUND
       });
     }
