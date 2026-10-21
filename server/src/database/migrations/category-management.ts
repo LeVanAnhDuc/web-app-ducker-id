@@ -1,5 +1,5 @@
 // database
-import instanceMongoDB from "@/database/mongodb";
+import { connectMongo, disconnectMongo } from "@/database/mongodb";
 // models
 import WebAppCategoryModel from "@/models/web-app-category";
 import WebAppModel from "@/models/web-app";
@@ -30,7 +30,7 @@ import {
 const migrate = async (): Promise<void> => {
   try {
     Logger.info("Connecting to MongoDB...");
-    await instanceMongoDB.connect();
+    await connectMongo();
 
     const categories = WebAppCategoryModel.collection;
     const legacy = (await categories
@@ -89,11 +89,11 @@ const migrate = async (): Promise<void> => {
     });
   } catch (error) {
     Logger.error("Migration category-management failed", error);
-    await instanceMongoDB.disconnect();
+    await disconnectMongo();
     process.exit(1);
   }
 
-  await instanceMongoDB.disconnect();
+  await disconnectMongo();
   process.exit(0);
 };
 

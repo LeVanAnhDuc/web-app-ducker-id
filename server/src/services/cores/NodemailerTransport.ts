@@ -56,8 +56,8 @@ export class NodemailerTransport extends EmailTransport {
       this.transporter = nodemailer.createTransport({
         service: EMAIL_SERVICE_PROVIDER,
         auth: {
-          user: config.USERNAME_EMAIL,
-          pass: config.PASSWORD_EMAIL
+          user: config.email.username,
+          pass: config.email.password
         },
         pool: true,
         maxConnections: EMAIL_POOL.MAX_CONNECTIONS,
@@ -83,7 +83,7 @@ export class NodemailerTransport extends EmailTransport {
     }
 
     await this.transporter.sendMail({
-      from: config.USERNAME_EMAIL,
+      from: config.email.username,
       to: options.to,
       subject: options.subject,
       html: options.htmlContent

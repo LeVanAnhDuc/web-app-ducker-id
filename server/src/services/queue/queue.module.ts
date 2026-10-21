@@ -20,7 +20,7 @@ const QUEUE_NAMES = {
   NOTIFICATION: "notification"
 } as const;
 
-const BULL_BOARD_PATH = "/admin/queues";
+export const BULL_BOARD_PATH = "/admin/queues";
 
 interface QueueModuleResult {
   emailQueue: QueueService<EmailJobData> | null;

@@ -1,8 +1,29 @@
-export { default } from "./mongodb.database";
-export { default as instanceMongoDB } from "./mongodb.database";
+// libs
+import mongoose from "mongoose";
+// others
+import config from "@/constants/env";
+import { Logger } from "@/libs/logger";
 
-export { buildMongoConfig, MAX_RECONNECT_ATTEMPTS } from "./mongodb.config";
+export const connectMongo = async (): Promise<void> => {
+  mongoose.connection.on("disconnected", () =>
+    Logger.warn("MongoDB disconnected")
+  );
+  mongoose.connection.on("reconnected", () =>
+    Logger.info("MongoDB reconnected")
+  );
+  mongoose.connection.on("error", (error) =>
+    Logger.error("MongoDB error", error)
+  );
 
-export { setupEventHandlers, updateConnectionState } from "./mongodb.events";
+  await mongoose.connect(config.db.url, {
+    dbName: config.db.name,
+    maxPoolSize: config.db.pool.max,
+    minPoolSize: config.db.pool.min,
+    serverSelectionTimeoutMS: config.db.timeout.serverSelectionMs,
+    socketTimeoutMS: config.db.timeout.socketMs
+  });
+};
 
-export { isHealthy, getStats } from "./mongodb.health";
+export const disconnectMongo = () => mongoose.disconnect();
+
+export const isMongoHealthy = () => mongoose.connection.readyState === 1;

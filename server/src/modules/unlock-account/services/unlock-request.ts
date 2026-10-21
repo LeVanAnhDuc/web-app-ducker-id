@@ -74,7 +74,7 @@ export const unlockRequest = async (
     email,
     data: {
       tempPassword,
-      loginUrl: ENV.CLIENT_URL || "http://localhost:3000/login"
+      loginUrl: ENV.app.clientUrl || "http://localhost:3000/login"
     },
     locale: language as I18n.Locale
   });

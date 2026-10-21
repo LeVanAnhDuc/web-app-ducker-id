@@ -28,8 +28,8 @@ export class RateLimiterMiddleware {
   private readonly redisClient: RedisClient;
 
   // All limiters are initialized once in the constructor after Redis connects.
-  // loadRateLimiters() runs before loadModules(app), so by the time controllers
-  // access these properties during initRoutes(), they are guaranteed to be ready.
+  // createModules() builds this before any module factory runs, so by the time
+  // controllers access these properties during initRoutes(), they are ready.
   public readonly loginByIp: RateLimitRequestHandler;
   public readonly signupOtpByIp: RateLimitRequestHandler;
   public readonly signupOtpByEmail: RateLimitRequestHandler;

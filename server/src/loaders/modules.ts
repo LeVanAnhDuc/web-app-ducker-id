@@ -1,12 +1,8 @@
-// libs
-import { Router } from "express";
 // types
-import type { Express } from "express";
+import type { Router } from "express";
 import type { RedisClientType } from "redis";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
-// database
-import { instanceRedis } from "@/database/redis";
 // modules
 import { createAuthenticationModule } from "@/modules/authentication/authentication.module";
 import { createLoginHistoryModule } from "@/modules/login-history/login-history.module";
@@ -29,87 +25,27 @@ import { createSessionModule } from "@/modules/session/session.module";
 import { createOAuthModule } from "@/modules/oauth/oauth.module";
 // others
 import { RateLimiterMiddleware } from "@/middlewares";
-import { Logger } from "@/libs/logger";
 
-interface ModuleRoutes {
-  signup: Router;
-  login: Router;
-  logout: Router;
-  token: Router;
-  unlockAccount: Router;
-  forgotPassword: Router;
-  changePassword: Router;
-  user: Router;
-  userAdmin: Router;
-  loginHistoryUser: Router;
-  loginHistoryAdmin: Router;
-  notification: Router;
-  favorite: Router;
-  recentApp: Router;
-  contact: Router;
-  contactAdmin: Router;
-  myContacts: Router;
-  webAppAdmin: Router;
-  webAppUser: Router;
-  categoryAdmin: Router;
-  categoryUser: Router;
-  entitlementAdmin: Router;
+export interface ModuleDeps {
+  redis: RedisClientType;
+  emailDispatcher: EmailDispatcher;
+  notificationDispatcher: NotificationDispatcher;
+}
+
+export interface ModuleRouters {
+  oauthRouter: Router;
+  apiRouters: Router[];
 }
 
 /**
- * Router OAuth mount THẲNG lên app, không qua `/api/v1`.
- *
- * OIDC Discovery bắt buộc `/.well-known/openid-configuration` nằm ở gốc
- * origin, và `/oauth/*` là đường dẫn công khai mà app vệ tinh cấu hình cứng —
- * đổi prefix là phá hợp đồng với mọi client đã đăng ký.
+ * Calls every module factory in dependency order — a module is built only
+ * after the services it takes exist — and returns their routers unmounted.
  */
-const mountOAuthRoutes = (app: Express, oauthRouter: Router): void => {
-  app.use(oauthRouter);
-};
-
-const mountRoutes = (app: Express, routes: ModuleRoutes): void => {
-  const v1Router = Router();
-
-  // Auth
-  v1Router.use(routes.signup);
-  v1Router.use(routes.login);
-  v1Router.use(routes.logout);
-  v1Router.use(routes.token);
-  v1Router.use(routes.unlockAccount);
-  v1Router.use(routes.forgotPassword);
-  v1Router.use(routes.changePassword);
-
-  // User
-  v1Router.use(routes.user);
-  v1Router.use(routes.userAdmin);
-  v1Router.use(routes.loginHistoryUser);
-  v1Router.use(routes.loginHistoryAdmin);
-  v1Router.use(routes.notification);
-  v1Router.use(routes.favorite);
-  v1Router.use(routes.recentApp);
-
-  // Contact
-  v1Router.use(routes.contact);
-  v1Router.use(routes.contactAdmin);
-  v1Router.use(routes.myContacts);
-
-  // App Registry
-  v1Router.use(routes.webAppAdmin);
-  v1Router.use(routes.webAppUser);
-  v1Router.use(routes.categoryAdmin);
-  v1Router.use(routes.categoryUser);
-  v1Router.use(routes.entitlementAdmin);
-
-  app.use("/api/v1", v1Router);
-};
-
-export const loadModules = (
-  app: Express,
-  emailDispatcher: EmailDispatcher,
-  notificationDispatcher: NotificationDispatcher
-): void => {
-  const redisClient = instanceRedis.getClient() as RedisClientType;
-
+export const createModules = ({
+  redis: redisClient,
+  emailDispatcher,
+  notificationDispatcher
+}: ModuleDeps): ModuleRouters => {
   // --- Shared infrastructure ---
   const { authService } = createAuthenticationModule();
   const rateLimiter = new RateLimiterMiddleware(redisClient);
@@ -220,33 +156,35 @@ export const loadModules = (
     rateLimiter
   );
 
-  // --- Route mounting ---
-  mountOAuthRoutes(app, oauthRouter);
-
-  mountRoutes(app, {
-    signup: signupRouter,
-    login: loginRouter,
-    logout: logoutRouter,
-    token: tokenRouter,
-    unlockAccount: unlockAccountRouter,
-    forgotPassword: forgotPasswordRouter,
-    changePassword: changePasswordRouter,
-    user: userRouter,
-    userAdmin: userAdminRouter,
-    loginHistoryUser: loginHistoryUserRouter,
-    loginHistoryAdmin: loginHistoryAdminRouter,
-    notification: notificationUserRouter,
-    favorite: favoriteUserRouter,
-    recentApp: recentAppUserRouter,
-    contact: contactAdminRouter,
-    contactAdmin: adminContactsRouter,
-    myContacts: myContactsRouter,
-    webAppAdmin: webAppAdminRouter,
-    webAppUser: webAppUserRouter,
-    categoryAdmin: categoryAdminRouter,
-    categoryUser: categoryUserRouter,
-    entitlementAdmin: entitlementAdminRouter
-  });
-
-  Logger.info("Modules loaded and routes mounted successfully");
+  return {
+    oauthRouter,
+    apiRouters: [
+      // Auth
+      signupRouter,
+      loginRouter,
+      logoutRouter,
+      tokenRouter,
+      unlockAccountRouter,
+      forgotPasswordRouter,
+      changePasswordRouter,
+      // User
+      userRouter,
+      userAdminRouter,
+      loginHistoryUserRouter,
+      loginHistoryAdminRouter,
+      notificationUserRouter,
+      favoriteUserRouter,
+      recentAppUserRouter,
+      // Contact
+      contactAdminRouter,
+      adminContactsRouter,
+      myContactsRouter,
+      // App Registry
+      webAppAdminRouter,
+      webAppUserRouter,
+      categoryAdminRouter,
+      categoryUserRouter,
+      entitlementAdminRouter
+    ]
+  };
 };

@@ -24,13 +24,22 @@ jest.mock("@/libs/logger", () => ({
 jest.mock("@/constants/env", () => ({
   __esModule: true,
   default: {
-    NODE_ENV: "test",
-    CLIENT_URL: "http://localhost:3000",
-    BASE_URL: "http://localhost:3000",
-    LOG_LEVEL: "error",
-    CORS_ORIGINS: ["http://localhost:3000"],
-    JWT_ACCESS_SECRET: "test-access-secret",
-    JWT_REFRESH_SECRET: "test-refresh-secret",
-    JWT_ID_SECRET: "test-id-secret"
+    nodeEnv: "test",
+    app: {
+      clientUrl: "http://localhost:3000",
+      logLevel: "error",
+      corsOrigins: ["http://localhost:3000"]
+    },
+    jwt: {
+      accessSecret: "test-access-secret",
+      refreshSecret: "test-refresh-secret",
+      idSecret: "test-id-secret"
+    },
+    // Every branch exists so a module reading a key the mock leaves out gets
+    // `undefined`, as it would with a flat config, instead of a TypeError.
+    db: { pool: {}, timeout: {} },
+    redis: { timeout: {}, reconnect: {} },
+    oidc: {},
+    email: {}
   }
 }));

@@ -17,7 +17,7 @@ export const SESSION_CONFIG = {
   MAX_CLIENTS: 50
 } as const;
 
-const allowCrossOrigin = ENV.ALLOW_CROSS_ORIGIN_COOKIES === "true";
+const allowCrossOrigin = ENV.app.allowCrossOriginCookies === "true";
 
 /**
  * SameSite=Lax là đủ cho SSO redirect: cookie Lax VẪN được gửi kèm trong
@@ -27,7 +27,7 @@ const allowCrossOrigin = ENV.ALLOW_CROSS_ORIGIN_COOKIES === "true";
  */
 export const SESSION_COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,
-  secure: allowCrossOrigin || ENV.NODE_ENV === "production",
+  secure: allowCrossOrigin || ENV.nodeEnv === "production",
   sameSite: allowCrossOrigin ? "none" : "lax",
   maxAge: SESSION_CONFIG.TTL_SECONDS * 1000,
   path: "/"

@@ -48,7 +48,7 @@ import {
 import ENV from "@/constants/env";
 import { commonSchemas, commonResponses } from "./common.schemas";
 
-const PORT = ENV.APP_PORT || 3000;
+const PORT = ENV.app.port || 3000;
 
 const allSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   ...commonSchemas,

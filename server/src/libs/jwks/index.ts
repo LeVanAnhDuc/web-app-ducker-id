@@ -51,17 +51,17 @@ const deriveKeyId = (publicKey: crypto.KeyObject): string => {
 };
 
 const loadFromEnv = (): KeyMaterial | null => {
-  const { OAUTH_PRIVATE_KEY, OAUTH_PUBLIC_KEY, OAUTH_KEY_ID } = ENV;
+  const { privateKey: privatePem, publicKey: publicPem, keyId } = ENV.oidc;
 
-  if (!OAUTH_PRIVATE_KEY || !OAUTH_PUBLIC_KEY) return null;
+  if (!privatePem || !publicPem) return null;
 
-  const privateKey = crypto.createPrivateKey(normalizePem(OAUTH_PRIVATE_KEY));
-  const publicKey = crypto.createPublicKey(normalizePem(OAUTH_PUBLIC_KEY));
+  const privateKey = crypto.createPrivateKey(normalizePem(privatePem));
+  const publicKey = crypto.createPublicKey(normalizePem(publicPem));
 
   return {
     privateKey,
     publicKey,
-    keyId: OAUTH_KEY_ID || deriveKeyId(publicKey)
+    keyId: keyId || deriveKeyId(publicKey)
   };
 };
 
@@ -82,7 +82,7 @@ const getKeyMaterial = (): KeyMaterial => {
 
   const fromEnv = loadFromEnv();
 
-  if (!fromEnv && ENV.NODE_ENV === "production") {
+  if (!fromEnv && ENV.nodeEnv === "production") {
     throw new Error(
       "OAUTH_PRIVATE_KEY và OAUTH_PUBLIC_KEY là bắt buộc ở production — không thể dùng keypair tạm."
     );

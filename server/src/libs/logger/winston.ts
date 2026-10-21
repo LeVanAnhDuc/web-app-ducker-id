@@ -61,14 +61,14 @@ const combinedFileRotateTransport = new DailyRotateFile({
 });
 
 const logger = createLogger({
-  level: ENV.LOG_LEVEL,
+  level: ENV.app.logLevel,
   levels: LEVELS,
   defaultMeta: { service: "web-app-ducker-id-server" },
   exitOnError: false,
   transports: [errorFileRotateTransport, combinedFileRotateTransport]
 });
 
-if (ENV.NODE_ENV !== "production") {
+if (ENV.nodeEnv !== "production") {
   logger.add(new transports.Console({ format: consoleFormat }));
 }
 

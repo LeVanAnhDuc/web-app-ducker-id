@@ -46,7 +46,7 @@ export const sendLink = async (
     context: { email }
   });
 
-  const magicLinkUrl = `${ENV.CLIENT_URL}/login/verify-magic-link?token=${token}&email=${encodeURIComponent(email)}`;
+  const magicLinkUrl = `${ENV.app.clientUrl}/login/verify-magic-link?token=${token}&email=${encodeURIComponent(email)}`;
   deps.emailDispatcher.send(EmailType.MAGIC_LINK, {
     email,
     data: { magicLinkUrl, expiryMinutes: MAGIC_LINK_CONFIG.EXPIRY_MINUTES },

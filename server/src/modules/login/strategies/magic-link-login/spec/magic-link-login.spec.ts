@@ -1,7 +1,7 @@
 jest.mock("@/utils/resilience/retry");
 jest.mock("@/constants/env", () => ({
   __esModule: true,
-  default: { CLIENT_URL: "https://app.test" }
+  default: { app: { clientUrl: "https://app.test" } }
 }));
 // types
 import type { Request } from "express";

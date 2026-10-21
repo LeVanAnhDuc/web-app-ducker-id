@@ -13,7 +13,7 @@ import { asyncHandler } from "@/utils/async-handler";
  *
  * OIDC Discovery bắt buộc `/.well-known/openid-configuration` nằm ở gốc
  * origin, và đường dẫn `/oauth/*` là một phần hợp đồng công khai mà app vệ
- * tinh cấu hình cứng. Xem `mountOAuthRoutes` trong modules.loader.ts.
+ * tinh cấu hình cứng. Xem `mountHttp` trong loaders/http.ts.
  */
 export const createOAuthRoutes = (
   controller: OAuthController,

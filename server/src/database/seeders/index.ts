@@ -1,5 +1,5 @@
 // database
-import instanceMongoDB from "@/database/mongodb";
+import { connectMongo, disconnectMongo } from "@/database/mongodb";
 // others
 import { Logger } from "@/libs/logger";
 import { seedUsers, clearUsers } from "./user.seeder";
@@ -11,7 +11,7 @@ import { seedEntitlements, clearEntitlements } from "./entitlement.seeder";
 const runSeeders = async (): Promise<void> => {
   try {
     Logger.info("Connecting to MongoDB...");
-    await instanceMongoDB.connect();
+    await connectMongo();
 
     const args = process.argv.slice(2);
     const shouldClear = args.includes("--clear");
@@ -40,7 +40,7 @@ const runSeeders = async (): Promise<void> => {
     Logger.error("Seeder failed", error);
     process.exit(1);
   } finally {
-    await instanceMongoDB.disconnect();
+    await disconnectMongo();
     process.exit(0);
   }
 };
