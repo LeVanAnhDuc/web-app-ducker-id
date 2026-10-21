@@ -3,6 +3,8 @@ import { Router } from "express";
 // types
 import type { RateLimiterMiddleware } from "@/middlewares";
 import type { ForgotPasswordController } from "./forgot-password.controller";
+// common
+import { handle } from "@/common/responses";
 // validators
 import {
   fpOtpSendSchema,
@@ -13,7 +15,6 @@ import {
 } from "@/validators/schemas/forgot-password";
 // others
 import { bodyPipe } from "@/middlewares";
-import { asyncHandler } from "@/utils/async-handler";
 
 export const createForgotPasswordRoutes = (
   controller: ForgotPasswordController,
@@ -27,14 +28,16 @@ export const createForgotPasswordRoutes = (
     rl.forgotPasswordOtpByIp,
     rl.forgotPasswordOtpByEmail,
     bodyPipe(fpOtpSendSchema),
-    asyncHandler(controller.sendOtp)
+    handle(controller.sendOtp, { message: "forgotPassword:success.otpSent" })
   );
 
   forgotPassword.post(
     "/otp/verify",
     rl.forgotPasswordOtpByIp,
     bodyPipe(fpOtpVerifySchema),
-    asyncHandler(controller.verifyOtp)
+    handle(controller.verifyOtp, {
+      message: "forgotPassword:success.otpVerified"
+    })
   );
 
   forgotPassword.post(
@@ -42,21 +45,27 @@ export const createForgotPasswordRoutes = (
     rl.forgotPasswordMagicLinkByIp,
     rl.forgotPasswordMagicLinkByEmail,
     bodyPipe(fpMagicLinkSendSchema),
-    asyncHandler(controller.sendMagicLink)
+    handle(controller.sendMagicLink, {
+      message: "forgotPassword:success.magicLinkSent"
+    })
   );
 
   forgotPassword.post(
     "/magic-link/verify",
     rl.forgotPasswordMagicLinkByIp,
     bodyPipe(fpMagicLinkVerifySchema),
-    asyncHandler(controller.verifyMagicLink)
+    handle(controller.verifyMagicLink, {
+      message: "forgotPassword:success.magicLinkVerified"
+    })
   );
 
   forgotPassword.post(
     "/reset",
     rl.forgotPasswordResetByIp,
     bodyPipe(fpResetPasswordSchema),
-    asyncHandler(controller.resetPassword)
+    handle(controller.resetPassword, {
+      message: "forgotPassword:success.passwordReset"
+    })
   );
 
   router.use("/auth/forgot-password", forgotPassword);

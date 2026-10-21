@@ -9,8 +9,6 @@ import type {
 } from "./types";
 import type { LoginService } from "./services/login";
 import type { SessionService } from "@/modules/session/services";
-// common
-import { OkSuccess } from "@/common/responses";
 // modules
 import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/modules/token/constants";
 import { REFRESH_TOKEN } from "@/modules/token/constants";
@@ -43,7 +41,7 @@ export class LoginController {
     });
   };
 
-  login = async (req: PasswordLoginRequest, res: Response): Promise<void> => {
+  login = async (req: PasswordLoginRequest, res: Response) => {
     const data = await this.service.passwordLogin(req.body, req);
     const { refreshToken, ...responseData } = data;
 
@@ -53,18 +51,12 @@ export class LoginController {
 
     await this.startSession(req, res);
 
-    new OkSuccess({
-      data: responseData,
-      message: "login:success.loginSuccessful"
-    }).send(req, res);
+    return responseData;
   };
 
-  sendOtp = async (req: OtpSendRequest, res: Response): Promise<void> => {
-    const data = await this.service.sendOtp(req.body, req);
-    new OkSuccess({ data, message: "login:success.otpSent" }).send(req, res);
-  };
+  sendOtp = async (req: OtpSendRequest) => this.service.sendOtp(req.body, req);
 
-  verifyOtp = async (req: OtpVerifyRequest, res: Response): Promise<void> => {
+  verifyOtp = async (req: OtpVerifyRequest, res: Response) => {
     const data = await this.service.verifyOtp(req.body, req);
     const { refreshToken, ...responseData } = data;
 
@@ -74,27 +66,13 @@ export class LoginController {
 
     await this.startSession(req, res);
 
-    new OkSuccess({
-      data: responseData,
-      message: "login:success.loginSuccessful"
-    }).send(req, res);
+    return responseData;
   };
 
-  sendMagicLink = async (
-    req: MagicLinkSendRequest,
-    res: Response
-  ): Promise<void> => {
-    const data = await this.service.sendMagicLink(req.body, req);
-    new OkSuccess({ data, message: "login:success.magicLinkSent" }).send(
-      req,
-      res
-    );
-  };
+  sendMagicLink = async (req: MagicLinkSendRequest) =>
+    this.service.sendMagicLink(req.body, req);
 
-  verifyMagicLink = async (
-    req: MagicLinkVerifyRequest,
-    res: Response
-  ): Promise<void> => {
+  verifyMagicLink = async (req: MagicLinkVerifyRequest, res: Response) => {
     const data = await this.service.verifyMagicLink(req.body, req);
     const { refreshToken, ...responseData } = data;
 
@@ -104,9 +82,6 @@ export class LoginController {
 
     await this.startSession(req, res);
 
-    new OkSuccess({
-      data: responseData,
-      message: "login:success.loginSuccessful"
-    }).send(req, res);
+    return responseData;
   };
 }

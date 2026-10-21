@@ -1,59 +1,100 @@
 // types
-import type { Response } from "express";
+import type { Request, Response } from "express";
+// common
+import { STATUS_CODES } from "@/common/http";
+import { NotFoundError } from "@/exceptions";
 // others
-import { CreatedSuccess, OkSuccess } from "./index";
+import { handle, sendSuccess } from "./index";
 
-const respond = (
-  success: OkSuccess<unknown> | CreatedSuccess<unknown>,
-  t?: (key: string) => string
-) => {
+const createRes = () => {
   const json = jest.fn();
-  const res = { status: jest.fn().mockReturnValue({ json }) };
-  success.send(
-    { originalUrl: "/api/v1/admin/users", t } as never,
-    res as unknown as Response
-  );
-  return { status: res.status.mock.calls[0][0], body: json.mock.calls[0][0] };
+  const end = jest.fn();
+  const status = jest.fn().mockReturnValue({ json, end });
+  return { res: { status } as unknown as Response, status, json, end };
 };
 
-describe("SuccessResponse.send", () => {
-  it("translates the message key for the request", () => {
+const createReq = (t?: (key: string) => string) =>
+  ({ originalUrl: "/api/v1/admin/users", t }) as unknown as Request;
+
+describe("handle", () => {
+  it("answers 200 by default with the handler's data and the translated message", async () => {
     const t = jest.fn((key: string) => `translated ${key}`);
-    const { status, body } = respond(
-      new OkSuccess({ data: [1], message: "user:success.getAdminUsers" }),
-      t
-    );
+    const { res, status, json } = createRes();
+
+    await handle(async () => [1], {
+      message: "user:success.getAdminUsers"
+    })(createReq(t), res, jest.fn());
 
     expect(t).toHaveBeenCalledWith("user:success.getAdminUsers");
-    expect(status).toBe(200);
-    expect(body).toMatchObject({
+    expect(status).toHaveBeenCalledWith(STATUS_CODES.OK);
+    expect(json.mock.calls[0][0]).toMatchObject({
       path: "/api/v1/admin/users",
       message: "translated user:success.getAdminUsers",
       data: [1]
     });
   });
 
-  it("translates a created response too", () => {
-    const { status, body } = respond(
-      new CreatedSuccess({ message: "favorite:success.add" }),
-      (key) => `T:${key}`
+  it("uses the status the route declares", async () => {
+    const { res, status, json } = createRes();
+
+    await handle(async () => ({ id: "a" }), {
+      status: STATUS_CODES.CREATED,
+      message: "favorite:success.add"
+    })(
+      createReq((key) => `T:${key}`),
+      res,
+      jest.fn()
     );
 
-    expect(status).toBe(201);
-    expect(body.message).toBe("T:favorite:success.add");
+    expect(status).toHaveBeenCalledWith(STATUS_CODES.CREATED);
+    expect(json.mock.calls[0][0].message).toBe("T:favorite:success.add");
   });
 
-  it("leaves the message alone when the request has no translator", () => {
-    const { body } = respond(new OkSuccess({ message: "MongoDB is healthy" }));
+  it("ends a 204 without a body", async () => {
+    const { res, status, json, end } = createRes();
 
-    expect(body.message).toBe("MongoDB is healthy");
+    await handle(async () => undefined, {
+      status: STATUS_CODES.NO_CONTENT
+    })(createReq(), res, jest.fn());
+
+    expect(status).toHaveBeenCalledWith(STATUS_CODES.NO_CONTENT);
+    expect(end).toHaveBeenCalled();
+    expect(json).not.toHaveBeenCalled();
   });
 
-  it("does not translate an empty message", () => {
+  it("sends an empty message when the route declares none", async () => {
     const t = jest.fn();
-    const { body } = respond(new OkSuccess({ data: 1 }), t);
+    const { res, json } = createRes();
+
+    await handle(async () => 1)(createReq(t), res, jest.fn());
 
     expect(t).not.toHaveBeenCalled();
-    expect(body.message).toBe("");
+    expect(json.mock.calls[0][0].message).toBe("");
+  });
+
+  it("passes a thrown error to next instead of answering", async () => {
+    const error = new NotFoundError();
+    const next = jest.fn();
+    const { res, status } = createRes();
+
+    await handle(async () => {
+      throw error;
+    })(createReq(), res, next);
+
+    expect(next).toHaveBeenCalledWith(error);
+    expect(status).not.toHaveBeenCalled();
+  });
+});
+
+describe("sendSuccess", () => {
+  it("sends the message as given, untranslated", () => {
+    const { res, json } = createRes();
+
+    sendSuccess(createReq(), res, {
+      status: STATUS_CODES.OK,
+      message: "MongoDB is healthy"
+    });
+
+    expect(json.mock.calls[0][0].message).toBe("MongoDB is healthy");
   });
 });

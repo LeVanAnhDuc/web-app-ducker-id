@@ -2,6 +2,9 @@
 import { Router } from "express";
 // types
 import type { FavoriteController } from "./favorite.controller";
+// common
+import { STATUS_CODES } from "@/common/http";
+import { handle } from "@/common/responses";
 // validators
 import {
   favoriteAppIdParamSchema,
@@ -9,7 +12,6 @@ import {
 } from "@/validators/schemas/favorite";
 // others
 import { authGuard, paramsPipe, queryPipe } from "@/middlewares";
-import { asyncHandler } from "@/utils/async-handler";
 
 export const createFavoriteUserRoutes = (
   controller: FavoriteController
@@ -22,17 +24,20 @@ export const createFavoriteUserRoutes = (
   favorites.get(
     "/",
     queryPipe(listFavoritesQuerySchema),
-    asyncHandler(controller.list)
+    handle(controller.list, { message: "favorite:success.list" })
   );
   favorites.post(
     "/:appId",
     paramsPipe(favoriteAppIdParamSchema),
-    asyncHandler(controller.add)
+    handle(controller.add, {
+      status: STATUS_CODES.CREATED,
+      message: "favorite:success.add"
+    })
   );
   favorites.delete(
     "/:appId",
     paramsPipe(favoriteAppIdParamSchema),
-    asyncHandler(controller.remove)
+    handle(controller.remove, { status: STATUS_CODES.NO_CONTENT })
   );
 
   router.use("/users/me/favorites", favorites);

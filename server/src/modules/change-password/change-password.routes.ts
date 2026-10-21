@@ -3,12 +3,13 @@ import { Router } from "express";
 // types
 import type { RateLimiterMiddleware } from "@/middlewares";
 import type { ChangePasswordController } from "./change-password.controller";
+// common
+import { handle } from "@/common/responses";
 // validators
 import { changePasswordSchema } from "@/validators/schemas/change-password";
 // middlewares
 import { passwordChangeAuthGuard, bodyPipe } from "@/middlewares";
 // others
-import { asyncHandler } from "@/utils/async-handler";
 
 export const createChangePasswordRoutes = (
   controller: ChangePasswordController,
@@ -22,7 +23,9 @@ export const createChangePasswordRoutes = (
     passwordChangeAuthGuard,
     rl.changePasswordByIpAndUser,
     bodyPipe(changePasswordSchema),
-    asyncHandler(controller.changePassword)
+    handle(controller.changePassword, {
+      message: "changePassword:success.passwordChanged"
+    })
   );
 
   return router;

@@ -2,6 +2,8 @@
 import { Router } from "express";
 // types
 import type { NotificationController } from "./notification.controller";
+// common
+import { handle } from "@/common/responses";
 // validators
 import {
   notificationListQuerySchema,
@@ -9,7 +11,6 @@ import {
 } from "@/validators/schemas/notification";
 // others
 import { authGuard, queryPipe, paramsPipe } from "@/middlewares";
-import { asyncHandler } from "@/utils/async-handler";
 
 export const createNotificationUserRoutes = (
   controller: NotificationController
@@ -19,17 +20,27 @@ export const createNotificationUserRoutes = (
 
   notifications.use(authGuard);
 
-  notifications.get("/unread-count", asyncHandler(controller.unreadCount));
-  notifications.patch("/read-all", asyncHandler(controller.markAllRead));
+  notifications.get(
+    "/unread-count",
+    handle(controller.unreadCount, {
+      message: "notification:success.unreadCount"
+    })
+  );
+  notifications.patch(
+    "/read-all",
+    handle(controller.markAllRead, {
+      message: "notification:success.markAllRead"
+    })
+  );
   notifications.get(
     "/",
     queryPipe(notificationListQuerySchema),
-    asyncHandler(controller.list)
+    handle(controller.list, { message: "notification:success.list" })
   );
   notifications.patch(
     "/:id/read",
     paramsPipe(notificationIdParamSchema),
-    asyncHandler(controller.markRead)
+    handle(controller.markRead, { message: "notification:success.markRead" })
   );
 
   router.use("/notifications", notifications);

@@ -2,7 +2,7 @@ import { test, expect } from "@/fixtures";
 import type { ErrorBody } from "@/api/response";
 import { serverLiteral, serverMessage } from "@/data/copy";
 
-// /health/{all,mongodb,redis} — server/src/loaders/health.loader.ts. Mounted
+// /health/{all,mongodb,redis} — server/src/loaders/health.ts. Mounted
 // on the API origin only (the client does not proxy it): every call goes
 // through the `ops` fixture.
 

@@ -8,12 +8,6 @@ import type {
   MoveCategoryRequest,
   UpdateCategoryRequest
 } from "./types";
-// common
-import {
-  CreatedSuccess,
-  NoContentSuccess,
-  OkSuccess
-} from "@/common/responses";
 
 /**
  * Short enough that a rename or delete reaches the /apps filter quickly, long
@@ -24,48 +18,26 @@ const PUBLIC_CACHE_CONTROL = "public, max-age=60";
 export class CategoryController {
   constructor(private readonly service: CategoryService) {}
 
-  list = async (req: Request, res: Response): Promise<void> => {
-    const data = await this.service.list();
-    new OkSuccess({ data, message: "category:success.list" }).send(req, res);
-  };
+  list = async () => this.service.list();
 
-  listPublic = async (req: Request, res: Response): Promise<void> => {
+  listPublic = async (_req: Request, res: Response) => {
     const data = await this.service.listPublic();
     res.set("Cache-Control", PUBLIC_CACHE_CONTROL);
-    new OkSuccess({ data, message: "category:success.list" }).send(req, res);
+    return data;
   };
 
-  create = async (req: CreateCategoryRequest, res: Response): Promise<void> => {
-    const data = await this.service.create(req.body);
-    new CreatedSuccess({ data, message: "category:success.create" }).send(
-      req,
-      res
-    );
-  };
+  create = async (req: CreateCategoryRequest) => this.service.create(req.body);
 
-  update = async (req: UpdateCategoryRequest, res: Response): Promise<void> => {
-    const data = await this.service.update(req.params.id, req.body);
-    new OkSuccess({ data, message: "category:success.update" }).send(req, res);
-  };
+  update = async (req: UpdateCategoryRequest) =>
+    this.service.update(req.params.id, req.body);
 
-  move = async (req: MoveCategoryRequest, res: Response): Promise<void> => {
-    const data = await this.service.move(req.params.id, req.body.direction);
-    new OkSuccess({ data, message: "category:success.move" }).send(req, res);
-  };
+  move = async (req: MoveCategoryRequest) =>
+    this.service.move(req.params.id, req.body.direction);
 
-  deleteImpact = async (
-    req: CategoryIdRequest,
-    res: Response
-  ): Promise<void> => {
-    const data = await this.service.deleteImpact(req.params.id);
-    new OkSuccess({ data, message: "category:success.deleteImpact" }).send(
-      req,
-      res
-    );
-  };
+  deleteImpact = async (req: CategoryIdRequest) =>
+    this.service.deleteImpact(req.params.id);
 
-  remove = async (req: DeleteCategoryRequest, res: Response): Promise<void> => {
+  remove = async (req: DeleteCategoryRequest) => {
     await this.service.remove(req.params.id, req.body.reassignments);
-    new NoContentSuccess().send(req, res);
   };
 }
