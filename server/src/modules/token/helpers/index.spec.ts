@@ -1,9 +1,10 @@
 jest.mock("@/constants/env", () => ({
   __esModule: true,
   default: {
-    NODE_ENV: "test",
-    OIDC_ISSUER: "https://id.test",
-    JWT_REFRESH_SECRET: "test-refresh-secret"
+    nodeEnv: "test",
+    app: {},
+    oidc: { issuer: "https://id.test" },
+    jwt: { refreshSecret: "test-refresh-secret" }
   }
 }));
 

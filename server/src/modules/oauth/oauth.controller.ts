@@ -95,11 +95,11 @@ export class OAuthController {
 
   logout = async (req: Request, res: Response): Promise<void> => {
     const target = await this.service.logout(req, res);
-    res.redirect(target ?? ENV.CLIENT_URL);
+    res.redirect(target ?? ENV.app.clientUrl);
   };
 
   discovery = (_req: Request, res: Response): void => {
-    const issuer = ENV.OIDC_ISSUER;
+    const issuer = ENV.oidc.issuer;
 
     res.json({
       issuer,

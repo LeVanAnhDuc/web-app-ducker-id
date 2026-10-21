@@ -2,17 +2,17 @@
 import "reflect-metadata";
 import config from "@/constants/env";
 import app from "./app";
-import { loadAll, closeAll } from "./loaders";
+import { bootstrap } from "./loaders";
 import { Logger } from "@/libs/logger";
 
 const startServer = async (): Promise<void> => {
   try {
-    await loadAll(app);
+    const closeAll = await bootstrap(app);
 
-    const PORT = config.APP_PORT || 3000;
+    const PORT = config.app.port || 3000;
     const server = app.listen(PORT, () => {
       Logger.info(`Server is running at http://localhost:${PORT}`);
-      Logger.info(`Environment: ${config.NODE_ENV}`);
+      Logger.info(`Environment: ${config.nodeEnv}`);
     });
 
     server.on("error", (error: NodeJS.ErrnoException) => {

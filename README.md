@@ -110,7 +110,7 @@ These have a user interface but no working backend, or are named in `docs/projec
 
 ## Running
 
-MongoDB and Redis must be running locally. There is no docker-compose or Makefile in this repo.
+MongoDB and Redis must be running locally. There is no docker-compose or Makefile in this repo. MongoDB has to run as a replica set, because sign-up, sign-in and category moves use transactions: start `mongod --replSet rs0`, run `rs.initiate()` once in `mongosh`, and keep `?replicaSet=rs0` in `DB_URL`.
 
 **1. Hooks (once, at the repo root)**
 
@@ -127,7 +127,7 @@ pnpm seed             # optional: seed apps, categories, users, contacts, notifi
 pnpm dev              # API on http://localhost:5000, Swagger UI at /api-docs
 ```
 
-Required environment variables are listed in `server/.env.example`: `APP_PORT`, `CLIENT_URL`, `CORS_ORIGINS`, `TRUST_PROXY`, `DB_URL` / `DB_NAME`, the `REDIS_*` group, `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` / `JWT_ID_SECRET`, and `USERNAME_EMAIL` / `PASSWORD_EMAIL` for outgoing mail. There is no migration framework — Mongoose creates collections and indexes on boot, and `pnpm seed` / `pnpm seed:clear` manage sample data.
+Required environment variables are listed in `server/.env.example`: `APP_PORT`, `CLIENT_URL`, `CORS_ORIGINS`, `TRUST_PROXY`, `DB_URL` / `DB_NAME` (plus optional `DB_*` pool and timeout tuning), `REDIS_URL`, `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` / `JWT_ID_SECRET`, and `USERNAME_EMAIL` / `PASSWORD_EMAIL` for outgoing mail. There is no migration framework — Mongoose creates collections and indexes on boot, and `pnpm seed` / `pnpm seed:clear` manage sample data.
 
 **3. Client** — from `client/`
 
@@ -172,7 +172,7 @@ pnpm test                  # or test:smoke, test:e2e, test:api, test:unit — se
 ├── server/                     # Express REST API, mounted under /api/v1
 │   ├── src/
 │   │   ├── app.ts server.ts    # Express wiring; boot with graceful shutdown
-│   │   ├── loaders/            # Boot sequence: db, redis, services, queues, modules, health, errors
+│   │   ├── loaders/            # Composition root: connect infrastructure → services/queues → modules → mount HTTP
 │   │   ├── modules/            # Feature modules (routes/controller/service/repository/swagger)
 │   │   │                       #   auth: signup, login, logout, token, unlock-account,
 │   │   │                       #   forgot-password, change-password, authentication

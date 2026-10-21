@@ -281,7 +281,7 @@ export const authorize = async (
     // Nó KHÔNG được dùng cho bất kỳ quyết định bảo mật nào.
     return {
       kind: "login",
-      url: buildRedirectUrl(`${ENV.CLIENT_URL}/login`, {
+      url: buildRedirectUrl(`${ENV.app.clientUrl}/login`, {
         auth_req: requestId,
         app: client.displayName
       })
@@ -307,7 +307,7 @@ export const authorize = async (
     url: buildRedirectUrl(params.redirectUri, {
       code,
       state: params.state,
-      iss: ENV.OIDC_ISSUER
+      iss: ENV.oidc.issuer
     })
   };
 };

@@ -1,5 +1,5 @@
 // database
-import instanceMongoDB from "@/database/mongodb";
+import { connectMongo, disconnectMongo } from "@/database/mongodb";
 // models
 import AuthenticationModel from "@/models/authentication";
 // others
@@ -26,7 +26,7 @@ const TEMP_PASSWORD_FIELDS = [
 const dropTempPasswordFields = async (): Promise<void> => {
   try {
     Logger.info("Connecting to MongoDB...");
-    await instanceMongoDB.connect();
+    await connectMongo();
 
     const filter = {
       $or: TEMP_PASSWORD_FIELDS.map((field) => ({ [field]: { $exists: true } }))
@@ -46,11 +46,11 @@ const dropTempPasswordFields = async (): Promise<void> => {
     });
   } catch (error) {
     Logger.error("Migration drop-temp-password-fields failed", error);
-    await instanceMongoDB.disconnect();
+    await disconnectMongo();
     process.exit(1);
   }
 
-  await instanceMongoDB.disconnect();
+  await disconnectMongo();
   process.exit(0);
 };
 

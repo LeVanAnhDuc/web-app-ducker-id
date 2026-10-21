@@ -44,7 +44,7 @@ const TOKEN_CONFIGS: Record<TokenType, TokenConfig> = {
     asymmetric: true
   },
   [TOKEN_TYPES.REFRESH]: {
-    secret: ENV.JWT_REFRESH_SECRET,
+    secret: ENV.jwt.refreshSecret,
     expiresIn: TOKEN_EXPIRY.REFRESH_TOKEN,
     asymmetric: false
   },
@@ -79,8 +79,8 @@ const signToken = (payload: object, type: TokenType): string => {
   return jwt.sign(payload, getSigningKey(), {
     algorithm: SIGNING_ALGORITHM,
     keyid: getKeyId(),
-    issuer: ENV.OIDC_ISSUER,
-    audience: ENV.OIDC_ISSUER,
+    issuer: ENV.oidc.issuer,
+    audience: ENV.oidc.issuer,
     expiresIn: config.expiresIn
   });
 };
@@ -95,8 +95,8 @@ const verifyToken = <T>(token: string, type: VerifiableTokenType): T => {
 
     return jwt.verify(token, getVerificationKey(), {
       algorithms: [SIGNING_ALGORITHM],
-      issuer: ENV.OIDC_ISSUER,
-      audience: ENV.OIDC_ISSUER
+      issuer: ENV.oidc.issuer,
+      audience: ENV.oidc.issuer
     }) as T;
   } catch (error) {
     const errorName = error instanceof Error ? error.name : "UnknownError";
@@ -146,7 +146,7 @@ export const signOAuthToken = (
   jwt.sign(payload, getSigningKey(), {
     algorithm: SIGNING_ALGORITHM,
     keyid: getKeyId(),
-    issuer: ENV.OIDC_ISSUER,
+    issuer: ENV.oidc.issuer,
     audience,
     expiresIn
   });
@@ -175,7 +175,7 @@ export const verifyOAuthAccessToken = (
 ): OAuthAccessTokenPayload => {
   const payload = jwt.verify(token, getVerificationKey(), {
     algorithms: [SIGNING_ALGORITHM],
-    issuer: ENV.OIDC_ISSUER
+    issuer: ENV.oidc.issuer
   });
 
   if (typeof payload === "string") {
@@ -184,7 +184,7 @@ export const verifyOAuthAccessToken = (
 
   const audiences = Array.isArray(payload.aud) ? payload.aud : [payload.aud];
 
-  if (audiences.includes(ENV.OIDC_ISSUER)) {
+  if (audiences.includes(ENV.oidc.issuer)) {
     throw new JsonWebTokenError("first-party token is not an OAuth token");
   }
 
