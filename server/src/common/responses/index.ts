@@ -1,73 +1,56 @@
 // types
-import type { Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 // common
 import { STATUS_CODES } from "@/common/http";
 
-interface SuccessResponsePattern<T> extends ResponsePattern<T> {
+interface SuccessBody<T> {
   status: number;
+  message: string;
+  data?: T;
 }
 
-interface RequestLike {
-  originalUrl: string;
-  // Absent only when a response is sent before the i18n middleware ran.
-  t?: TranslateFunction;
+export interface HandleOptions {
+  status?: number;
+  message?: I18n.Key;
 }
 
-// Controllers pass an i18next key ("user:success.getAdminUsers"); the body
-// carries its translation for the request's Accept-Language, the same way the
-// error filter translates error keys. A literal with no catalogue entry (the
-// health checks) comes back unchanged.
-const translate = (req: RequestLike, message: string): string =>
-  message && req.t ? req.t(message as I18n.Key) : message;
+type Handler = (req: Request, res: Response) => unknown;
 
-abstract class SuccessResponse<T> {
-  private readonly status: number;
-  private readonly message: string;
-  private readonly data: T;
-
-  constructor({ data, status, message }: Partial<SuccessResponsePattern<T>>) {
-    this.status = status;
-    this.message = message;
-    this.data = data;
+export const sendSuccess = <T>(
+  req: Request,
+  res: Response,
+  { status, message, data }: SuccessBody<T>
+): void => {
+  if (status === STATUS_CODES.NO_CONTENT) {
+    res.status(status).end();
+    return;
   }
 
-  public send = (req: RequestLike, res: Response): void => {
-    const body: ResponsePattern<T> = {
-      timestamp: new Date().toISOString(),
-      path: req.originalUrl,
-      message: translate(req, this.message),
-      data: this.data
-    };
-    res.status(this.status).json(body);
+  const body: ResponsePattern<T> = {
+    timestamp: new Date().toISOString(),
+    path: req.originalUrl,
+    message,
+    data
   };
-}
+  res.status(status).json(body);
+};
 
-export class OkSuccess<T> extends SuccessResponse<T> {
-  constructor({
-    message = "",
-    status = STATUS_CODES.OK,
-    data = undefined
-  }: Partial<SuccessResponsePattern<T>>) {
-    super({ message, status, data });
-  }
-}
-
-export class CreatedSuccess<T> extends SuccessResponse<T> {
-  constructor({
-    message = "",
-    status = STATUS_CODES.CREATED,
-    data = undefined
-  }: Partial<SuccessResponsePattern<T>>) {
-    super({ message, status, data });
-  }
-}
-
-export class NoContentSuccess extends SuccessResponse<undefined> {
-  constructor() {
-    super({ status: STATUS_CODES.NO_CONTENT });
-  }
-
-  public send = (_req: RequestLike, res: Response): void => {
-    res.status(STATUS_CODES.NO_CONTENT).end();
+// Controllers return the data; the route declares the status (200 unless
+// stated) and the i18next key of the message, translated here per request.
+export const handle =
+  (
+    handler: Handler,
+    { status = STATUS_CODES.OK, message }: HandleOptions = {}
+  ) =>
+  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const data = await handler(req, res);
+      sendSuccess(req, res, {
+        status,
+        message: message && req.t ? req.t(message) : "",
+        data
+      });
+    } catch (error) {
+      next(error);
+    }
   };
-}

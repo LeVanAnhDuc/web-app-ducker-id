@@ -2,8 +2,6 @@
 import type { Response } from "express";
 import type { LogoutRequest } from "./types";
 import type { LogoutService } from "./services";
-// common
-import { NoContentSuccess } from "@/common/responses";
 // modules
 import {
   REFRESH_TOKEN,
@@ -13,11 +11,9 @@ import {
 export class LogoutController {
   constructor(private readonly service: LogoutService) {}
 
-  logout = async (req: LogoutRequest, res: Response): Promise<void> => {
+  logout = async (req: LogoutRequest, res: Response) => {
     await this.service.logout(req, res);
 
     res.clearCookie(REFRESH_TOKEN, REFRESH_TOKEN_CLEAR_COOKIE_OPTIONS);
-
-    new NoContentSuccess().send(req, res);
   };
 }

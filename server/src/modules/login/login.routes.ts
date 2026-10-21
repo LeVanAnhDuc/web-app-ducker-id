@@ -3,6 +3,8 @@ import { Router } from "express";
 // types
 import type { RateLimiterMiddleware } from "@/middlewares";
 import type { LoginController } from "./login.controller";
+// common
+import { handle } from "@/common/responses";
 // validators
 import {
   loginSchema,
@@ -13,7 +15,6 @@ import {
 } from "@/validators/schemas/login";
 // others
 import { bodyPipe } from "@/middlewares";
-import { asyncHandler } from "@/utils/async-handler";
 
 export const createLoginRoutes = (
   controller: LoginController,
@@ -26,7 +27,7 @@ export const createLoginRoutes = (
     "/",
     rl.loginByIp,
     bodyPipe(loginSchema),
-    asyncHandler(controller.login)
+    handle(controller.login, { message: "login:success.loginSuccessful" })
   );
 
   login.post(
@@ -34,14 +35,14 @@ export const createLoginRoutes = (
     rl.loginOtpByIp,
     rl.loginOtpByEmail,
     bodyPipe(otpSendSchema),
-    asyncHandler(controller.sendOtp)
+    handle(controller.sendOtp, { message: "login:success.otpSent" })
   );
 
   login.post(
     "/otp/verify",
     rl.loginByIp,
     bodyPipe(otpVerifySchema),
-    asyncHandler(controller.verifyOtp)
+    handle(controller.verifyOtp, { message: "login:success.loginSuccessful" })
   );
 
   login.post(
@@ -49,14 +50,16 @@ export const createLoginRoutes = (
     rl.magicLinkByIp,
     rl.magicLinkByEmail,
     bodyPipe(magicLinkSendSchema),
-    asyncHandler(controller.sendMagicLink)
+    handle(controller.sendMagicLink, { message: "login:success.magicLinkSent" })
   );
 
   login.post(
     "/magic-link/verify",
     rl.loginByIp,
     bodyPipe(magicLinkVerifySchema),
-    asyncHandler(controller.verifyMagicLink)
+    handle(controller.verifyMagicLink, {
+      message: "login:success.loginSuccessful"
+    })
   );
 
   router.use("/auth/login", login);

@@ -2,6 +2,9 @@
 import { Router } from "express";
 // types
 import type { WebAppController } from "./web-app.controller";
+// common
+import { STATUS_CODES } from "@/common/http";
+import { handle } from "@/common/responses";
 // validators
 import {
   adminListAppsQuerySchema,
@@ -18,7 +21,6 @@ import {
   bodyPipe,
   paramsPipe
 } from "@/middlewares";
-import { asyncHandler } from "@/utils/async-handler";
 
 export const createAdminWebAppRoutes = (
   controller: WebAppController
@@ -31,20 +33,23 @@ export const createAdminWebAppRoutes = (
   adminApps.get(
     "/",
     queryPipe(adminListAppsQuerySchema),
-    asyncHandler(controller.listApps)
+    handle(controller.listApps, { message: "webApp:success.listApps" })
   );
 
   adminApps.post(
     "/",
     bodyPipe(adminCreateAppBodySchema),
-    asyncHandler(controller.createApp)
+    handle(controller.createApp, {
+      status: STATUS_CODES.CREATED,
+      message: "webApp:success.createApp"
+    })
   );
 
   adminApps.patch(
     "/:id",
     paramsPipe(adminAppIdParamSchema),
     bodyPipe(adminUpdateAppBodySchema),
-    asyncHandler(controller.updateApp)
+    handle(controller.updateApp, { message: "webApp:success.updateApp" })
   );
 
   router.use("/admin/apps", adminApps);
@@ -61,7 +66,7 @@ export const createUserWebAppRoutes = (
     "/",
     authGuard,
     queryPipe(listAppsQuerySchema),
-    asyncHandler(controller.listUserApps)
+    handle(controller.listUserApps, { message: "webApp:success.listApps" })
   );
 
   router.use("/apps", apps);

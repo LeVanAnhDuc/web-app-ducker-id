@@ -5,7 +5,8 @@ import type { Request, Response } from "express";
 import type { RedisClientType } from "redis";
 // common
 import { InternalServerError } from "@/exceptions";
-import { OkSuccess } from "@/common/responses";
+import { STATUS_CODES } from "@/common/http";
+import { sendSuccess } from "@/common/responses";
 // database
 import { isMongoHealthy } from "@/database/mongodb";
 import { checkRedisHealth } from "@/database/redis";
@@ -22,10 +23,11 @@ const checkMongoDB = asyncHandler(async (req: Request, res: Response) => {
     });
   }
 
-  new OkSuccess({
+  sendSuccess(req, res, {
+    status: STATUS_CODES.OK,
     message: "MongoDB is healthy",
     data: { mongodb: { status: "up" } }
-  }).send(req, res);
+  });
 });
 
 const checkRedis = (redis: RedisClientType) =>
@@ -39,12 +41,13 @@ const checkRedis = (redis: RedisClientType) =>
       });
     }
 
-    new OkSuccess({
+    sendSuccess(req, res, {
+      status: STATUS_CODES.OK,
       message: "Redis is healthy",
       data: {
         redis: { status: "up", latency_ms: redisHealth.latency ?? null }
       }
-    }).send(req, res);
+    });
   });
 
 const checkAll = (redis: RedisClientType) =>
@@ -65,13 +68,14 @@ const checkAll = (redis: RedisClientType) =>
       });
     }
 
-    new OkSuccess({
+    sendSuccess(req, res, {
+      status: STATUS_CODES.OK,
       message: "All services are healthy",
       data: {
         mongodb: { status: "up" },
         redis: { status: "up", latency_ms: redisHealth.latency ?? null }
       }
-    }).send(req, res);
+    });
   });
 
 export const createHealthRouter = (redis: RedisClientType): Router => {

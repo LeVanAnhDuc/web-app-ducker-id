@@ -39,7 +39,7 @@ describe("SignupController.completeSignup", () => {
       "/api/v1/auth/signup/complete";
     const res = createResponseMock();
 
-    await controller.completeSignup(
+    const data = await controller.completeSignup(
       req as unknown as CompleteSignupRequest,
       res as unknown as Response
     );
@@ -49,7 +49,6 @@ describe("SignupController.completeSignup", () => {
       "refresh-x",
       REFRESH_TOKEN_COOKIE_OPTIONS
     );
-    const { data } = res.json.mock.calls[0][0];
     expect(data.tokens).toEqual({
       accessToken: "access-x",
       idToken: "id-x",

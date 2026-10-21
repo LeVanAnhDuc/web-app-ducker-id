@@ -105,7 +105,7 @@ These have a user interface but no working backend, or are named in `docs/projec
 | --------- | ------------------------------------------------------------------------------------------------------------------------ |
 | Client    | Next.js 15.3 (App Router) · React 19 · TypeScript 5 · Tailwind CSS v4 · shadcn/ui + Radix · TanStack Query 5 · Zustand 5 · React Hook Form 7 + Zod 4 · next-intl 4 · Axios · Framer Motion |
 | Server    | Node.js · Express 4 · TypeScript 5 · MongoDB with Mongoose 8 · Redis + BullMQ · JWT + bcrypt · Joi 17 · i18next · Nodemailer + React Email · Winston · Swagger UI |
-| Testing   | Jest 30 + ts-jest on the server — **101 suites / 762 tests, all passing**. Playwright 1.60 in `automation-test/` — **1306 tests** (776 UI E2E + 529 API + seed) proving 992 test cases over 149 requirements, plus 32 unit tests of its own config; last run 2026-10-15, module by module: 0 unexpected failures, 0 open bugs (the 53 it had logged were fixed on 2026-10-15) (needs a running client, server, MongoDB and Redis — see `automation-test/README.md`) |
+| Testing   | Jest 30 + ts-jest on the server — **102 suites / 784 tests, all passing**. Playwright 1.60 in `automation-test/` — **1306 tests** (776 UI E2E + 529 API + seed) proving 992 test cases over 149 requirements, plus 32 unit tests of its own config; last run 2026-10-15, module by module: 0 unexpected failures, 0 open bugs (the 53 it had logged were fixed on 2026-10-15) (needs a running client, server, MongoDB and Redis — see `automation-test/README.md`) |
 | Tooling   | pnpm · ESLint · Prettier · Husky pre-commit running lint-staged in both `client/` and `server/`                 |
 
 ## Running
