@@ -9,7 +9,7 @@ const startServer = async (): Promise<void> => {
   try {
     const closeAll = await bootstrap(app);
 
-    const PORT = config.app.port || 3000;
+    const PORT = config.app.port;
     const server = app.listen(PORT, () => {
       Logger.info(`Server is running at http://localhost:${PORT}`);
       Logger.info(`Environment: ${config.nodeEnv}`);
@@ -20,7 +20,7 @@ const startServer = async (): Promise<void> => {
         throw error;
       }
 
-      const bind = typeof PORT === "string" ? `Pipe ${PORT}` : `Port ${PORT}`;
+      const bind = `Port ${PORT}`;
 
       switch (error.code) {
         case "EACCES":
