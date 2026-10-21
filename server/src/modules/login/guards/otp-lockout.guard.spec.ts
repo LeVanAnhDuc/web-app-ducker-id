@@ -1,7 +1,7 @@
 // types
 import type { OtpLoginRepository } from "../repositories/otp-login.repository";
 // common
-import { TooManyRequestsError } from "@/common/exceptions";
+import { TooManyRequestsError } from "@/exceptions";
 // others
 import { createOtpLoginRepoMock } from "@test/mocks/otp-login-repo.mock";
 import { OtpLockoutGuard } from "./otp-lockout.guard";

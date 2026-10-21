@@ -5,7 +5,7 @@ import type { OtpVerifyBody } from "../../types";
 import type { LoginResponseDto } from "../../dtos";
 import type { OtpLoginStrategyDeps } from "./deps";
 // common
-import { TooManyRequestsError, UnauthorizedError } from "@/common/exceptions";
+import { TooManyRequestsError, UnauthorizedError } from "@/exceptions";
 // modules
 import { LOGIN_METHODS } from "@/modules/login-history/constants";
 // others

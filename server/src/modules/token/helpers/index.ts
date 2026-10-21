@@ -3,7 +3,7 @@ import jwt, { JsonWebTokenError, type Secret } from "jsonwebtoken";
 // types
 import type { StringValue } from "ms";
 // common
-import { ForbiddenError } from "@/common/exceptions";
+import { ForbiddenError } from "@/exceptions";
 // others
 import ENV from "@/constants/env";
 import { ERROR_CODES } from "@/constants/error-code";

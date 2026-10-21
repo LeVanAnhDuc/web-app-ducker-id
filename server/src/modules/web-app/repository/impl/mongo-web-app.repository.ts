@@ -18,7 +18,7 @@ import type { WebAppRepository } from "../web-app.repository";
 // models
 import WebAppModel from "@/models/web-app";
 // common
-import { ConflictRequestError } from "@/common/exceptions";
+import { ConflictRequestError } from "@/exceptions";
 // modules
 import { buildWebAppFilter } from "../../helpers";
 import { buildAccessFilter } from "@/modules/entitlement/entitlement.helper";

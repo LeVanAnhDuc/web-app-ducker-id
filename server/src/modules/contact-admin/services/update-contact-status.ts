@@ -3,7 +3,7 @@ import type { ContactStatus } from "../types";
 import type { UpdateContactStatusDto } from "../dtos";
 import type { ContactRepository } from "../repository/contact-admin.repository";
 // common
-import { NotFoundError } from "@/common/exceptions";
+import { NotFoundError } from "@/exceptions";
 // dtos
 import { toUpdateContactStatusDto } from "../dtos";
 // others

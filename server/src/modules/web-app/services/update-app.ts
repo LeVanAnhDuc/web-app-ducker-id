@@ -3,7 +3,7 @@ import type { AdminAppUpdateBody, WebAppUpdateInput } from "../types";
 import type { AdminAppDto } from "../dtos";
 import type { WebAppServiceDeps } from "./deps";
 // common
-import { ConflictRequestError, NotFoundError } from "@/common/exceptions";
+import { ConflictRequestError, NotFoundError } from "@/exceptions";
 // dtos
 import { toAdminAppDto } from "../dtos";
 // others

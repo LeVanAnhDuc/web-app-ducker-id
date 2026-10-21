@@ -1,7 +1,7 @@
 // types
 import type { ErrorRequestHandler } from "express";
 // common
-import { OAuthError } from "@/common/exceptions";
+import { OAuthError } from "@/exceptions";
 import { STATUS_CODES } from "@/common/http";
 // modules
 import { OAUTH_ERRORS } from "@/modules/oauth/constants";

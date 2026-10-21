@@ -4,7 +4,7 @@ import type { MagicLinkVerifyBody } from "../../types";
 import type { LoginResponseDto } from "../../dtos";
 import type { MagicLinkLoginStrategyDeps } from "./deps";
 // common
-import { UnauthorizedError } from "@/common/exceptions";
+import { UnauthorizedError } from "@/exceptions";
 // modules
 import { LOGIN_METHODS } from "@/modules/login-history/constants";
 // others

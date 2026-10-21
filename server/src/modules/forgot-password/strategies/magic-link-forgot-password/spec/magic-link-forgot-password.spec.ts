@@ -7,7 +7,7 @@ import type { MagicLinkForgotPasswordRepository } from "../../../repositories/ma
 import type { ResetTokenRepository } from "../../../repositories/reset-token.repository";
 import type { MagicLinkForgotPasswordStrategyDeps } from "../deps";
 // common
-import { BadRequestError, UnauthorizedError } from "@/common/exceptions";
+import { BadRequestError, UnauthorizedError } from "@/exceptions";
 // others
 import { EmailType } from "@/types/services/email";
 import {

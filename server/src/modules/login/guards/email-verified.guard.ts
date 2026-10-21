@@ -4,7 +4,7 @@ import type { LoginMethod } from "@/modules/login-history/types";
 import type { Request } from "express";
 import type { LoginAuditService } from "../services/login-audit";
 // common
-import { UnauthorizedError } from "@/common/exceptions";
+import { UnauthorizedError } from "@/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 

@@ -3,6 +3,15 @@ import type { OpenAPIV3 } from "openapi-types";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 
+export const swaggerObjectId = (
+  description?: string
+): OpenAPIV3.SchemaObject => ({
+  type: "string",
+  pattern: "^[a-fA-F0-9]{24}$",
+  example: "507f1f77bcf86cd799439012",
+  ...(description && { description })
+});
+
 export const commonSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   SuccessResponse: {
     type: "object",

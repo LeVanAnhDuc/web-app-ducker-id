@@ -13,7 +13,7 @@ import type { CategoryRepository } from "../category.repository";
 import WebAppCategoryModel from "@/models/web-app-category";
 import WebAppModel from "@/models/web-app";
 // common
-import { ConflictRequestError } from "@/common/exceptions";
+import { ConflictRequestError } from "@/exceptions";
 // modules
 import { CATEGORY_NAME_COLLATION } from "../../constants";
 // others

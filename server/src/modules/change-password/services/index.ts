@@ -7,7 +7,7 @@ import type { NotificationDispatcher } from "@/services/notification/notificatio
 import type { AuthTokensResponse } from "@/modules/authentication/types";
 import type { WrongCurrentPasswordGuard, SamePasswordGuard } from "../guards";
 // common
-import { UnauthorizedError } from "@/common/exceptions";
+import { UnauthorizedError } from "@/exceptions";
 // modules
 import { generateAuthTokensResponse } from "@/modules/authentication/helpers";
 import {

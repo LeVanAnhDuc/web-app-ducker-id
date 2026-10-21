@@ -4,7 +4,7 @@ import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repo
 import type { AppFavoritableGuard } from "../../guards";
 import type { EntitlementRepository } from "@/modules/entitlement/repository/entitlement.repository";
 // commons
-import { NotFoundError } from "@/common/exceptions";
+import { NotFoundError } from "@/exceptions";
 // modules
 import { FavoriteService } from "../";
 import { AccessPolicy } from "@/modules/entitlement/services/access-policy";

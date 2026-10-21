@@ -2,7 +2,7 @@
 import type { AdminContactDetailItemDto } from "../dtos";
 import type { ContactRepository } from "../repository/contact-admin.repository";
 // common
-import { NotFoundError } from "@/common/exceptions";
+import { NotFoundError } from "@/exceptions";
 // dtos
 import { toAdminContactDetailItemDto } from "../dtos";
 // others

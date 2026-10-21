@@ -2,7 +2,7 @@
 import type { Request } from "express";
 import type { OtpLoginRepository } from "../repositories/otp-login.repository";
 // common
-import { BadRequestError } from "@/common/exceptions";
+import { BadRequestError } from "@/exceptions";
 // others
 import { makeMockRequest } from "@test/helpers/request.helper";
 import { createOtpLoginRepoMock } from "@test/mocks/otp-login-repo.mock";

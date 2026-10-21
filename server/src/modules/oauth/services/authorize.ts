@@ -9,7 +9,7 @@ import type {
 } from "../types";
 import type { OAuthServiceDeps } from "./deps";
 // common
-import { OAuthError } from "@/common/exceptions";
+import { OAuthError } from "@/exceptions";
 // others
 import ENV from "@/constants/env";
 import { Logger } from "@/libs/logger";

@@ -3,7 +3,7 @@ import type { CategoryName, UpdateCategoryBody } from "../types";
 import type { AdminCategoryDto } from "../dtos";
 import type { CategoryServiceDeps } from "./deps";
 // common
-import { ConflictRequestError, NotFoundError } from "@/common/exceptions";
+import { ConflictRequestError, NotFoundError } from "@/exceptions";
 // dtos
 import { toAdminCategoryDto } from "../dtos";
 // others

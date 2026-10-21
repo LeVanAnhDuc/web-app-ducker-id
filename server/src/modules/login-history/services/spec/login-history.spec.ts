@@ -3,7 +3,7 @@ import type { LoginHistoryRepository } from "../../repository/login-history.repo
 import type { LoginHistoryDocument } from "@/modules/login-history/types";
 // module under test
 import { LoginHistoryService } from "../";
-import { NotFoundError } from "@/common/exceptions";
+import { NotFoundError } from "@/exceptions";
 import { createNotificationDispatcherMock } from "@test/mocks/notification-dispatcher.mock";
 
 const makeRepo = (

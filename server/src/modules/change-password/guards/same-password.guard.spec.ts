@@ -1,5 +1,5 @@
 // common
-import { BadRequestError } from "@/common/exceptions";
+import { BadRequestError } from "@/exceptions";
 // others
 import { SamePasswordGuard } from "./same-password.guard";
 

@@ -1,7 +1,7 @@
 // types
 import type { RecentAppServiceDeps } from "./deps";
 // commons
-import { NotFoundError } from "@/common/exceptions";
+import { NotFoundError } from "@/exceptions";
 // modules
 import { isAppVisibleTo } from "@/modules/web-app/helpers";
 // constants

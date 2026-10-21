@@ -18,7 +18,7 @@ import {
   BadRequestError,
   TooManyRequestsError,
   UnauthorizedError
-} from "@/common/exceptions";
+} from "@/exceptions";
 // modules
 import { LOGIN_METHODS } from "@/modules/login-history/constants";
 // others

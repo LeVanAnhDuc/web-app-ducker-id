@@ -1,5 +1,5 @@
 // common
-import { ForbiddenError } from "@/common/exceptions";
+import { ForbiddenError } from "@/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { verifyRefreshToken } from "../helpers";

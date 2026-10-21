@@ -13,6 +13,8 @@ import {
 } from "@/modules/login-history/constants";
 // common
 import { PAGINATION } from "@/common/pagination";
+// others
+import { swaggerObjectId } from "@/libs/swagger/common.schemas";
 
 const ok = (
   description: string,
@@ -49,10 +51,7 @@ const enumOf = (values: readonly string[]): OpenAPIV3.SchemaObject => ({
   enum: [...values]
 });
 
-const objectId: OpenAPIV3.SchemaObject = {
-  type: "string",
-  pattern: "^[a-fA-F0-9]{24}$"
-};
+const objectId = swaggerObjectId();
 
 const filterParams = (
   sortBy: readonly string[]

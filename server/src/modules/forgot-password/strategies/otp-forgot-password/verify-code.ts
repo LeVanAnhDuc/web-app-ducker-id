@@ -4,7 +4,7 @@ import type { VerifyOtpResponseDto } from "../../dtos";
 import type { AuthExistsGuard } from "../../guards";
 import type { OtpForgotPasswordStrategyDeps } from "./deps";
 // common
-import { BadRequestError, UnauthorizedError } from "@/common/exceptions";
+import { BadRequestError, UnauthorizedError } from "@/exceptions";
 // dtos
 import { toVerifyOtpResponseDto } from "../../dtos";
 // others

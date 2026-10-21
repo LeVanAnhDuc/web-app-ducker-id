@@ -1,4 +1,4 @@
-import { isSupportedTimeZone } from "./constants";
+import { isSupportedTimeZone } from "./utils";
 import { loginHistoryStatsQuerySchema } from "./schemas/login-history";
 
 describe("isSupportedTimeZone", () => {

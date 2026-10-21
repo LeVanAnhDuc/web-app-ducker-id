@@ -2,7 +2,7 @@
 import type { SetUserActiveResult } from "@/modules/user/types";
 import type { UserServiceDeps } from "./deps";
 // common
-import { ForbiddenError, NotFoundError } from "@/common/exceptions";
+import { ForbiddenError, NotFoundError } from "@/exceptions";
 // validators
 import { validateObjectId } from "@/validators/utils";
 // modules

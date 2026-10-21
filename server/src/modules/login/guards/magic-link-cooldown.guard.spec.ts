@@ -2,7 +2,7 @@
 import type { Request } from "express";
 import type { MagicLinkLoginRepository } from "../repositories/magic-link-login.repository";
 // common
-import { BadRequestError } from "@/common/exceptions";
+import { BadRequestError } from "@/exceptions";
 // others
 import { makeMockRequest } from "@test/helpers/request.helper";
 import { createMagicLinkLoginRepoMock } from "@test/mocks/magic-link-login-repo.mock";

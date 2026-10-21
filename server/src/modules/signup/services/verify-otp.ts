@@ -3,7 +3,7 @@ import type { VerifyOtpBody } from "../types";
 import type { VerifyOtpDto } from "../dtos";
 import type { SignupServiceDeps } from "./deps";
 // common
-import { BadRequestError } from "@/common/exceptions";
+import { BadRequestError } from "@/exceptions";
 // dtos
 import { toVerifyOtpDto } from "../dtos";
 // others

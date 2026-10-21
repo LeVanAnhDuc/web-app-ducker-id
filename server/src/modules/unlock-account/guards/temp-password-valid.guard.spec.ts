@@ -2,7 +2,7 @@
 import type { Request } from "express";
 import type { UnlockAccountRepository } from "../repository/unlock-account.repository";
 // common
-import { UnauthorizedError } from "@/common/exceptions";
+import { UnauthorizedError } from "@/exceptions";
 // others
 import { makeMockRequest } from "@test/helpers/request.helper";
 import { createUnlockAccountRepoMock } from "@test/mocks/unlock-account-repo.mock";

@@ -1,7 +1,7 @@
 // service
 import { CategoryService } from "../";
 // common
-import { NotFoundError } from "@/common/exceptions";
+import { NotFoundError } from "@/exceptions";
 // others
 import { CATEGORY_ID, categoryDoc, makeDeps } from "./make-deps";
 

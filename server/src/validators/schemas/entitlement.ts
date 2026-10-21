@@ -8,18 +8,9 @@ import type {
 // modules
 import { ENTITLEMENT_LIMITS } from "@/modules/entitlement/constants";
 // validators
-import { OBJECTID_PATTERN } from "@/validators/constants";
+import { objectIdSchema } from "@/validators/utils";
 
-const objectId = (key: string) =>
-  Joi.string()
-    .pattern(OBJECTID_PATTERN)
-    .required()
-    .messages({
-      "string.base": `entitlement:validation.${key}.invalid`,
-      "string.empty": `entitlement:validation.${key}.invalid`,
-      "any.required": `entitlement:validation.${key}.invalid`,
-      "string.pattern.base": `entitlement:validation.${key}.invalid`
-    });
+const objectId = (key: string) => objectIdSchema("entitlement", key);
 
 /** `?userIds=a,b` arrives as one string; split it before validating each id. */
 const commaList = Joi.extend({

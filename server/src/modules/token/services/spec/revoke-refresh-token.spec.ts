@@ -4,7 +4,7 @@ jest.mock("../../helpers", () => ({ verifyRefreshToken: jest.fn() }));
 import type { RevokedRefreshTokenRepository } from "../../repository/revoked-refresh-token.repository";
 import type { TokenServiceDeps } from "../deps";
 // common
-import { ForbiddenError } from "@/common/exceptions";
+import { ForbiddenError } from "@/exceptions";
 // others
 import { verifyRefreshToken } from "../../helpers";
 import { TokenService } from "../";

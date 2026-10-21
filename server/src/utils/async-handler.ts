@@ -1,7 +1,7 @@
 // types
 import type { NextFunction, Request, Response } from "express";
 // common
-import { DatabaseError, ErrorResponse } from "@/common/exceptions";
+import { DatabaseError, AppError } from "@/exceptions";
 // others
 import { Logger } from "@/libs/logger";
 import {
@@ -36,7 +36,7 @@ export async function asyncDatabaseHandler<T>(
     Logger.error(`Database operation failed: ${operation}`, error);
 
     if (
-      error instanceof ErrorResponse ||
+      error instanceof AppError ||
       isDuplicateKeyError(error) ||
       isMongooseValidationError(error) ||
       isMongooseCastError(error)

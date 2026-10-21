@@ -5,7 +5,7 @@ import RedisStore from "rate-limit-redis";
 import type { Request, Response } from "express";
 import type { createClient } from "redis";
 // common
-import { TooManyRequestsError } from "@/common/exceptions";
+import { TooManyRequestsError } from "@/exceptions";
 // others
 import { RATE_LIMIT_CONFIG } from "@/constants/redis/rate-limit";
 import { RequestContext } from "@/utils/request-context";
