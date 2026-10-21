@@ -29,14 +29,14 @@ export const adminResetPassword = async (
   const target = await deps.userRepo.findAuthIdById(id);
   if (!target) {
     throw new NotFoundError({
-      i18nMessage: (t) => t("user:errors.notFound"),
+      key: "user:errors.notFound",
       code: ERROR_CODES.USER_NOT_FOUND
     });
   }
 
   if (target.authId === RequestContext.requireAuthId()) {
     throw new ForbiddenError({
-      i18nMessage: (t) => t("user:errors.cannotResetSelf"),
+      key: "user:errors.cannotResetSelf",
       code: ERROR_CODES.ADMIN_CANNOT_RESET_SELF
     });
   }

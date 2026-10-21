@@ -18,10 +18,10 @@ export class OtpLockoutGuard {
     Logger.warn("Forgot password OTP verification locked", { email, attempts });
 
     throw new BadRequestError({
-      i18nMessage: (t) =>
-        t("forgotPassword:errors.otpLocked", {
-          minutes: FORGOT_PASSWORD_OTP_CONFIG.LOCKOUT_DURATION_MINUTES
-        }),
+      key: "forgotPassword:errors.otpLocked",
+      params: {
+        minutes: FORGOT_PASSWORD_OTP_CONFIG.LOCKOUT_DURATION_MINUTES
+      },
       code: ERROR_CODES.FORGOT_PASSWORD_OTP_LOCKED
     });
   }

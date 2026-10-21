@@ -107,17 +107,17 @@ export class PasswordLoginStrategy {
       });
 
       throw new TooManyRequestsError({
-        i18nMessage: (t) =>
-          t("login:errors.accountLocked", {
-            attempts: attemptCount,
-            seconds: lockoutSeconds
-          }),
+        key: "login:errors.accountLocked",
+        params: {
+          attempts: attemptCount,
+          seconds: lockoutSeconds
+        },
         code: ERROR_CODES.LOGIN_ACCOUNT_LOCKED
       });
     }
 
     throw new UnauthorizedError({
-      i18nMessage: (t) => t("login:errors.invalidCredentials"),
+      key: "login:errors.invalidCredentials",
       code: ERROR_CODES.LOGIN_INVALID_CREDENTIALS
     });
   }

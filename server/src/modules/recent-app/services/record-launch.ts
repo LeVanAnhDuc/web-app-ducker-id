@@ -24,7 +24,7 @@ export const recordLaunch = async (
   ]);
   if (!isAppVisibleTo(app, scope)) {
     throw new NotFoundError({
-      i18nMessage: (t) => t("recentApp:errors.appNotFound"),
+      key: "recentApp:errors.appNotFound",
       code: ERROR_CODES.RECENT_APP_NOT_FOUND
     });
   }

@@ -44,7 +44,7 @@ export const RequestContext = {
     const user = storage.getStore()?.user;
     if (!user) {
       throw new UnauthorizedError({
-        i18nMessage: (t) => t("common:errors.unauthorized"),
+        key: "common:errors.unauthorized",
         code: ERROR_CODES.AUTH_MISSING_TOKEN
       });
     }
@@ -55,7 +55,7 @@ export const RequestContext = {
     const user = storage.getStore()?.user;
     if (!user) {
       throw new UnauthorizedError({
-        i18nMessage: (t) => t("common:errors.unauthorized"),
+        key: "common:errors.unauthorized",
         code: ERROR_CODES.AUTH_MISSING_TOKEN
       });
     }
@@ -66,7 +66,7 @@ export const RequestContext = {
     const user = storage.getStore()?.user;
     if (!user) {
       throw new UnauthorizedError({
-        i18nMessage: (t) => t("common:errors.unauthorized"),
+        key: "common:errors.unauthorized",
         code: ERROR_CODES.AUTH_MISSING_TOKEN
       });
     }

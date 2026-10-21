@@ -15,7 +15,7 @@ export class EmailAvailableGuard {
     if (exists) {
       Logger.warn("Email already exists", { email });
       throw new ConflictRequestError({
-        i18nMessage: (t) => t("signup:errors.emailAlreadyExists"),
+        key: "signup:errors.emailAlreadyExists",
         code: ERROR_CODES.SIGNUP_EMAIL_EXISTS
       });
     }

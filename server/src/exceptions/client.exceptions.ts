@@ -12,7 +12,8 @@ export class BadRequestError extends AppError {
       status: STATUS_CODES.BAD_REQUEST,
       code: opts.code ?? ERROR_CODES.BAD_REQUEST,
       message: opts.message ?? REASON_PHRASES.BAD_REQUEST,
-      i18nMessage: opts.i18nMessage
+      key: opts.key,
+      params: opts.params
     });
   }
 }
@@ -28,7 +29,8 @@ export class ValidationError extends AppError {
       code: opts.code ?? ERROR_CODES.VALIDATION_ERROR,
       message: opts.message ?? REASON_PHRASES.BAD_REQUEST,
       errors: opts.errors ?? [],
-      i18nMessage: opts.i18nMessage
+      key: opts.key,
+      params: opts.params
     });
   }
 }
@@ -39,7 +41,8 @@ export class UnauthorizedError extends AppError {
       status: STATUS_CODES.UNAUTHORIZED,
       code: opts.code ?? ERROR_CODES.UNAUTHORIZED,
       message: opts.message ?? REASON_PHRASES.UNAUTHORIZED,
-      i18nMessage: opts.i18nMessage
+      key: opts.key,
+      params: opts.params
     });
   }
 }
@@ -50,7 +53,8 @@ export class ForbiddenError extends AppError {
       status: STATUS_CODES.FORBIDDEN,
       code: opts.code ?? ERROR_CODES.FORBIDDEN,
       message: opts.message ?? REASON_PHRASES.FORBIDDEN,
-      i18nMessage: opts.i18nMessage
+      key: opts.key,
+      params: opts.params
     });
   }
 }
@@ -61,7 +65,8 @@ export class NotFoundError extends AppError {
       status: STATUS_CODES.NOT_FOUND,
       code: opts.code ?? ERROR_CODES.NOT_FOUND,
       message: opts.message ?? REASON_PHRASES.NOT_FOUND,
-      i18nMessage: opts.i18nMessage
+      key: opts.key,
+      params: opts.params
     });
   }
 }
@@ -72,7 +77,8 @@ export class ConflictRequestError extends AppError {
       status: STATUS_CODES.CONFLICT,
       code: opts.code ?? ERROR_CODES.CONFLICT,
       message: opts.message ?? REASON_PHRASES.CONFLICT,
-      i18nMessage: opts.i18nMessage
+      key: opts.key,
+      params: opts.params
     });
   }
 }
@@ -83,7 +89,8 @@ export class TooManyRequestsError extends AppError {
       status: STATUS_CODES.TOO_MANY_REQUESTS,
       code: opts.code ?? ERROR_CODES.TOO_MANY_REQUESTS,
       message: opts.message ?? REASON_PHRASES.TOO_MANY_REQUESTS,
-      i18nMessage: opts.i18nMessage
+      key: opts.key,
+      params: opts.params
     });
   }
 }

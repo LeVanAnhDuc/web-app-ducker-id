@@ -31,7 +31,7 @@ export const sendCode = async (
   if (exceeded) {
     Logger.warn("Login OTP resend limit exceeded", { email });
     throw new BadRequestError({
-      i18nMessage: (t) => t("login:errors.otpResendLimitExceeded"),
+      key: "login:errors.otpResendLimitExceeded",
       code: ERROR_CODES.LOGIN_OTP_RESEND_LIMIT
     });
   }

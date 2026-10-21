@@ -32,7 +32,7 @@ export class AccountExistsGuard {
 
     Logger.warn("Authentication not found", { email });
     throw new UnauthorizedError({
-      i18nMessage: (t) => t("login:errors.invalidEmail"),
+      key: "login:errors.invalidEmail",
       code: ERROR_CODES.LOGIN_INVALID_EMAIL
     });
   }
@@ -47,7 +47,7 @@ export class AccountExistsGuard {
 
     this.audit.recordInvalidCredentials({ email, req });
     throw new UnauthorizedError({
-      i18nMessage: (t) => t("login:errors.invalidCredentials"),
+      key: "login:errors.invalidCredentials",
       code: ERROR_CODES.LOGIN_INVALID_CREDENTIALS
     });
   }

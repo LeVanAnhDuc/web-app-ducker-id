@@ -26,7 +26,7 @@ const createAuthGuard =
 
       if (!authHeader || !authHeader.startsWith("Bearer ")) {
         throw new UnauthorizedError({
-          i18nMessage: (t) => t("common:errors.unauthorized"),
+          key: "common:errors.unauthorized",
           code: ERROR_CODES.AUTH_MISSING_TOKEN
         });
       }
@@ -35,7 +35,7 @@ const createAuthGuard =
 
       if (!token) {
         throw new UnauthorizedError({
-          i18nMessage: (t) => t("common:errors.unauthorized"),
+          key: "common:errors.unauthorized",
           code: ERROR_CODES.AUTH_MISSING_TOKEN
         });
       }
@@ -44,14 +44,14 @@ const createAuthGuard =
 
       if (!payload || !payload.sub || !payload.authId) {
         throw new UnauthorizedError({
-          i18nMessage: (t) => t("common:errors.invalidToken"),
+          key: "common:errors.invalidToken",
           code: ERROR_CODES.AUTH_INVALID_TOKEN
         });
       }
 
       if (payload.mustChangePassword && !allowPasswordChangeRequired) {
         throw new ForbiddenError({
-          i18nMessage: (t) => t("common:errors.passwordChangeRequired"),
+          key: "common:errors.passwordChangeRequired",
           code: ERROR_CODES.AUTH_PASSWORD_CHANGE_REQUIRED
         });
       }

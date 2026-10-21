@@ -38,7 +38,7 @@ export const handleNotFound = (
   const error = new AppError({
     code: ERROR_CODES.NOT_FOUND,
     status: STATUS_CODES.NOT_FOUND,
-    i18nMessage: (t) => t("common:errors.notFound")
+    key: "common:errors.notFound"
   });
 
   next(error);
@@ -114,7 +114,7 @@ export const handleError = (
   }
 
   if (err instanceof AppError) {
-    const message = err.i18nMessage ? err.i18nMessage(req.t) : err.message;
+    const message = err.key ? req.t(err.key, err.params) : err.message;
     const body: ErrorPattern = {
       code: err.code,
       message,

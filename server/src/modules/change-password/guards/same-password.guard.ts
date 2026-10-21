@@ -8,7 +8,7 @@ export class SamePasswordGuard {
     if (currentPassword !== newPassword) return;
 
     throw new BadRequestError({
-      i18nMessage: (t) => t("changePassword:errors.sameAsCurrent"),
+      key: "changePassword:errors.sameAsCurrent",
       code: ERROR_CODES.CHANGE_PASSWORD_SAME_AS_CURRENT
     });
   }

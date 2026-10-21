@@ -27,7 +27,7 @@ const DISPLAY_ORDER = { sortOrder: 1, _id: 1 } as const;
 const rethrowNameTaken = (err: unknown): never => {
   if (isDuplicateKeyError(err) && getDuplicatedField(err) === "name.en") {
     throw new ConflictRequestError({
-      i18nMessage: (t) => t("category:errors.nameTaken"),
+      key: "category:errors.nameTaken",
       code: ERROR_CODES.CATEGORY_NAME_TAKEN
     });
   }

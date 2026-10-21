@@ -18,7 +18,7 @@ export const create = async (
 
   if (await deps.categoryRepo.existsByNameEn(name.en)) {
     throw new ConflictRequestError({
-      i18nMessage: (t) => t("category:errors.nameTaken"),
+      key: "category:errors.nameTaken",
       code: ERROR_CODES.CATEGORY_NAME_TAKEN
     });
   }

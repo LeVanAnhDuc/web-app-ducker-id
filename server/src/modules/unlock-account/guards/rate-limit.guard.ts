@@ -18,7 +18,7 @@ export class RateLimitGuard {
         requestCount
       });
       throw new TooManyRequestsError({
-        i18nMessage: (t) => t("unlockAccount:errors.unlockRateLimit"),
+        key: "unlockAccount:errors.unlockRateLimit",
         code: ERROR_CODES.UNLOCK_RATE_LIMIT
       });
     }

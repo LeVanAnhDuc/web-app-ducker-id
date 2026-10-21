@@ -23,7 +23,7 @@ export class UserExistsGuard {
         authId
       });
       throw new ForbiddenError({
-        i18nMessage: (t) => t("login:errors.invalidRefreshToken"),
+        key: "login:errors.invalidRefreshToken",
         code: ERROR_CODES.REFRESH_TOKEN_INVALID
       });
     }

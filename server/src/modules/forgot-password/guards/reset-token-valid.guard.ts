@@ -17,7 +17,7 @@ export class ResetTokenValidGuard {
       email
     });
     throw new UnauthorizedError({
-      i18nMessage: (t) => t("forgotPassword:errors.invalidResetToken"),
+      key: "forgotPassword:errors.invalidResetToken",
       code: ERROR_CODES.FORGOT_PASSWORD_INVALID_RESET_TOKEN
     });
   }

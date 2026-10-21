@@ -17,7 +17,7 @@ export const markRead = async (
   const doc = await repo.markRead(id, userId);
   if (!doc) {
     throw new NotFoundError({
-      i18nMessage: (t) => t("notification:errors.notFound"),
+      key: "notification:errors.notFound",
       code: ERROR_CODES.NOTIFICATION_NOT_FOUND
     });
   }

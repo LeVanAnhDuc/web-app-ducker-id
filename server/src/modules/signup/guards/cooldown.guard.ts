@@ -16,8 +16,8 @@ export class CooldownGuard {
 
     Logger.warn("OTP cooldown not expired", { email, remaining });
     throw new BadRequestError({
-      i18nMessage: (t) =>
-        t("signup:errors.resendCoolDown", { seconds: remaining }),
+      key: "signup:errors.resendCoolDown",
+      params: { seconds: remaining },
       code: ERROR_CODES.SIGNUP_OTP_COOLDOWN
     });
   }

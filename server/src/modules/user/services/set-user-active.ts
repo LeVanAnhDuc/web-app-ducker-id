@@ -21,14 +21,14 @@ export const setUserActive = async (
   const target = await deps.userRepo.findAuthIdById(id);
   if (!target) {
     throw new NotFoundError({
-      i18nMessage: (t) => t("user:errors.notFound"),
+      key: "user:errors.notFound",
       code: ERROR_CODES.USER_NOT_FOUND
     });
   }
 
   if (!isActive && target.authId === RequestContext.requireAuthId()) {
     throw new ForbiddenError({
-      i18nMessage: (t) => t("user:errors.cannotLockSelf"),
+      key: "user:errors.cannotLockSelf",
       code: ERROR_CODES.ADMIN_CANNOT_LOCK_SELF
     });
   }
@@ -43,7 +43,7 @@ export const setUserActive = async (
       const activeAdmins = await deps.authService.countActiveAdmins();
       if (activeAdmins <= 1) {
         throw new ForbiddenError({
-          i18nMessage: (t) => t("user:errors.cannotLockLastAdmin"),
+          key: "user:errors.cannotLockLastAdmin",
           code: ERROR_CODES.ADMIN_CANNOT_LOCK_LAST_ADMIN
         });
       }

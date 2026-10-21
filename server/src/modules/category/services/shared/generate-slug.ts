@@ -22,7 +22,7 @@ export const generateSlug = async (
   if (!base) {
     // The body pipe rejects these first; this guards direct service callers.
     throw new BadRequestError({
-      i18nMessage: (t) => t("category:errors.nameNoSlug"),
+      key: "category:errors.nameNoSlug",
       code: ERROR_CODES.CATEGORY_NAME_NO_SLUG
     });
   }

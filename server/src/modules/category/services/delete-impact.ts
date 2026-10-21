@@ -15,7 +15,7 @@ export const deleteImpact = async (
   const category = await deps.categoryRepo.findById(id);
   if (!category) {
     throw new NotFoundError({
-      i18nMessage: (t) => t("category:errors.notFound"),
+      key: "category:errors.notFound",
       code: ERROR_CODES.CATEGORY_NOT_FOUND
     });
   }

@@ -24,11 +24,11 @@ export class PasswordLockoutGuard {
     });
 
     throw new TooManyRequestsError({
-      i18nMessage: (t) =>
-        t("login:errors.accountLocked", {
-          attempts: attemptCount,
-          seconds: remainingSeconds
-        }),
+      key: "login:errors.accountLocked",
+      params: {
+        attempts: attemptCount,
+        seconds: remainingSeconds
+      },
       code: ERROR_CODES.LOGIN_ACCOUNT_LOCKED
     });
   }

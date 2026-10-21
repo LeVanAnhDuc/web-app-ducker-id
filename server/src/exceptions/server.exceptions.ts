@@ -10,7 +10,8 @@ export class InternalServerError extends AppError {
       status: STATUS_CODES.INTERNAL_SERVER_ERROR,
       code: opts.code ?? ERROR_CODES.INTERNAL_SERVER_ERROR,
       message: opts.message ?? REASON_PHRASES.INTERNAL_SERVER_ERROR,
-      i18nMessage: opts.i18nMessage
+      key: opts.key,
+      params: opts.params
     });
   }
 }
@@ -21,7 +22,8 @@ export class ServiceUnavailableError extends AppError {
       status: STATUS_CODES.SERVICE_UNAVAILABLE,
       code: opts.code ?? ERROR_CODES.SERVICE_UNAVAILABLE,
       message: opts.message ?? REASON_PHRASES.SERVICE_UNAVAILABLE,
-      i18nMessage: opts.i18nMessage
+      key: opts.key,
+      params: opts.params
     });
   }
 }

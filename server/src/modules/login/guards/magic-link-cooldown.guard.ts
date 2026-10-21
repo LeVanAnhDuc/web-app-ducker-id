@@ -16,8 +16,8 @@ export class MagicLinkCooldownGuard {
 
     Logger.warn("Magic link cooldown not expired", { email, remaining });
     throw new BadRequestError({
-      i18nMessage: (t) =>
-        t("login:errors.magicLinkCooldown", { seconds: remaining }),
+      key: "login:errors.magicLinkCooldown",
+      params: { seconds: remaining },
       code: ERROR_CODES.LOGIN_MAGIC_LINK_COOLDOWN
     });
   }

@@ -1,10 +1,8 @@
 // types
-import type { Request } from "express";
 import type { OtpLoginRepository } from "../repositories/otp-login.repository";
 // common
 import { BadRequestError } from "@/exceptions";
 // others
-import { makeMockRequest } from "@test/helpers/request.helper";
 import { createOtpLoginRepoMock } from "@test/mocks/otp-login-repo.mock";
 import { OtpCooldownGuard } from "./otp-cooldown.guard";
 import { ERROR_CODES } from "@/constants/error-code";
@@ -12,14 +10,10 @@ import { ERROR_CODES } from "@/constants/error-code";
 const EMAIL = "user@example.com";
 
 describe("OtpCooldownGuard", () => {
-  let req: Request;
-  let tSpy: jest.Mock;
   let repo: jest.Mocked<OtpLoginRepository>;
   let guard: OtpCooldownGuard;
 
   beforeEach(() => {
-    req = makeMockRequest();
-    tSpy = req.t as unknown as jest.Mock;
     repo = createOtpLoginRepoMock();
     guard = new OtpCooldownGuard(repo);
   });
@@ -39,8 +33,8 @@ describe("OtpCooldownGuard", () => {
     expect((error as BadRequestError).code).toBe(
       ERROR_CODES.LOGIN_OTP_COOLDOWN
     );
-    (error as BadRequestError).i18nMessage?.(req.t);
-    expect(tSpy).toHaveBeenCalledWith("login:errors.otpCooldown", {
+    expect((error as BadRequestError).key).toBe("login:errors.otpCooldown");
+    expect((error as BadRequestError).params).toEqual({
       seconds: 42
     });
   });

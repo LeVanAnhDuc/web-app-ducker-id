@@ -19,7 +19,7 @@ export const updateMyProfile = async (
 
   if (!user) {
     throw new NotFoundError({
-      i18nMessage: (t) => t("user:errors.notFound"),
+      key: "user:errors.notFound",
       code: ERROR_CODES.USER_NOT_FOUND
     });
   }

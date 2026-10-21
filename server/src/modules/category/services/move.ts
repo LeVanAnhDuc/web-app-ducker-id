@@ -33,7 +33,7 @@ export const move = async (
       const from = ordered.indexOf(id);
       if (from === -1) {
         throw new NotFoundError({
-          i18nMessage: (t) => t("category:errors.notFound"),
+          key: "category:errors.notFound",
           code: ERROR_CODES.CATEGORY_NOT_FOUND
         });
       }

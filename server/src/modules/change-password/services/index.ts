@@ -41,7 +41,7 @@ export class ChangePasswordService {
     const auth = await this.authService.findById(authId);
     if (!auth) {
       throw new UnauthorizedError({
-        i18nMessage: (t) => t("common:errors.unauthorized"),
+        key: "common:errors.unauthorized",
         code: ERROR_CODES.AUTH_INVALID_TOKEN
       });
     }
@@ -58,7 +58,7 @@ export class ChangePasswordService {
     const user = await this.userService.findByAuthId(authId);
     if (!user) {
       throw new UnauthorizedError({
-        i18nMessage: (t) => t("common:errors.unauthorized"),
+        key: "common:errors.unauthorized",
         code: ERROR_CODES.AUTH_INVALID_TOKEN
       });
     }

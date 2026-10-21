@@ -74,7 +74,7 @@ describe("FavoriteService", () => {
     const { favoriteRepo, guard, makeService } = makeDeps();
     guard.assert.mockRejectedValue(
       new NotFoundError({
-        i18nMessage: (t) => t("favorite:errors.appNotFound")
+        key: "favorite:errors.appNotFound"
       })
     );
     const svc = makeService();
