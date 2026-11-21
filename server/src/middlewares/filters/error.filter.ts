@@ -1,9 +1,10 @@
+// libs
+import { StatusCodes } from "http-status-codes";
 // types
 import type { NextFunction, Request, Response } from "express";
 import type { ValidationErrorItem } from "@/types/common";
 // common
 import { AppError } from "@/exceptions";
-import { STATUS_CODES } from "@/common/http";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import {
@@ -16,11 +17,11 @@ import {
 import { isBodyParserError } from "@/utils/http-errors";
 
 const BODY_ERRORS: Record<number, { code: string; key: I18n.Key }> = {
-  [STATUS_CODES.REQUEST_TOO_LONG]: {
+  [StatusCodes.REQUEST_TOO_LONG]: {
     code: ERROR_CODES.PAYLOAD_TOO_LARGE,
     key: "common:errors.payloadTooLarge"
   },
-  [STATUS_CODES.UNSUPPORTED_MEDIA_TYPE]: {
+  [StatusCodes.UNSUPPORTED_MEDIA_TYPE]: {
     code: ERROR_CODES.UNSUPPORTED_MEDIA_TYPE,
     key: "common:errors.unsupportedMediaType"
   }
@@ -37,7 +38,7 @@ export const handleNotFound = (
 ) => {
   const error = new AppError({
     code: ERROR_CODES.NOT_FOUND,
-    status: STATUS_CODES.NOT_FOUND,
+    status: StatusCodes.NOT_FOUND,
     key: "common:errors.notFound"
   });
 
@@ -70,7 +71,7 @@ export const handleError = (
       })
     };
 
-    return res.status(STATUS_CODES.CONFLICT).json(body);
+    return res.status(StatusCodes.CONFLICT).json(body);
   }
 
   if (isMongooseValidationError(err)) {
@@ -83,7 +84,7 @@ export const handleError = (
       ...(errors.length > 0 && { errors })
     };
 
-    return res.status(STATUS_CODES.BAD_REQUEST).json(body);
+    return res.status(StatusCodes.BAD_REQUEST).json(body);
   }
 
   if (isMongooseCastError(err)) {
@@ -101,7 +102,7 @@ export const handleError = (
       ]
     };
 
-    return res.status(STATUS_CODES.BAD_REQUEST).json(body);
+    return res.status(StatusCodes.BAD_REQUEST).json(body);
   }
 
   // The body never reached a route: keep body-parser's 4xx status, answer in
@@ -131,5 +132,5 @@ export const handleError = (
     ...baseBody
   };
 
-  return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json(body);
+  return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(body);
 };

@@ -1,7 +1,7 @@
+// libs
+import { StatusCodes } from "http-status-codes";
 // types
 import type { NextFunction, Request, Response } from "express";
-// common
-import { STATUS_CODES } from "@/common/http";
 
 interface SuccessBody<T> {
   status: number;
@@ -21,7 +21,7 @@ export const sendSuccess = <T>(
   res: Response,
   { status, message, data }: SuccessBody<T>
 ): void => {
-  if (status === STATUS_CODES.NO_CONTENT) {
+  if (status === StatusCodes.NO_CONTENT) {
     res.status(status).end();
     return;
   }
@@ -40,7 +40,7 @@ export const sendSuccess = <T>(
 export const handle =
   (
     handler: Handler,
-    { status = STATUS_CODES.OK, message }: HandleOptions = {}
+    { status = StatusCodes.OK, message }: HandleOptions = {}
   ) =>
   async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {

@@ -1,8 +1,9 @@
+// libs
+import { StatusCodes } from "http-status-codes";
 // types
 import type { ErrorRequestHandler } from "express";
 // common
 import { OAuthError } from "@/exceptions";
-import { STATUS_CODES } from "@/common/http";
 // modules
 import { OAUTH_ERRORS } from "@/modules/oauth/constants";
 import { buildRedirectUrl } from "@/modules/oauth/helpers";
@@ -56,7 +57,7 @@ export const handleOAuthUnexpectedError: ErrorRequestHandler = (
     error: err instanceof Error ? err.message : err
   });
 
-  res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({
+  res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
     error: OAUTH_ERRORS.SERVER_ERROR
   });
 };

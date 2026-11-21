@@ -1,10 +1,10 @@
 // libs
 import { Router } from "express";
+import { StatusCodes } from "http-status-codes";
 // types
 import type { RateLimiterMiddleware } from "@/middlewares";
 import type { ContactAdminController } from "./contact-admin.controller";
 // common
-import { STATUS_CODES } from "@/common/http";
 import { handle } from "@/common/responses";
 // validators
 import {
@@ -37,7 +37,7 @@ export const createContactRoutes = (
     optionalAuthGuard,
     bodyPipe(submitContactSchema),
     handle(controller.submit, {
-      status: STATUS_CODES.CREATED,
+      status: StatusCodes.CREATED,
       message: "contactAdmin:success.submitted"
     })
   );

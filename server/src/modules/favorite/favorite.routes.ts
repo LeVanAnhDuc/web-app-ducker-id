@@ -1,9 +1,9 @@
 // libs
 import { Router } from "express";
+import { StatusCodes } from "http-status-codes";
 // types
 import type { FavoriteController } from "./favorite.controller";
 // common
-import { STATUS_CODES } from "@/common/http";
 import { handle } from "@/common/responses";
 // validators
 import {
@@ -30,14 +30,14 @@ export const createFavoriteUserRoutes = (
     "/:appId",
     paramsPipe(favoriteAppIdParamSchema),
     handle(controller.add, {
-      status: STATUS_CODES.CREATED,
+      status: StatusCodes.CREATED,
       message: "favorite:success.add"
     })
   );
   favorites.delete(
     "/:appId",
     paramsPipe(favoriteAppIdParamSchema),
-    handle(controller.remove, { status: STATUS_CODES.NO_CONTENT })
+    handle(controller.remove, { status: StatusCodes.NO_CONTENT })
   );
 
   router.use("/users/me/favorites", favorites);

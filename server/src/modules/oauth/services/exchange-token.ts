@@ -1,10 +1,11 @@
+// libs
+import { StatusCodes } from "http-status-codes";
 // types
 import type { WebAppDocument } from "@/modules/web-app/types";
 import type { TokenRequestBody, TokenResponse } from "../types";
 import type { OAuthServiceDeps } from "./deps";
 // common
 import { OAuthError } from "@/exceptions";
-import { STATUS_CODES } from "@/common/http";
 // modules
 import { signOAuthToken } from "@/modules/token/helpers";
 // others
@@ -56,7 +57,7 @@ const assertClientAuthentication = (
     throw new OAuthError({
       error: OAUTH_ERRORS.INVALID_CLIENT,
       description: "Client authentication failed",
-      status: STATUS_CODES.UNAUTHORIZED
+      status: StatusCodes.UNAUTHORIZED
     });
   }
 };

@@ -1,10 +1,10 @@
 // libs
 import { Router } from "express";
+import { StatusCodes } from "http-status-codes";
 // types
 import type { RateLimiterMiddleware } from "@/middlewares";
 import type { SignupController } from "./signup.controller";
 // common
-import { STATUS_CODES } from "@/common/http";
 import { handle } from "@/common/responses";
 // validators
 import {
@@ -50,7 +50,7 @@ export const createSignupRoutes = (
     "/complete",
     bodyPipe(completeSignupSchema),
     handle(controller.completeSignup, {
-      status: STATUS_CODES.CREATED,
+      status: StatusCodes.CREATED,
       message: "signup:success.signupCompleted"
     })
   );
