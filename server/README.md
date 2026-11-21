@@ -11,7 +11,7 @@ RESTful API server for **Ducker ID (Identity Management System)** — a central 
 | Database        | MongoDB (Mongoose 8)                   |
 | Cache / Queue   | Redis (node-redis) + BullMQ            |
 | Authentication  | JWT (access + refresh tokens) + bcrypt |
-| Validation      | Joi 17                                 |
+| Validation      | class-validator + class-transformer    |
 | Email           | Nodemailer + React Email templates     |
 | Documentation   | Swagger UI (OpenAPI)                   |
 | Logging         | Winston (daily rotate files)           |
@@ -160,7 +160,7 @@ src/
 │   ├── pipes/                 # Validation pipes (body, params, query)
 │   ├── RateLimiterMiddleware/ # Redis-backed rate limiting
 │   └── error-handler/         # Global error handler
-├── validators/                # Joi schemas and validation constants
+├── validators/                # Shared validation decorators/, base request dtos/, constants
 ├── types/                     # TypeScript type definitions
 ├── constants/                 # App-wide constants
 ├── i18n/                      # Internationalization (i18next)
@@ -178,7 +178,7 @@ modules/{feature}/
 ├── {feature}.routes.ts        # Express router with validation middleware
 ├── {feature}.service.ts       # Business logic
 ├── {feature}.helper.ts        # Module-specific helpers (optional)
-├── dtos/                      # Data Transfer Objects (optional)
+├── dtos/                      # Response DTOs; requests/ holds the request DTO classes
 ├── repositories/              # Data access layer (optional)
 └── swagger/                   # OpenAPI docs for the module (optional)
 ```

@@ -230,7 +230,7 @@ so every commit builds and passes `pnpm test`:
 
 ## Verification
 
-- `server`: `pnpm type-check`, `pnpm lint`, `pnpm test` (103 suites / 787 tests before; 117 suites / 875 tests after) green at
+- `server`: `pnpm type-check`, `pnpm lint`, `pnpm test` (103 suites / 787 tests before; 118 suites / 878 tests after) green at
   every commit.
 - `automation-test`: `pnpm test:api` against the dedicated e2e stack (`DB_NAME=ducker-id-e2e`, API
   `:5600`, client `:3600` — see `automation-test/src/docs/test-plan.md`) once, at the end. The API
