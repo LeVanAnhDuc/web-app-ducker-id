@@ -1,6 +1,7 @@
 // types
 import type { Router } from "express";
 import type { RedisClientType } from "redis";
+import type { RateLimiters } from "@/middlewares/common/rate-limiter.middleware";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 // modules
@@ -35,6 +36,9 @@ export interface ModuleDeps {
 export interface ModuleRouters {
   oauthRouter: Router;
   apiRouters: Router[];
+  /** Annotated controllers, in `apiRouters` order; both coexist until every module has moved. */
+  controllers: object[];
+  rateLimiters: RateLimiters;
 }
 
 /**
@@ -134,7 +138,7 @@ export const createModules = ({
 
   const { notificationUserRouter } = createNotificationModule();
 
-  const { favoriteRepository, favoriteUserRouter } =
+  const { favoriteRepository, favoriteController } =
     createFavoriteModule(accessPolicy);
 
   const { recentAppService, recentAppUserRouter } = createRecentAppModule(
@@ -169,7 +173,6 @@ export const createModules = ({
       loginHistoryUserRouter,
       loginHistoryAdminRouter,
       notificationUserRouter,
-      favoriteUserRouter,
       recentAppUserRouter,
       contactAdminRouter,
       adminContactsRouter,
@@ -179,6 +182,8 @@ export const createModules = ({
       categoryAdminRouter,
       categoryUserRouter,
       entitlementAdminRouter
-    ]
+    ],
+    controllers: [favoriteController],
+    rateLimiters: rateLimiter
   };
 };

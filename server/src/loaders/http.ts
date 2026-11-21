@@ -3,6 +3,9 @@ import { Router } from "express";
 // types
 import type { Express } from "express";
 import type { RedisClientType } from "redis";
+import type { RateLimiters } from "@/middlewares/common/rate-limiter.middleware";
+// common
+import { mountControllers } from "@/common/routing";
 // services
 import { BULL_BOARD_PATH } from "@/services/queue/queue.module";
 // middlewares
@@ -15,6 +18,8 @@ interface HttpParts {
   bullBoardRouter: Router;
   oauthRouter: Router;
   apiRouters: Router[];
+  controllers: object[];
+  rateLimiters: RateLimiters;
 }
 
 export const mountHttp = (app: Express, parts: HttpParts): void => {
@@ -28,6 +33,10 @@ export const mountHttp = (app: Express, parts: HttpParts): void => {
   const v1Router = Router();
   parts.apiRouters.forEach((router) => v1Router.use(router));
   app.use("/api/v1", v1Router);
+  // Annotated controllers answer whatever the routers above did not claim.
+  // handleNotFound and handleError below must stay after this call:
+  // routing-controllers calls next() once it has sent a response.
+  mountControllers(app, parts.controllers, parts.rateLimiters);
 
   app.use("/health", createHealthRouter(parts.redis));
 

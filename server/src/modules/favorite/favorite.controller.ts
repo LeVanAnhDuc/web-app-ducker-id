@@ -1,20 +1,40 @@
+// libs
+import { StatusCodes } from "http-status-codes";
+import { Delete, Get, JsonController, Post } from "routing-controllers";
 // types
-import type {
-  FavoriteAppIdRequest,
-  ListFavoritesRequest
-} from "@/modules/favorite/types";
 import type { FavoriteService } from "./services";
+// common
+import { Auth, Respond, ValidParams, ValidQuery } from "@/common/routing";
+// others
+import { FavoriteAppIdParamsDto, ListFavoritesQueryDto } from "./dtos/requests";
 
+@JsonController("/users/me/favorites")
+@Auth()
 export class FavoriteController {
   constructor(private readonly service: FavoriteService) {}
 
-  add = async (req: FavoriteAppIdRequest) => {
-    await this.service.add(req.params.appId);
-  };
+  @Get("/")
+  @Respond({ message: "favorite:success.list" })
+  list(@ValidQuery(ListFavoritesQueryDto) query: ListFavoritesQueryDto) {
+    return this.service.list(query);
+  }
 
-  remove = async (req: FavoriteAppIdRequest) => {
-    await this.service.remove(req.params.appId);
-  };
+  @Post("/:appId")
+  @Respond({
+    status: StatusCodes.CREATED,
+    message: "favorite:success.add"
+  })
+  async add(
+    @ValidParams(FavoriteAppIdParamsDto) params: FavoriteAppIdParamsDto
+  ) {
+    await this.service.add(params.appId);
+  }
 
-  list = async (req: ListFavoritesRequest) => this.service.list(req.query);
+  @Delete("/:appId")
+  @Respond({ status: StatusCodes.NO_CONTENT })
+  async remove(
+    @ValidParams(FavoriteAppIdParamsDto) params: FavoriteAppIdParamsDto
+  ) {
+    await this.service.remove(params.appId);
+  }
 }
