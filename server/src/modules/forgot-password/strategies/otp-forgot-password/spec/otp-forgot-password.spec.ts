@@ -2,7 +2,6 @@
 import type { FPOtpSendRequest, FPOtpVerifyRequest } from "../../../types";
 import type { OtpForgotPasswordRepository } from "../../../repositories/otp-forgot-password.repository";
 import type { ResetTokenRepository } from "../../../repositories/reset-token.repository";
-import type { OtpForgotPasswordStrategyDeps } from "../deps";
 // common
 import { BadRequestError, UnauthorizedError } from "@/exceptions";
 // others
@@ -61,24 +60,22 @@ const setup = () => {
   const emailDispatcher = createEmailDispatcherMock();
   const historyService = createLoginHistoryServiceMock();
 
-  const deps = {
-    otpRepo,
-    resetTokenRepo,
-    emailDispatcher,
-    cooldownGuard: new OtpCooldownGuard(otpRepo),
-    resendLimitGuard: new OtpResendLimitGuard(otpRepo),
-    lockoutGuard: new OtpLockoutGuard(otpRepo),
-    authExistsGuard: new AuthExistsGuard(userService as never),
-    audit: new ForgotPasswordAuditService(historyService)
-  } as unknown as OtpForgotPasswordStrategyDeps;
-
   return {
     otpRepo,
     resetTokenRepo,
     userService,
     emailDispatcher,
     historyService,
-    strategy: new OtpForgotPasswordStrategy(deps)
+    strategy: new OtpForgotPasswordStrategy(
+      otpRepo,
+      resetTokenRepo,
+      emailDispatcher,
+      new OtpCooldownGuard(otpRepo),
+      new OtpResendLimitGuard(otpRepo),
+      new OtpLockoutGuard(otpRepo),
+      new AuthExistsGuard(userService as never),
+      new ForgotPasswordAuditService(historyService)
+    )
   };
 };
 

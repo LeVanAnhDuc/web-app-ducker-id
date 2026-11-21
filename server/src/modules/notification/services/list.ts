@@ -1,12 +1,12 @@
 // types
 import type { NotificationListQueryDto } from "../dtos/requests";
-import type { NotificationItemDto } from "../dtos";
 import type { NotificationRepository } from "../repository/notification.repository";
 import type { PaginatedResult } from "@/common/pagination";
 // common
+import { toDto } from "@/common/dto";
 import { resolvePaging, toPageMeta } from "@/common/pagination";
 // dtos
-import { toNotificationItemDto } from "../dtos";
+import { NotificationItemDto } from "../dtos";
 // others
 import { RequestContext } from "@/utils/request-context";
 import { buildNotificationFilter } from "../helpers";
@@ -22,7 +22,7 @@ export const list = async (
   const { data, total } = await repo.findByUser(filter, { skip, limit, sort });
 
   return {
-    items: data.map(toNotificationItemDto),
+    items: toDto(NotificationItemDto, data),
     meta: toPageMeta(total, page, limit)
   };
 };

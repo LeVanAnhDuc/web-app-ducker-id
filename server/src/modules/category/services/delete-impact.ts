@@ -1,6 +1,7 @@
 // types
 import type { DeleteImpactDto } from "../dtos";
-import type { CategoryServiceDeps } from "./deps";
+import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
+import type { CategoryRepository } from "../repository/category.repository";
 // common
 import { NotFoundError } from "@/exceptions";
 // dtos
@@ -9,7 +10,7 @@ import { toDeleteImpactDto } from "../dtos";
 import { ERROR_CODES } from "@/constants/error-code";
 
 export const deleteImpact = async (
-  deps: CategoryServiceDeps,
+  deps: { categoryRepo: CategoryRepository; webAppRepo: WebAppRepository },
   id: string
 ): Promise<DeleteImpactDto> => {
   const category = await deps.categoryRepo.findById(id);

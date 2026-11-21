@@ -10,7 +10,10 @@ describe("CategoryService.list / listPublic", () => {
       { ...categoryDoc(CATEGORY_ID, "Tools", "tools", 2), appCount: 3 }
     ]);
 
-    const [dto] = await new CategoryService(deps).list();
+    const [dto] = await new CategoryService(
+      deps.categoryRepo,
+      deps.webAppRepo
+    ).list();
 
     expect(dto).toEqual({
       _id: CATEGORY_ID,
@@ -27,7 +30,10 @@ describe("CategoryService.list / listPublic", () => {
       categoryDoc(CATEGORY_ID, "Tools", "tools", 2)
     ]);
 
-    const [dto] = await new CategoryService(deps).listPublic();
+    const [dto] = await new CategoryService(
+      deps.categoryRepo,
+      deps.webAppRepo
+    ).listPublic();
 
     expect(dto).toEqual({
       _id: CATEGORY_ID,

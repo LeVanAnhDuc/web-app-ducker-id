@@ -11,12 +11,12 @@ export const createFavoriteModule = (accessPolicy: AccessPolicy) => {
   const favoriteRepo = new MongoFavoriteRepository();
   const webAppRepo = new MongoWebAppRepository();
   const favoritableGuard = new AppFavoritableGuard(webAppRepo, accessPolicy);
-  const service = new FavoriteService({
+  const service = new FavoriteService(
     favoriteRepo,
     webAppRepo,
     favoritableGuard,
     accessPolicy
-  });
+  );
   const favoriteController = new FavoriteController(service);
 
   return {

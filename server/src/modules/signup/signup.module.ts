@@ -24,7 +24,7 @@ export const createSignupModule = (
   const emailAvailableGuard = new EmailAvailableGuard(userService);
   const cooldownGuard = new CooldownGuard(otpSignupRepo);
 
-  const signupService = new SignupService({
+  const signupService = new SignupService(
     authService,
     userService,
     otpSignupRepo,
@@ -32,7 +32,8 @@ export const createSignupModule = (
     emailDispatcher,
     emailAvailableGuard,
     cooldownGuard
-  });
+  );
+
   return {
     signupController: new SignupController(signupService),
     signupService

@@ -1,9 +1,10 @@
 // types
 import type { WebAppWithCategories } from "@/modules/web-app/types";
-import type { PublicCategoryDto } from "@/modules/category/dtos";
 import type { RecentAppUsage } from "../types";
+// common
+import { toDto } from "@/common/dto";
 // modules
-import { toPublicCategoryDto } from "@/modules/category/dtos";
+import { PublicCategoryDto } from "@/modules/category/dtos";
 import { orderByCategoryIds } from "@/modules/web-app/helpers";
 // constants
 import { RECENT_APP_STATS } from "../constants";
@@ -39,7 +40,7 @@ const primaryCategory = (
   app: WebAppWithCategories
 ): PublicCategoryDto | null => {
   const [first] = orderByCategoryIds(app);
-  return first ? toPublicCategoryDto(first) : null;
+  return first ? toDto(PublicCategoryDto, first) : null;
 };
 
 const usedWithin = (

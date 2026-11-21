@@ -42,7 +42,10 @@ describe("CategoryService.remove", () => {
     ctx.webAppRepo.findOrphansOf.mockResolvedValue(
       orphans.map((id) => ({ _id: id, displayName: id }))
     );
-    return { ...ctx, service: new CategoryService(ctx.deps) };
+    return {
+      ...ctx,
+      service: new CategoryService(ctx.deps.categoryRepo, ctx.deps.webAppRepo)
+    };
   };
 
   const expectNothingWritten = (ctx: ReturnType<typeof setup>) => {

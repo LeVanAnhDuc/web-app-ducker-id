@@ -1,6 +1,6 @@
 // types
 import type { UserRole } from "@/modules/user/types";
-import type { EntitlementAdminServiceDeps } from "../deps";
+import type { UserRepository } from "@/modules/user/repository/user.repository";
 // common
 import { NotFoundError } from "@/exceptions";
 // others
@@ -8,10 +8,10 @@ import { ERROR_CODES } from "@/constants/error-code";
 
 /** Roles of `userIds` in the given order; any missing user fails the request. */
 export const resolveUsers = async (
-  deps: EntitlementAdminServiceDeps,
+  userRepo: Pick<UserRepository, "findRolesByIds">,
   userIds: string[]
 ): Promise<UserRole[]> => {
-  const rows = await deps.userRepo.findRolesByIds(userIds);
+  const rows = await userRepo.findRolesByIds(userIds);
   const byId = new Map(rows.map((row) => [row.userId, row]));
 
   return userIds.map((userId) => {

@@ -1,12 +1,13 @@
 // types
 import type { CategoryName } from "../types";
 import type { UpdateCategoryBodyDto } from "../dtos/requests";
-import type { AdminCategoryDto } from "../dtos";
-import type { CategoryServiceDeps } from "./deps";
+import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
+import type { CategoryRepository } from "../repository/category.repository";
 // common
+import { toDto } from "@/common/dto";
 import { ConflictRequestError, NotFoundError } from "@/exceptions";
 // dtos
-import { toAdminCategoryDto } from "../dtos";
+import { AdminCategoryDto } from "../dtos";
 // others
 import { generateSlug, withSlugRetry } from "./shared/generate-slug";
 import { ERROR_CODES } from "@/constants/error-code";
@@ -18,7 +19,7 @@ const notFound = () =>
   });
 
 export const update = async (
-  deps: CategoryServiceDeps,
+  deps: { categoryRepo: CategoryRepository; webAppRepo: WebAppRepository },
   id: string,
   body: UpdateCategoryBodyDto
 ): Promise<AdminCategoryDto> => {
@@ -41,12 +42,12 @@ export const update = async (
 
   const updated = await withSlugRetry(async () => {
     const slug = enChanged
-      ? await generateSlug(deps, name.en, id)
+      ? await generateSlug(deps.categoryRepo, name.en, id)
       : existing.slug;
     return deps.categoryRepo.updateById(id, { slug, name });
   });
   if (!updated) throw notFound();
 
   const appCount = await deps.webAppRepo.countByCategory(id);
-  return toAdminCategoryDto({ ...updated, appCount });
+  return toDto(AdminCategoryDto, { ...updated, appCount });
 };

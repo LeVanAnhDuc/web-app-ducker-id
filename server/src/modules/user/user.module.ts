@@ -13,12 +13,12 @@ export const createUserModule = (
   emailDispatcher: EmailDispatcher,
   notificationDispatcher: NotificationDispatcher
 ) => {
-  const userService = new UserService({
-    userRepo: new MongoUserRepository(),
+  const userService = new UserService(
+    new MongoUserRepository(),
     authService,
     emailDispatcher,
     notificationDispatcher
-  });
+  );
 
   return {
     userService,

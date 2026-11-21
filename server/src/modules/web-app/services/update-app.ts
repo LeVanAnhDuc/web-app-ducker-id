@@ -1,12 +1,14 @@
 // types
 import type { WebAppUpdateInput } from "../types";
 import type { UpdateAppBodyDto } from "../dtos/requests";
-import type { AdminAppDto } from "../dtos";
-import type { WebAppServiceDeps } from "./deps";
+import type { CategoryRepository } from "@/modules/category/repository/category.repository";
+import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
+import type { WebAppRepository } from "../repository/web-app.repository";
 // common
+import { toDto } from "@/common/dto";
 import { ConflictRequestError, NotFoundError } from "@/exceptions";
 // dtos
-import { toAdminAppDto } from "../dtos";
+import { AdminAppDto } from "../dtos";
 // others
 import { announceApp } from "./shared/announce-app";
 import { assertCategoriesExist } from "./shared/assert-categories-exist";
@@ -15,7 +17,11 @@ import { WEB_APP_STATUSES } from "../constants";
 import { ERROR_CODES } from "@/constants/error-code";
 
 export const updateApp = async (
-  deps: WebAppServiceDeps,
+  deps: {
+    webAppRepo: WebAppRepository;
+    categoryRepo: CategoryRepository;
+    notificationDispatcher: NotificationDispatcher;
+  },
   id: string,
   body: UpdateAppBodyDto
 ): Promise<AdminAppDto> => {
@@ -38,7 +44,7 @@ export const updateApp = async (
   }
 
   if (body.categoryIds !== undefined) {
-    await assertCategoriesExist(deps, body.categoryIds);
+    await assertCategoriesExist(deps.categoryRepo, body.categoryIds);
   }
 
   const updateInput: WebAppUpdateInput = {};
@@ -81,5 +87,5 @@ export const updateApp = async (
     await announceApp(deps, updated);
   }
 
-  return toAdminAppDto(updated);
+  return toDto(AdminAppDto, updated);
 };

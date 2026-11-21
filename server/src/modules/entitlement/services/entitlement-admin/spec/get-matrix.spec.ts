@@ -21,7 +21,15 @@ describe("EntitlementAdminService.getMatrix", () => {
     ]);
     ctx.webAppRepo.findAccessRules.mockResolvedValue(CATALOG);
     ctx.entitlementRepo.findByUsers.mockResolvedValue([]);
-    return { ...ctx, service: new EntitlementAdminService(ctx.deps) };
+    return {
+      ...ctx,
+      service: new EntitlementAdminService(
+        ctx.deps.entitlementRepo,
+        ctx.deps.userRepo,
+        ctx.deps.webAppRepo,
+        ctx.deps.notificationDispatcher
+      )
+    };
   };
 
   it("returns one row per requested user, in request order, against the whole catalog", async () => {

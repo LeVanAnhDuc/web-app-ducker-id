@@ -1,18 +1,10 @@
-// types
-import type { AuthTokensResponse } from "@/modules/authentication/types";
+// common
+import { Expose } from "@/common/dto";
 
-export interface UnlockVerifyDto {
-  accessToken: string;
-  refreshToken: string;
-  idToken: string;
-  expiresIn: number;
+/** Source: `AuthTokensResponse` — exactly the four token fields, nothing else. */
+export class UnlockVerifyDto {
+  @Expose() accessToken!: string;
+  @Expose() refreshToken!: string;
+  @Expose() idToken!: string;
+  @Expose() expiresIn!: number;
 }
-
-export const toUnlockVerifyDto = (
-  data: AuthTokensResponse
-): UnlockVerifyDto => ({
-  accessToken: data.accessToken,
-  refreshToken: data.refreshToken,
-  idToken: data.idToken,
-  expiresIn: data.expiresIn
-});

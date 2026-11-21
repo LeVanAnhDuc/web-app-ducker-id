@@ -1,17 +1,13 @@
 // types
-import type { CategoryName, WebAppCategoryDocument } from "../types";
+import type { CategoryNameDto } from "./category-name.dto";
+// common
+import { Expose, ExposeId } from "@/common/dto";
+// others
+import { ExposeCategoryName } from "./category-name.dto";
 
 /** What a non-admin may see of a category — no counts, no ordering internals. */
-export interface PublicCategoryDto {
-  _id: string;
-  slug: string;
-  name: CategoryName;
+export class PublicCategoryDto {
+  @ExposeId() _id!: string;
+  @Expose() slug!: string;
+  @ExposeCategoryName() name!: CategoryNameDto;
 }
-
-export const toPublicCategoryDto = (
-  doc: Pick<WebAppCategoryDocument, "_id" | "slug" | "name">
-): PublicCategoryDto => ({
-  _id: doc._id.toString(),
-  slug: doc.slug,
-  name: { en: doc.name.en, vi: doc.name.vi }
-});

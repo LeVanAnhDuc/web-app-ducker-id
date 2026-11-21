@@ -14,13 +14,13 @@ export const createWebAppModule = (
   accessPolicy: AccessPolicy,
   notificationDispatcher: NotificationDispatcher
 ) => {
-  const service = new WebAppService({
-    webAppRepo: new MongoWebAppRepository(),
+  const service = new WebAppService(
+    new MongoWebAppRepository(),
     categoryRepo,
-    favoriteRepo: new MongoFavoriteRepository(),
+    new MongoFavoriteRepository(),
     accessPolicy,
     notificationDispatcher
-  });
+  );
 
   return {
     webAppAdminController: new WebAppAdminController(service),

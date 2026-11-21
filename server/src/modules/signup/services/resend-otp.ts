@@ -2,7 +2,9 @@
 import type { Request } from "express";
 import type { ResendOtpBodyDto } from "../dtos/requests";
 import type { ResendOtpDto } from "../dtos";
-import type { SignupServiceDeps } from "./deps";
+import type { OtpSignupRepository } from "../repositories/otp-signup.repository";
+import type { EmailDispatcher } from "@/services/email/email.dispatcher";
+import type { EmailAvailableGuard, CooldownGuard } from "../guards";
 // common
 import { BadRequestError } from "@/exceptions";
 // dtos
@@ -20,7 +22,12 @@ import {
 } from "../constants";
 
 export const resendOtp = async (
-  deps: SignupServiceDeps,
+  deps: {
+    otpSignupRepo: OtpSignupRepository;
+    emailDispatcher: EmailDispatcher;
+    emailAvailableGuard: EmailAvailableGuard;
+    cooldownGuard: CooldownGuard;
+  },
   body: ResendOtpBodyDto,
   req: Request
 ): Promise<ResendOtpDto> => {

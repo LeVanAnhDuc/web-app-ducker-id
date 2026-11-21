@@ -5,7 +5,10 @@ import type {
   EntitlementUpsert
 } from "../../types";
 import type { EntitlementMatrixDto } from "../../dtos";
-import type { EntitlementAdminServiceDeps } from "./deps";
+import type { UserRepository } from "@/modules/user/repository/user.repository";
+import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
+import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
+import type { EntitlementRepository } from "../../repository/entitlement.repository";
 // common
 import { NotFoundError } from "@/exceptions";
 // modules
@@ -38,7 +41,10 @@ const unique = (values: string[]): string[] => [...new Set(values)];
  * Never throws: the admin's save already succeeded.
  */
 const notifyAccessChanges = async (
-  deps: EntitlementAdminServiceDeps,
+  deps: {
+    webAppRepo: Pick<WebAppRepository, "findAccessRules" | "findAll">;
+    notificationDispatcher: NotificationDispatcher;
+  },
   flipped: EntitlementChange[]
 ): Promise<void> => {
   if (flipped.length === 0) return;
@@ -78,12 +84,17 @@ const notifyAccessChanges = async (
  * role default (DR-4) — a value equal to the default removes the override.
  */
 export const updateMatrix = async (
-  deps: EntitlementAdminServiceDeps,
+  deps: {
+    entitlementRepo: EntitlementRepository;
+    userRepo: Pick<UserRepository, "findRolesByIds">;
+    webAppRepo: Pick<WebAppRepository, "findAccessRules" | "findAll">;
+    notificationDispatcher: NotificationDispatcher;
+  },
   changes: EntitlementChange[],
   actorId: string
 ): Promise<EntitlementMatrixDto> => {
   const users = await resolveUsers(
-    deps,
+    deps.userRepo,
     unique(changes.map((change) => change.userId))
   );
   const appIds = unique(changes.map((change) => change.appId));

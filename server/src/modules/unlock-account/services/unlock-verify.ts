@@ -1,19 +1,29 @@
 // types
 import type { Request } from "express";
 import type { UnlockVerifyBodyDto } from "../dtos/requests";
-import type { UnlockVerifyDto } from "../dtos";
-import type { UnlockAccountServiceDeps } from "./deps";
+import type { AuthenticationService } from "@/modules/authentication/services";
+import type { LoginHistoryService } from "@/modules/login-history/services";
+import type { LoginService } from "@/modules/login/services/login";
+import type { AuthExistsGuard, TempPasswordValidGuard } from "../guards";
+// common
+import { toDto } from "@/common/dto";
 // modules
 import { generateAuthTokensResponse } from "@/modules/authentication/helpers";
 import { LOGIN_METHODS } from "@/modules/login-history/constants";
 // dtos
-import { toUnlockVerifyDto } from "../dtos";
+import { UnlockVerifyDto } from "../dtos";
 // others
 import { Logger } from "@/libs/logger";
 import { withRetry } from "@/utils/resilience/retry";
 
 export const unlockVerify = async (
-  deps: UnlockAccountServiceDeps,
+  deps: {
+    authService: AuthenticationService;
+    loginHistoryService: LoginHistoryService;
+    loginService: LoginService;
+    authExistsGuard: AuthExistsGuard;
+    tempPasswordValidGuard: TempPasswordValidGuard;
+  },
   body: UnlockVerifyBodyDto,
   req: Request
 ): Promise<UnlockVerifyDto> => {
@@ -54,7 +64,8 @@ export const unlockVerify = async (
     authId: auth._id
   });
 
-  return toUnlockVerifyDto(
+  return toDto(
+    UnlockVerifyDto,
     generateAuthTokensResponse({
       userId: user._id.toString(),
       authId: auth._id.toString(),

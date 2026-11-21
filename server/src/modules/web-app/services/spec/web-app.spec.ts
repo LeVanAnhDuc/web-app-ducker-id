@@ -78,17 +78,17 @@ describe("WebAppService.createApp", () => {
     const { webAppRepo, categoryRepo, favoriteRepo, accessPolicy } =
       makeRepos();
     webAppRepo.existsByName.mockResolvedValue(true);
-    const service = new WebAppService({
+    const service = new WebAppService(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      webAppRepo: webAppRepo as any,
+      webAppRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      categoryRepo: categoryRepo as any,
+      categoryRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      favoriteRepo: favoriteRepo as any,
+      favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any,
-      notificationDispatcher: createNotificationDispatcherMock()
-    });
+      accessPolicy as any,
+      createNotificationDispatcherMock()
+    );
     await expect(service.createApp(validBody)).rejects.toBeInstanceOf(
       ConflictRequestError
     );
@@ -99,17 +99,17 @@ describe("WebAppService.createApp", () => {
     const { webAppRepo, categoryRepo, favoriteRepo, accessPolicy } =
       makeRepos();
     categoryRepo.countByIds.mockResolvedValue(1);
-    const service = new WebAppService({
+    const service = new WebAppService(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      webAppRepo: webAppRepo as any,
+      webAppRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      categoryRepo: categoryRepo as any,
+      categoryRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      favoriteRepo: favoriteRepo as any,
+      favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any,
-      notificationDispatcher: createNotificationDispatcherMock()
-    });
+      accessPolicy as any,
+      createNotificationDispatcherMock()
+    );
     await expect(service.createApp(validBody)).rejects.toBeInstanceOf(
       BadRequestError
     );
@@ -121,17 +121,17 @@ describe("WebAppService.createApp", () => {
     const { webAppRepo, categoryRepo, favoriteRepo, accessPolicy } =
       makeRepos();
     webAppRepo.create.mockResolvedValue(createdDoc);
-    const service = new WebAppService({
+    const service = new WebAppService(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      webAppRepo: webAppRepo as any,
+      webAppRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      categoryRepo: categoryRepo as any,
+      categoryRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      favoriteRepo: favoriteRepo as any,
+      favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any,
-      notificationDispatcher: createNotificationDispatcherMock()
-    });
+      accessPolicy as any,
+      createNotificationDispatcherMock()
+    );
 
     const result = await service.createApp(validBody);
 
@@ -174,17 +174,17 @@ describe("WebAppService.updateApp", () => {
     const { webAppRepo, categoryRepo, favoriteRepo, accessPolicy } =
       makeRepos();
     webAppRepo.findById.mockResolvedValue(null);
-    const service = new WebAppService({
+    const service = new WebAppService(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      webAppRepo: webAppRepo as any,
+      webAppRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      categoryRepo: categoryRepo as any,
+      categoryRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      favoriteRepo: favoriteRepo as any,
+      favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any,
-      notificationDispatcher: createNotificationDispatcherMock()
-    });
+      accessPolicy as any,
+      createNotificationDispatcherMock()
+    );
     await expect(
       service.updateApp("app1", { displayName: "New" })
     ).rejects.toBeInstanceOf(NotFoundError);
@@ -196,17 +196,17 @@ describe("WebAppService.updateApp", () => {
       makeRepos();
     webAppRepo.findById.mockResolvedValue(existingDoc);
     webAppRepo.existsByNameExcludingId.mockResolvedValue(true);
-    const service = new WebAppService({
+    const service = new WebAppService(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      webAppRepo: webAppRepo as any,
+      webAppRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      categoryRepo: categoryRepo as any,
+      categoryRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      favoriteRepo: favoriteRepo as any,
+      favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any,
-      notificationDispatcher: createNotificationDispatcherMock()
-    });
+      accessPolicy as any,
+      createNotificationDispatcherMock()
+    );
     await expect(
       service.updateApp("app1", { name: "taken" })
     ).rejects.toBeInstanceOf(ConflictRequestError);
@@ -218,17 +218,17 @@ describe("WebAppService.updateApp", () => {
       makeRepos();
     webAppRepo.findById.mockResolvedValue(existingDoc);
     webAppRepo.updateById.mockResolvedValue(existingDoc);
-    const service = new WebAppService({
+    const service = new WebAppService(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      webAppRepo: webAppRepo as any,
+      webAppRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      categoryRepo: categoryRepo as any,
+      categoryRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      favoriteRepo: favoriteRepo as any,
+      favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any,
-      notificationDispatcher: createNotificationDispatcherMock()
-    });
+      accessPolicy as any,
+      createNotificationDispatcherMock()
+    );
     await service.updateApp("app1", { name: "blog", displayName: "Blog 2" });
     expect(webAppRepo.existsByNameExcludingId).not.toHaveBeenCalled();
     expect(webAppRepo.updateById).toHaveBeenCalled();
@@ -239,17 +239,17 @@ describe("WebAppService.updateApp", () => {
       makeRepos();
     webAppRepo.findById.mockResolvedValue(existingDoc);
     categoryRepo.countByIds.mockResolvedValue(0);
-    const service = new WebAppService({
+    const service = new WebAppService(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      webAppRepo: webAppRepo as any,
+      webAppRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      categoryRepo: categoryRepo as any,
+      categoryRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      favoriteRepo: favoriteRepo as any,
+      favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any,
-      notificationDispatcher: createNotificationDispatcherMock()
-    });
+      accessPolicy as any,
+      createNotificationDispatcherMock()
+    );
     await expect(
       service.updateApp("app1", { categoryIds: ["6a24f14e6d65650b697c34c6"] })
     ).rejects.toBeInstanceOf(BadRequestError);
@@ -264,17 +264,17 @@ describe("WebAppService.updateApp", () => {
       ...existingDoc,
       status: WEB_APP_STATUSES.INACTIVE
     });
-    const service = new WebAppService({
+    const service = new WebAppService(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      webAppRepo: webAppRepo as any,
+      webAppRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      categoryRepo: categoryRepo as any,
+      categoryRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      favoriteRepo: favoriteRepo as any,
+      favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any,
-      notificationDispatcher: createNotificationDispatcherMock()
-    });
+      accessPolicy as any,
+      createNotificationDispatcherMock()
+    );
     const result = await service.updateApp("app1", { status: "inactive" });
     const persisted = webAppRepo.updateById.mock.calls[0][1];
     expect(persisted.status).toBe(WEB_APP_STATUSES.INACTIVE);
@@ -292,17 +292,17 @@ describe("WebAppService.updateApp", () => {
       ...existingDoc,
       status: WEB_APP_STATUSES.ACTIVE
     });
-    const service = new WebAppService({
+    const service = new WebAppService(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      webAppRepo: webAppRepo as any,
+      webAppRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      categoryRepo: categoryRepo as any,
+      categoryRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      favoriteRepo: favoriteRepo as any,
+      favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any,
-      notificationDispatcher: createNotificationDispatcherMock()
-    });
+      accessPolicy as any,
+      createNotificationDispatcherMock()
+    );
     const result = await service.updateApp("app1", { status: "active" });
     const persisted = webAppRepo.updateById.mock.calls[0][1];
     expect(persisted.status).toBe(WEB_APP_STATUSES.ACTIVE);
@@ -317,17 +317,17 @@ describe("WebAppService.updateApp", () => {
       ...existingDoc,
       displayName: "Renamed"
     });
-    const service = new WebAppService({
+    const service = new WebAppService(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      webAppRepo: webAppRepo as any,
+      webAppRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      categoryRepo: categoryRepo as any,
+      categoryRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      favoriteRepo: favoriteRepo as any,
+      favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any,
-      notificationDispatcher: createNotificationDispatcherMock()
-    });
+      accessPolicy as any,
+      createNotificationDispatcherMock()
+    );
     const result = await service.updateApp("app1", { displayName: "Renamed" });
     const persisted = webAppRepo.updateById.mock.calls[0][1];
     expect(Object.keys(persisted)).toEqual(["displayName"]);
@@ -367,17 +367,17 @@ describe("WebAppService.listUserApps", () => {
       makeRepos();
     webAppRepo.findActivePaginated.mockResolvedValue([activeDoc]);
     webAppRepo.countActive.mockResolvedValue(1);
-    const service = new WebAppService({
+    const service = new WebAppService(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      webAppRepo: webAppRepo as any,
+      webAppRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      categoryRepo: categoryRepo as any,
+      categoryRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      favoriteRepo: favoriteRepo as any,
+      favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any,
-      notificationDispatcher: createNotificationDispatcherMock()
-    });
+      accessPolicy as any,
+      createNotificationDispatcherMock()
+    );
 
     await service.listUserApps({ search: "blog" });
 
@@ -391,17 +391,17 @@ describe("WebAppService.listUserApps", () => {
       makeRepos();
     webAppRepo.findActivePaginated.mockResolvedValue([activeDoc]);
     webAppRepo.countActive.mockResolvedValue(25);
-    const service = new WebAppService({
+    const service = new WebAppService(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      webAppRepo: webAppRepo as any,
+      webAppRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      categoryRepo: categoryRepo as any,
+      categoryRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      favoriteRepo: favoriteRepo as any,
+      favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any,
-      notificationDispatcher: createNotificationDispatcherMock()
-    });
+      accessPolicy as any,
+      createNotificationDispatcherMock()
+    );
 
     const result = await service.listUserApps({ page: 2, limit: 12 });
 
@@ -437,17 +437,17 @@ describe("WebAppService.listUserApps", () => {
       makeRepos();
     webAppRepo.findActivePaginated.mockResolvedValue([]);
     webAppRepo.countActive.mockResolvedValue(0);
-    const service = new WebAppService({
+    const service = new WebAppService(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      webAppRepo: webAppRepo as any,
+      webAppRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      categoryRepo: categoryRepo as any,
+      categoryRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      favoriteRepo: favoriteRepo as any,
+      favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any,
-      notificationDispatcher: createNotificationDispatcherMock()
-    });
+      accessPolicy as any,
+      createNotificationDispatcherMock()
+    );
 
     const result = await service.listUserApps({ limit: 9999 });
 
@@ -464,17 +464,17 @@ describe("WebAppService.listUserApps", () => {
       makeRepos();
     webAppRepo.findActivePaginated.mockResolvedValue([]);
     webAppRepo.countActive.mockResolvedValue(0);
-    const service = new WebAppService({
+    const service = new WebAppService(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      webAppRepo: webAppRepo as any,
+      webAppRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      categoryRepo: categoryRepo as any,
+      categoryRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      favoriteRepo: favoriteRepo as any,
+      favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any,
-      notificationDispatcher: createNotificationDispatcherMock()
-    });
+      accessPolicy as any,
+      createNotificationDispatcherMock()
+    );
 
     await service.listUserApps(
       { categoryId: "64b2f0c2f1a2b3c4d5e6f7a8" },
@@ -490,17 +490,17 @@ describe("WebAppService.listUserApps", () => {
       makeRepos();
     webAppRepo.findActivePaginated.mockResolvedValue([]);
     webAppRepo.countActive.mockResolvedValue(0);
-    const service = new WebAppService({
+    const service = new WebAppService(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      webAppRepo: webAppRepo as any,
+      webAppRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      categoryRepo: categoryRepo as any,
+      categoryRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      favoriteRepo: favoriteRepo as any,
+      favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any,
-      notificationDispatcher: createNotificationDispatcherMock()
-    });
+      accessPolicy as any,
+      createNotificationDispatcherMock()
+    );
 
     await service.listUserApps({}, "user");
 
@@ -517,17 +517,17 @@ describe("WebAppService.listUserApps access", () => {
       makeRepos();
     webAppRepo.findActivePaginated.mockResolvedValue([]);
     webAppRepo.countActive.mockResolvedValue(0);
-    const service = new WebAppService({
+    const service = new WebAppService(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      webAppRepo: webAppRepo as any,
+      webAppRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      categoryRepo: categoryRepo as any,
+      categoryRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      favoriteRepo: favoriteRepo as any,
+      favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any,
-      notificationDispatcher: createNotificationDispatcherMock()
-    });
+      accessPolicy as any,
+      createNotificationDispatcherMock()
+    );
     return { webAppRepo, accessPolicy, service };
   };
 
@@ -618,17 +618,17 @@ describe("WebAppService.listUserApps isFavorite", () => {
     webAppRepo.countActive.mockResolvedValue(2);
     favoriteRepo.findFavoritedAppIds.mockResolvedValue(new Set(["app1"]));
     jest.spyOn(RequestContext, "getUserId").mockReturnValue("u1");
-    const service = new WebAppService({
+    const service = new WebAppService(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      webAppRepo: webAppRepo as any,
+      webAppRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      categoryRepo: categoryRepo as any,
+      categoryRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      favoriteRepo: favoriteRepo as any,
+      favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: accessPolicy as any,
-      notificationDispatcher: createNotificationDispatcherMock()
-    });
+      accessPolicy as any,
+      createNotificationDispatcherMock()
+    );
     const res = await service.listUserApps({}, "user");
     expect(res.items.find((i) => i._id === "app1")?.isFavorite).toBe(true);
     expect(res.items.find((i) => i._id === "app2")?.isFavorite).toBe(false);
@@ -639,17 +639,17 @@ describe("WebAppService.listUserApps isFavorite", () => {
 describe("WebAppService — APP_AVAILABLE announcement", () => {
   const build = (repos: ReturnType<typeof makeRepos>) => {
     const notificationDispatcher = createNotificationDispatcherMock();
-    const service = new WebAppService({
+    const service = new WebAppService(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      webAppRepo: repos.webAppRepo as any,
+      repos.webAppRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      categoryRepo: repos.categoryRepo as any,
+      repos.categoryRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      favoriteRepo: repos.favoriteRepo as any,
+      repos.favoriteRepo as any,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      accessPolicy: repos.accessPolicy as any,
+      repos.accessPolicy as any,
       notificationDispatcher
-    });
+    );
     return { service, notificationDispatcher };
   };
 

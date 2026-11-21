@@ -1,12 +1,13 @@
 // types
 import type { SubmitContactBodyDto } from "../dtos/requests";
-import type { SubmitContactResponseDto } from "../dtos";
 import type { ContactRepository } from "../repository/contact-admin.repository";
+// common
+import { toDto } from "@/common/dto";
 // validators
 import { sanitizeText, validateStringLength } from "@/validators/utils";
 import { CONTACT_CONFIG } from "@/validators/constants";
 // dtos
-import { toSubmitContactResponseDto } from "../dtos";
+import { SubmitContactResponseDto } from "../dtos";
 // others
 import { CONTACT_STATUSES } from "../constants";
 import { RequestContext } from "@/utils/request-context";
@@ -47,5 +48,5 @@ export const submitContact = async (
     ipAddress
   });
 
-  return toSubmitContactResponseDto(contact);
+  return toDto(SubmitContactResponseDto, contact);
 };

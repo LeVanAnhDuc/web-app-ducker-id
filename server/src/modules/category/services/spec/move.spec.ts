@@ -32,7 +32,10 @@ describe("CategoryService.move", () => {
       categoryDoc(THIRD_ID, "C", "c", 1)
     ]);
     ctx.categoryRepo.findAllWithAppCount.mockResolvedValue([]);
-    return { ...ctx, service: new CategoryService(ctx.deps) };
+    return {
+      ...ctx,
+      service: new CategoryService(ctx.deps.categoryRepo, ctx.deps.webAppRepo)
+    };
   };
 
   beforeEach(() => {

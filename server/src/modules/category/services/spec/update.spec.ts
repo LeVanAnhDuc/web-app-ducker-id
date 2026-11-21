@@ -18,7 +18,10 @@ describe("CategoryService.update", () => {
       ...input
     }));
     ctx.webAppRepo.countByCategory.mockResolvedValue(2);
-    return { ...ctx, service: new CategoryService(ctx.deps) };
+    return {
+      ...ctx,
+      service: new CategoryService(ctx.deps.categoryRepo, ctx.deps.webAppRepo)
+    };
   };
 
   it("regenerates the slug when name.en changes", async () => {

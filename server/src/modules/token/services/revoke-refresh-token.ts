@@ -1,5 +1,5 @@
 // types
-import type { TokenServiceDeps } from "./deps";
+import type { RevokedRefreshTokenRepository } from "../repository/revoked-refresh-token.repository";
 // others
 import { Logger } from "@/libs/logger";
 import { MILLISECONDS_PER_SECOND } from "@/constants/time";
@@ -11,7 +11,7 @@ import { verifyRefreshToken } from "../helpers";
  * is skipped instead of failing the logout.
  */
 export const revokeRefreshToken = async (
-  deps: TokenServiceDeps,
+  revokedRefreshTokenRepo: RevokedRefreshTokenRepository,
   refreshToken: string | undefined
 ): Promise<void> => {
   if (!refreshToken) return;
@@ -27,7 +27,7 @@ export const revokeRefreshToken = async (
   const ttlSeconds = (payload.exp ?? 0) - nowSeconds;
   if (ttlSeconds <= 0) return;
 
-  await deps.revokedRefreshTokenRepo.revoke(refreshToken, ttlSeconds);
+  await revokedRefreshTokenRepo.revoke(refreshToken, ttlSeconds);
 
   Logger.info("Refresh token revoked", { authId: payload.authId });
 };

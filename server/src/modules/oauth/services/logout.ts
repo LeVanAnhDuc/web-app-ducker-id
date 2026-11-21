@@ -1,6 +1,7 @@
 // types
 import type { Request, Response } from "express";
-import type { OAuthServiceDeps } from "./deps";
+import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
+import type { SessionService } from "@/modules/session/services";
 // others
 import { buildRedirectUrl } from "../helpers";
 
@@ -10,7 +11,10 @@ import { buildRedirectUrl } from "../helpers";
  * 15 phút là thứ giới hạn bán kính ảnh hưởng thay cho nó.
  */
 export const logout = async (
-  deps: OAuthServiceDeps,
+  deps: {
+    webAppRepo: WebAppRepository;
+    sessionService: SessionService;
+  },
   req: Request,
   res: Response
 ): Promise<string | null> => {

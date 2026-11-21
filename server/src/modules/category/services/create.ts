@@ -1,22 +1,22 @@
 // types
 import type { CreateCategoryBodyDto } from "../dtos/requests";
-import type { AdminCategoryDto } from "../dtos";
-import type { CategoryServiceDeps } from "./deps";
+import type { CategoryRepository } from "../repository/category.repository";
 // common
+import { toDto } from "@/common/dto";
 import { ConflictRequestError } from "@/exceptions";
 // dtos
-import { toAdminCategoryDto } from "../dtos";
+import { AdminCategoryDto } from "../dtos";
 // others
 import { generateSlug, withSlugRetry } from "./shared/generate-slug";
 import { ERROR_CODES } from "@/constants/error-code";
 
 export const create = async (
-  deps: CategoryServiceDeps,
+  categoryRepo: CategoryRepository,
   body: CreateCategoryBodyDto
 ): Promise<AdminCategoryDto> => {
   const { name } = body;
 
-  if (await deps.categoryRepo.existsByNameEn(name.en)) {
+  if (await categoryRepo.existsByNameEn(name.en)) {
     throw new ConflictRequestError({
       key: "category:errors.nameTaken",
       code: ERROR_CODES.CATEGORY_NAME_TAKEN
@@ -24,10 +24,10 @@ export const create = async (
   }
 
   const doc = await withSlugRetry(async () => {
-    const slug = await generateSlug(deps, name.en);
-    const sortOrder = (await deps.categoryRepo.findMaxSortOrder()) + 1;
-    return deps.categoryRepo.create({ slug, name, sortOrder });
+    const slug = await generateSlug(categoryRepo, name.en);
+    const sortOrder = (await categoryRepo.findMaxSortOrder()) + 1;
+    return categoryRepo.create({ slug, name, sortOrder });
   });
 
-  return toAdminCategoryDto({ ...doc, appCount: 0 });
+  return toDto(AdminCategoryDto, { ...doc, appCount: 0 });
 };

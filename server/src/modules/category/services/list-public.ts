@@ -1,12 +1,13 @@
 // types
-import type { PublicCategoryDto } from "../dtos";
-import type { CategoryServiceDeps } from "./deps";
+import type { CategoryRepository } from "../repository/category.repository";
+// common
+import { toDto } from "@/common/dto";
 // dtos
-import { toPublicCategoryDto } from "../dtos";
+import { PublicCategoryDto } from "../dtos";
 
 export const listPublic = async (
-  deps: CategoryServiceDeps
+  categoryRepo: CategoryRepository
 ): Promise<PublicCategoryDto[]> => {
-  const docs = await deps.categoryRepo.findAll();
-  return docs.map(toPublicCategoryDto);
+  const docs = await categoryRepo.findAll();
+  return toDto(PublicCategoryDto, docs);
 };

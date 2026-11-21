@@ -2,7 +2,9 @@
 import type { Request } from "express";
 import type { OtpSendBodyDto } from "../../dtos/requests";
 import type { OtpSendDto } from "../../dtos";
-import type { OtpLoginStrategyDeps } from "./deps";
+import type { EmailDispatcher } from "@/services/email/email.dispatcher";
+import type { OtpLoginRepository } from "../../repositories/otp-login.repository";
+import type { AccountExistsGuard, OtpCooldownGuard } from "../../guards";
 // common
 import { BadRequestError } from "@/exceptions";
 // dtos
@@ -15,7 +17,12 @@ import { withRetry } from "@/utils/resilience/retry";
 import { LOGIN_OTP_CONFIG } from "../../constants";
 
 export const sendCode = async (
-  deps: OtpLoginStrategyDeps,
+  deps: {
+    accountExistsGuard: AccountExistsGuard;
+    otpCooldownGuard: OtpCooldownGuard;
+    otpLoginRepo: OtpLoginRepository;
+    emailDispatcher: EmailDispatcher;
+  },
   body: OtpSendBodyDto,
   req: Request
 ): Promise<OtpSendDto> => {

@@ -2,7 +2,7 @@
 import { StatusCodes } from "http-status-codes";
 // types
 import type { WebAppDocument } from "@/modules/web-app/types";
-import type { OAuthServiceDeps } from "../deps";
+import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
 // common
 import { OAuthError } from "@/exceptions";
 // modules
@@ -19,7 +19,7 @@ import { OAUTH_ERRORS } from "../../constants";
  * phải helper: nó đọc Mongo.
  */
 export const resolveClient = async (
-  deps: OAuthServiceDeps,
+  webAppRepo: WebAppRepository,
   clientId?: string
 ): Promise<WebAppDocument> => {
   if (!clientId) {
@@ -29,7 +29,7 @@ export const resolveClient = async (
     });
   }
 
-  const client = await deps.webAppRepo.findByClientId(clientId);
+  const client = await webAppRepo.findByClientId(clientId);
 
   if (!client || client.status !== WEB_APP_STATUSES.ACTIVE) {
     throw new OAuthError({

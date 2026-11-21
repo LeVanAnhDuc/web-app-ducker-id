@@ -1,10 +1,14 @@
 // types
-import type { FavoriteServiceDeps } from "./deps";
+import type { FavoriteRepository } from "../repository/favorite.repository";
+import type { AppFavoritableGuard } from "../guards";
 // others
 import { RequestContext } from "@/utils/request-context";
 
 export const add = async (
-  deps: FavoriteServiceDeps,
+  deps: {
+    favoriteRepo: FavoriteRepository;
+    favoritableGuard: AppFavoritableGuard;
+  },
   appId: string
 ): Promise<void> => {
   const userId = RequestContext.requireUserId();

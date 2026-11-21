@@ -1,17 +1,18 @@
 // types
 import type { AdminAppsQueryDto } from "../dtos/requests";
-import type { AdminAppDto } from "../dtos";
-import type { WebAppServiceDeps } from "./deps";
+import type { WebAppRepository } from "../repository/web-app.repository";
+// common
+import { toDto } from "@/common/dto";
 // dtos
-import { toAdminAppDto } from "../dtos";
+import { AdminAppDto } from "../dtos";
 // others
 import { buildWebAppFilter } from "../helpers";
 
 export const listApps = async (
-  deps: WebAppServiceDeps,
+  webAppRepo: WebAppRepository,
   query: AdminAppsQueryDto
 ): Promise<{ items: AdminAppDto[] }> => {
   const filter = buildWebAppFilter(query);
-  const docs = await deps.webAppRepo.findAll(filter);
-  return { items: docs.map(toAdminAppDto) };
+  const docs = await webAppRepo.findAll(filter);
+  return { items: toDto(AdminAppDto, docs) };
 };

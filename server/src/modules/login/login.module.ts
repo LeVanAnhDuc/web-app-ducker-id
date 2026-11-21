@@ -60,7 +60,7 @@ export const createLoginModule = (
     completionService,
     notificationDispatcher
   );
-  const otpStrategy = new OtpLoginStrategy({
+  const otpStrategy = new OtpLoginStrategy(
     accountExistsGuard,
     accountActiveGuard,
     emailVerifiedGuard,
@@ -69,10 +69,10 @@ export const createLoginModule = (
     otpCooldownGuard,
     otpLoginRepo,
     emailDispatcher,
-    audit: auditService,
-    completion: completionService
-  });
-  const magicLinkStrategy = new MagicLinkLoginStrategy({
+    auditService,
+    completionService
+  );
+  const magicLinkStrategy = new MagicLinkLoginStrategy(
     accountExistsGuard,
     accountActiveGuard,
     emailVerifiedGuard,
@@ -80,9 +80,9 @@ export const createLoginModule = (
     magicLinkCooldownGuard,
     magicLinkLoginRepo,
     emailDispatcher,
-    audit: auditService,
-    completion: completionService
-  });
+    auditService,
+    completionService
+  );
 
   const loginService = new LoginService(
     passwordStrategy,

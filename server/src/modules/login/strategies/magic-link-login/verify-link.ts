@@ -2,7 +2,15 @@
 import type { Request } from "express";
 import type { MagicLinkVerifyBodyDto } from "../../dtos/requests";
 import type { LoginResponseDto } from "../../dtos";
-import type { MagicLinkLoginStrategyDeps } from "./deps";
+import type { MagicLinkLoginRepository } from "../../repositories/magic-link-login.repository";
+import type {
+  AccountExistsGuard,
+  AccountActiveGuard,
+  EmailVerifiedGuard,
+  PasswordLockoutGuard
+} from "../../guards";
+import type { LoginAuditService } from "../../services/login-audit";
+import type { LoginCompletionService } from "../../services/login-completion";
 // common
 import { UnauthorizedError } from "@/exceptions";
 // modules
@@ -13,7 +21,15 @@ import { Logger } from "@/libs/logger";
 import { withRetry } from "@/utils/resilience/retry";
 
 export const verifyLink = async (
-  deps: MagicLinkLoginStrategyDeps,
+  deps: {
+    accountExistsGuard: AccountExistsGuard;
+    accountActiveGuard: AccountActiveGuard;
+    emailVerifiedGuard: EmailVerifiedGuard;
+    passwordLockoutGuard: PasswordLockoutGuard;
+    magicLinkLoginRepo: MagicLinkLoginRepository;
+    audit: LoginAuditService;
+    completion: LoginCompletionService;
+  },
   body: MagicLinkVerifyBodyDto,
   req: Request
 ): Promise<LoginResponseDto> => {

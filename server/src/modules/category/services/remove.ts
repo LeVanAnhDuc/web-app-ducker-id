@@ -3,7 +3,8 @@ import mongoose from "mongoose";
 // types
 import type { ClientSession } from "mongoose";
 import type { CategoryReassignment } from "../types";
-import type { CategoryServiceDeps } from "./deps";
+import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
+import type { CategoryRepository } from "../repository/category.repository";
 // common
 import {
   BadRequestError,
@@ -14,7 +15,7 @@ import {
 import { ERROR_CODES } from "@/constants/error-code";
 
 const assertTargetsValid = async (
-  deps: CategoryServiceDeps,
+  categoryRepo: CategoryRepository,
   id: string,
   reassignments: CategoryReassignment[],
   session: ClientSession
@@ -25,8 +26,7 @@ const assertTargetsValid = async (
     appIds.size === reassignments.length &&
     !targets.includes(id) &&
     (targets.length === 0 ||
-      (await deps.categoryRepo.countByIds(targets, session)) ===
-        targets.length);
+      (await categoryRepo.countByIds(targets, session)) === targets.length);
   if (!valid) {
     throw new BadRequestError({
       key: "category:errors.reassignInvalid",
@@ -42,13 +42,13 @@ const assertTargetsValid = async (
  * category at all — nothing is written and the client reloads the impact.
  */
 const assertCoversOrphans = async (
-  deps: CategoryServiceDeps,
+  webAppRepo: WebAppRepository,
   id: string,
   reassignments: CategoryReassignment[],
   session: ClientSession
 ): Promise<void> => {
   const orphanIds = new Set(
-    (await deps.webAppRepo.findOrphansOf(id, session)).map((app) => app._id)
+    (await webAppRepo.findOrphansOf(id, session)).map((app) => app._id)
   );
 
   if (orphanIds.size > 0 && reassignments.length === 0) {
@@ -70,7 +70,7 @@ const assertCoversOrphans = async (
 };
 
 export const remove = async (
-  deps: CategoryServiceDeps,
+  deps: { categoryRepo: CategoryRepository; webAppRepo: WebAppRepository },
   id: string,
   reassignments: CategoryReassignment[]
 ): Promise<void> => {
@@ -86,8 +86,8 @@ export const remove = async (
         });
       }
 
-      await assertTargetsValid(deps, id, reassignments, session);
-      await assertCoversOrphans(deps, id, reassignments, session);
+      await assertTargetsValid(deps.categoryRepo, id, reassignments, session);
+      await assertCoversOrphans(deps.webAppRepo, id, reassignments, session);
 
       await deps.webAppRepo.reassignOrphans(id, reassignments, session);
       await deps.webAppRepo.pullCategory(id, session);

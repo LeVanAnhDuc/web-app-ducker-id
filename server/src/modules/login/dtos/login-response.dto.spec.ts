@@ -1,9 +1,11 @@
 // types
 import type { AuthTokensResponse } from "@/modules/authentication/types";
+// common
+import { toDto } from "@/common/dto";
 // others
-import { toLoginResponseDto } from "./login-response.dto";
+import { LoginResponseDto } from "./login-response.dto";
 
-describe("toLoginResponseDto", () => {
+describe("LoginResponseDto", () => {
   it("maps AuthTokensResponse fields 1:1", () => {
     const input: AuthTokensResponse = {
       accessToken: "access-xyz",
@@ -12,7 +14,7 @@ describe("toLoginResponseDto", () => {
       expiresIn: 3600
     };
 
-    const result = toLoginResponseDto(input);
+    const result = toDto(LoginResponseDto, input);
 
     expect(result).toEqual({
       accessToken: "access-xyz",
@@ -31,7 +33,7 @@ describe("toLoginResponseDto", () => {
       internalSecret: "leak"
     } as unknown as AuthTokensResponse;
 
-    const result = toLoginResponseDto(input);
+    const result = toDto(LoginResponseDto, input);
 
     expect(Object.keys(result).sort()).toEqual([
       "accessToken",

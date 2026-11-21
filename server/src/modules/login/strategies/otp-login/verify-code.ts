@@ -3,7 +3,16 @@ import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { Request } from "express";
 import type { OtpVerifyBodyDto } from "../../dtos/requests";
 import type { LoginResponseDto } from "../../dtos";
-import type { OtpLoginStrategyDeps } from "./deps";
+import type { OtpLoginRepository } from "../../repositories/otp-login.repository";
+import type {
+  AccountExistsGuard,
+  AccountActiveGuard,
+  EmailVerifiedGuard,
+  PasswordLockoutGuard,
+  OtpLockoutGuard
+} from "../../guards";
+import type { LoginAuditService } from "../../services/login-audit";
+import type { LoginCompletionService } from "../../services/login-completion";
 // common
 import { TooManyRequestsError, UnauthorizedError } from "@/exceptions";
 // modules
@@ -16,7 +25,7 @@ import { LOGIN_OTP_CONFIG } from "../../constants";
 
 /** Chạm Redis nên không phải helper; chỉ `verifyCode` dùng tới. */
 const handleInvalidOtp = async (
-  deps: OtpLoginStrategyDeps,
+  deps: { otpLoginRepo: OtpLoginRepository; audit: LoginAuditService },
   auth: AuthenticationDocument,
   email: string,
   req: Request
@@ -44,7 +53,16 @@ const handleInvalidOtp = async (
 };
 
 export const verifyCode = async (
-  deps: OtpLoginStrategyDeps,
+  deps: {
+    accountExistsGuard: AccountExistsGuard;
+    accountActiveGuard: AccountActiveGuard;
+    emailVerifiedGuard: EmailVerifiedGuard;
+    passwordLockoutGuard: PasswordLockoutGuard;
+    otpLockoutGuard: OtpLockoutGuard;
+    otpLoginRepo: OtpLoginRepository;
+    audit: LoginAuditService;
+    completion: LoginCompletionService;
+  },
   body: OtpVerifyBodyDto,
   req: Request
 ): Promise<LoginResponseDto> => {
@@ -61,7 +79,13 @@ export const verifyCode = async (
   deps.emailVerifiedGuard.assertWithAudit(auth, email, LOGIN_METHODS.OTP, req);
 
   const isValid = await deps.otpLoginRepo.verify(email, otp);
-  if (!isValid) await handleInvalidOtp(deps, auth, email, req);
+  if (!isValid)
+    await handleInvalidOtp(
+      { otpLoginRepo: deps.otpLoginRepo, audit: deps.audit },
+      auth,
+      email,
+      req
+    );
 
   withRetry(() => deps.otpLoginRepo.cleanupAll(email), {
     operationName: "cleanupLoginOtpData",

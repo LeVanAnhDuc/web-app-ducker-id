@@ -60,12 +60,12 @@ const makeDeps = () => {
   const accessPolicy = new AccessPolicy(
     entitlementRepo as unknown as EntitlementRepository
   );
-  const service = new RecentAppService({
-    recentAppRepo: recentAppRepo as unknown as RecentAppRepository,
-    webAppRepo: webAppRepo as unknown as WebAppRepository,
-    favoriteRepo: favoriteRepo as unknown as FavoriteRepository,
+  const service = new RecentAppService(
+    recentAppRepo as unknown as RecentAppRepository,
+    webAppRepo as unknown as WebAppRepository,
+    favoriteRepo as unknown as FavoriteRepository,
     accessPolicy
-  });
+  );
   return { recentAppRepo, webAppRepo, favoriteRepo, entitlementRepo, service };
 };
 

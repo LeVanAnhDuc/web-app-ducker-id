@@ -5,7 +5,11 @@ import type { Schema } from "mongoose";
 import type { Gender } from "@/modules/user/types";
 import type { CompleteSignupBodyDto } from "../dtos/requests";
 import type { CompleteSignupDto } from "../dtos";
-import type { SignupServiceDeps } from "./deps";
+import type { AuthenticationService } from "@/modules/authentication/services";
+import type { UserService } from "@/modules/user/services";
+import type { OtpSignupRepository } from "../repositories/otp-signup.repository";
+import type { SessionSignupRepository } from "../repositories/session-signup.repository";
+import type { EmailAvailableGuard } from "../guards";
 // common
 import {
   BadRequestError,
@@ -28,7 +32,10 @@ import { isDuplicateKeyError, getDuplicatedField } from "@/utils/mongo-errors";
  * `completeSignup` dùng tới — trước kia là private method của `SignupService`.
  */
 const createUserAccount = async (
-  deps: SignupServiceDeps,
+  deps: {
+    authService: AuthenticationService;
+    userService: UserService;
+  },
   email: string,
   password: string,
   fullName: string,
@@ -94,7 +101,13 @@ const createUserAccount = async (
 };
 
 export const completeSignup = async (
-  deps: SignupServiceDeps,
+  deps: {
+    authService: AuthenticationService;
+    userService: UserService;
+    otpSignupRepo: OtpSignupRepository;
+    sessionSignupRepo: SessionSignupRepository;
+    emailAvailableGuard: EmailAvailableGuard;
+  },
   body: CompleteSignupBodyDto
 ): Promise<CompleteSignupDto> => {
   const { email, password, fullName, gender, dateOfBirth, sessionToken } = body;

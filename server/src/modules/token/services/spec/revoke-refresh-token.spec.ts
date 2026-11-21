@@ -2,7 +2,6 @@ jest.mock("../../helpers", () => ({ verifyRefreshToken: jest.fn() }));
 
 // types
 import type { RevokedRefreshTokenRepository } from "../../repository/revoked-refresh-token.repository";
-import type { TokenServiceDeps } from "../deps";
 // common
 import { ForbiddenError } from "@/exceptions";
 // others
@@ -22,9 +21,18 @@ const setup = () => {
     isRevoked: jest.fn()
   } as jest.Mocked<RevokedRefreshTokenRepository>;
 
-  const service = new TokenService({
-    revokedRefreshTokenRepo
-  } as unknown as TokenServiceDeps);
+  const unused = undefined as never;
+  const service = new TokenService(
+    unused,
+    unused,
+    revokedRefreshTokenRepo,
+    unused,
+    unused,
+    unused,
+    unused,
+    unused,
+    unused
+  );
 
   return { service, revokedRefreshTokenRepo };
 };

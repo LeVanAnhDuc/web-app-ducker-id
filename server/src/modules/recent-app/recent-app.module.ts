@@ -12,12 +12,12 @@ export const createRecentAppModule = (
   favoriteRepo: FavoriteRepository,
   accessPolicy: AccessPolicy
 ) => {
-  const service = new RecentAppService({
-    recentAppRepo: new MongoRecentAppRepository(),
-    webAppRepo: new MongoWebAppRepository(),
+  const service = new RecentAppService(
+    new MongoRecentAppRepository(),
+    new MongoWebAppRepository(),
     favoriteRepo,
     accessPolicy
-  });
+  );
   const recentAppController = new RecentAppController(service);
 
   return {

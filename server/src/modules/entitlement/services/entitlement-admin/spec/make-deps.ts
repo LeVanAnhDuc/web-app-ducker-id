@@ -1,5 +1,8 @@
 // types
-import type { EntitlementAdminServiceDeps } from "../deps";
+import type { UserRepository } from "@/modules/user/repository/user.repository";
+import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
+import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
+import type { EntitlementRepository } from "../../../repository/entitlement.repository";
 // others
 import { createNotificationDispatcherMock } from "@test/mocks/notification-dispatcher.mock";
 
@@ -34,7 +37,12 @@ export const makeDeps = () => {
     userRepo,
     webAppRepo,
     notificationDispatcher
-  } as unknown as EntitlementAdminServiceDeps;
+  } as unknown as {
+    entitlementRepo: EntitlementRepository;
+    userRepo: Pick<UserRepository, "findRolesByIds">;
+    webAppRepo: Pick<WebAppRepository, "findAccessRules" | "findAll">;
+    notificationDispatcher: NotificationDispatcher;
+  };
   return {
     deps,
     entitlementRepo,

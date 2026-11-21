@@ -2,7 +2,9 @@
 import type { Request } from "express";
 import type { MagicLinkSendBodyDto } from "../../dtos/requests";
 import type { MagicLinkSendDto } from "../../dtos";
-import type { MagicLinkLoginStrategyDeps } from "./deps";
+import type { EmailDispatcher } from "@/services/email/email.dispatcher";
+import type { MagicLinkLoginRepository } from "../../repositories/magic-link-login.repository";
+import type { AccountExistsGuard, MagicLinkCooldownGuard } from "../../guards";
 // dtos
 import { toMagicLinkSendDto } from "../../dtos";
 // others
@@ -13,7 +15,12 @@ import { withRetry } from "@/utils/resilience/retry";
 import { MAGIC_LINK_CONFIG } from "../../constants";
 
 export const sendLink = async (
-  deps: MagicLinkLoginStrategyDeps,
+  deps: {
+    accountExistsGuard: AccountExistsGuard;
+    magicLinkCooldownGuard: MagicLinkCooldownGuard;
+    magicLinkLoginRepo: MagicLinkLoginRepository;
+    emailDispatcher: EmailDispatcher;
+  },
   body: MagicLinkSendBodyDto,
   req: Request
 ): Promise<MagicLinkSendDto> => {

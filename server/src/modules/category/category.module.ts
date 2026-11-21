@@ -8,10 +8,10 @@ import { CategoryController } from "./category.controller";
 
 export const createCategoryModule = () => {
   const categoryRepository = new MongoCategoryRepository();
-  const service = new CategoryService({
-    categoryRepo: categoryRepository,
-    webAppRepo: new MongoWebAppRepository()
-  });
+  const service = new CategoryService(
+    categoryRepository,
+    new MongoWebAppRepository()
+  );
 
   return {
     categoryRepository,

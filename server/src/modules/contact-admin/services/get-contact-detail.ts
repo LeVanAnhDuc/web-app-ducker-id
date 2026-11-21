@@ -1,10 +1,10 @@
 // types
-import type { AdminContactDetailItemDto } from "../dtos";
 import type { ContactRepository } from "../repository/contact-admin.repository";
 // common
+import { toDto } from "@/common/dto";
 import { NotFoundError } from "@/exceptions";
 // dtos
-import { toAdminContactDetailItemDto } from "../dtos";
+import { AdminContactDetailItemDto } from "../dtos";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 
@@ -21,5 +21,5 @@ export const getContactDetail = async (
     });
   }
 
-  return toAdminContactDetailItemDto(doc);
+  return toDto(AdminContactDetailItemDto, doc);
 };

@@ -1,19 +1,19 @@
 // types
 import type { UserWithAuth } from "@/modules/user/types";
-import type { UserServiceDeps } from "./deps";
+import type { UserRepository } from "../repository/user.repository";
 // validators
 import { validateEmail } from "@/validators/utils";
 // others
 import { Logger } from "@/libs/logger";
 
 export const findByEmailWithAuth = async (
-  deps: UserServiceDeps,
+  userRepo: UserRepository,
   email: string
 ): Promise<UserWithAuth | null> => {
   validateEmail(email);
 
   try {
-    return await deps.userRepo.findByEmailWithAuth(email);
+    return await userRepo.findByEmailWithAuth(email);
   } catch (error) {
     Logger.error("Failed to find auth by email", { email, error });
     throw error;

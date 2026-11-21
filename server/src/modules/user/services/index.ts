@@ -12,7 +12,10 @@ import type {
 import type { ClientSession } from "mongoose";
 import type { AdminUserDto, MyProfileDto, PublicProfileDto } from "../dtos";
 import type { AdminUsersQueryDto } from "../dtos/requests";
-import type { UserServiceDeps } from "./deps";
+import type { AuthenticationService } from "@/modules/authentication/services";
+import type { EmailDispatcher } from "@/services/email/email.dispatcher";
+import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
+import type { UserRepository } from "../repository/user.repository";
 // others
 import { adminResetPassword } from "./admin-reset-password";
 import { createProfile } from "./create-profile";
@@ -26,33 +29,38 @@ import { setUserActive } from "./set-user-active";
 import { updateMyProfile } from "./update-my-profile";
 
 export class UserService {
-  constructor(private readonly deps: UserServiceDeps) {}
+  constructor(
+    private readonly userRepo: UserRepository,
+    private readonly authService: AuthenticationService,
+    private readonly emailDispatcher: EmailDispatcher,
+    private readonly notificationDispatcher: NotificationDispatcher
+  ) {}
 
   getMyProfile(): Promise<MyProfileDto> {
-    return getMyProfile(this.deps);
+    return getMyProfile(this.userRepo);
   }
 
   updateMyProfile(data: Partial<UpdateProfileData>): Promise<MyProfileDto> {
-    return updateMyProfile(this.deps, data);
+    return updateMyProfile(this.userRepo, data);
   }
 
   getPublicProfile(userId: string): Promise<PublicProfileDto> {
-    return getPublicProfile(this.deps, userId);
+    return getPublicProfile(this.userRepo, userId);
   }
 
   createProfile(
     data: CreateUserData,
     session?: ClientSession
   ): Promise<UserRecord> {
-    return createProfile(this.deps, data, session);
+    return createProfile(this.userRepo, data, session);
   }
 
   emailExists(email: string): Promise<boolean> {
-    return emailExists(this.deps, email);
+    return emailExists(this.userRepo, email);
   }
 
   findByEmailWithAuth(email: string): Promise<UserWithAuth | null> {
-    return findByEmailWithAuth(this.deps, email);
+    return findByEmailWithAuth(this.userRepo, email);
   }
 
   findByAuthId(authId: string): Promise<{
@@ -61,20 +69,32 @@ export class UserService {
     fullName: string;
     avatar?: string | null;
   } | null> {
-    return findByAuthId(this.deps, authId);
+    return findByAuthId(this.userRepo, authId);
   }
 
   getAdminUsers(
     query: AdminUsersQueryDto
   ): Promise<{ items: AdminUserDto[]; meta: PageMeta }> {
-    return getAdminUsers(this.deps, query);
+    return getAdminUsers(this.userRepo, query);
   }
 
   setUserActive(id: string, isActive: boolean): Promise<SetUserActiveResult> {
-    return setUserActive(this.deps, id, isActive);
+    return setUserActive(
+      { userRepo: this.userRepo, authService: this.authService },
+      id,
+      isActive
+    );
   }
 
   adminResetPassword(id: string): Promise<AdminResetPasswordResult> {
-    return adminResetPassword(this.deps, id);
+    return adminResetPassword(
+      {
+        userRepo: this.userRepo,
+        authService: this.authService,
+        emailDispatcher: this.emailDispatcher,
+        notificationDispatcher: this.notificationDispatcher
+      },
+      id
+    );
   }
 }
