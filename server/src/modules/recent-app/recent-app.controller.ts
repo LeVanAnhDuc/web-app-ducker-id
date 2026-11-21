@@ -5,21 +5,30 @@ import { OpenAPI } from "routing-controllers-openapi";
 // types
 import type { RecentAppService } from "./services";
 // common
-import { ApiErrors, Paginated } from "@/common/openapi";
+import { ApiErrors, ApiProperty, Paginated } from "@/common/openapi";
 import {
   Auth,
+  PathVariable,
   RateLimit,
-  Respond,
-  ValidParams,
-  ValidQuery
+  RequestParam,
+  Respond
 } from "@/common/routing";
+// validators
+import { IsRequiredObjectId } from "@/validators/decorators";
 // others
 import { RecentAppDto, RecentAppsStatsDto } from "./dtos";
 import {
   ListRecentAppsQueryDto,
-  RecentAppIdParamsDto,
   RecentAppsStatsQueryDto
 } from "./dtos/requests";
+
+const APP_ID = [
+  IsRequiredObjectId("recentApp:validation.appId.invalid"),
+  ApiProperty({
+    example: "507f1f77bcf86cd799439011",
+    description: "MongoDB ObjectId of the app"
+  })
+];
 
 @JsonController("/users/me/recent-apps")
 @Auth()
@@ -34,7 +43,7 @@ export class RecentAppController {
       "The apps the current user has opened, newest first, one row per app. Only apps the user can still see in the catalog are returned (active, and visible to the user's role); soft-deleted rows are excluded."
   })
   @Respond({ message: "recentApp:success.list", type: Paginated(RecentAppDto) })
-  list(@ValidQuery(ListRecentAppsQueryDto) query: ListRecentAppsQueryDto) {
+  list(@RequestParam(ListRecentAppsQueryDto) query: ListRecentAppsQueryDto) {
     return this.service.list(query);
   }
 
@@ -46,7 +55,7 @@ export class RecentAppController {
       "Totals, how many apps were used in the last 7 and 30 days, the most opened apps (all-time use count) and the apps per primary category. Counts only apps the user can still see."
   })
   @Respond({ message: "recentApp:success.stats", type: RecentAppsStatsDto })
-  stats(@ValidQuery(RecentAppsStatsQueryDto) query: RecentAppsStatsQueryDto) {
+  stats(@RequestParam(RecentAppsStatsQueryDto) query: RecentAppsStatsQueryDto) {
     return this.service.stats(query);
   }
 
@@ -70,10 +79,8 @@ export class RecentAppController {
   @ApiErrors(404)
   @RateLimit("recordRecentAppByUser")
   @Respond({ status: StatusCodes.NO_CONTENT })
-  async record(
-    @ValidParams(RecentAppIdParamsDto) params: RecentAppIdParamsDto
-  ) {
-    await this.service.recordLaunch(params.appId);
+  async record(@PathVariable("appId", ...APP_ID) appId: string) {
+    await this.service.recordLaunch(appId);
   }
 
   @Delete("/:appId")
@@ -83,16 +90,14 @@ export class RecentAppController {
       "Soft-deletes the row (idempotent). It can be brought back with the restore endpoint."
   })
   @Respond({ status: StatusCodes.NO_CONTENT })
-  async hide(@ValidParams(RecentAppIdParamsDto) params: RecentAppIdParamsDto) {
-    await this.service.hide(params.appId);
+  async hide(@PathVariable("appId", ...APP_ID) appId: string) {
+    await this.service.hide(appId);
   }
 
   @Post("/:appId/restore")
   @OpenAPI({ summary: "Undo removing an app from recent history" })
   @Respond({ status: StatusCodes.NO_CONTENT })
-  async restore(
-    @ValidParams(RecentAppIdParamsDto) params: RecentAppIdParamsDto
-  ) {
-    await this.service.restore(params.appId);
+  async restore(@PathVariable("appId", ...APP_ID) appId: string) {
+    await this.service.restore(appId);
   }
 }

@@ -1,11 +1,9 @@
 // types
 import type { UserService } from "@/modules/user/services";
-import type { Request } from "express";
 import type { LoginAuditService } from "../services/login-audit";
 // common
 import { UnauthorizedError } from "@/exceptions";
 // others
-import { makeMockRequest } from "@test/helpers/request.helper";
 import { createUserServiceMock } from "@test/mocks/user-service.mock";
 import { createLoginAuditServiceMock } from "@test/mocks/login-audit-service.mock";
 import { buildUserWithAuth } from "@test/factories/user-with-auth.factory";
@@ -15,13 +13,11 @@ import { ERROR_CODES } from "@/constants/error-code";
 const EMAIL = "user@example.com";
 
 describe("AccountExistsGuard", () => {
-  let req: Request;
   let userService: jest.Mocked<UserService>;
   let audit: jest.Mocked<LoginAuditService>;
   let guard: AccountExistsGuard;
 
   beforeEach(() => {
-    req = makeMockRequest();
     userService = createUserServiceMock();
     audit = createLoginAuditServiceMock();
     guard = new AccountExistsGuard(userService, audit);
@@ -69,24 +65,23 @@ describe("AccountExistsGuard", () => {
       const fixture = buildUserWithAuth();
       userService.findByEmailWithAuth.mockResolvedValue(fixture);
 
-      await expect(
-        guard.assertWithCredentialAudit(EMAIL, req)
-      ).resolves.toEqual(fixture);
+      await expect(guard.assertWithCredentialAudit(EMAIL)).resolves.toEqual(
+        fixture
+      );
       expect(audit.recordInvalidCredentials).not.toHaveBeenCalled();
     });
 
     it("records audit and throws UnauthorizedError with LOGIN_INVALID_CREDENTIALS when not found", async () => {
       userService.findByEmailWithAuth.mockResolvedValue(null);
 
-      const promise = guard.assertWithCredentialAudit(EMAIL, req);
+      const promise = guard.assertWithCredentialAudit(EMAIL);
 
       await expect(promise).rejects.toBeInstanceOf(UnauthorizedError);
       await expect(promise).rejects.toMatchObject({
         code: ERROR_CODES.LOGIN_INVALID_CREDENTIALS
       });
       expect(audit.recordInvalidCredentials).toHaveBeenCalledWith({
-        email: EMAIL,
-        req
+        email: EMAIL
       });
     });
   });

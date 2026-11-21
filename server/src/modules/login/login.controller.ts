@@ -1,8 +1,8 @@
 // libs
-import { JsonController, Post, Req, Res } from "routing-controllers";
+import { JsonController, Post, Res } from "routing-controllers";
 import { OpenAPI } from "routing-controllers-openapi";
 // types
-import type { Request, Response } from "express";
+import type { Response } from "express";
 import type { LoginService } from "./services/login";
 import type { SessionService } from "@/modules/session/services";
 // common
@@ -10,6 +10,10 @@ import { ApiErrors } from "@/common/openapi";
 import { RateLimit, Respond, ValidBody } from "@/common/routing";
 // modules
 import { AccessTokensDto } from "@/modules/token/dtos";
+import {
+  SESSION_COOKIE,
+  SESSION_COOKIE_OPTIONS
+} from "@/modules/session/constants";
 import {
   REFRESH_TOKEN,
   REFRESH_TOKEN_COOKIE_OPTIONS
@@ -40,17 +44,17 @@ export class LoginController {
    *
    * Danh tính lấy từ RequestContext do LoginCompletionService đặt vào.
    */
-  private async startSession(req: Request, res: Response): Promise<void> {
+  private async startSession(res: Response): Promise<void> {
     const identity = RequestContext.getUser();
     if (!identity) return;
 
-    await this.sessionService.start({
+    const session = await this.sessionService.start({
       authId: identity.authId,
       userId: identity.sub,
-      roles: identity.roles,
-      req,
-      res
+      roles: identity.roles
     });
+
+    res.cookie(SESSION_COOKIE, session.sid, SESSION_COOKIE_OPTIONS);
   }
 
   @Post("/")
@@ -64,17 +68,16 @@ export class LoginController {
   @Respond({ message: "login:success.loginSuccessful", type: AccessTokensDto })
   async login(
     @ValidBody(LoginBodyDto) body: LoginBodyDto,
-    @Req() req: Request,
     @Res() res: Response
   ) {
-    const data = await this.service.passwordLogin(body, req);
+    const data = await this.service.passwordLogin(body);
     const { refreshToken, ...responseData } = data;
 
     if (refreshToken) {
       res.cookie(REFRESH_TOKEN, refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
     }
 
-    await this.startSession(req, res);
+    await this.startSession(res);
 
     return responseData;
   }
@@ -87,11 +90,8 @@ export class LoginController {
   })
   @RateLimit("loginOtpByIp", "loginOtpByEmail")
   @Respond({ message: "login:success.otpSent", type: OtpSendDto })
-  sendOtp(
-    @ValidBody(OtpSendBodyDto) body: OtpSendBodyDto,
-    @Req() req: Request
-  ) {
-    return this.service.sendOtp(body, req);
+  sendOtp(@ValidBody(OtpSendBodyDto) body: OtpSendBodyDto) {
+    return this.service.sendOtp(body);
   }
 
   @Post("/otp/verify")
@@ -105,17 +105,16 @@ export class LoginController {
   @Respond({ message: "login:success.loginSuccessful", type: AccessTokensDto })
   async verifyOtp(
     @ValidBody(OtpVerifyBodyDto) body: OtpVerifyBodyDto,
-    @Req() req: Request,
     @Res() res: Response
   ) {
-    const data = await this.service.verifyOtp(body, req);
+    const data = await this.service.verifyOtp(body);
     const { refreshToken, ...responseData } = data;
 
     if (refreshToken) {
       res.cookie(REFRESH_TOKEN, refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
     }
 
-    await this.startSession(req, res);
+    await this.startSession(res);
 
     return responseData;
   }
@@ -128,11 +127,8 @@ export class LoginController {
   })
   @RateLimit("magicLinkByIp", "magicLinkByEmail")
   @Respond({ message: "login:success.magicLinkSent", type: MagicLinkSendDto })
-  sendMagicLink(
-    @ValidBody(MagicLinkSendBodyDto) body: MagicLinkSendBodyDto,
-    @Req() req: Request
-  ) {
-    return this.service.sendMagicLink(body, req);
+  sendMagicLink(@ValidBody(MagicLinkSendBodyDto) body: MagicLinkSendBodyDto) {
+    return this.service.sendMagicLink(body);
   }
 
   @Post("/magic-link/verify")
@@ -146,17 +142,16 @@ export class LoginController {
   @Respond({ message: "login:success.loginSuccessful", type: AccessTokensDto })
   async verifyMagicLink(
     @ValidBody(MagicLinkVerifyBodyDto) body: MagicLinkVerifyBodyDto,
-    @Req() req: Request,
     @Res() res: Response
   ) {
-    const data = await this.service.verifyMagicLink(body, req);
+    const data = await this.service.verifyMagicLink(body);
     const { refreshToken, ...responseData } = data;
 
     if (refreshToken) {
       res.cookie(REFRESH_TOKEN, refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);
     }
 
-    await this.startSession(req, res);
+    await this.startSession(res);
 
     return responseData;
   }

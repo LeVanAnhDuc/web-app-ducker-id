@@ -1,5 +1,5 @@
 // types
-import type { Response } from "express";
+import type { Request } from "express";
 import type { SessionRecord } from "../../types";
 import type { SessionRepository } from "../../repository/session.repository";
 // others
@@ -8,7 +8,8 @@ import {
   SESSION_COOKIE_OPTIONS,
   SESSION_CLEAR_COOKIE_OPTIONS
 } from "../../constants";
-import { makeMockRequest } from "@test/helpers/request.helper";
+import { readSid } from "../../helpers";
+import { inRequest } from "@test/helpers/request-context.helper";
 import { SessionService } from "../";
 
 const SID = "sid-abc";
@@ -39,36 +40,15 @@ const setup = () => {
   return { repo, service: new SessionService(repo) };
 };
 
-const makeRes = () =>
-  ({ cookie: jest.fn(), clearCookie: jest.fn() }) as unknown as jest.Mocked<
-    Pick<Response, "cookie" | "clearCookie">
-  > &
-    Response;
-
-const reqWithSid = (sid?: string) =>
-  makeMockRequest({ ...(sid ? { headers: {} } : {}) }) as ReturnType<
-    typeof makeMockRequest
-  > & { cookies?: Record<string, string> };
-
-const withCookies = (cookies: Record<string, string> | undefined) => {
-  const req = reqWithSid();
-  (req as { cookies?: Record<string, string> }).cookies = cookies;
-  return req;
-};
+const START = { authId: AUTH_ID, userId: USER_ID, roles: "user" };
 
 describe("SessionService.start", () => {
-  it("records the session and sets the sid cookie", async () => {
+  it("records the session with the caller's ip and user agent", async () => {
     const { repo, service } = setup();
-    const res = makeRes();
-    const req = makeMockRequest({ ip: "10.0.0.9", userAgent: "ua/2" });
 
-    const result = await service.start({
-      authId: AUTH_ID,
-      userId: USER_ID,
-      roles: "user",
-      req,
-      res
-    });
+    const result = await inRequest({ ip: "10.0.0.9", userAgent: "ua/2" }, () =>
+      service.start(START)
+    );
 
     expect(repo.create).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -79,11 +59,6 @@ describe("SessionService.start", () => {
         userAgent: "ua/2"
       })
     );
-    expect(res.cookie).toHaveBeenCalledWith(
-      SESSION_COOKIE,
-      SID,
-      SESSION_COOKIE_OPTIONS
-    );
     expect(result.sid).toBe(SID);
   });
 
@@ -91,13 +66,7 @@ describe("SessionService.start", () => {
     const { repo, service } = setup();
     jest.spyOn(Date, "now").mockReturnValue(1_700_000_123_456);
 
-    await service.start({
-      authId: AUTH_ID,
-      userId: USER_ID,
-      roles: "user",
-      req: makeMockRequest(),
-      res: makeRes()
-    });
+    await service.start(START);
 
     expect(repo.create).toHaveBeenCalledWith(
       expect.objectContaining({ authTime: 1_700_000_123 })
@@ -105,19 +74,10 @@ describe("SessionService.start", () => {
     jest.restoreAllMocks();
   });
 
-  it("falls back to empty strings when ip and user-agent are absent", async () => {
+  it("falls back to empty strings outside a request", async () => {
     const { repo, service } = setup();
-    const req = makeMockRequest();
-    (req as { ip?: string }).ip = undefined;
-    (req as unknown as { get: () => undefined }).get = () => undefined;
 
-    await service.start({
-      authId: AUTH_ID,
-      userId: USER_ID,
-      roles: "user",
-      req,
-      res: makeRes()
-    });
+    await service.start(START);
 
     expect(repo.create).toHaveBeenCalledWith(
       expect.objectContaining({ ip: "", userAgent: "" })
@@ -125,30 +85,28 @@ describe("SessionService.start", () => {
   });
 });
 
-describe("SessionService.readSid", () => {
+describe("readSid", () => {
+  const withCookies = (cookies: Record<string, string> | undefined) =>
+    ({ cookies }) as unknown as Request;
+
   it("reads the sid cookie", () => {
-    const { service } = setup();
-    expect(service.readSid(withCookies({ [SESSION_COOKIE]: SID }))).toBe(SID);
+    expect(readSid(withCookies({ [SESSION_COOKIE]: SID }))).toBe(SID);
   });
 
-  it("treats an empty cookie as no session", () => {
-    const { service } = setup();
-    expect(service.readSid(withCookies({ [SESSION_COOKIE]: "" }))).toBeNull();
+  it("treats an empty sid as no session", () => {
+    expect(readSid(withCookies({ [SESSION_COOKIE]: "" }))).toBeNull();
   });
 
   it("returns null when the request carries no cookies at all", () => {
-    const { service } = setup();
-    expect(service.readSid(withCookies(undefined))).toBeNull();
+    expect(readSid(withCookies(undefined))).toBeNull();
   });
 });
 
 describe("SessionService.resolve", () => {
-  it("returns the stored record for a request carrying a sid", async () => {
+  it("returns the stored record for a sid", async () => {
     const { repo, service } = setup();
 
-    const result = await service.resolve(
-      withCookies({ [SESSION_COOKIE]: SID })
-    );
+    const result = await service.resolve(SID);
 
     expect(repo.findBySid).toHaveBeenCalledWith(SID);
     expect(result?.sid).toBe(SID);
@@ -157,7 +115,7 @@ describe("SessionService.resolve", () => {
   it("does not hit the store when there is no sid", async () => {
     const { repo, service } = setup();
 
-    const result = await service.resolve(withCookies(undefined));
+    const result = await service.resolve(null);
 
     expect(result).toBeNull();
     expect(repo.findBySid).not.toHaveBeenCalled();
@@ -167,11 +125,7 @@ describe("SessionService.resolve", () => {
     const { repo, service } = setup();
     repo.findBySid.mockResolvedValue(null);
 
-    const result = await service.resolve(
-      withCookies({ [SESSION_COOKIE]: SID })
-    );
-
-    expect(result).toBeNull();
+    expect(await service.resolve(SID)).toBeNull();
   });
 });
 
@@ -186,40 +140,38 @@ describe("SessionService.registerClient", () => {
 });
 
 describe("SessionService.end", () => {
-  it("destroys the session and clears the cookie", async () => {
+  it("destroys the session", async () => {
     const { repo, service } = setup();
-    const res = makeRes();
 
-    await service.end(withCookies({ [SESSION_COOKIE]: SID }), res);
+    await service.end(SID);
 
     expect(repo.destroy).toHaveBeenCalledWith(SID);
-    expect(res.clearCookie).toHaveBeenCalledWith(
-      SESSION_COOKIE,
-      SESSION_CLEAR_COOKIE_OPTIONS
-    );
   });
 
-  it("still clears the cookie when there was no session to destroy", async () => {
+  it("does nothing when there is no session to destroy", async () => {
     const { repo, service } = setup();
-    const res = makeRes();
 
-    await service.end(withCookies(undefined), res);
+    await service.end(null);
 
     expect(repo.destroy).not.toHaveBeenCalled();
-    expect(res.clearCookie).toHaveBeenCalledWith(
-      SESSION_COOKIE,
-      SESSION_CLEAR_COOKIE_OPTIONS
-    );
+  });
+});
+
+describe("session cookie options", () => {
+  it("sets the cookie for the session's lifetime", () => {
+    expect(SESSION_COOKIE_OPTIONS).toMatchObject({
+      httpOnly: true,
+      path: "/"
+    });
+    expect(SESSION_COOKIE_OPTIONS.maxAge).toBeGreaterThan(0);
   });
 
-  it("clears the cookie without a maxAge, so it expires now", async () => {
-    const { service } = setup();
-    const res = makeRes();
-
-    await service.end(withCookies({ [SESSION_COOKIE]: SID }), res);
-
-    const [, options] = res.clearCookie.mock.calls[0];
-    expect(options).not.toHaveProperty("maxAge");
-    expect(options).toMatchObject({ httpOnly: true, path: "/" });
+  // BUG-OIDC-05: a maxAge on clearCookie overrides its own expiry.
+  it("clears the cookie without a maxAge, so it expires now", () => {
+    expect(SESSION_CLEAR_COOKIE_OPTIONS).not.toHaveProperty("maxAge");
+    expect(SESSION_CLEAR_COOKIE_OPTIONS).toMatchObject({
+      httpOnly: true,
+      path: "/"
+    });
   });
 });

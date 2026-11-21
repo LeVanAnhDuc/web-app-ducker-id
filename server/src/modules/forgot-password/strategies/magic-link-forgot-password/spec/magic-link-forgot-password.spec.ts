@@ -1,8 +1,8 @@
 // types
 import type {
-  FPMagicLinkSendRequest,
-  FPMagicLinkVerifyRequest
-} from "../../../types";
+  ForgotPasswordMagicLinkSendBodyDto,
+  ForgotPasswordMagicLinkVerifyBodyDto
+} from "../../../dtos/requests";
 import type { MagicLinkForgotPasswordRepository } from "../../../repositories/magic-link-forgot-password.repository";
 import type { ResetTokenRepository } from "../../../repositories/reset-token.repository";
 // common
@@ -18,22 +18,18 @@ import { ForgotPasswordAuditService } from "../../../services/forgot-password-au
 import { buildUserWithAuth } from "@test/factories/user-with-auth.factory";
 import { createEmailDispatcherMock } from "@test/mocks/email-dispatcher.mock";
 import { createLoginHistoryServiceMock } from "@test/mocks/login-history-service.mock";
-import { makeMockRequest } from "@test/helpers/request.helper";
 import { MagicLinkForgotPasswordStrategy } from "../";
 
 const EMAIL = "user@example.com";
 const EXPIRY = 900;
 const COOLDOWN = 60;
 
-const sendReq = () =>
-  makeMockRequest({
-    body: { email: EMAIL }
-  }) as unknown as FPMagicLinkSendRequest;
+const sendBody = (): ForgotPasswordMagicLinkSendBodyDto => ({ email: EMAIL });
 
-const verifyReq = () =>
-  makeMockRequest({
-    body: { email: EMAIL, token: "a-token" }
-  }) as unknown as FPMagicLinkVerifyRequest;
+const verifyBody = (): ForgotPasswordMagicLinkVerifyBodyDto => ({
+  email: EMAIL,
+  token: "a-token"
+});
 
 const setup = () => {
   const magicLinkRepo = {
@@ -82,7 +78,7 @@ describe("MagicLinkForgotPasswordStrategy.sendLink", () => {
   it("emails a reset link carrying the token and the email", async () => {
     const { strategy, emailDispatcher } = setup();
 
-    const result = await strategy.sendLink(sendReq());
+    const result = await strategy.sendLink(sendBody());
 
     const [type, payload] = emailDispatcher.send.mock.calls[0] as [
       string,
@@ -105,7 +101,7 @@ describe("MagicLinkForgotPasswordStrategy.sendLink", () => {
     const { strategy, userService, magicLinkRepo, emailDispatcher } = setup();
     userService.findByEmailWithAuth.mockResolvedValue(null);
 
-    const result = await strategy.sendLink(sendReq());
+    const result = await strategy.sendLink(sendBody());
 
     expect(result.success).toBe(true);
     expect(magicLinkRepo.createAndStoreToken).not.toHaveBeenCalled();
@@ -118,7 +114,7 @@ describe("MagicLinkForgotPasswordStrategy.sendLink", () => {
       buildUserWithAuth({ auth: { isActive: false }, user: { email: EMAIL } })
     );
 
-    await strategy.sendLink(sendReq());
+    await strategy.sendLink(sendBody());
 
     expect(emailDispatcher.send).not.toHaveBeenCalled();
   });
@@ -127,14 +123,18 @@ describe("MagicLinkForgotPasswordStrategy.sendLink", () => {
     const { strategy, magicLinkRepo } = setup();
     magicLinkRepo.getCooldownRemaining.mockResolvedValue(30);
 
-    await expect(strategy.sendLink(sendReq())).rejects.toThrow(BadRequestError);
+    await expect(strategy.sendLink(sendBody())).rejects.toThrow(
+      BadRequestError
+    );
   });
 
   it("refuses once the resend limit is spent", async () => {
     const { strategy, magicLinkRepo } = setup();
     magicLinkRepo.hasExceededResendLimit.mockResolvedValue(true);
 
-    await expect(strategy.sendLink(sendReq())).rejects.toThrow(BadRequestError);
+    await expect(strategy.sendLink(sendBody())).rejects.toThrow(
+      BadRequestError
+    );
   });
 });
 
@@ -142,7 +142,7 @@ describe("MagicLinkForgotPasswordStrategy.verifyLink", () => {
   it("returns a reset token and clears the magic-link data", async () => {
     const { strategy, magicLinkRepo, resetTokenRepo } = setup();
 
-    const result = await strategy.verifyLink(verifyReq());
+    const result = await strategy.verifyLink(verifyBody());
 
     expect(magicLinkRepo.verifyToken).toHaveBeenCalledWith(EMAIL, "a-token");
     expect(resetTokenRepo.createAndStore).toHaveBeenCalledWith(EMAIL);
@@ -154,7 +154,7 @@ describe("MagicLinkForgotPasswordStrategy.verifyLink", () => {
     const { strategy, magicLinkRepo, resetTokenRepo, historyService } = setup();
     magicLinkRepo.verifyToken.mockResolvedValue(false);
 
-    await expect(strategy.verifyLink(verifyReq())).rejects.toThrow(
+    await expect(strategy.verifyLink(verifyBody())).rejects.toThrow(
       UnauthorizedError
     );
     expect(historyService.recordFailedLogin).toHaveBeenCalled();
@@ -165,7 +165,7 @@ describe("MagicLinkForgotPasswordStrategy.verifyLink", () => {
     const { strategy, userService } = setup();
     userService.findByEmailWithAuth.mockResolvedValue(null);
 
-    await expect(strategy.verifyLink(verifyReq())).rejects.toThrow(
+    await expect(strategy.verifyLink(verifyBody())).rejects.toThrow(
       UnauthorizedError
     );
   });

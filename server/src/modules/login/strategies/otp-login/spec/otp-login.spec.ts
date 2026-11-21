@@ -1,6 +1,5 @@
 jest.mock("@/utils/resilience/retry");
 // types
-import type { Request } from "express";
 import type { OtpLoginRepository } from "../../../repositories/otp-login.repository";
 import type {
   AccountExistsGuard,
@@ -22,7 +21,6 @@ import {
 // modules
 import { LOGIN_METHODS } from "@/modules/login-history/constants";
 // others
-import { makeMockRequest } from "@test/helpers/request.helper";
 import { createOtpLoginRepoMock } from "@test/mocks/otp-login-repo.mock";
 import { createEmailDispatcherMock } from "@test/mocks/email-dispatcher.mock";
 import {
@@ -48,7 +46,6 @@ const EMAIL = "user@example.com";
 const OTP_CODE = "123456";
 
 describe("OtpLoginStrategy", () => {
-  let req: Request;
   let accountExists: jest.Mocked<AccountExistsGuard>;
   let accountActive: jest.Mocked<AccountActiveGuard>;
   let emailVerified: jest.Mocked<EmailVerifiedGuard>;
@@ -62,7 +59,6 @@ describe("OtpLoginStrategy", () => {
   let strategy: OtpLoginStrategy;
 
   beforeEach(() => {
-    req = makeMockRequest({ language: "en" });
     accountExists = createAccountExistsGuardMock();
     accountActive = createAccountActiveGuardMock();
     emailVerified = createEmailVerifiedGuardMock();
@@ -98,7 +94,7 @@ describe("OtpLoginStrategy", () => {
       otpRepo.hasExceededResendLimit.mockResolvedValue(false);
       otpRepo.createAndStoreOtp.mockResolvedValue(OTP_CODE);
 
-      const result = await strategy.sendCode({ email: EMAIL }, req);
+      const result = await strategy.sendCode({ email: EMAIL });
 
       expect(otpCooldown.assert).toHaveBeenCalledWith(EMAIL);
       expect(accountExists.tryFind).toHaveBeenCalledWith(EMAIL);
@@ -126,7 +122,7 @@ describe("OtpLoginStrategy", () => {
       accountExists.isLoginEligible.mockReturnValue(true);
       otpRepo.hasExceededResendLimit.mockResolvedValue(true);
 
-      const promise = strategy.sendCode({ email: EMAIL }, req);
+      const promise = strategy.sendCode({ email: EMAIL });
 
       await expect(promise).rejects.toBeInstanceOf(BadRequestError);
       await expect(promise).rejects.toMatchObject({
@@ -141,9 +137,9 @@ describe("OtpLoginStrategy", () => {
       accountExists.isLoginEligible.mockReturnValue(false);
       otpRepo.hasExceededResendLimit.mockResolvedValue(true);
 
-      await expect(
-        strategy.sendCode({ email: EMAIL }, req)
-      ).rejects.toMatchObject({ code: ERROR_CODES.LOGIN_OTP_RESEND_LIMIT });
+      await expect(strategy.sendCode({ email: EMAIL })).rejects.toMatchObject({
+        code: ERROR_CODES.LOGIN_OTP_RESEND_LIMIT
+      });
       expect(otpRepo.hasExceededResendLimit).toHaveBeenCalledWith(EMAIL);
       expect(emailDispatcher.send).not.toHaveBeenCalled();
     });
@@ -152,7 +148,7 @@ describe("OtpLoginStrategy", () => {
       accountExists.tryFind.mockResolvedValue(null);
       accountExists.isLoginEligible.mockReturnValue(false);
 
-      const result = await strategy.sendCode({ email: EMAIL }, req);
+      const result = await strategy.sendCode({ email: EMAIL });
 
       expect(otpRepo.createAndStoreOtp).not.toHaveBeenCalled();
       expect(emailDispatcher.send).not.toHaveBeenCalled();
@@ -178,7 +174,7 @@ describe("OtpLoginStrategy", () => {
         buildUserWithAuth({ auth: { isActive: false } })
       );
 
-      const result = await strategy.sendCode({ email: EMAIL }, req);
+      const result = await strategy.sendCode({ email: EMAIL });
 
       expect(otpRepo.createAndStoreOtp).not.toHaveBeenCalled();
       expect(emailDispatcher.send).not.toHaveBeenCalled();
@@ -194,7 +190,7 @@ describe("OtpLoginStrategy", () => {
         buildUserWithAuth({ auth: { verifiedEmail: false } })
       );
 
-      const result = await strategy.sendCode({ email: EMAIL }, req);
+      const result = await strategy.sendCode({ email: EMAIL });
 
       expect(otpRepo.createAndStoreOtp).not.toHaveBeenCalled();
       expect(emailDispatcher.send).not.toHaveBeenCalled();
@@ -218,31 +214,25 @@ describe("OtpLoginStrategy", () => {
         expiresIn: 3600
       });
 
-      const result = await strategy.verifyCode(
-        { email: EMAIL, otp: OTP_CODE },
-        req
-      );
+      const result = await strategy.verifyCode({ email: EMAIL, otp: OTP_CODE });
 
       expect(otpLockout.assert).toHaveBeenCalledWith(EMAIL);
       expect(passwordLockout.assert).toHaveBeenCalledWith(EMAIL);
       expect(accountActive.assertWithAudit).toHaveBeenCalledWith(
         fixture.auth,
         EMAIL,
-        LOGIN_METHODS.OTP,
-        req
+        LOGIN_METHODS.OTP
       );
       expect(emailVerified.assertWithAudit).toHaveBeenCalledWith(
         fixture.auth,
         EMAIL,
-        LOGIN_METHODS.OTP,
-        req
+        LOGIN_METHODS.OTP
       );
       expect(otpRepo.verify).toHaveBeenCalledWith(EMAIL, OTP_CODE);
       expect(completion.complete).toHaveBeenCalledWith({
         auth: fixture.auth,
         user: fixture.user,
-        method: LOGIN_METHODS.OTP,
-        req
+        method: LOGIN_METHODS.OTP
       });
       expect(result).toEqual({
         accessToken: "a",
@@ -260,7 +250,7 @@ describe("OtpLoginStrategy", () => {
         })
       );
 
-      const promise = strategy.verifyCode({ email: EMAIL, otp: OTP_CODE }, req);
+      const promise = strategy.verifyCode({ email: EMAIL, otp: OTP_CODE });
 
       await expect(promise).rejects.toBeInstanceOf(TooManyRequestsError);
       await expect(promise).rejects.toMatchObject({
@@ -281,7 +271,7 @@ describe("OtpLoginStrategy", () => {
       });
 
       await expect(
-        strategy.verifyCode({ email: EMAIL, otp: OTP_CODE }, req)
+        strategy.verifyCode({ email: EMAIL, otp: OTP_CODE })
       ).rejects.toMatchObject({
         code: ERROR_CODES.LOGIN_ACCOUNT_INACTIVE
       });
@@ -295,7 +285,7 @@ describe("OtpLoginStrategy", () => {
       otpRepo.verify.mockResolvedValue(false);
       otpRepo.incrementFailedAttempts.mockResolvedValue(1);
 
-      const promise = strategy.verifyCode({ email: EMAIL, otp: "bad" }, req);
+      const promise = strategy.verifyCode({ email: EMAIL, otp: "bad" });
 
       await expect(promise).rejects.toBeInstanceOf(UnauthorizedError);
       await expect(promise).rejects.toMatchObject({
@@ -304,8 +294,7 @@ describe("OtpLoginStrategy", () => {
       expect(audit.recordInvalidOtp).toHaveBeenCalledWith({
         auth: fixture.auth,
         email: EMAIL,
-        attempts: 1,
-        req
+        attempts: 1
       });
     });
 
@@ -317,7 +306,7 @@ describe("OtpLoginStrategy", () => {
         LOGIN_OTP_CONFIG.MAX_FAILED_ATTEMPTS
       );
 
-      const promise = strategy.verifyCode({ email: EMAIL, otp: "bad" }, req);
+      const promise = strategy.verifyCode({ email: EMAIL, otp: "bad" });
 
       await expect(promise).rejects.toBeInstanceOf(TooManyRequestsError);
       await expect(promise).rejects.toMatchObject({

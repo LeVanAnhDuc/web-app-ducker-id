@@ -1,6 +1,5 @@
 // modules
 import {
-  CheckEmailParamsDto,
   CompleteSignupBodyDto,
   ResendOtpBodyDto,
   SendOtpBodyDto,
@@ -137,9 +136,5 @@ describe("signup request DTOs match the Joi schemas", () => {
       dateOfBirthTooYoung: complete({ dateOfBirth: "2025-01-01" }),
       dateOfBirthTooOld: complete({ dateOfBirth: "1900-01-01" })
     });
-  });
-
-  it("CheckEmailParamsDto ≡ checkEmailSchema", async () => {
-    await expectDto(CheckEmailParamsDto, emailCases);
   });
 });

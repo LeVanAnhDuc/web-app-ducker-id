@@ -4,17 +4,29 @@ import { OpenAPI } from "routing-controllers-openapi";
 // types
 import type { UserService } from "./services";
 // common
-import { ApiErrors } from "@/common/openapi";
+import { ApiErrors, ApiProperty } from "@/common/openapi";
 import {
   Auth,
+  PathVariable,
   RateLimit,
   Respond,
-  ValidBody,
-  ValidParams
+  ValidBody
 } from "@/common/routing";
+// validators
+import { IsRequiredObjectId } from "@/validators/decorators";
 // others
 import { MyProfileDto, PublicProfileDto } from "./dtos";
-import { PublicProfileParamsDto, UpdateProfileBodyDto } from "./dtos/requests";
+import { UpdateProfileBodyDto } from "./dtos/requests";
+
+// Every failure of an id takes the one key; each still keeps its own
+// constraint name so `reason` tells them apart.
+const USER_ID = [
+  IsRequiredObjectId("user:errors.invalidId"),
+  ApiProperty({
+    example: "64f1b2c3d4e5f6a7b8c9d0e1",
+    description: "MongoDB ObjectId of the target user"
+  })
+];
 
 @JsonController("/users")
 @OpenAPI({ tags: ["User Profile"] })
@@ -60,9 +72,7 @@ export class UserController {
     message: "user:success.getPublicProfile",
     type: PublicProfileDto
   })
-  getPublicProfile(
-    @ValidParams(PublicProfileParamsDto) params: PublicProfileParamsDto
-  ) {
-    return this.service.getPublicProfile(params.id);
+  getPublicProfile(@PathVariable("id", ...USER_ID) id: string) {
+    return this.service.getPublicProfile(id);
   }
 }

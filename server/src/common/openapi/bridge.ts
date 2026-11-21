@@ -88,9 +88,12 @@ const queryParameters = (Dto: Function): Parameter[] => {
  * Fills one operation from what our routing decorators recorded — the same
  * store `mountControllers` builds the chain from — so a controller method
  * restates none of it:
- * - path parameters from the `@ValidParams` DTO, query parameters from the
- *   `@ValidQuery` DTO, the request body from the `@ValidBody` DTO (required
- *   only when the DTO has a required field or `IsNotEmptyBody`);
+ * - path parameters from the `@PathVariable` DTO, query parameters from the
+ *   `@RequestParam` DTO, the request body from the `@ValidBody` DTO (required
+ *   only when the DTO has a required field or `IsNotEmptyBody`). A named value
+ *   (`@PathVariable("id", ...rules)`) is recorded as a class built from its
+ *   rules, read here like any DTO and inlined, so it is never a schema;
+ *   `ApiProperty({ example, description })` among the rules documents it;
  * - `security` from the guards (`@OptionalAuth` makes it optional);
  * - `responses`, replaced entirely: the `@Respond` status (204 without
  *   content), 400 for any pipe, 401 for a required guard, 403 for `@Auth` or `@Admin`,

@@ -2,7 +2,6 @@
 import { UAParser } from "ua-parser-js";
 import geoip from "geoip-lite";
 // types
-import type { Request } from "express";
 import type {
   ClientType,
   CreateLoginHistoryData,
@@ -19,7 +18,6 @@ import {
   CLIENT_TYPES,
   DEVICE_TYPES,
   GEO_DEFAULTS,
-  HTTP_HEADERS,
   LOGIN_ANOMALY_CONFIG,
   LOGIN_ANOMALY_REASONS,
   LOGIN_SOURCES,
@@ -54,10 +52,8 @@ const isPrivateOrLocalIp = (ip: string): boolean => {
   return isPrivate || isLocalhost;
 };
 
-export const extractIp = (req: Request): string => {
-  const rawIp = req.ip || req.socket.remoteAddress || GEO_DEFAULTS.UNKNOWN_IP;
-  return normalizeIp(rawIp);
-};
+export const extractIp = (rawIp: string): string =>
+  normalizeIp(rawIp || GEO_DEFAULTS.UNKNOWN_IP);
 
 const MOBILE_DEVICE_TYPE = "mobile";
 const TABLET_DEVICE_TYPE = "tablet";
@@ -249,16 +245,13 @@ export const buildLoginHistoryData = (
     status,
     failReason,
     loginMethod,
-    req,
+    client,
     timezoneOffset,
     app
   } = payload;
 
-  const ip = extractIp(req);
-  const userAgent = req.headers[HTTP_HEADERS.USER_AGENT] || "";
-  const clientTypeHeader = req.headers[HTTP_HEADERS.CLIENT_TYPE] as
-    | string
-    | undefined;
+  const ip = extractIp(client.ip);
+  const { userAgent } = client;
   const { deviceType, os, browser } = parseUserAgent(userAgent);
   const { country, city } = geoipLookup(ip);
 
@@ -275,7 +268,7 @@ export const buildLoginHistoryData = (
     os,
     browser,
     userAgent,
-    clientType: determineClientType(clientTypeHeader),
+    clientType: determineClientType(client.clientType),
     timezoneOffset: timezoneOffset || null,
     isAnomaly: false,
     anomalyReasons: [],

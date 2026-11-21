@@ -1,5 +1,5 @@
 // libs
-import { IsDefined, IsOptional, IsString } from "class-validator";
+import { IsDefined, IsEmail, IsOptional, IsString } from "class-validator";
 import { commonResponses } from "@/libs/swagger/common.schemas";
 import { IsNotEmptyBody } from "@/validators/decorators";
 import { StatusCodes } from "http-status-codes";
@@ -15,9 +15,9 @@ import {
   PasswordChangeAuth,
   RateLimit,
   Respond,
-  ValidBody,
-  ValidParams,
-  ValidQuery
+  PathVariable,
+  RequestParam,
+  ValidBody
 } from "@/common/routing";
 // others
 import { ApiErrors } from "../api-errors";
@@ -72,7 +72,7 @@ class BridgeFixtureController {
   @Respond({ status: StatusCodes.CREATED })
   @ApiErrors(404, 409)
   create(
-    @ValidParams(BridgeIdParamsDto) _params: BridgeIdParamsDto,
+    @PathVariable("id", IsString(), IsDefined()) _id: string,
     @ValidBody(BridgeBodyDto) _body: BridgeBodyDto
   ) {
     return undefined;
@@ -82,15 +82,40 @@ class BridgeFixtureController {
   @Auth()
   @Admin()
   @Respond({ status: StatusCodes.NO_CONTENT })
-  remove(@ValidParams(BridgeIdParamsDto) _params: BridgeIdParamsDto) {
+  remove(@PathVariable(BridgeIdParamsDto) _params: BridgeIdParamsDto) {
     return undefined;
   }
 
   @Get("/")
   @OptionalAuth()
   @Respond({ type: [BridgeItemDto] })
-  list(@ValidQuery(BridgeQueryDto) _query: BridgeQueryDto) {
+  list(@RequestParam(BridgeQueryDto) _query: BridgeQueryDto) {
     return [];
+  }
+}
+
+@JsonController("/bridge-named")
+class NamedValueFixtureController {
+  @Get("/:appId")
+  find(
+    @PathVariable(
+      "appId",
+      IsString(),
+      IsDefined(),
+      ApiProperty({
+        example: "507f1f77bcf86cd799439011",
+        description: "The app"
+      })
+    )
+    _appId: string,
+    @RequestParam(
+      "email",
+      IsEmail(),
+      ApiProperty({ example: "user@example.com" })
+    )
+    _email: string
+  ) {
+    return undefined;
   }
 }
 
@@ -141,7 +166,8 @@ const paths = generatePaths([
   GuardFixtureController,
   BodyFixtureController,
   BridgeFixtureController,
-  DocumentedFixtureController
+  DocumentedFixtureController,
+  NamedValueFixtureController
 ]);
 const op = (path: string, method: "get" | "post" | "delete" | "patch") =>
   (paths[path] as OpenAPIV3.PathItemObject)[
@@ -181,6 +207,48 @@ describe("routeOperation", () => {
     });
     expect(create.summary).toBeUndefined();
     expect(create.tags).toBeUndefined();
+  });
+
+  it("documents named @PathVariable / @RequestParam values inline, with the ApiProperty among their rules", () => {
+    const find = op("/bridge-named/{appId}", "get");
+
+    expect(find.parameters).toEqual([
+      {
+        in: "path",
+        name: "appId",
+        required: true,
+        schema: {
+          type: "string",
+          example: "507f1f77bcf86cd799439011",
+          description: "The app"
+        }
+      },
+      {
+        in: "query",
+        name: "email",
+        required: true,
+        schema: { type: "string", format: "email", example: "user@example.com" }
+      }
+    ]);
+    expect(find.responses["400"]).toEqual(ref("ValidationError"));
+  });
+
+  it("holds a named value to the request-DTO rule: ApiProperty takes only example and description", () => {
+    expect(() => {
+      @JsonController("/bridge-named-misuse")
+      class MisuseController {
+        @Get("/:id")
+        get(
+          @PathVariable("id", IsString(), ApiProperty({ type: "integer" }))
+          _id: string
+        ) {
+          return undefined;
+        }
+      }
+      return MisuseController;
+    }).toThrow(
+      "id.id: @ApiProperty on a request DTO takes only example and description (got type)"
+    );
   });
 
   it("marks a body required only when a field is required or IsNotEmptyBody applies", () => {

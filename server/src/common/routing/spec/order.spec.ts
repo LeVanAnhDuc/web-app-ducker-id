@@ -16,11 +16,11 @@ import {
   Auth,
   OptionalAuth,
   PasswordChangeAuth,
+  PathVariable,
   RateLimit,
+  RequestParam,
   Respond,
-  ValidBody,
-  ValidParams,
-  ValidQuery
+  ValidBody
 } from "../decorators";
 import { readRouteMeta } from "../metadata";
 import { orderMiddlewares } from "../order";
@@ -52,7 +52,7 @@ class ProfileController {
 class CategoryAdminController {
   @RateLimit("categoryMutationByIpAndUser")
   @Respond({ message: "category:success.update" })
-  update(@ValidParams(P) _params: P, @ValidBody(B) _body: B) {}
+  update(@PathVariable(P) _params: P, @ValidBody(B) _body: B) {}
 }
 
 class PublicCategoryController {
@@ -73,7 +73,7 @@ class ReadingOrderA {
   @RateLimit("forgotPasswordOtpByIp", "forgotPasswordOtpByEmail")
   @RateLimit("adminUserMutationByIpAndUser")
   @Respond({ status: StatusCodes.CREATED })
-  act(@ValidBody(B) _b: B, @ValidQuery(Q) _q: Q, @ValidParams(P) _p: P) {}
+  act(@ValidBody(B) _b: B, @RequestParam(Q) _q: Q, @PathVariable(P) _p: P) {}
 }
 
 class ReadingOrderB {
@@ -82,7 +82,7 @@ class ReadingOrderB {
   @RateLimit("forgotPasswordOtpByIp", "forgotPasswordOtpByEmail")
   @Admin()
   @Auth()
-  act(@ValidParams(P) _p: P, @ValidQuery(Q) _q: Q, @ValidBody(B) _b: B) {}
+  act(@PathVariable(P) _p: P, @RequestParam(Q) _q: Q, @ValidBody(B) _b: B) {}
 }
 
 describe("orderMiddlewares", () => {

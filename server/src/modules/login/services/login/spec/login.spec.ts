@@ -1,5 +1,4 @@
 // types
-import type { Request } from "express";
 import type { FailedAttemptsRepository } from "../../../repositories/failed-attempts.repository";
 import type { PasswordLoginStrategy } from "../../../strategies/password-login";
 import type { OtpLoginStrategy } from "../../../strategies/otp-login";
@@ -10,7 +9,6 @@ import type {
   MagicLinkSendDto
 } from "../../../dtos";
 // others
-import { makeMockRequest } from "@test/helpers/request.helper";
 import { createFailedAttemptsRepoMock } from "@test/mocks/failed-attempts-repo.mock";
 import { LoginService } from "../";
 
@@ -44,7 +42,6 @@ function createMagicLinkStrategyMock(): jest.Mocked<MagicLinkLoginStrategy> {
 }
 
 describe("LoginService", () => {
-  let req: Request;
   let passwordStrategy: jest.Mocked<PasswordLoginStrategy>;
   let otpStrategy: jest.Mocked<OtpLoginStrategy>;
   let magicLinkStrategy: jest.Mocked<MagicLinkLoginStrategy>;
@@ -52,7 +49,6 @@ describe("LoginService", () => {
   let service: LoginService;
 
   beforeEach(() => {
-    req = makeMockRequest();
     passwordStrategy = createPasswordStrategyMock();
     otpStrategy = createOtpStrategyMock();
     magicLinkStrategy = createMagicLinkStrategyMock();
@@ -71,9 +67,9 @@ describe("LoginService", () => {
       passwordStrategy.authenticate.mockResolvedValue(TOKENS);
       const body = { email: EMAIL, password: "pw" };
 
-      const result = await service.passwordLogin(body, req);
+      const result = await service.passwordLogin(body);
 
-      expect(passwordStrategy.authenticate).toHaveBeenCalledWith(body, req);
+      expect(passwordStrategy.authenticate).toHaveBeenCalledWith(body);
       expect(result).toBe(TOKENS);
     });
 
@@ -82,7 +78,7 @@ describe("LoginService", () => {
       passwordStrategy.authenticate.mockRejectedValue(err);
 
       await expect(
-        service.passwordLogin({ email: EMAIL, password: "pw" }, req)
+        service.passwordLogin({ email: EMAIL, password: "pw" })
       ).rejects.toBe(err);
     });
   });
@@ -93,9 +89,9 @@ describe("LoginService", () => {
       otpStrategy.sendCode.mockResolvedValue(dto);
       const body = { email: EMAIL };
 
-      const result = await service.sendOtp(body, req);
+      const result = await service.sendOtp(body);
 
-      expect(otpStrategy.sendCode).toHaveBeenCalledWith(body, req);
+      expect(otpStrategy.sendCode).toHaveBeenCalledWith(body);
       expect(result).toBe(dto);
     });
   });
@@ -105,9 +101,9 @@ describe("LoginService", () => {
       otpStrategy.verifyCode.mockResolvedValue(TOKENS);
       const body = { email: EMAIL, otp: "123456" };
 
-      const result = await service.verifyOtp(body, req);
+      const result = await service.verifyOtp(body);
 
-      expect(otpStrategy.verifyCode).toHaveBeenCalledWith(body, req);
+      expect(otpStrategy.verifyCode).toHaveBeenCalledWith(body);
       expect(result).toBe(TOKENS);
     });
   });
@@ -122,9 +118,9 @@ describe("LoginService", () => {
       magicLinkStrategy.sendLink.mockResolvedValue(dto);
       const body = { email: EMAIL };
 
-      const result = await service.sendMagicLink(body, req);
+      const result = await service.sendMagicLink(body);
 
-      expect(magicLinkStrategy.sendLink).toHaveBeenCalledWith(body, req);
+      expect(magicLinkStrategy.sendLink).toHaveBeenCalledWith(body);
       expect(result).toBe(dto);
     });
   });
@@ -134,9 +130,9 @@ describe("LoginService", () => {
       magicLinkStrategy.verifyLink.mockResolvedValue(TOKENS);
       const body = { email: EMAIL, token: "tok" };
 
-      const result = await service.verifyMagicLink(body, req);
+      const result = await service.verifyMagicLink(body);
 
-      expect(magicLinkStrategy.verifyLink).toHaveBeenCalledWith(body, req);
+      expect(magicLinkStrategy.verifyLink).toHaveBeenCalledWith(body);
       expect(result).toBe(TOKENS);
     });
   });

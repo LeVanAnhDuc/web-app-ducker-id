@@ -4,22 +4,34 @@ import { OpenAPI } from "routing-controllers-openapi";
 // types
 import type { UserService } from "./services";
 // common
-import { ApiErrors, Paginated } from "@/common/openapi";
+import { ApiErrors, ApiProperty, Paginated } from "@/common/openapi";
 import {
   Admin,
   Auth,
+  PathVariable,
   RateLimit,
-  Respond,
-  ValidParams,
-  ValidQuery
+  RequestParam,
+  Respond
 } from "@/common/routing";
+// validators
+import { IsRequiredObjectId } from "@/validators/decorators";
 // others
 import {
   AdminResetPasswordResultDto,
   AdminUserDto,
   SetUserActiveResultDto
 } from "./dtos";
-import { AdminUserIdParamsDto, AdminUsersQueryDto } from "./dtos/requests";
+import { AdminUsersQueryDto } from "./dtos/requests";
+
+// Every failure of an id takes the one key; each still keeps its own
+// constraint name so `reason` tells them apart.
+const USER_ID = [
+  IsRequiredObjectId("user:errors.invalidId"),
+  ApiProperty({
+    example: "64f1b2c3d4e5f6a7b8c9d0e1",
+    description: "MongoDB ObjectId of the target user"
+  })
+];
 
 @JsonController("/admin/users")
 @Auth()
@@ -38,7 +50,7 @@ export class UserAdminController {
     message: "user:success.getAdminUsers",
     type: Paginated(AdminUserDto)
   })
-  getAdminUsers(@ValidQuery(AdminUsersQueryDto) query: AdminUsersQueryDto) {
+  getAdminUsers(@RequestParam(AdminUsersQueryDto) query: AdminUsersQueryDto) {
     return this.service.getAdminUsers(query);
   }
 
@@ -54,8 +66,8 @@ export class UserAdminController {
     message: "user:success.lockUser",
     type: SetUserActiveResultDto
   })
-  lockUser(@ValidParams(AdminUserIdParamsDto) params: AdminUserIdParamsDto) {
-    return this.service.setUserActive(params.id, false);
+  lockUser(@PathVariable("id", ...USER_ID) id: string) {
+    return this.service.setUserActive(id, false);
   }
 
   @Patch("/:id/unlock")
@@ -70,8 +82,8 @@ export class UserAdminController {
     message: "user:success.unlockUser",
     type: SetUserActiveResultDto
   })
-  unlockUser(@ValidParams(AdminUserIdParamsDto) params: AdminUserIdParamsDto) {
-    return this.service.setUserActive(params.id, true);
+  unlockUser(@PathVariable("id", ...USER_ID) id: string) {
+    return this.service.setUserActive(id, true);
   }
 
   @Post("/:id/reset-password")
@@ -86,9 +98,7 @@ export class UserAdminController {
     message: "user:success.resetPassword",
     type: AdminResetPasswordResultDto
   })
-  resetUserPassword(
-    @ValidParams(AdminUserIdParamsDto) params: AdminUserIdParamsDto
-  ) {
-    return this.service.adminResetPassword(params.id);
+  resetUserPassword(@PathVariable("id", ...USER_ID) id: string) {
+    return this.service.adminResetPassword(id);
   }
 }

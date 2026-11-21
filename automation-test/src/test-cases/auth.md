@@ -82,7 +82,7 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/auth.md
 - **Layer:** api · **Priority:** P1 · **Vai trò:** guest
 - **Kỹ thuật:** phân vùng tương đương (EP) (đã đăng ký, còn trống, sai định dạng)
 - **Bước:**
-  1. `GET /auth/signup/check-email/:email` cho `user@test.com`, một địa chỉ
+  1. `GET /auth/signup/check-email?email=` cho `user@test.com`, một địa chỉ
      còn trống và `not-an-email`.
 - **Mong đợi:** `{ available: false }`, `{ available: true }`, 400
   `VALIDATION_ERROR`.
@@ -838,7 +838,7 @@ not-a-jwt`.
 - **Layer:** api · **Priority:** P2 · **Vai trò:** guest
 - **Kỹ thuật:** giá trị biên (BVA) (10 / 11 request)
 - **Bước:**
-  1. 10 `GET /auth/signup/check-email/:email` từ một IP; lần 11.
+  1. 10 `GET /auth/signup/check-email?email=` từ một IP; lần 11.
 - **Mong đợi:** 1–10 → 200; lần 11 → 429 `TOO_MANY_REQUESTS` "You have exceeded the allowed number of attempts".
 - **Automated:** `tests/api/auth/rate-limit.api.ts`
 
@@ -860,7 +860,7 @@ not-a-jwt`.
 - **Layer:** api · **Priority:** P2 · **Vai trò:** guest
 - **Kỹ thuật:** đoán lỗi (error guessing) (viết HOA, khoảng trắng)
 - **Bước:**
-  1. `GET /auth/signup/check-email/USER@TEST.COM`.
+  1. `GET /auth/signup/check-email?email=USER@TEST.COM`.
   2. `POST /auth/signup/send-otp` với `"  USER@TEST.COM  "`.
 - **Mong đợi:** `{ available: false }`; 409 `SIGNUP_EMAIL_EXISTS`.
 - **Automated:** `tests/api/auth/signup.api.ts`

@@ -3,7 +3,6 @@ import { PAGINATION } from "@/common/pagination";
 // modules
 import {
   LoginHistoryAdminQueryDto,
-  LoginHistoryIdParamsDto,
   LoginHistoryQueryDto,
   LoginHistoryStatsQueryDto
 } from "@/modules/login-history/dtos/requests";
@@ -168,18 +167,6 @@ describe("login-history request DTOs match the Joi schemas", () => {
       tzTooLong: { tz: `Asia/${"a".repeat(64)}` },
       tzWrongType: { tz: ["UTC"] },
       tzPathLike: { tz: "../../etc" }
-    });
-  });
-
-  it("LoginHistoryIdParamsDto ≡ loginHistoryIdParamSchema", async () => {
-    await expectDto(LoginHistoryIdParamsDto, {
-      valid: { id: ID },
-      unknownStripped: { id: ID, extra: "x" },
-      missing: {},
-      null: { id: null },
-      empty: { id: "" },
-      wrongType: { id: 123 },
-      notHex: { id: "507f1f77bcf86cd79943901z" }
     });
   });
 });

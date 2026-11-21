@@ -1,5 +1,8 @@
 // types
-import type { FPOtpSendRequest, FPOtpVerifyRequest } from "../../../types";
+import type {
+  ForgotPasswordOtpSendBodyDto,
+  ForgotPasswordOtpVerifyBodyDto
+} from "../../../dtos/requests";
 import type { OtpForgotPasswordRepository } from "../../../repositories/otp-forgot-password.repository";
 import type { ResetTokenRepository } from "../../../repositories/reset-token.repository";
 // common
@@ -17,20 +20,18 @@ import { FORGOT_PASSWORD_OTP_CONFIG } from "../../../constants";
 import { buildUserWithAuth } from "@test/factories/user-with-auth.factory";
 import { createEmailDispatcherMock } from "@test/mocks/email-dispatcher.mock";
 import { createLoginHistoryServiceMock } from "@test/mocks/login-history-service.mock";
-import { makeMockRequest } from "@test/helpers/request.helper";
 import { OtpForgotPasswordStrategy } from "../";
 
 const EMAIL = "user@example.com";
 const EXPIRY = 300;
 const COOLDOWN = 60;
 
-const sendReq = () =>
-  makeMockRequest({ body: { email: EMAIL } }) as unknown as FPOtpSendRequest;
+const sendBody = (): ForgotPasswordOtpSendBodyDto => ({ email: EMAIL });
 
-const verifyReq = () =>
-  makeMockRequest({
-    body: { email: EMAIL, otp: "123456" }
-  }) as unknown as FPOtpVerifyRequest;
+const verifyBody = (): ForgotPasswordOtpVerifyBodyDto => ({
+  email: EMAIL,
+  otp: "123456"
+});
 
 const setup = () => {
   const otpRepo = {
@@ -83,7 +84,7 @@ describe("OtpForgotPasswordStrategy.sendCode", () => {
   it("sends an OTP for a real, active account", async () => {
     const { strategy, otpRepo, emailDispatcher } = setup();
 
-    const result = await strategy.sendCode(sendReq());
+    const result = await strategy.sendCode(sendBody());
 
     expect(otpRepo.createAndStoreOtp).toHaveBeenCalledWith(EMAIL);
     expect(emailDispatcher.send).toHaveBeenCalledWith(
@@ -101,7 +102,7 @@ describe("OtpForgotPasswordStrategy.sendCode", () => {
     const { strategy, userService, otpRepo, emailDispatcher } = setup();
     userService.findByEmailWithAuth.mockResolvedValue(null);
 
-    const result = await strategy.sendCode(sendReq());
+    const result = await strategy.sendCode(sendBody());
 
     expect(result).toEqual({
       success: true,
@@ -118,7 +119,7 @@ describe("OtpForgotPasswordStrategy.sendCode", () => {
       buildUserWithAuth({ auth: { isActive: false }, user: { email: EMAIL } })
     );
 
-    const result = await strategy.sendCode(sendReq());
+    const result = await strategy.sendCode(sendBody());
 
     expect(result.success).toBe(true);
     expect(emailDispatcher.send).not.toHaveBeenCalled();
@@ -128,14 +129,18 @@ describe("OtpForgotPasswordStrategy.sendCode", () => {
     const { strategy, otpRepo } = setup();
     otpRepo.getCooldownRemaining.mockResolvedValue(30);
 
-    await expect(strategy.sendCode(sendReq())).rejects.toThrow(BadRequestError);
+    await expect(strategy.sendCode(sendBody())).rejects.toThrow(
+      BadRequestError
+    );
   });
 
   it("refuses once the resend limit is spent", async () => {
     const { strategy, otpRepo } = setup();
     otpRepo.hasExceededResendLimit.mockResolvedValue(true);
 
-    await expect(strategy.sendCode(sendReq())).rejects.toThrow(BadRequestError);
+    await expect(strategy.sendCode(sendBody())).rejects.toThrow(
+      BadRequestError
+    );
   });
 });
 
@@ -143,7 +148,7 @@ describe("OtpForgotPasswordStrategy.verifyCode", () => {
   it("returns a reset token and clears the OTP data", async () => {
     const { strategy, otpRepo, resetTokenRepo } = setup();
 
-    const result = await strategy.verifyCode(verifyReq());
+    const result = await strategy.verifyCode(verifyBody());
 
     expect(resetTokenRepo.createAndStore).toHaveBeenCalledWith(EMAIL);
     expect(otpRepo.cleanupAll).toHaveBeenCalledWith(EMAIL);
@@ -154,7 +159,7 @@ describe("OtpForgotPasswordStrategy.verifyCode", () => {
     const { strategy, userService } = setup();
     userService.findByEmailWithAuth.mockResolvedValue(null);
 
-    await expect(strategy.verifyCode(verifyReq())).rejects.toThrow(
+    await expect(strategy.verifyCode(verifyBody())).rejects.toThrow(
       UnauthorizedError
     );
   });
@@ -164,7 +169,7 @@ describe("OtpForgotPasswordStrategy.verifyCode", () => {
     otpRepo.verify.mockResolvedValue(false);
     otpRepo.incrementFailedAttempts.mockResolvedValue(1);
 
-    await expect(strategy.verifyCode(verifyReq())).rejects.toThrow(
+    await expect(strategy.verifyCode(verifyBody())).rejects.toThrow(
       UnauthorizedError
     );
     expect(historyService.recordFailedLogin).toHaveBeenCalled();
@@ -178,7 +183,7 @@ describe("OtpForgotPasswordStrategy.verifyCode", () => {
       FORGOT_PASSWORD_OTP_CONFIG.MAX_FAILED_ATTEMPTS
     );
 
-    await expect(strategy.verifyCode(verifyReq())).rejects.toThrow(
+    await expect(strategy.verifyCode(verifyBody())).rejects.toThrow(
       BadRequestError
     );
   });
@@ -187,7 +192,7 @@ describe("OtpForgotPasswordStrategy.verifyCode", () => {
     const { strategy, otpRepo } = setup();
     otpRepo.isLocked.mockResolvedValue(true);
 
-    await expect(strategy.verifyCode(verifyReq())).rejects.toThrow(
+    await expect(strategy.verifyCode(verifyBody())).rejects.toThrow(
       BadRequestError
     );
     expect(otpRepo.verify).not.toHaveBeenCalled();

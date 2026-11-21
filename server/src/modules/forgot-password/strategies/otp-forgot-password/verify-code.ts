@@ -1,5 +1,5 @@
 // types
-import type { FPOtpVerifyRequest } from "../../types";
+import type { ForgotPasswordOtpVerifyBodyDto } from "../../dtos/requests";
 import type { VerifyOtpResponseDto } from "../../dtos";
 import type { OtpForgotPasswordRepository } from "../../repositories/otp-forgot-password.repository";
 import type { ResetTokenRepository } from "../../repositories/reset-token.repository";
@@ -22,11 +22,10 @@ const handleInvalidOtp = async (
     audit: ForgotPasswordAuditService;
   },
   email: string,
-  auth: Awaited<ReturnType<AuthExistsGuard["assert"]>>["auth"],
-  req: FPOtpVerifyRequest
+  auth: Awaited<ReturnType<AuthExistsGuard["assert"]>>["auth"]
 ): Promise<never> => {
   const attempts = await deps.otpRepo.incrementFailedAttempts(email);
-  deps.audit.recordInvalidOtp({ email, auth, attempts, req });
+  deps.audit.recordInvalidOtp({ email, auth, attempts });
 
   const remaining = FORGOT_PASSWORD_OTP_CONFIG.MAX_FAILED_ATTEMPTS - attempts;
 
@@ -55,9 +54,9 @@ export const verifyCode = async (
     authExistsGuard: AuthExistsGuard;
     audit: ForgotPasswordAuditService;
   },
-  req: FPOtpVerifyRequest
+  body: ForgotPasswordOtpVerifyBodyDto
 ): Promise<VerifyOtpResponseDto> => {
-  const { email, otp } = req.body;
+  const { email, otp } = body;
 
   await deps.lockoutGuard.assert(email);
 
@@ -68,8 +67,7 @@ export const verifyCode = async (
     await handleInvalidOtp(
       { otpRepo: deps.otpRepo, audit: deps.audit },
       email,
-      auth,
-      req
+      auth
     );
 
   const resetToken = await deps.resetTokenRepo.createAndStore(email);

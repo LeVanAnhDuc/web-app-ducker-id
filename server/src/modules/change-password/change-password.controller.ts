@@ -1,9 +1,8 @@
 // libs
-import { JsonController, Patch, Req, Res } from "routing-controllers";
+import { JsonController, Patch, Res } from "routing-controllers";
 import { OpenAPI } from "routing-controllers-openapi";
 // types
 import type { Response } from "express";
-import type { ChangePasswordRequest } from "./types";
 import type { ChangePasswordService } from "./services";
 // common
 import {
@@ -27,7 +26,6 @@ export class ChangePasswordController {
   constructor(private readonly service: ChangePasswordService) {}
 
   // The one way out of a temporary-password session — it must accept one.
-  // The service takes the whole request and reads the validated body from it.
   @Patch("/change-password")
   @OpenAPI({
     summary: "Change password (authenticated user)",
@@ -41,12 +39,10 @@ export class ChangePasswordController {
     type: AccessTokensDto
   })
   async changePassword(
-    // Declared only to register the body pipe; the service reads req.body.
-    @ValidBody(ChangePasswordBodyDto) _body: ChangePasswordBodyDto,
-    @Req() req: ChangePasswordRequest,
+    @ValidBody(ChangePasswordBodyDto) body: ChangePasswordBodyDto,
     @Res() res: Response
   ) {
-    const data = await this.service.changePassword(req);
+    const data = await this.service.changePassword(body);
     const { refreshToken, ...responseData } = data;
 
     res.cookie(REFRESH_TOKEN, refreshToken, REFRESH_TOKEN_COOKIE_OPTIONS);

@@ -1,5 +1,4 @@
 // types
-import type { Request } from "express";
 import type { OtpSendBodyDto } from "../../dtos/requests";
 import type { OtpSendDto } from "../../dtos";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
@@ -10,6 +9,7 @@ import { BadRequestError } from "@/exceptions";
 // dtos
 import { toOtpSendDto } from "../../dtos";
 // others
+import { RequestContext } from "@/utils/request-context";
 import { EmailType } from "@/types/services/email";
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
@@ -23,11 +23,10 @@ export const sendCode = async (
     otpLoginRepo: OtpLoginRepository;
     emailDispatcher: EmailDispatcher;
   },
-  body: OtpSendBodyDto,
-  req: Request
+  body: OtpSendBodyDto
 ): Promise<OtpSendDto> => {
   const { email } = body;
-  const { language } = req;
+  const { language } = RequestContext.getClient();
 
   await deps.otpCooldownGuard.assert(email);
 

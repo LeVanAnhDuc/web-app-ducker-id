@@ -1,8 +1,8 @@
 // libs
-import { JsonController, Post, Req, Res } from "routing-controllers";
+import { JsonController, Post, Res } from "routing-controllers";
 import { OpenAPI } from "routing-controllers-openapi";
 // types
-import type { Request, Response } from "express";
+import type { Response } from "express";
 import type { UnlockAccountService } from "./services";
 // common
 import { ApiErrors } from "@/common/openapi";
@@ -33,11 +33,8 @@ export class UnlockAccountController {
     message: "unlockAccount:success.unlockEmailSent",
     type: UnlockRequestDto
   })
-  unlockRequest(
-    @ValidBody(UnlockRequestBodyDto) body: UnlockRequestBodyDto,
-    @Req() req: Request
-  ) {
-    return this.service.unlockRequest(body, req);
+  unlockRequest(@ValidBody(UnlockRequestBodyDto) body: UnlockRequestBodyDto) {
+    return this.service.unlockRequest(body);
   }
 
   @Post("/verify")
@@ -54,10 +51,9 @@ export class UnlockAccountController {
   })
   async unlockVerify(
     @ValidBody(UnlockVerifyBodyDto) body: UnlockVerifyBodyDto,
-    @Req() req: Request,
     @Res() res: Response
   ) {
-    const data = await this.service.unlockVerify(body, req);
+    const data = await this.service.unlockVerify(body);
     const { refreshToken, ...responseData } = data;
 
     if (refreshToken) {

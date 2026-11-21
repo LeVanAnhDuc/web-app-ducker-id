@@ -4,12 +4,24 @@ import { OpenAPI } from "routing-controllers-openapi";
 // types
 import type { ContactAdminService } from "./services";
 // common
-import { ApiErrors, Paginated } from "@/common/openapi";
-import { Auth, Respond, ValidParams, ValidQuery } from "@/common/routing";
+import { ApiErrors, ApiProperty, Paginated } from "@/common/openapi";
+import { Auth, PathVariable, RequestParam, Respond } from "@/common/routing";
+// validators
+import { IsRequiredObjectId } from "@/validators/decorators";
 // others
 import { RequestContext } from "@/utils/request-context";
 import { ContactDetailItemDto, ContactListItemDto } from "./dtos";
-import { ContactIdParamsDto, MyContactsQueryDto } from "./dtos/requests";
+import { MyContactsQueryDto } from "./dtos/requests";
+
+// Every failure takes the one key; each keeps its own constraint name so
+// `reason` still tells them apart.
+const CONTACT_ID = [
+  IsRequiredObjectId("contactAdmin:errors.invalidId"),
+  ApiProperty({
+    example: "507f1f77bcf86cd799439011",
+    description: "MongoDB ObjectId of the contact request"
+  })
+];
 
 @JsonController("/contacts")
 @Auth()
@@ -27,7 +39,7 @@ export class MyContactsController {
     message: "contactAdmin:success.getMyContacts",
     type: Paginated(ContactListItemDto)
   })
-  getMyContacts(@ValidQuery(MyContactsQueryDto) query: MyContactsQueryDto) {
+  getMyContacts(@RequestParam(MyContactsQueryDto) query: MyContactsQueryDto) {
     return this.service.getMyContacts(RequestContext.requireUserId(), query);
   }
 
@@ -42,12 +54,7 @@ export class MyContactsController {
     message: "contactAdmin:success.getMyContactDetail",
     type: ContactDetailItemDto
   })
-  getMyContactDetail(
-    @ValidParams(ContactIdParamsDto) params: ContactIdParamsDto
-  ) {
-    return this.service.getMyContactDetail(
-      params.id,
-      RequestContext.requireUserId()
-    );
+  getMyContactDetail(@PathVariable("id", ...CONTACT_ID) id: string) {
+    return this.service.getMyContactDetail(id, RequestContext.requireUserId());
   }
 }

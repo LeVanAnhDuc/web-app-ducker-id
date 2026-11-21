@@ -3,14 +3,12 @@ jest.mock("@/utils/request-context", () => ({
 }));
 
 // types
-import type { Response } from "express";
 import type { SessionService } from "@/modules/session/services";
 import type { TokenService } from "@/modules/token/services";
 // common
 import { UnauthorizedError } from "@/exceptions";
 // others
 import { RequestContext } from "@/utils/request-context";
-import { makeMockRequest } from "@test/helpers/request.helper";
 import { LogoutService } from "../";
 
 const mockedRequireUserId = RequestContext.requireUserId as jest.MockedFunction<
@@ -35,26 +33,23 @@ const setup = () => {
   };
 };
 
-const res = {} as Response;
+const SID = "sid-abc";
 
 describe("LogoutService.logout", () => {
   beforeEach(() => mockedRequireUserId.mockReturnValue(USER_ID));
 
-  it("ends the IdP session with the same req/res the handler got", async () => {
+  it("ends the IdP session the request carried", async () => {
     const { sessionService, service } = setup();
-    const req = makeMockRequest();
 
-    await service.logout(req, res);
+    await service.logout("the-refresh-token", SID);
 
-    expect(sessionService.end).toHaveBeenCalledWith(req, res);
+    expect(sessionService.end).toHaveBeenCalledWith(SID);
   });
 
   it("revokes the refresh token the request carries (BUG-AUTH-01)", async () => {
     const { tokenService, service } = setup();
-    const req = makeMockRequest();
-    req.cookies = { refreshToken: "the-refresh-token" };
 
-    await service.logout(req, res);
+    await service.logout("the-refresh-token", SID);
 
     expect(tokenService.revokeRefreshToken).toHaveBeenCalledWith(
       "the-refresh-token"
@@ -63,12 +58,11 @@ describe("LogoutService.logout", () => {
 
   it("still ends the session when there is no refresh cookie", async () => {
     const { sessionService, tokenService, service } = setup();
-    const req = makeMockRequest();
 
-    await service.logout(req, res);
+    await service.logout(undefined, SID);
 
     expect(tokenService.revokeRefreshToken).toHaveBeenCalledWith(undefined);
-    expect(sessionService.end).toHaveBeenCalledWith(req, res);
+    expect(sessionService.end).toHaveBeenCalledWith(SID);
   });
 
   it("does not touch the session when there is no authenticated user", async () => {
@@ -77,9 +71,7 @@ describe("LogoutService.logout", () => {
       throw new UnauthorizedError({ message: "no user" });
     });
 
-    await expect(service.logout(makeMockRequest(), res)).rejects.toThrow(
-      UnauthorizedError
-    );
+    await expect(service.logout("t", SID)).rejects.toThrow(UnauthorizedError);
     expect(sessionService.end).not.toHaveBeenCalled();
     expect(tokenService.revokeRefreshToken).not.toHaveBeenCalled();
   });
@@ -88,8 +80,6 @@ describe("LogoutService.logout", () => {
     const { sessionService, service } = setup();
     sessionService.end.mockRejectedValue(new Error("redis down"));
 
-    await expect(service.logout(makeMockRequest(), res)).rejects.toThrow(
-      "redis down"
-    );
+    await expect(service.logout("t", SID)).rejects.toThrow("redis down");
   });
 });

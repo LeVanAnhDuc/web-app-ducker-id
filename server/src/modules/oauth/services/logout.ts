@@ -1,5 +1,5 @@
 // types
-import type { Request, Response } from "express";
+import type { OAuthQuery } from "../types";
 import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
 import type { SessionService } from "@/modules/session/services";
 // others
@@ -9,17 +9,18 @@ import { buildRedirectUrl } from "../helpers";
  * RP-initiated logout. Không có back-channel logout vì app vệ tinh tĩnh
  * (GitHub Pages) không có endpoint server để nhận webhook — access token TTL
  * 15 phút là thứ giới hạn bán kính ảnh hưởng thay cho nó.
+ *
+ * Trả về URL để redirect, hoặc null; controller xoá cookie `sid`.
  */
 export const logout = async (
   deps: {
     webAppRepo: WebAppRepository;
     sessionService: SessionService;
   },
-  req: Request,
-  res: Response
+  query: OAuthQuery,
+  sid: string | null
 ): Promise<string | null> => {
-  const query = req.query as Record<string, string | undefined>;
-  await deps.sessionService.end(req, res);
+  await deps.sessionService.end(sid);
 
   const target = query.post_logout_redirect_uri;
   if (!target || !query.client_id) return null;

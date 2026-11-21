@@ -5,7 +5,7 @@ import { OpenAPI } from "routing-controllers-openapi";
 import type { LoginHistoryService } from "./services";
 // common
 import { Paginated } from "@/common/openapi";
-import { Auth, Respond, ValidQuery } from "@/common/routing";
+import { Auth, RequestParam, Respond } from "@/common/routing";
 // others
 import { MyHistoryItemDto, MyLoginStatsDto } from "./dtos";
 import {
@@ -30,7 +30,7 @@ export class LoginHistoryController {
     type: MyLoginStatsDto
   })
   getMyStats(
-    @ValidQuery(LoginHistoryStatsQueryDto) query: LoginHistoryStatsQueryDto
+    @RequestParam(LoginHistoryStatsQueryDto) query: LoginHistoryStatsQueryDto
   ) {
     return this.service.getMyLoginStats(query);
   }
@@ -45,7 +45,9 @@ export class LoginHistoryController {
     message: "loginHistory:success.getMyHistory",
     type: Paginated(MyHistoryItemDto)
   })
-  getMyHistory(@ValidQuery(LoginHistoryQueryDto) query: LoginHistoryQueryDto) {
+  getMyHistory(
+    @RequestParam(LoginHistoryQueryDto) query: LoginHistoryQueryDto
+  ) {
     return this.service.getMyLoginHistory(query);
   }
 }

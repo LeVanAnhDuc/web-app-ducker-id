@@ -2,7 +2,7 @@
 import { readdirSync, readFileSync } from "fs";
 import { join } from "path";
 import express from "express";
-import { IsDefined, IsString } from "class-validator";
+import { getMetadataStorage, IsDefined, IsString } from "class-validator";
 import {
   Get,
   getMetadataArgsStorage,
@@ -20,7 +20,12 @@ import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 // common
 import { isDocumented } from "@/common/openapi/bridge";
-import { readRouteMeta, Respond, ValidBody } from "@/common/routing";
+import {
+  isNamedValueClass,
+  readRouteMeta,
+  Respond,
+  ValidBody
+} from "@/common/routing";
 // others
 import { i18nMiddleware } from "@/i18n";
 import { createModules } from "@/loaders/modules";
@@ -97,14 +102,14 @@ const ACCEPTED_DIFFS: Record<string, string[]> = {
   category: [
     // [optional] The route takes an optional Bearer token (`@OptionalAuth`); the hand-written docs described it in prose but declared no security.
     // [nested] The hand-written update `name` was an inline object; the generated one is an `allOf` $ref to UpdateCategoryNameDto (so a description can sit beside it), whose type is on the referenced schema.
-    // [400] A malformed `:id` is a validation failure answered with 400 (`@ValidParams`); the hand-written docs left it off this GET.
+    // [400] A malformed `:id` is a validation failure answered with 400 (`@PathVariable`); the hand-written docs left it off this GET.
     'GET /apps/categories: security undefined in hand-written, [{},{"bearerAuth":[]}] in generated', // [optional]
     "PATCH /admin/categories/{id}: request property name type is object in hand-written, none in generated", // [nested]
     "GET /admin/categories/{id}/delete-impact: response status 400 only in generated" // [400]
   ],
   "web-app": [
     // [422] Nothing in the code can answer 422 (grep of src for 422 and UnprocessableEntity finds only hand-written docs); validation failures are 400, so the hand-written 422 was wrong and is dropped.
-    // [400] A query failing validation (`@ValidQuery`) is answered with 400; the hand-written docs listed 422 instead.
+    // [400] A query failing validation (`@RequestParam`) is answered with 400; the hand-written docs listed 422 instead.
     // [fields] `postLogoutRedirectUris` and `tokenEndpointAuthMethod` are accepted by CreateAppBodyDto and UpdateAppBodyDto; the hand-written bodies left them out.
     // [404] createApp cannot throw NotFoundError: a missing category is `BadRequestError` WEB_APP_CATEGORY_NOT_FOUND (400), so the hand-written 404 on POST is dropped.
     // [403] authGuard can answer 403 AUTH_PASSWORD_CHANGE_REQUIRED (a temporary-password session); the hand-written docs never listed it on the user route (the admin routes already did).
@@ -125,7 +130,7 @@ const ACCEPTED_DIFFS: Record<string, string[]> = {
     // [403] authGuard can answer 403 AUTH_PASSWORD_CHANGE_REQUIRED (a temporary-password session); the hand-written docs never listed it on the profile routes (the admin routes already did).
     // [404] getMyProfile and updateMyProfile throw NotFoundError USER_NOT_FOUND when the record is gone; the hand-written docs did not list it.
     // [422] Nothing in the code can answer 422 (grep of src for 422 and UnprocessableEntity finds only hand-written docs); a body failing validation is 400.
-    // [400] A body or query failing validation is answered with 400 (`@ValidBody`, `@ValidQuery`); the hand-written docs listed 422 or nothing.
+    // [400] A body or query failing validation is answered with 400 (`@ValidBody`, `@RequestParam`); the hand-written docs listed 422 or nothing.
     // [body] UpdateProfileBodyDto has no required field and no IsNotEmptyBody, so an empty body is accepted and no field is required; the hand-written body was `required: true`.
     // [default] page, limit, sortBy and sortOrder are defaulted in the service (`resolvePaging`: page 1, limit 20, sort createdAt, order desc), not on the DTO, so no schema default is generated; the descriptions say them.
     "GET /users/me: response status 500 only in hand-written", // [500]
@@ -160,12 +165,13 @@ const ACCEPTED_DIFFS: Record<string, string[]> = {
     // [date] `ToDate` + `IsDate` accept an ISO date or date-time (and a timestamp), so the schema is a `oneOf` of the two string formats with no single top-level type; the hand-written `type: string, format: date` was narrower than the validator.
     // [201] `@Respond({ status: StatusCodes.CREATED })`: the route answers 201; the hand-written docs said 200.
     // [500] createUserAccount throws InternalServerError when the sign-up transaction is aborted (services/complete-signup.ts).
-    // [pattern] `IsAppEmail` refuses control and invisible characters with a pattern; the hand-written path parameter declared only `format: email`.
+    // [query] BREAKING in #50 (5ce6bf4a): `GET /auth/signup/check-email/:email` became `GET /auth/signup/check-email?email=` — an email is the value looked up, not a resource, and it stays out of the access-logged path. The operation moved, so the fixture's path is only in hand-written and the new one only in generated; the `email` query parameter it now takes is pinned by "documents a named @RequestParam value inline" below.
     "POST /auth/signup/complete: request property dateOfBirth type is string in hand-written, none in generated", // [date]
     "POST /auth/signup/complete: response status 200 only in hand-written", // [201]
     "POST /auth/signup/complete: response status 201 only in generated", // [201]
     "POST /auth/signup/complete: response status 500 only in generated", // [500]
-    'GET /auth/signup/check-email/{email}: parameter path email pattern is none in hand-written, "^[^\\\\u0000-\\\\u001F\\\\u007F-\\\\u009F\\\\u200B-\\\\u200D\\\\u202A-\\\\u202E\\\\uFEFF]+$" in generated' // [pattern]
+    "GET /auth/signup/check-email/{email}: only in hand-written", // [query]
+    "GET /auth/signup/check-email: only in generated" // [query]
   ],
   login: [
     // [422] Nothing in the code can answer 422 (no exception class carries it); a body failing validation is 400, which every route already documented or now derives from `@ValidBody`.
@@ -389,6 +395,66 @@ describe("buildOpenApiSpec", () => {
     expect(() => buildOpenApiSpec([new DupController()])).toThrow(
       /Two classes are named DuplicatedNameDto: .*openapi\.spec\.ts:\d+.*openapi\.spec\.ts:\d+/
     );
+  });
+
+  it("ignores the classes built for named values, though several are named id", () => {
+    const { validationMetadatas } = getMetadataStorage() as unknown as {
+      validationMetadatas: Map<unknown, unknown>;
+    };
+    const namedIds = [...validationMetadatas.keys()].filter(
+      (target) =>
+        isNamedValueClass(target) && (target as Function).name === "id"
+    );
+
+    // Built without a duplicate-name error, and none of them is a schema.
+    expect(namedIds.length).toBeGreaterThan(1);
+    const schemas = Object.keys(document.components?.schemas ?? {});
+    expect(schemas).not.toContain("id");
+    expect(schemas).not.toContain("appId");
+    expect(schemas).not.toContain("email");
+    expect(schemas).not.toContain("");
+  });
+
+  it("documents a named @PathVariable value inline, with the example passed among its rules", () => {
+    const op = (document.paths["/admin/categories/{id}/delete-impact"] ?? {})
+      .get as OpenAPIV3.OperationObject;
+
+    expect(op.parameters).toEqual([
+      {
+        in: "path",
+        name: "id",
+        required: true,
+        schema: expect.objectContaining({
+          type: "string",
+          pattern: "^[a-fA-F0-9]{24}$",
+          example: "507f1f77bcf86cd799439012",
+          description: "MongoDB ObjectId of the category"
+        })
+      }
+    ]);
+  });
+
+  it("documents a named @RequestParam value inline (check-email moved from the path in #50)", () => {
+    const op = (document.paths["/auth/signup/check-email"] ?? {})
+      .get as OpenAPIV3.OperationObject;
+
+    expect(document.paths["/auth/signup/check-email/{email}"]).toBeUndefined();
+    expect(op.parameters).toEqual([
+      {
+        in: "query",
+        name: "email",
+        required: true,
+        schema: expect.objectContaining({
+          type: "string",
+          example: "user@example.com",
+          description: "Email address to check"
+        })
+      }
+    ]);
+    expect(
+      (op.parameters as OpenAPIV3.ParameterObject[])[0].schema
+    ).toHaveProperty("pattern");
+    expect(op.responses["400"]).toBeDefined();
   });
 
   it("has no $ref to Array or Object anywhere", () => {

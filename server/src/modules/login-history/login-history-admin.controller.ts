@@ -4,20 +4,29 @@ import { OpenAPI } from "routing-controllers-openapi";
 // types
 import type { LoginHistoryService } from "./services";
 // common
-import { ApiErrors, Paginated } from "@/common/openapi";
+import { ApiErrors, ApiProperty, Paginated } from "@/common/openapi";
 import {
   Admin,
   Auth,
-  Respond,
-  ValidParams,
-  ValidQuery
+  PathVariable,
+  RequestParam,
+  Respond
 } from "@/common/routing";
+// validators
+import { IsRequiredObjectId } from "@/validators/decorators";
 // others
 import { AllHistoryItemDto, HistoryDetailItemDto } from "./dtos";
-import {
-  LoginHistoryAdminQueryDto,
-  LoginHistoryIdParamsDto
-} from "./dtos/requests";
+import { LoginHistoryAdminQueryDto } from "./dtos/requests";
+
+// Every failure takes the one key; each keeps its own constraint name so
+// `reason` still tells them apart.
+const LOGIN_HISTORY_ID = [
+  IsRequiredObjectId("loginHistory:errors.invalidId"),
+  ApiProperty({
+    example: "507f1f77bcf86cd799439011",
+    description: "MongoDB ObjectId of the login-history record"
+  })
+];
 
 @JsonController("/admin/login-history")
 @Auth()
@@ -33,7 +42,7 @@ export class LoginHistoryAdminController {
     type: Paginated(AllHistoryItemDto)
   })
   getAllHistory(
-    @ValidQuery(LoginHistoryAdminQueryDto) query: LoginHistoryAdminQueryDto
+    @RequestParam(LoginHistoryAdminQueryDto) query: LoginHistoryAdminQueryDto
   ) {
     return this.service.getAllLoginHistory(query);
   }
@@ -45,9 +54,7 @@ export class LoginHistoryAdminController {
     message: "loginHistory:success.getHistoryDetail",
     type: HistoryDetailItemDto
   })
-  getHistoryDetail(
-    @ValidParams(LoginHistoryIdParamsDto) params: LoginHistoryIdParamsDto
-  ) {
-    return this.service.getLoginHistoryDetail(params.id);
+  getHistoryDetail(@PathVariable("id", ...LOGIN_HISTORY_ID) id: string) {
+    return this.service.getLoginHistoryDetail(id);
   }
 }

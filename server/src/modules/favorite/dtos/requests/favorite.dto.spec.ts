@@ -1,8 +1,5 @@
 // modules
-import {
-  FavoriteAppIdParamsDto,
-  ListFavoritesQueryDto
-} from "@/modules/favorite/dtos/requests";
+import { ListFavoritesQueryDto } from "@/modules/favorite/dtos/requests";
 // validators
 import { SEARCH_MAX_LENGTH } from "@/validators/constants";
 // others
@@ -11,19 +8,6 @@ import { expectDto } from "@test/helpers/dto-cases";
 const APP_ID = "507f1f77bcf86cd799439011";
 
 describe("favorite request DTOs match the Joi schemas", () => {
-  it("FavoriteAppIdParamsDto ≡ favoriteAppIdParamSchema", async () => {
-    await expectDto(FavoriteAppIdParamsDto, {
-      valid: { appId: APP_ID },
-      unknownStripped: { appId: APP_ID, extra: "x" },
-      missing: {},
-      null: { appId: null },
-      empty: { appId: "" },
-      wrongType: { appId: 123 },
-      notHex: { appId: "507f1f77bcf86cd79943901z" },
-      tooShort: { appId: "507f1f77bcf86cd79943901" }
-    });
-  });
-
   it("ListFavoritesQueryDto ≡ listFavoritesQuerySchema", async () => {
     await expectDto(ListFavoritesQueryDto, {
       empty: {},

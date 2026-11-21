@@ -1,5 +1,4 @@
 // types
-import type { Request } from "express";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { LoginHistoryService } from "@/modules/login-history/services";
 // others
@@ -14,7 +13,6 @@ export class ForgotPasswordAuditService {
     email: string;
     auth: AuthenticationDocument;
     attempts: number;
-    req: Request;
   }): void {
     recordInvalidOtp(this.historyService, params);
   }
@@ -22,7 +20,6 @@ export class ForgotPasswordAuditService {
   recordInvalidMagicLink(params: {
     email: string;
     auth: AuthenticationDocument;
-    req: Request;
   }): void {
     recordInvalidMagicLink(this.historyService, params);
   }
@@ -30,7 +27,6 @@ export class ForgotPasswordAuditService {
   recordPasswordReset(params: {
     email: string;
     auth: AuthenticationDocument;
-    req: Request;
   }): void {
     recordPasswordReset(this.historyService, params);
   }

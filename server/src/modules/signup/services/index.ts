@@ -1,7 +1,5 @@
 // types
-import type { Request } from "express";
 import type {
-  CheckEmailParamsDto,
   CompleteSignupBodyDto,
   ResendOtpBodyDto,
   SendOtpBodyDto,
@@ -40,7 +38,7 @@ export class SignupService {
   ) {}
 
   @LogMethod({ name: "SendOtp" })
-  sendOtp(body: SendOtpBodyDto, req: Request): Promise<SendOtpDto> {
+  sendOtp(body: SendOtpBodyDto): Promise<SendOtpDto> {
     return sendOtp(
       {
         otpSignupRepo: this.otpSignupRepo,
@@ -48,8 +46,7 @@ export class SignupService {
         emailAvailableGuard: this.emailAvailableGuard,
         cooldownGuard: this.cooldownGuard
       },
-      body,
-      req
+      body
     );
   }
 
@@ -65,7 +62,7 @@ export class SignupService {
   }
 
   @LogMethod({ name: "ResendOtp" })
-  resendOtp(body: ResendOtpBodyDto, req: Request): Promise<ResendOtpDto> {
+  resendOtp(body: ResendOtpBodyDto): Promise<ResendOtpDto> {
     return resendOtp(
       {
         otpSignupRepo: this.otpSignupRepo,
@@ -73,8 +70,7 @@ export class SignupService {
         emailAvailableGuard: this.emailAvailableGuard,
         cooldownGuard: this.cooldownGuard
       },
-      body,
-      req
+      body
     );
   }
 
@@ -93,7 +89,7 @@ export class SignupService {
   }
 
   @LogMethod({ name: "CheckEmail" })
-  checkEmail(params: CheckEmailParamsDto): Promise<CheckEmailDto> {
-    return checkEmail(this.userService, params);
+  checkEmail(email: string): Promise<CheckEmailDto> {
+    return checkEmail(this.userService, email);
   }
 }

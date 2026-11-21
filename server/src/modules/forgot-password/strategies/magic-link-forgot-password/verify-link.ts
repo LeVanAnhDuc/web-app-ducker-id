@@ -1,5 +1,5 @@
 // types
-import type { FPMagicLinkVerifyRequest } from "../../types";
+import type { ForgotPasswordMagicLinkVerifyBodyDto } from "../../dtos/requests";
 import type { VerifyMagicLinkResponseDto } from "../../dtos";
 import type { MagicLinkForgotPasswordRepository } from "../../repositories/magic-link-forgot-password.repository";
 import type { ResetTokenRepository } from "../../repositories/reset-token.repository";
@@ -21,15 +21,15 @@ export const verifyLink = async (
     authExistsGuard: AuthExistsGuard;
     audit: ForgotPasswordAuditService;
   },
-  req: FPMagicLinkVerifyRequest
+  body: ForgotPasswordMagicLinkVerifyBodyDto
 ): Promise<VerifyMagicLinkResponseDto> => {
-  const { email, token } = req.body;
+  const { email, token } = body;
 
   const { auth } = await deps.authExistsGuard.assert(email);
 
   const isValid = await deps.magicLinkRepo.verifyToken(email, token);
   if (!isValid) {
-    deps.audit.recordInvalidMagicLink({ email, auth, req });
+    deps.audit.recordInvalidMagicLink({ email, auth });
     throw new UnauthorizedError({
       key: "forgotPassword:errors.invalidMagicLink",
       code: ERROR_CODES.FORGOT_PASSWORD_MAGIC_LINK_INVALID

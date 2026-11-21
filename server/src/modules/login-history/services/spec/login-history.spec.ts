@@ -80,11 +80,6 @@ describe("LoginHistoryService.getLoginHistoryDetail", () => {
 });
 
 describe("LoginHistoryService app sign-in recording", () => {
-  const req = {
-    headers: { "user-agent": "Mozilla/5.0" },
-    ip: "127.0.0.1",
-    socket: { remoteAddress: "127.0.0.1" }
-  } as never;
   const app = {
     webAppId: "64b7f0c2f1a2b3c4d5e6f7c1",
     clientName: "Match CV",
@@ -101,8 +96,7 @@ describe("LoginHistoryService app sign-in recording", () => {
     service.recordAppSignIn({
       userId: "64b7f0c2f1a2b3c4d5e6f7b9",
       usernameAttempted: "user@test.com",
-      app,
-      req
+      app
     });
 
     expect(repo.create).toHaveBeenCalledWith(
@@ -127,8 +121,7 @@ describe("LoginHistoryService app sign-in recording", () => {
     service.recordAppSignInDenied({
       userId: "64b7f0c2f1a2b3c4d5e6f7b9",
       usernameAttempted: "user@test.com",
-      app: { ...app, interactive: true },
-      req
+      app: { ...app, interactive: true }
     });
 
     expect(repo.create).toHaveBeenCalledWith(
@@ -151,8 +144,7 @@ describe("LoginHistoryService app sign-in recording", () => {
     service.recordSuccessfulLogin({
       userId: "64b7f0c2f1a2b3c4d5e6f7b9",
       usernameAttempted: "user@test.com",
-      loginMethod: "password",
-      req
+      loginMethod: "password"
     });
     // The successful path reads the user's history before it writes.
     await new Promise(setImmediate);

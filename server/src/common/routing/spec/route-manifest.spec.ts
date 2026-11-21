@@ -74,8 +74,8 @@ const EXPECTED: Row[] = [
   ],
   [
     "GET",
-    "/api/v1/auth/signup/check-email/:email",
-    "rl:checkEmailByIp > params:CheckEmailParamsDto",
+    "/api/v1/auth/signup/check-email",
+    "rl:checkEmailByIp > query:email",
     "OK",
     "—",
     "checkEmail"
@@ -219,7 +219,7 @@ const EXPECTED: Row[] = [
   [
     "GET",
     "/api/v1/users/:id",
-    "params:PublicProfileParamsDto",
+    "params:id",
     "OK",
     "user:success.getPublicProfile",
     "getPublicProfile"
@@ -235,7 +235,7 @@ const EXPECTED: Row[] = [
   [
     "PATCH",
     "/api/v1/admin/users/:id/lock",
-    "auth > admin > rl:adminUserMutationByIpAndUser > params:AdminUserIdParamsDto",
+    "auth > admin > rl:adminUserMutationByIpAndUser > params:id",
     "OK",
     "user:success.lockUser",
     "lockUser"
@@ -243,7 +243,7 @@ const EXPECTED: Row[] = [
   [
     "PATCH",
     "/api/v1/admin/users/:id/unlock",
-    "auth > admin > rl:adminUserMutationByIpAndUser > params:AdminUserIdParamsDto",
+    "auth > admin > rl:adminUserMutationByIpAndUser > params:id",
     "OK",
     "user:success.unlockUser",
     "unlockUser"
@@ -251,7 +251,7 @@ const EXPECTED: Row[] = [
   [
     "POST",
     "/api/v1/admin/users/:id/reset-password",
-    "auth > admin > rl:adminUserMutationByIpAndUser > params:AdminUserIdParamsDto",
+    "auth > admin > rl:adminUserMutationByIpAndUser > params:id",
     "OK",
     "user:success.resetPassword",
     "resetUserPassword"
@@ -283,7 +283,7 @@ const EXPECTED: Row[] = [
   [
     "GET",
     "/api/v1/admin/login-history/:id",
-    "auth > admin > params:LoginHistoryIdParamsDto",
+    "auth > admin > params:id",
     "OK",
     "loginHistory:success.getHistoryDetail",
     "getHistoryDetail"
@@ -315,7 +315,7 @@ const EXPECTED: Row[] = [
   [
     "PATCH",
     "/api/v1/notifications/:id/read",
-    "auth > params:NotificationIdParamsDto",
+    "auth > params:id",
     "OK",
     "notification:success.markRead",
     "markRead"
@@ -331,7 +331,7 @@ const EXPECTED: Row[] = [
   [
     "POST",
     "/api/v1/users/me/favorites/:appId",
-    "auth > params:FavoriteAppIdParamsDto",
+    "auth > params:appId",
     "CREATED",
     "favorite:success.add",
     "add"
@@ -339,7 +339,7 @@ const EXPECTED: Row[] = [
   [
     "DELETE",
     "/api/v1/users/me/favorites/:appId",
-    "auth > params:FavoriteAppIdParamsDto",
+    "auth > params:appId",
     "NO_CONTENT",
     "—",
     "remove"
@@ -371,7 +371,7 @@ const EXPECTED: Row[] = [
   [
     "POST",
     "/api/v1/users/me/recent-apps/:appId",
-    "auth > rl:recordRecentAppByUser > params:RecentAppIdParamsDto",
+    "auth > rl:recordRecentAppByUser > params:appId",
     "NO_CONTENT",
     "—",
     "record"
@@ -379,7 +379,7 @@ const EXPECTED: Row[] = [
   [
     "DELETE",
     "/api/v1/users/me/recent-apps/:appId",
-    "auth > params:RecentAppIdParamsDto",
+    "auth > params:appId",
     "NO_CONTENT",
     "—",
     "hide"
@@ -387,7 +387,7 @@ const EXPECTED: Row[] = [
   [
     "POST",
     "/api/v1/users/me/recent-apps/:appId/restore",
-    "auth > params:RecentAppIdParamsDto",
+    "auth > params:appId",
     "NO_CONTENT",
     "—",
     "restore"
@@ -411,7 +411,7 @@ const EXPECTED: Row[] = [
   [
     "GET",
     "/api/v1/admin/contacts/:id",
-    "auth > admin > params:ContactIdParamsDto",
+    "auth > admin > params:id",
     "OK",
     "contactAdmin:success.getContactDetail",
     "getContactDetail"
@@ -419,7 +419,7 @@ const EXPECTED: Row[] = [
   [
     "PATCH",
     "/api/v1/admin/contacts/:id/status",
-    "auth > admin > params:ContactIdParamsDto > body:UpdateContactStatusBodyDto",
+    "auth > admin > params:id > body:UpdateContactStatusBodyDto",
     "OK",
     "contactAdmin:success.updateContactStatus",
     "updateContactStatus"
@@ -435,7 +435,7 @@ const EXPECTED: Row[] = [
   [
     "GET",
     "/api/v1/contacts/:id",
-    "auth > params:ContactIdParamsDto",
+    "auth > params:id",
     "OK",
     "contactAdmin:success.getMyContactDetail",
     "getMyContactDetail"
@@ -459,7 +459,7 @@ const EXPECTED: Row[] = [
   [
     "PATCH",
     "/api/v1/admin/apps/:id",
-    "auth > admin > params:AppIdParamsDto > body:UpdateAppBodyDto",
+    "auth > admin > params:id > body:UpdateAppBodyDto",
     "OK",
     "webApp:success.updateApp",
     "updateApp"
@@ -491,7 +491,7 @@ const EXPECTED: Row[] = [
   [
     "PATCH",
     "/api/v1/admin/categories/:id",
-    "auth > admin > rl:categoryMutationByIpAndUser > params:CategoryIdParamsDto > body:UpdateCategoryBodyDto",
+    "auth > admin > rl:categoryMutationByIpAndUser > params:id > body:UpdateCategoryBodyDto",
     "OK",
     "category:success.update",
     "update"
@@ -499,7 +499,7 @@ const EXPECTED: Row[] = [
   [
     "POST",
     "/api/v1/admin/categories/:id/move",
-    "auth > admin > rl:categoryMutationByIpAndUser > params:CategoryIdParamsDto > body:MoveCategoryBodyDto",
+    "auth > admin > rl:categoryMutationByIpAndUser > params:id > body:MoveCategoryBodyDto",
     "OK",
     "category:success.move",
     "move"
@@ -507,7 +507,7 @@ const EXPECTED: Row[] = [
   [
     "GET",
     "/api/v1/admin/categories/:id/delete-impact",
-    "auth > admin > params:CategoryIdParamsDto",
+    "auth > admin > params:id",
     "OK",
     "category:success.deleteImpact",
     "deleteImpact"
@@ -515,7 +515,7 @@ const EXPECTED: Row[] = [
   [
     "DELETE",
     "/api/v1/admin/categories/:id",
-    "auth > admin > rl:categoryMutationByIpAndUser > params:CategoryIdParamsDto > body:DeleteCategoryBodyDto",
+    "auth > admin > rl:categoryMutationByIpAndUser > params:id > body:DeleteCategoryBodyDto",
     "NO_CONTENT",
     "—",
     "remove"

@@ -13,7 +13,7 @@ const END_POINTS = {
   AUTH_SIGNUP_VERIFY_OTP: "/auth/signup/verify-otp",
   AUTH_SIGNUP_RESEND_OTP: "/auth/signup/resend-otp",
   AUTH_SIGNUP_COMPLETE: "/auth/signup/complete",
-  AUTH_SIGNUP_CHECK_EMAIL: "/auth/signup/check-email/:email",
+  AUTH_SIGNUP_CHECK_EMAIL: "/auth/signup/check-email",
 
   AUTH_FORGOT_PASSWORD_OTP_SEND: "/auth/forgot-password/otp/send",
   AUTH_FORGOT_PASSWORD_OTP_VERIFY: "/auth/forgot-password/otp/verify",

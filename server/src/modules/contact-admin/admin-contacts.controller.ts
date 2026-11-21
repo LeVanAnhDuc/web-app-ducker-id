@@ -4,15 +4,17 @@ import { OpenAPI } from "routing-controllers-openapi";
 // types
 import type { ContactAdminService } from "./services";
 // common
-import { ApiErrors, Paginated } from "@/common/openapi";
+import { ApiErrors, ApiProperty, Paginated } from "@/common/openapi";
 import {
   Admin,
   Auth,
+  PathVariable,
+  RequestParam,
   Respond,
-  ValidBody,
-  ValidParams,
-  ValidQuery
+  ValidBody
 } from "@/common/routing";
+// validators
+import { IsRequiredObjectId } from "@/validators/decorators";
 // others
 import {
   AdminContactDetailItemDto,
@@ -21,9 +23,18 @@ import {
 } from "./dtos";
 import {
   AdminContactsQueryDto,
-  ContactIdParamsDto,
   UpdateContactStatusBodyDto
 } from "./dtos/requests";
+
+// Every failure takes the one key; each keeps its own constraint name so
+// `reason` still tells them apart.
+const CONTACT_ID = [
+  IsRequiredObjectId("contactAdmin:errors.invalidId"),
+  ApiProperty({
+    example: "507f1f77bcf86cd799439011",
+    description: "MongoDB ObjectId of the contact request"
+  })
+];
 
 @JsonController("/admin/contacts")
 @Auth()
@@ -39,7 +50,7 @@ export class AdminContactsController {
     type: Paginated(ContactListItemDto)
   })
   getContactList(
-    @ValidQuery(AdminContactsQueryDto) query: AdminContactsQueryDto
+    @RequestParam(AdminContactsQueryDto) query: AdminContactsQueryDto
   ) {
     return this.service.getContactList(query);
   }
@@ -55,10 +66,8 @@ export class AdminContactsController {
     message: "contactAdmin:success.getContactDetail",
     type: AdminContactDetailItemDto
   })
-  getContactDetail(
-    @ValidParams(ContactIdParamsDto) params: ContactIdParamsDto
-  ) {
-    return this.service.getContactDetail(params.id);
+  getContactDetail(@PathVariable("id", ...CONTACT_ID) id: string) {
+    return this.service.getContactDetail(id);
   }
 
   @Patch("/:id/status")
@@ -69,9 +78,9 @@ export class AdminContactsController {
     type: UpdateContactStatusDto
   })
   updateContactStatus(
-    @ValidParams(ContactIdParamsDto) params: ContactIdParamsDto,
+    @PathVariable("id", ...CONTACT_ID) id: string,
     @ValidBody(UpdateContactStatusBodyDto) body: UpdateContactStatusBodyDto
   ) {
-    return this.service.updateContactStatus(params.id, body.status);
+    return this.service.updateContactStatus(id, body.status);
   }
 }

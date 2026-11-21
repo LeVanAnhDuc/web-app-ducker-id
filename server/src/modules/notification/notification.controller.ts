@@ -4,18 +4,26 @@ import { OpenAPI } from "routing-controllers-openapi";
 // types
 import type { NotificationService } from "./services";
 // common
-import { ApiErrors, Paginated } from "@/common/openapi";
-import { Auth, Respond, ValidParams, ValidQuery } from "@/common/routing";
+import { ApiErrors, ApiProperty, Paginated } from "@/common/openapi";
+import { Auth, PathVariable, RequestParam, Respond } from "@/common/routing";
+// validators
+import { IsRequiredObjectId } from "@/validators/decorators";
 // others
 import {
   MarkedReadCountDto,
   NotificationItemDto,
   UnreadCountDto
 } from "./dtos";
-import {
-  NotificationIdParamsDto,
-  NotificationListQueryDto
-} from "./dtos/requests";
+import { NotificationListQueryDto } from "./dtos/requests";
+
+// Every failure takes the one key.
+const NOTIFICATION_ID = [
+  IsRequiredObjectId("validation:id.invalid"),
+  ApiProperty({
+    example: "507f1f77bcf86cd799439012",
+    description: "MongoDB ObjectId of the notification"
+  })
+];
 
 @JsonController("/notifications")
 @Auth()
@@ -53,7 +61,9 @@ export class NotificationController {
     message: "notification:success.list",
     type: Paginated(NotificationItemDto)
   })
-  list(@ValidQuery(NotificationListQueryDto) query: NotificationListQueryDto) {
+  list(
+    @RequestParam(NotificationListQueryDto) query: NotificationListQueryDto
+  ) {
     return this.service.list(query);
   }
 
@@ -64,9 +74,7 @@ export class NotificationController {
     message: "notification:success.markRead",
     type: NotificationItemDto
   })
-  markRead(
-    @ValidParams(NotificationIdParamsDto) params: NotificationIdParamsDto
-  ) {
-    return this.service.markRead(params.id);
+  markRead(@PathVariable("id", ...NOTIFICATION_ID) id: string) {
+    return this.service.markRead(id);
   }
 }

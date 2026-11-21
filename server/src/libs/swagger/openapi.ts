@@ -14,6 +14,7 @@ import {
   normalizeRefSiblings,
   SCHEMA_REF_PREFIX
 } from "@/common/openapi";
+import { isNamedValueClass } from "@/common/routing";
 // others
 import ENV from "@/constants/env";
 import { commonSchemas, commonResponses } from "./common.schemas";
@@ -154,13 +155,36 @@ const declarationsOf = (name: string): string[] => {
     );
 };
 
-/** Every class name that more than one class-validator target carries. */
-const duplicateClassNames = (): Set<string> => {
+type MetadataStorage = ReturnType<typeof getMetadataStorage>;
+
+const validationMetadatasOf = (
+  storage: MetadataStorage
+): Map<unknown, unknown> =>
+  (storage as unknown as { validationMetadatas: Map<unknown, unknown> })
+    .validationMetadatas;
+
+/**
+ * The class-validator storage minus the classes `@PathVariable` /
+ * `@RequestParam` build for named values: those are documented as inline
+ * parameters, and several share a name (`id`), so letting them into the
+ * schema pass would merge them into one bogus `id` schema.
+ */
+const dtoStorage = (): MetadataStorage => {
+  const storage = getMetadataStorage();
+  const validationMetadatas = new Map(
+    [...validationMetadatasOf(storage)].filter(
+      ([target]) => !isNamedValueClass(target)
+    )
+  );
+  return Object.assign(Object.create(storage) as MetadataStorage, {
+    validationMetadatas
+  });
+};
+
+/** Every class name that more than one DTO class carries. */
+const duplicateClassNames = (storage: MetadataStorage): Set<string> => {
   const byName = new Map<string, Set<Function>>();
-  const { validationMetadatas } = getMetadataStorage() as unknown as {
-    validationMetadatas: Map<unknown, unknown>;
-  };
-  for (const target of validationMetadatas.keys()) {
+  for (const target of validationMetadatasOf(storage).keys()) {
     if (typeof target !== "function") continue;
     const targets = byName.get(target.name) ?? new Set<Function>();
     targets.add(target);
@@ -208,16 +232,22 @@ const reachableSchemas = (
  * `@/common/openapi`).
  *
  * Order (design §Step 0): duplicate class names → schemas → bridge on each
- * controller → library → normalizePathKeys (inside generatePaths). Only the
+ * controller → library → normalizePathKeys (inside generatePaths). The first
+ * two skip the classes built for named values, which the bridge inlines as
+ * parameters. Only the
  * schemas the operations reach are added, and a duplicate name fails only when
  * such a schema is one of them: two classes with one name would silently merge
  * into one schema.
  */
 export const buildOpenApiSpec = (controllers: object[]): OpenAPIV3.Document => {
   assertApiPropertyUsage();
-  const duplicates = duplicateClassNames();
+  const storage = dtoStorage();
+  const duplicates = duplicateClassNames(storage);
   const schemas = normalizeRefSiblings(
-    validationMetadatasToSchemas(jsonSchemaOptions)
+    validationMetadatasToSchemas({
+      ...jsonSchemaOptions,
+      classValidatorMetadataStorage: storage
+    })
   ) as unknown as Record<string, OpenAPIV3.SchemaObject>;
 
   const documented = controllers

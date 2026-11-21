@@ -9,9 +9,9 @@ import {
   Admin,
   Auth,
   RateLimit,
+  RequestParam,
   Respond,
-  ValidBody,
-  ValidQuery
+  ValidBody
 } from "@/common/routing";
 // others
 import { RequestContext } from "@/utils/request-context";
@@ -37,7 +37,7 @@ export class EntitlementAdminController {
   @ApiErrors(404)
   @Respond({ message: "entitlement:success.get", type: EntitlementMatrixDto })
   getMatrix(
-    @ValidQuery(EntitlementMatrixQueryDto) query: EntitlementMatrixQueryDto
+    @RequestParam(EntitlementMatrixQueryDto) query: EntitlementMatrixQueryDto
   ) {
     return this.service.getMatrix(query.userIds);
   }

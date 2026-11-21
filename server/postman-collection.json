@@ -681,16 +681,16 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/signup/check-email/{{signupEmail}}",
+                  "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/signup/check-email?email={{signupEmail}}",
                   "host": ["{{baseUrl}}"],
                   "path": [
                     "api",
                     "{{apiVersion}}",
                     "auth",
                     "signup",
-                    "check-email",
-                    "{{signupEmail}}"
-                  ]
+                    "check-email"
+                  ],
+                  "query": [{ "key": "email", "value": "{{signupEmail}}" }]
                 }
               },
               "response": []
@@ -4706,16 +4706,16 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/signup/check-email/{{userEmail}}",
+                  "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/signup/check-email?email={{userEmail}}",
                   "host": ["{{baseUrl}}"],
                   "path": [
                     "api",
                     "{{apiVersion}}",
                     "auth",
                     "signup",
-                    "check-email",
-                    "{{userEmail}}"
-                  ]
+                    "check-email"
+                  ],
+                  "query": [{ "key": "email", "value": "{{userEmail}}" }]
                 },
                 "description": "200 with the email reported as unavailable."
               },
@@ -4740,16 +4740,16 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                  "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/signup/check-email/not-an-email",
+                  "raw": "{{baseUrl}}/api/{{apiVersion}}/auth/signup/check-email?email=not-an-email",
                   "host": ["{{baseUrl}}"],
                   "path": [
                     "api",
                     "{{apiVersion}}",
                     "auth",
                     "signup",
-                    "check-email",
-                    "not-an-email"
-                  ]
+                    "check-email"
+                  ],
+                  "query": [{ "key": "email", "value": "not-an-email" }]
                 }
               },
               "response": []

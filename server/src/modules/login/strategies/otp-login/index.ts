@@ -1,5 +1,4 @@
 // types
-import type { Request } from "express";
 import type { OtpSendBodyDto, OtpVerifyBodyDto } from "../../dtos/requests";
 import type { LoginResponseDto, OtpSendDto } from "../../dtos";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
@@ -34,7 +33,7 @@ export class OtpLoginStrategy {
   ) {}
 
   @LogMethod({ name: "Login OTP send" })
-  sendCode(body: OtpSendBodyDto, req: Request): Promise<OtpSendDto> {
+  sendCode(body: OtpSendBodyDto): Promise<OtpSendDto> {
     return sendCode(
       {
         accountExistsGuard: this.accountExistsGuard,
@@ -42,13 +41,12 @@ export class OtpLoginStrategy {
         otpLoginRepo: this.otpLoginRepo,
         emailDispatcher: this.emailDispatcher
       },
-      body,
-      req
+      body
     );
   }
 
   @LogMethod({ name: "Login OTP verification" })
-  verifyCode(body: OtpVerifyBodyDto, req: Request): Promise<LoginResponseDto> {
+  verifyCode(body: OtpVerifyBodyDto): Promise<LoginResponseDto> {
     return verifyCode(
       {
         accountExistsGuard: this.accountExistsGuard,
@@ -60,8 +58,7 @@ export class OtpLoginStrategy {
         audit: this.audit,
         completion: this.completion
       },
-      body,
-      req
+      body
     );
   }
 }

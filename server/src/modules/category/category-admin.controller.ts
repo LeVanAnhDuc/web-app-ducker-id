@@ -5,24 +5,33 @@ import { OpenAPI } from "routing-controllers-openapi";
 // types
 import type { CategoryService } from "./services";
 // common
-import { ApiErrors } from "@/common/openapi";
+import { ApiErrors, ApiProperty } from "@/common/openapi";
 import {
   Admin,
   Auth,
+  PathVariable,
   RateLimit,
   Respond,
-  ValidBody,
-  ValidParams
+  ValidBody
 } from "@/common/routing";
+// validators
+import { IsRequiredObjectId } from "@/validators/decorators";
 // others
 import { AdminCategoryDto, DeleteImpactDto } from "./dtos";
 import {
-  CategoryIdParamsDto,
   CreateCategoryBodyDto,
   DeleteCategoryBodyDto,
   MoveCategoryBodyDto,
   UpdateCategoryBodyDto
 } from "./dtos/requests";
+
+const CATEGORY_ID = [
+  IsRequiredObjectId("category:validation.id.invalid"),
+  ApiProperty({
+    example: "507f1f77bcf86cd799439012",
+    description: "MongoDB ObjectId of the category"
+  })
+];
 
 @JsonController("/admin/categories")
 @Auth()
@@ -65,10 +74,10 @@ export class CategoryAdminController {
   @RateLimit("categoryMutationByIpAndUser")
   @Respond({ message: "category:success.update", type: AdminCategoryDto })
   update(
-    @ValidParams(CategoryIdParamsDto) params: CategoryIdParamsDto,
+    @PathVariable("id", ...CATEGORY_ID) id: string,
     @ValidBody(UpdateCategoryBodyDto) body: UpdateCategoryBodyDto
   ) {
-    return this.service.update(params.id, body);
+    return this.service.update(id, body);
   }
 
   @Post("/:id/move")
@@ -81,18 +90,18 @@ export class CategoryAdminController {
   @RateLimit("categoryMutationByIpAndUser")
   @Respond({ message: "category:success.move", type: [AdminCategoryDto] })
   move(
-    @ValidParams(CategoryIdParamsDto) params: CategoryIdParamsDto,
+    @PathVariable("id", ...CATEGORY_ID) id: string,
     @ValidBody(MoveCategoryBodyDto) body: MoveCategoryBodyDto
   ) {
-    return this.service.move(params.id, body.direction);
+    return this.service.move(id, body.direction);
   }
 
   @Get("/:id/delete-impact")
   @OpenAPI({ summary: "Preview what deleting a category would affect" })
   @ApiErrors(404)
   @Respond({ message: "category:success.deleteImpact", type: DeleteImpactDto })
-  deleteImpact(@ValidParams(CategoryIdParamsDto) params: CategoryIdParamsDto) {
-    return this.service.deleteImpact(params.id);
+  deleteImpact(@PathVariable("id", ...CATEGORY_ID) id: string) {
+    return this.service.deleteImpact(id);
   }
 
   @Delete("/:id")
@@ -105,9 +114,9 @@ export class CategoryAdminController {
   @RateLimit("categoryMutationByIpAndUser")
   @Respond({ status: StatusCodes.NO_CONTENT })
   async remove(
-    @ValidParams(CategoryIdParamsDto) params: CategoryIdParamsDto,
+    @PathVariable("id", ...CATEGORY_ID) id: string,
     @ValidBody(DeleteCategoryBodyDto) body: DeleteCategoryBodyDto
   ) {
-    await this.service.remove(params.id, body.reassignments);
+    await this.service.remove(id, body.reassignments);
   }
 }

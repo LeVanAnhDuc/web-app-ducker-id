@@ -15,7 +15,7 @@ import {
   SESSION_EXPIRY_SECONDS
 } from "../../constants";
 import { createEmailDispatcherMock } from "@test/mocks/email-dispatcher.mock";
-import { makeMockRequest } from "@test/helpers/request.helper";
+import { inRequest } from "@test/helpers/request-context.helper";
 import { SignupService } from "../";
 
 const EMAIL = "new@example.com";
@@ -71,7 +71,7 @@ describe("SignupService.sendOtp", () => {
   it("stores an OTP, sets the cooldown and queues the email", async () => {
     const { service, otpSignupRepo, emailDispatcher } = setup();
 
-    const result = await service.sendOtp({ email: EMAIL }, makeMockRequest());
+    const result = await service.sendOtp({ email: EMAIL });
 
     expect(otpSignupRepo.createAndStoreOtp).toHaveBeenCalledWith(
       EMAIL,
@@ -95,14 +95,14 @@ describe("SignupService.sendOtp", () => {
   it("sends the email in the language of the request", async () => {
     const { service, emailDispatcher } = setup();
 
-    await service.sendOtp(
-      { email: EMAIL },
-      makeMockRequest({ language: "vi" })
+    // "en" rather than the app default "vi", so the context is what decides.
+    await inRequest({ language: "en" }, () =>
+      service.sendOtp({ email: EMAIL })
     );
 
     expect(emailDispatcher.send).toHaveBeenCalledWith(
       EmailType.SIGNUP_OTP,
-      expect.objectContaining({ locale: "vi" })
+      expect.objectContaining({ locale: "en" })
     );
   });
 
@@ -110,9 +110,9 @@ describe("SignupService.sendOtp", () => {
     const { service, otpSignupRepo, emailDispatcher } = setup();
     otpSignupRepo.getCooldownRemaining.mockResolvedValue(42);
 
-    await expect(
-      service.sendOtp({ email: EMAIL }, makeMockRequest())
-    ).rejects.toThrow(BadRequestError);
+    await expect(service.sendOtp({ email: EMAIL })).rejects.toThrow(
+      BadRequestError
+    );
     expect(emailDispatcher.send).not.toHaveBeenCalled();
   });
 
@@ -120,9 +120,9 @@ describe("SignupService.sendOtp", () => {
     const { service, userService, otpSignupRepo } = setup();
     userService.emailExists.mockResolvedValue(true);
 
-    await expect(
-      service.sendOtp({ email: EMAIL }, makeMockRequest())
-    ).rejects.toThrow(ConflictRequestError);
+    await expect(service.sendOtp({ email: EMAIL })).rejects.toThrow(
+      ConflictRequestError
+    );
     expect(otpSignupRepo.createAndStoreOtp).not.toHaveBeenCalled();
   });
 
@@ -130,9 +130,9 @@ describe("SignupService.sendOtp", () => {
     const { service, otpSignupRepo, userService } = setup();
     otpSignupRepo.getCooldownRemaining.mockResolvedValue(10);
 
-    await expect(
-      service.sendOtp({ email: EMAIL }, makeMockRequest())
-    ).rejects.toThrow(BadRequestError);
+    await expect(service.sendOtp({ email: EMAIL })).rejects.toThrow(
+      BadRequestError
+    );
     expect(userService.emailExists).not.toHaveBeenCalled();
   });
 });
@@ -191,7 +191,7 @@ describe("SignupService.resendOtp", () => {
     const { service, otpSignupRepo } = setup();
     otpSignupRepo.incrementResendCount.mockResolvedValue(2);
 
-    const result = await service.resendOtp({ email: EMAIL }, makeMockRequest());
+    const result = await service.resendOtp({ email: EMAIL });
 
     expect(result).toEqual({
       success: true,
@@ -207,9 +207,9 @@ describe("SignupService.resendOtp", () => {
     const { service, otpSignupRepo, emailDispatcher } = setup();
     otpSignupRepo.hasExceededResendLimit.mockResolvedValue(true);
 
-    await expect(
-      service.resendOtp({ email: EMAIL }, makeMockRequest())
-    ).rejects.toThrow(BadRequestError);
+    await expect(service.resendOtp({ email: EMAIL })).rejects.toThrow(
+      BadRequestError
+    );
     expect(emailDispatcher.send).not.toHaveBeenCalled();
   });
 
@@ -217,9 +217,9 @@ describe("SignupService.resendOtp", () => {
     const { service, userService, otpSignupRepo } = setup();
     userService.emailExists.mockResolvedValue(true);
 
-    await expect(
-      service.resendOtp({ email: EMAIL }, makeMockRequest())
-    ).rejects.toThrow(ConflictRequestError);
+    await expect(service.resendOtp({ email: EMAIL })).rejects.toThrow(
+      ConflictRequestError
+    );
     expect(otpSignupRepo.createAndStoreOtp).not.toHaveBeenCalled();
   });
 });
@@ -228,7 +228,7 @@ describe("SignupService.checkEmail", () => {
   it("reports an unused email as available", async () => {
     const { service } = setup();
 
-    await expect(service.checkEmail({ email: EMAIL })).resolves.toEqual({
+    await expect(service.checkEmail(EMAIL)).resolves.toEqual({
       available: true
     });
   });
@@ -237,7 +237,7 @@ describe("SignupService.checkEmail", () => {
     const { service, userService } = setup();
     userService.emailExists.mockResolvedValue(true);
 
-    await expect(service.checkEmail({ email: EMAIL })).resolves.toEqual({
+    await expect(service.checkEmail(EMAIL)).resolves.toEqual({
       available: false
     });
   });

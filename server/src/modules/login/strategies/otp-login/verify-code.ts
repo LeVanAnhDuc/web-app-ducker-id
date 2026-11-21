@@ -1,6 +1,5 @@
 // types
 import type { AuthenticationDocument } from "@/modules/authentication/types";
-import type { Request } from "express";
 import type { OtpVerifyBodyDto } from "../../dtos/requests";
 import type { LoginResponseDto } from "../../dtos";
 import type { OtpLoginRepository } from "../../repositories/otp-login.repository";
@@ -27,11 +26,10 @@ import { LOGIN_OTP_CONFIG } from "../../constants";
 const handleInvalidOtp = async (
   deps: { otpLoginRepo: OtpLoginRepository; audit: LoginAuditService },
   auth: AuthenticationDocument,
-  email: string,
-  req: Request
+  email: string
 ): Promise<void> => {
   const attempts = await deps.otpLoginRepo.incrementFailedAttempts(email);
-  deps.audit.recordInvalidOtp({ auth, email, attempts, req });
+  deps.audit.recordInvalidOtp({ auth, email, attempts });
 
   const remaining = LOGIN_OTP_CONFIG.MAX_FAILED_ATTEMPTS - attempts;
 
@@ -63,8 +61,7 @@ export const verifyCode = async (
     audit: LoginAuditService;
     completion: LoginCompletionService;
   },
-  body: OtpVerifyBodyDto,
-  req: Request
+  body: OtpVerifyBodyDto
 ): Promise<LoginResponseDto> => {
   const { email, otp } = body;
 
@@ -75,16 +72,15 @@ export const verifyCode = async (
 
   const { auth, user } = await deps.accountExistsGuard.assert(email);
 
-  deps.accountActiveGuard.assertWithAudit(auth, email, LOGIN_METHODS.OTP, req);
-  deps.emailVerifiedGuard.assertWithAudit(auth, email, LOGIN_METHODS.OTP, req);
+  deps.accountActiveGuard.assertWithAudit(auth, email, LOGIN_METHODS.OTP);
+  deps.emailVerifiedGuard.assertWithAudit(auth, email, LOGIN_METHODS.OTP);
 
   const isValid = await deps.otpLoginRepo.verify(email, otp);
   if (!isValid)
     await handleInvalidOtp(
       { otpLoginRepo: deps.otpLoginRepo, audit: deps.audit },
       auth,
-      email,
-      req
+      email
     );
 
   withRetry(() => deps.otpLoginRepo.cleanupAll(email), {
@@ -97,7 +93,6 @@ export const verifyCode = async (
   return deps.completion.complete({
     auth,
     user,
-    method: LOGIN_METHODS.OTP,
-    req
+    method: LOGIN_METHODS.OTP
   });
 };

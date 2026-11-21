@@ -37,12 +37,11 @@ export function createAuthClient(base: BaseClient) {
     },
 
     // ── sign-up ───────────────────────────────────────────────────────────
-    /** GET /auth/signup/check-email/:email — the address is URL-encoded here. */
+    /** GET /auth/signup/check-email?email= */
     checkEmail(email: string): Promise<APIResponse> {
-      return base.call(
-        "get",
-        `/auth/signup/check-email/${encodeURIComponent(email)}`
-      );
+      return base.call("get", "/auth/signup/check-email", {
+        params: { email }
+      });
     },
     sendSignupOtp(email: string): Promise<APIResponse> {
       return base.call("post", "/auth/signup/send-otp", { data: { email } });

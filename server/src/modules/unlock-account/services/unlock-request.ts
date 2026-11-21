@@ -1,5 +1,4 @@
 // types
-import type { Request } from "express";
 import type { UnlockRequestBodyDto } from "../dtos/requests";
 import type { UnlockRequestDto } from "../dtos";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
@@ -11,6 +10,7 @@ import { BadRequestError } from "@/exceptions";
 // dtos
 import { toUnlockRequestDto } from "../dtos";
 // others
+import { RequestContext } from "@/utils/request-context";
 import ENV from "@/constants/env";
 import { generateTempPassword } from "@/utils/crypto/temp-password";
 import { EmailType } from "@/types/services/email";
@@ -26,11 +26,10 @@ export const unlockRequest = async (
     rateLimitGuard: RateLimitGuard;
     authExistsGuard: AuthExistsGuard;
   },
-  body: UnlockRequestBodyDto,
-  req: Request
+  body: UnlockRequestBodyDto
 ): Promise<UnlockRequestDto> => {
   const { email } = body;
-  const { language } = req;
+  const { language } = RequestContext.getClient();
 
   Logger.info("Processing unlock request", { email });
 

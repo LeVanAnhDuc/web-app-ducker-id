@@ -1,12 +1,10 @@
 // types
-import type { Request } from "express";
 import type { LoginAuditService } from "../services/login-audit";
 // common
 import { UnauthorizedError } from "@/exceptions";
 // modules
 import { LOGIN_METHODS } from "@/modules/login-history/constants";
 // others
-import { makeMockRequest } from "@test/helpers/request.helper";
 import { createLoginAuditServiceMock } from "@test/mocks/login-audit-service.mock";
 import { buildAuth } from "@test/factories/user-with-auth.factory";
 import { EmailVerifiedGuard } from "./email-verified.guard";
@@ -15,12 +13,10 @@ import { ERROR_CODES } from "@/constants/error-code";
 const EMAIL = "user@example.com";
 
 describe("EmailVerifiedGuard", () => {
-  let req: Request;
   let audit: jest.Mocked<LoginAuditService>;
   let guard: EmailVerifiedGuard;
 
   beforeEach(() => {
-    req = makeMockRequest();
     audit = createLoginAuditServiceMock();
     guard = new EmailVerifiedGuard(audit);
   });
@@ -48,7 +44,7 @@ describe("EmailVerifiedGuard", () => {
   describe("assertWithAudit", () => {
     it("returns silently when verified, no audit", () => {
       expect(() =>
-        guard.assertWithAudit(buildAuth(), EMAIL, LOGIN_METHODS.PASSWORD, req)
+        guard.assertWithAudit(buildAuth(), EMAIL, LOGIN_METHODS.PASSWORD)
       ).not.toThrow();
       expect(audit.recordEmailNotVerified).not.toHaveBeenCalled();
     });
@@ -57,14 +53,13 @@ describe("EmailVerifiedGuard", () => {
       const auth = buildAuth({ verifiedEmail: false });
 
       expect(() =>
-        guard.assertWithAudit(auth, EMAIL, LOGIN_METHODS.PASSWORD, req)
+        guard.assertWithAudit(auth, EMAIL, LOGIN_METHODS.PASSWORD)
       ).toThrow(UnauthorizedError);
 
       expect(audit.recordEmailNotVerified).toHaveBeenCalledWith({
         auth,
         email: EMAIL,
-        method: LOGIN_METHODS.PASSWORD,
-        req
+        method: LOGIN_METHODS.PASSWORD
       });
     });
   });

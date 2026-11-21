@@ -1,10 +1,10 @@
 // types
-import type { Request } from "express";
 import type { LoginHistoryRepository } from "../../repository/login-history.repository";
 import type { SignInTraits } from "@/modules/login-history/types";
 // module under test
 import { LoginHistoryService } from "../";
 import { createNotificationDispatcherMock } from "@test/mocks/notification-dispatcher.mock";
+import { inRequest } from "@test/helpers/request-context.helper";
 
 jest.mock("geoip-lite", () => ({ lookup: jest.fn() }));
 import geoip from "geoip-lite";
@@ -12,13 +12,6 @@ import geoip from "geoip-lite";
 const AUTH_ID = "64b7f0c2f1a2b3c4d5e6f7b9";
 const CHROME_WINDOWS =
   "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36";
-
-const req = (ip: string) =>
-  ({
-    headers: { "user-agent": CHROME_WINDOWS },
-    ip,
-    socket: { remoteAddress: ip }
-  }) as unknown as Request;
 
 const traits = (over: Partial<SignInTraits> = {}): SignInTraits => ({
   hasHistory: true,
@@ -38,12 +31,13 @@ const setup = (history: SignInTraits) => {
 };
 
 const signIn = async (service: LoginHistoryService, ip = "8.8.8.8") => {
-  service.recordSuccessfulLogin({
-    userId: AUTH_ID,
-    usernameAttempted: "user@test.com",
-    loginMethod: "password",
-    req: req(ip)
-  });
+  inRequest({ ip, userAgent: CHROME_WINDOWS }, () =>
+    service.recordSuccessfulLogin({
+      userId: AUTH_ID,
+      usernameAttempted: "user@test.com",
+      loginMethod: "password"
+    })
+  );
   await new Promise(setImmediate);
 };
 

@@ -1,18 +1,20 @@
 // libs
 import { StatusCodes } from "http-status-codes";
-import { Get, JsonController, Post, Req, Res } from "routing-controllers";
+import { Get, JsonController, Post, Res } from "routing-controllers";
 import { OpenAPI } from "routing-controllers-openapi";
 // types
-import type { Request, Response } from "express";
+import type { Response } from "express";
 import type { SignupService } from "./services";
 // common
-import { ApiErrors } from "@/common/openapi";
-import { RateLimit, Respond, ValidBody, ValidParams } from "@/common/routing";
+import { ApiErrors, ApiProperty } from "@/common/openapi";
+import { RateLimit, RequestParam, Respond, ValidBody } from "@/common/routing";
 // modules
 import {
   REFRESH_TOKEN,
   REFRESH_TOKEN_COOKIE_OPTIONS
 } from "@/modules/token/constants";
+// validators
+import { IsAppEmail } from "@/validators/decorators";
 // others
 import {
   CheckEmailDto,
@@ -22,7 +24,6 @@ import {
   VerifyOtpDto
 } from "./dtos";
 import {
-  CheckEmailParamsDto,
   CompleteSignupBodyDto,
   ResendOtpBodyDto,
   SendOtpBodyDto,
@@ -43,11 +44,8 @@ export class SignupController {
   @ApiErrors(409)
   @RateLimit("signupOtpByIp", "signupOtpByEmail")
   @Respond({ message: "signup:success.otpSent", type: SendOtpDto })
-  sendOtp(
-    @ValidBody(SendOtpBodyDto) body: SendOtpBodyDto,
-    @Req() req: Request
-  ) {
-    return this.service.sendOtp(body, req);
+  sendOtp(@ValidBody(SendOtpBodyDto) body: SendOtpBodyDto) {
+    return this.service.sendOtp(body);
   }
 
   @Post("/verify-otp")
@@ -70,11 +68,8 @@ export class SignupController {
   @ApiErrors(409)
   @RateLimit("signupOtpByIp", "signupOtpByEmail")
   @Respond({ message: "signup:success.otpResent", type: ResendOtpDto })
-  resendOtp(
-    @ValidBody(ResendOtpBodyDto) body: ResendOtpBodyDto,
-    @Req() req: Request
-  ) {
-    return this.service.resendOtp(body, req);
+  resendOtp(@ValidBody(ResendOtpBodyDto) body: ResendOtpBodyDto) {
+    return this.service.resendOtp(body);
   }
 
   @Post("/complete")
@@ -106,7 +101,9 @@ export class SignupController {
     return { ...account, tokens };
   }
 
-  @Get("/check-email/:email")
+  // A query value, not a path segment: an email is what is looked up, not a
+  // resource of its own, and it stays out of the path the access log records.
+  @Get("/check-email")
   @OpenAPI({
     summary: "Check email availability",
     description:
@@ -114,7 +111,17 @@ export class SignupController {
   })
   @RateLimit("checkEmailByIp")
   @Respond({ type: CheckEmailDto })
-  checkEmail(@ValidParams(CheckEmailParamsDto) params: CheckEmailParamsDto) {
-    return this.service.checkEmail(params);
+  checkEmail(
+    @RequestParam(
+      "email",
+      IsAppEmail(),
+      ApiProperty({
+        example: "user@example.com",
+        description: "Email address to check"
+      })
+    )
+    email: string
+  ) {
+    return this.service.checkEmail(email);
   }
 }

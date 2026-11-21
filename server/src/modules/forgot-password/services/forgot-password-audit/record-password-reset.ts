@@ -1,5 +1,4 @@
 // types
-import type { Request } from "express";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { LoginHistoryService } from "@/modules/login-history/services";
 // modules
@@ -12,16 +11,14 @@ export const recordPasswordReset = (
   params: {
     email: string;
     auth: AuthenticationDocument;
-    req: Request;
   }
 ): void => {
-  const { email, auth, req } = params;
+  const { email, auth } = params;
 
   historyService.recordSuccessfulLogin({
     userId: auth._id,
     usernameAttempted: email,
-    loginMethod: LOGIN_METHODS.FORGOT_PASSWORD,
-    req
+    loginMethod: LOGIN_METHODS.FORGOT_PASSWORD
   });
 
   Logger.info("Forgot password reset completed successfully", { email });

@@ -5,23 +5,32 @@ import { OpenAPI } from "routing-controllers-openapi";
 // types
 import type { WebAppService } from "./services";
 // common
-import { ApiErrors, Listed } from "@/common/openapi";
+import { ApiErrors, ApiProperty, Listed } from "@/common/openapi";
 import {
   Admin,
   Auth,
+  PathVariable,
+  RequestParam,
   Respond,
-  ValidBody,
-  ValidParams,
-  ValidQuery
+  ValidBody
 } from "@/common/routing";
+// validators
+import { IsRequiredObjectId } from "@/validators/decorators";
 // others
 import { AdminAppCreatedDto, AdminAppDto } from "./dtos";
 import {
   AdminAppsQueryDto,
-  AppIdParamsDto,
   CreateAppBodyDto,
   UpdateAppBodyDto
 } from "./dtos/requests";
+
+const APP_ID = [
+  IsRequiredObjectId("webApp:validation.id.invalid"),
+  ApiProperty({
+    example: "507f1f77bcf86cd799439011",
+    description: "MongoDB ObjectId of the app"
+  })
+];
 
 @JsonController("/admin/apps")
 @Auth()
@@ -37,7 +46,7 @@ export class WebAppAdminController {
       "List registered apps for the admin console. Not paginated: every match is returned."
   })
   @Respond({ message: "webApp:success.listApps", type: Listed(AdminAppDto) })
-  listApps(@ValidQuery(AdminAppsQueryDto) query: AdminAppsQueryDto) {
+  listApps(@RequestParam(AdminAppsQueryDto) query: AdminAppsQueryDto) {
     return this.service.listApps(query);
   }
 
@@ -66,9 +75,9 @@ export class WebAppAdminController {
   @ApiErrors(404, 409)
   @Respond({ message: "webApp:success.updateApp", type: AdminAppDto })
   updateApp(
-    @ValidParams(AppIdParamsDto) params: AppIdParamsDto,
+    @PathVariable("id", ...APP_ID) id: string,
     @ValidBody(UpdateAppBodyDto) body: UpdateAppBodyDto
   ) {
-    return this.service.updateApp(params.id, body);
+    return this.service.updateApp(id, body);
   }
 }

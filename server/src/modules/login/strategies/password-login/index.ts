@@ -2,7 +2,6 @@
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { UserDocument } from "@/modules/user/types";
 import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
-import type { Request } from "express";
 import type { LoginBodyDto } from "../../dtos/requests";
 import type { FailedAttemptsRepository } from "../../repositories/failed-attempts.repository";
 import type { LoginResponseDto } from "../../dtos";
@@ -42,31 +41,26 @@ export class PasswordLoginStrategy {
   ) {}
 
   @LogMethod({ name: "Password login" })
-  async authenticate(
-    body: LoginBodyDto,
-    req: Request
-  ): Promise<LoginResponseDto> {
+  async authenticate(body: LoginBodyDto): Promise<LoginResponseDto> {
     const { email, password } = body;
 
     await this.passwordLockoutGuard.assert(email);
 
     const { auth, user } =
-      await this.accountExistsGuard.assertWithCredentialAudit(email, req);
+      await this.accountExistsGuard.assertWithCredentialAudit(email);
 
     this.accountActiveGuard.assertWithAudit(
       auth,
       email,
-      LOGIN_METHODS.PASSWORD,
-      req
+      LOGIN_METHODS.PASSWORD
     );
     this.emailVerifiedGuard.assertWithAudit(
       auth,
       email,
-      LOGIN_METHODS.PASSWORD,
-      req
+      LOGIN_METHODS.PASSWORD
     );
 
-    await this.verifyPasswordOrFail(auth, user, password, email, req);
+    await this.verifyPasswordOrFail(auth, user, password, email);
 
     withRetry(() => this.failedAttemptsRepo.resetAll(email), {
       operationName: "resetFailedLoginAttempts",
@@ -78,8 +72,7 @@ export class PasswordLoginStrategy {
     return this.completion.complete({
       auth,
       user,
-      method: LOGIN_METHODS.PASSWORD,
-      req
+      method: LOGIN_METHODS.PASSWORD
     });
   }
 
@@ -87,14 +80,13 @@ export class PasswordLoginStrategy {
     auth: AuthenticationDocument,
     user: UserDocument,
     password: string,
-    email: string,
-    req: Request
+    email: string
   ): Promise<void> {
     if (isValidHashedValue(password, auth.password)) return;
 
     const { attemptCount, lockoutSeconds } =
       await this.failedAttemptsRepo.trackAttempt(email);
-    this.audit.recordInvalidPassword({ auth, email, attemptCount, req });
+    this.audit.recordInvalidPassword({ auth, email, attemptCount });
 
     if (attemptCount >= LOGIN_LOCKOUT.MAX_ATTEMPTS && lockoutSeconds > 0) {
       // The owner cannot sign in while locked; the notification is there for

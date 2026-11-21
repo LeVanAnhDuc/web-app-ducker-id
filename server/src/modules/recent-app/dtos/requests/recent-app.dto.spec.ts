@@ -3,7 +3,6 @@ import { PAGINATION } from "@/common/pagination";
 // modules
 import {
   ListRecentAppsQueryDto,
-  RecentAppIdParamsDto,
   RecentAppsStatsQueryDto
 } from "@/modules/recent-app/dtos/requests";
 import { RECENT_APP_STATS } from "@/modules/recent-app/constants";
@@ -12,21 +11,7 @@ import { SEARCH_MAX_LENGTH } from "@/validators/constants";
 // others
 import { expectDto } from "@test/helpers/dto-cases";
 
-const APP_ID = "507f1f77bcf86cd799439011";
-
 describe("recent-app request DTOs match the Joi schemas", () => {
-  it("RecentAppIdParamsDto ≡ recentAppIdParamSchema", async () => {
-    await expectDto(RecentAppIdParamsDto, {
-      valid: { appId: APP_ID },
-      unknownStripped: { appId: APP_ID, extra: "x" },
-      missing: {},
-      null: { appId: null },
-      empty: { appId: "" },
-      wrongType: { appId: 123 },
-      notHex: { appId: "507f1f77bcf86cd79943901z" }
-    });
-  });
-
   it("ListRecentAppsQueryDto ≡ listRecentAppsQuerySchema", async () => {
     await expectDto(ListRecentAppsQueryDto, {
       empty: {},

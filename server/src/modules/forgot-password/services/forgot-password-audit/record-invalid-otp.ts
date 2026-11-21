@@ -1,5 +1,4 @@
 // types
-import type { Request } from "express";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { LoginHistoryService } from "@/modules/login-history/services";
 // modules
@@ -16,17 +15,15 @@ export const recordInvalidOtp = (
     email: string;
     auth: AuthenticationDocument;
     attempts: number;
-    req: Request;
   }
 ): void => {
-  const { email, auth, attempts, req } = params;
+  const { email, auth, attempts } = params;
 
   historyService.recordFailedLogin({
     userId: auth._id,
     usernameAttempted: email,
     loginMethod: LOGIN_METHODS.FORGOT_PASSWORD,
-    failReason: LOGIN_FAIL_REASONS.INVALID_OTP,
-    req
+    failReason: LOGIN_FAIL_REASONS.INVALID_OTP
   });
 
   Logger.warn("Forgot password OTP verification failed", { email, attempts });

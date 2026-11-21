@@ -1,6 +1,6 @@
 // types
 import type { Schema, Document } from "mongoose";
-import type { Request } from "express";
+import type { ClientInfo } from "@/utils/request-context";
 import type {
   LOGIN_METHODS,
   LOGIN_SOURCES,
@@ -114,7 +114,7 @@ export interface LoginEventPayload {
   status: LoginStatus;
   failReason?: LoginFailReason;
   loginMethod: LoginMethod;
-  req: Request;
+  client: ClientInfo;
   timezoneOffset?: string;
   // Present only for an OAuth sign-in into a satellite app.
   app?: LoginEventApp;

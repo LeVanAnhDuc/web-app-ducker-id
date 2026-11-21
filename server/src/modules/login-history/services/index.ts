@@ -1,7 +1,6 @@
 // types
 import type { PaginatedResult } from "@/common/pagination";
 import type { Schema } from "mongoose";
-import type { Request } from "express";
 import type { LoginEventApp, LoginFailReason, LoginMethod } from "../types";
 import type {
   LoginHistoryAdminQueryDto,
@@ -36,7 +35,6 @@ export class LoginHistoryService {
     userId: Schema.Types.ObjectId | string;
     usernameAttempted: string;
     loginMethod: LoginMethod;
-    req: Request;
   }): void {
     recordSuccessfulLogin(
       {
@@ -52,7 +50,6 @@ export class LoginHistoryService {
     usernameAttempted: string;
     loginMethod: LoginMethod;
     failReason: LoginFailReason;
-    req: Request;
   }): void {
     recordFailedLogin(this.loginHistoryRepo, params);
   }
@@ -61,7 +58,6 @@ export class LoginHistoryService {
     userId: Schema.Types.ObjectId | string;
     usernameAttempted: string;
     app: LoginEventApp;
-    req: Request;
   }): void {
     recordAppSignIn(this.loginHistoryRepo, params);
   }
@@ -70,7 +66,6 @@ export class LoginHistoryService {
     userId: Schema.Types.ObjectId | string;
     usernameAttempted: string;
     app: LoginEventApp;
-    req: Request;
   }): void {
     recordAppSignInDenied(this.loginHistoryRepo, params);
   }
