@@ -142,3 +142,29 @@ test(
     expect(body.message).not.toBe(serverMessage.common.errors.internalServer);
   }
 );
+
+test(
+  "A JSON body that is not an object answers 400, not a 500",
+  { tag: "@TC-OPS-018" },
+  async ({ api, urls }) => {
+    for (const lang of ["en", "vi"] as const) {
+      const res = await api.call("post", "/auth/login", {
+        headers: {
+          "Content-Type": "application/json",
+          "Accept-Language": lang
+        },
+        data: "[]"
+      });
+      expect(res.status(), lang).toBe(400);
+      const body = await errorBody(res, `${urls.apiPrefix}/auth/login`);
+      expect(body.code).toBe("VALIDATION_ERROR");
+      expect(body.errors).toEqual([
+        {
+          field: "",
+          reason: "isObject",
+          message: server[lang].validation.body.invalid
+        }
+      ]);
+    }
+  }
+);

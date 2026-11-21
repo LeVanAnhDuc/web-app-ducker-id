@@ -226,3 +226,17 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/ops.md
   envelope.
 - **Automated:** manual — phải tắt MongoDB/Redis của chính server đang chạy; stack e2e dùng chung một Redis cloud và
   một DB seed cho mọi spec, tắt chúng làm đỏ mọi test khác trong lượt chạy.
+
+### TC-OPS-018 — A JSON body that is not an object answers 400, not a 500
+
+- **Requirement:** REQ-OPS-03
+- **Layer:** api · **Priority:** P1 · **Vai trò:** guest
+- **Kỹ thuật:** đoán lỗi (Error Guessing — body JSON hợp lệ nhưng là mảng), bảo mật (không bỏ qua validation)
+- **Tiền điều kiện:** không có
+- **Bước:**
+  1. `POST <API prefix>/auth/login` với `Content-Type: application/json`, `Accept-Language` lần lượt `en` / `vi`,
+     body `[]`.
+- **Mong đợi:** 400 `VALIDATION_ERROR` trong error envelope, `errors` đúng một mục
+  `{ field: "", reason: "isObject", message: <validation:body.invalid> }` đã dịch theo ngôn ngữ — không phải 500
+  hay một lần đăng nhập với email rỗng.
+- **Automated:** `tests/api/ops/error-envelope.api.ts`

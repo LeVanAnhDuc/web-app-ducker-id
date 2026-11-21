@@ -14,6 +14,19 @@ export interface DtoFailure {
 
 const ROOT_FIELD = "";
 
+const NOT_AN_OBJECT: DtoFailure = {
+  field: ROOT_FIELD,
+  reason: "isObject",
+  key: "validation:body.invalid"
+};
+
+// null and undefined count as an empty object (Express 5 leaves req.body
+// undefined when nothing was posted).
+const isPlainObjectLike = (plain: unknown): boolean =>
+  plain === null ||
+  plain === undefined ||
+  (typeof plain === "object" && !Array.isArray(plain));
+
 /**
  * Context key under which an array rule carries its per-item check. Joi
  * reported a bad item at `field.<index>`, class-validator reports the whole
@@ -74,6 +87,12 @@ export const validateDto = async <T extends object>(
   Dto: DtoClass<T>,
   plain: unknown
 ): Promise<{ value: T; failures: DtoFailure[] }> => {
+  // express.json() accepts a top-level array or primitive. plainToInstance
+  // would return an array as is and validate() finds nothing wrong with it,
+  // so every rule would be skipped; Joi's object() refused it outright.
+  if (!isPlainObjectLike(plain)) {
+    return { value: plain as T, failures: [NOT_AN_OBJECT] };
+  }
   const value = plainToInstance(Dto, plain ?? {});
   const errors = await validate(value, {
     whitelist: true,

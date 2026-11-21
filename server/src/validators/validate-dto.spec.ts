@@ -141,4 +141,22 @@ describe("validateDto", () => {
       { field: "a", reason: "isDefined", key: "validation:a.required" }
     ]);
   });
+
+  it.each([
+    ["an empty array", []],
+    ["an array of objects", [{}]],
+    ["an array holding a valid object", [{ a: "x" }]],
+    ["a string", "x"],
+    ["a number", 5],
+    ["a boolean", true]
+  ])(
+    "refuses %s as a whole instead of validating it",
+    async (_label, plain) => {
+      const { failures } = await validateDto(RequiredDto, plain);
+
+      expect(failures).toEqual([
+        { field: "", reason: "isObject", key: "validation:body.invalid" }
+      ]);
+    }
+  );
 });

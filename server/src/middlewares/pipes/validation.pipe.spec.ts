@@ -86,6 +86,22 @@ describe("validation pipe", () => {
       { field: "a", reason: "isDefined", message: "t(validation:a.required)" }
     ]);
   });
+
+  it("refuses a top-level array body and leaves req.body alone", async () => {
+    const body = [{ a: "x" }];
+    const req = makeMockRequest({ body, t: translate });
+    const next = jest.fn();
+
+    const error = await rejection(
+      bodyPipe(FixtureDto)(req, res, next as NextFunction)
+    );
+
+    expect(error.errors).toEqual([
+      { field: "", reason: "isObject", message: "t(validation:body.invalid)" }
+    ]);
+    expect(req.body).toBe(body);
+    expect(next).not.toHaveBeenCalled();
+  });
 });
 
 // Runs the pipes inside a real Express app, because what they depend on —

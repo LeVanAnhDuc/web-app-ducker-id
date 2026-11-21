@@ -2,7 +2,7 @@
 
 Sinh bởi `pnpm coverage:check --write` — không sửa tay.
 
-**149** requirement · **149** đã phủ · **992** test case (986 tự động, 6 thủ công)
+**149** requirement · **149** đã phủ · **993** test case (987 tự động, 6 thủ công)
 
 ## ADMINAPPS — Quản lý danh sách ứng dụng (admin)
 
@@ -189,14 +189,14 @@ Sinh bởi `pnpm coverage:check --write` — không sửa tay.
 
 ## OPS — công cụ vận hành
 
-| Requirement                                                                                                        | Test cases                                                             | Automated in                          |
-| ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------- | ------------------------------------- |
-| **REQ-OPS-01** `/health` báo trạng thái MongoDB và Redis.                                                          | TC-OPS-001, TC-OPS-002, TC-OPS-003, TC-OPS-017                         | `tests/api/ops/health.api.ts`         |
-| **REQ-OPS-02** Swagger UI ở `/api-docs` và tài liệu ở `/api-docs.json`.                                            | TC-OPS-004, TC-OPS-005, TC-OPS-006                                     | `tests/api/ops/api-docs.api.ts`       |
-| **REQ-OPS-03** Mọi lỗi API dùng envelope `{ code, message, timestamp, path }`, dịch theo locale của từng request.  | TC-OPS-007, TC-OPS-008, TC-OPS-009, TC-OPS-010, TC-OPS-011, TC-OPS-016 | `tests/api/ops/error-envelope.api.ts` |
-| **REQ-OPS-04** Mọi response của API mang security header của Helmet (`X-Content-Type-Options: nosniff`,            | TC-OPS-013                                                             | `tests/api/ops/headers.api.ts`        |
-| **REQ-OPS-05** Mọi response mang `X-Request-Id` là một UUID do server sinh mới cho từng request; `X-Request-Id` do | TC-OPS-014                                                             | `tests/api/ops/headers.api.ts`        |
-| **REQ-OPS-06** CORS chỉ trả `Access-Control-Allow-Origin` cho các origin trong `CORS_ORIGINS` của server, kèm      | TC-OPS-015                                                             | `tests/api/ops/headers.api.ts`        |
+| Requirement                                                                                                        | Test cases                                                                         | Automated in                          |
+| ------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------- | ------------------------------------- |
+| **REQ-OPS-01** `/health` báo trạng thái MongoDB và Redis.                                                          | TC-OPS-001, TC-OPS-002, TC-OPS-003, TC-OPS-017                                     | `tests/api/ops/health.api.ts`         |
+| **REQ-OPS-02** Swagger UI ở `/api-docs` và tài liệu ở `/api-docs.json`.                                            | TC-OPS-004, TC-OPS-005, TC-OPS-006                                                 | `tests/api/ops/api-docs.api.ts`       |
+| **REQ-OPS-03** Mọi lỗi API dùng envelope `{ code, message, timestamp, path }`, dịch theo locale của từng request.  | TC-OPS-007, TC-OPS-008, TC-OPS-009, TC-OPS-010, TC-OPS-011, TC-OPS-016, TC-OPS-018 | `tests/api/ops/error-envelope.api.ts` |
+| **REQ-OPS-04** Mọi response của API mang security header của Helmet (`X-Content-Type-Options: nosniff`,            | TC-OPS-013                                                                         | `tests/api/ops/headers.api.ts`        |
+| **REQ-OPS-05** Mọi response mang `X-Request-Id` là một UUID do server sinh mới cho từng request; `X-Request-Id` do | TC-OPS-014                                                                         | `tests/api/ops/headers.api.ts`        |
+| **REQ-OPS-06** CORS chỉ trả `Access-Control-Allow-Origin` cho các origin trong `CORS_ORIGINS` của server, kèm      | TC-OPS-015                                                                         | `tests/api/ops/headers.api.ts`        |
 
 ## PASSWORD — khôi phục và đổi mật khẩu
 
