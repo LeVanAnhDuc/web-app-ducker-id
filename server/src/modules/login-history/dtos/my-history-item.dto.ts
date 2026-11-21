@@ -7,42 +7,33 @@ import type {
   ClientType,
   LoginHistoryDocument
 } from "@/modules/login-history/types";
-import type { LoginAppFieldsDto } from "./login-app.dto";
+// common
+import {
+  Expose,
+  ExposeDate,
+  ExposeFrom,
+  ExposeId,
+  ExposeOrNull
+} from "@/common/dto";
 // others
-import { toLoginAppFieldsDto } from "./login-app.dto";
+import { LoginAppFieldsDto } from "./login-app.dto";
 import { maskIp } from "../helpers";
 
-export interface MyHistoryItemDto extends LoginAppFieldsDto {
-  _id: string;
-  method: LoginMethod;
-  status: LoginStatus;
-  failReason: LoginFailReason | null;
-  ip: string;
-  country: string;
-  city: string;
-  deviceType: DeviceType;
-  os: string;
-  browser: string;
-  clientType: ClientType;
-  isAnomaly: boolean;
-  createdAt: string;
+/** Source: a login-history record. The owner's view — masked IP, no user agent. */
+export class MyHistoryItemDto extends LoginAppFieldsDto {
+  @ExposeId() _id!: string;
+  @Expose() method!: LoginMethod;
+  @Expose() status!: LoginStatus;
+  @ExposeOrNull() failReason!: LoginFailReason | null;
+  @ExposeFrom<LoginHistoryDocument>((doc) => maskIp(doc.ip)) ip!: string;
+  @Expose() country!: string;
+  @Expose() city!: string;
+  @Expose() deviceType!: DeviceType;
+  @Expose() os!: string;
+  @Expose() browser!: string;
+  @Expose() clientType!: ClientType;
+  // A row written before the flag existed is not anomalous.
+  @ExposeFrom<LoginHistoryDocument>((doc) => doc.isAnomaly ?? false)
+  isAnomaly!: boolean;
+  @ExposeDate() createdAt!: string;
 }
-
-export const toMyHistoryItemDto = (
-  doc: LoginHistoryDocument
-): MyHistoryItemDto => ({
-  _id: doc._id.toString(),
-  method: doc.method,
-  status: doc.status,
-  failReason: doc.failReason ?? null,
-  ip: maskIp(doc.ip),
-  country: doc.country,
-  city: doc.city,
-  deviceType: doc.deviceType,
-  os: doc.os,
-  browser: doc.browser,
-  clientType: doc.clientType,
-  isAnomaly: doc.isAnomaly ?? false,
-  createdAt: doc.createdAt.toISOString(),
-  ...toLoginAppFieldsDto(doc)
-});

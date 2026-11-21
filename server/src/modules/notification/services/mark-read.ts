@@ -1,10 +1,10 @@
 // types
-import type { NotificationItemDto } from "../dtos";
 import type { NotificationRepository } from "../repository/notification.repository";
 // common
+import { toDto } from "@/common/dto";
 import { NotFoundError } from "@/exceptions";
 // dtos
-import { toNotificationItemDto } from "../dtos";
+import { NotificationItemDto } from "../dtos";
 // others
 import { RequestContext } from "@/utils/request-context";
 import { ERROR_CODES } from "@/constants/error-code";
@@ -21,5 +21,5 @@ export const markRead = async (
       code: ERROR_CODES.NOTIFICATION_NOT_FOUND
     });
   }
-  return toNotificationItemDto(doc);
+  return toDto(NotificationItemDto, doc);
 };

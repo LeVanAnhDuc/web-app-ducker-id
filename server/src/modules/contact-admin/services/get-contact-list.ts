@@ -1,12 +1,12 @@
 // types
 import type { AdminContactsQueryDto } from "../dtos/requests";
-import type { ContactListItemDto } from "../dtos";
 import type { ContactRepository } from "../repository/contact-admin.repository";
 import type { PaginatedResult } from "@/common/pagination";
 // common
+import { toDto } from "@/common/dto";
 import { resolvePaging, toPageMeta } from "@/common/pagination";
 // dtos
-import { toContactListItemDto } from "../dtos";
+import { ContactListItemDto } from "../dtos";
 // others
 import { buildContactFilter } from "../helpers";
 
@@ -24,7 +24,7 @@ export const getContactList = async (
   });
 
   return {
-    items: data.map(toContactListItemDto),
+    items: toDto(ContactListItemDto, data),
     meta: toPageMeta(total, page, limit)
   };
 };

@@ -1,13 +1,14 @@
 // types
 import type { Request } from "express";
 import type { UnlockVerifyBodyDto } from "../dtos/requests";
-import type { UnlockVerifyDto } from "../dtos";
 import type { UnlockAccountServiceDeps } from "./deps";
+// common
+import { toDto } from "@/common/dto";
 // modules
 import { generateAuthTokensResponse } from "@/modules/authentication/helpers";
 import { LOGIN_METHODS } from "@/modules/login-history/constants";
 // dtos
-import { toUnlockVerifyDto } from "../dtos";
+import { UnlockVerifyDto } from "../dtos";
 // others
 import { Logger } from "@/libs/logger";
 import { withRetry } from "@/utils/resilience/retry";
@@ -54,7 +55,8 @@ export const unlockVerify = async (
     authId: auth._id
   });
 
-  return toUnlockVerifyDto(
+  return toDto(
+    UnlockVerifyDto,
     generateAuthTokensResponse({
       userId: user._id.toString(),
       authId: auth._id.toString(),

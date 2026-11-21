@@ -4,54 +4,31 @@ import type {
   LoginStatus,
   LoginFailReason,
   DeviceType,
-  ClientType,
-  LoginHistoryDocument
+  ClientType
 } from "@/modules/login-history/types";
-import type { LoginAppFieldsDto } from "./login-app.dto";
+// common
+import { Expose, ExposeDate, ExposeId, ExposeOrNull } from "@/common/dto";
 // others
-import { toLoginAppFieldsDto } from "./login-app.dto";
+import { LoginAppFieldsDto } from "./login-app.dto";
 
-export interface AllHistoryItemDto extends LoginAppFieldsDto {
-  _id: string;
-  method: LoginMethod;
-  status: LoginStatus;
-  failReason: LoginFailReason | null;
-  ip: string;
-  country: string;
-  city: string;
-  deviceType: DeviceType;
-  os: string;
-  browser: string;
-  clientType: ClientType;
-  createdAt: string;
-  userId: string | null;
-  usernameAttempted: string;
-  userAgent: string;
-  timezoneOffset: string | null;
-  isAnomaly: boolean;
-  anomalyReasons: string[];
+/** Source: a login-history record. The admin view — full IP, user agent, attempted username. */
+export class AllHistoryItemDto extends LoginAppFieldsDto {
+  @ExposeId() _id!: string;
+  @Expose() method!: LoginMethod;
+  @Expose() status!: LoginStatus;
+  @ExposeOrNull() failReason!: LoginFailReason | null;
+  @Expose() ip!: string;
+  @Expose() country!: string;
+  @Expose() city!: string;
+  @Expose() deviceType!: DeviceType;
+  @Expose() os!: string;
+  @Expose() browser!: string;
+  @Expose() clientType!: ClientType;
+  @ExposeDate() createdAt!: string;
+  @ExposeId() userId!: string | null;
+  @Expose() usernameAttempted!: string;
+  @Expose() userAgent!: string;
+  @Expose() timezoneOffset!: string | null;
+  @Expose() isAnomaly!: boolean;
+  @Expose() anomalyReasons!: string[];
 }
-
-export const toAllHistoryItemDto = (
-  doc: LoginHistoryDocument
-): AllHistoryItemDto => ({
-  _id: doc._id.toString(),
-  method: doc.method,
-  status: doc.status,
-  failReason: doc.failReason ?? null,
-  ip: doc.ip,
-  country: doc.country,
-  city: doc.city,
-  deviceType: doc.deviceType,
-  os: doc.os,
-  browser: doc.browser,
-  clientType: doc.clientType,
-  createdAt: doc.createdAt.toISOString(),
-  userId: doc.userId ? doc.userId.toString() : null,
-  usernameAttempted: doc.usernameAttempted,
-  userAgent: doc.userAgent,
-  timezoneOffset: doc.timezoneOffset,
-  isAnomaly: doc.isAnomaly,
-  anomalyReasons: doc.anomalyReasons,
-  ...toLoginAppFieldsDto(doc)
-});

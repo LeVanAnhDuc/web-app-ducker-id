@@ -1,13 +1,13 @@
 // types
 import type { AdminUsersFilter } from "@/modules/user/types";
 import type { AdminUsersQueryDto } from "../dtos/requests";
-import type { AdminUserDto } from "../dtos";
 import type { PageMeta } from "@/common/pagination";
 import type { UserServiceDeps } from "./deps";
 // common
+import { toDto } from "@/common/dto";
 import { resolvePaging, toPageMeta } from "@/common/pagination";
 // dtos
-import { toAdminUserDto } from "../dtos";
+import { AdminUserDto } from "../dtos";
 
 export const getAdminUsers = async (
   deps: UserServiceDeps,
@@ -29,7 +29,7 @@ export const getAdminUsers = async (
   });
 
   return {
-    items: data.map(toAdminUserDto),
+    items: toDto(AdminUserDto, data),
     meta: toPageMeta(total, page, limit)
   };
 };

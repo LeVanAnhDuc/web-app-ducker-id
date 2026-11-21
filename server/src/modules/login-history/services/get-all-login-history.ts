@@ -1,12 +1,12 @@
 // types
 import type { LoginHistoryAdminQueryDto } from "../dtos/requests";
-import type { AllHistoryItemDto } from "../dtos";
 import type { LoginHistoryServiceDeps } from "./deps";
 import type { PaginatedResult } from "@/common/pagination";
 // common
+import { toDto } from "@/common/dto";
 import { resolvePaging, toPageMeta } from "@/common/pagination";
 // dtos
-import { toAllHistoryItemDto } from "../dtos";
+import { AllHistoryItemDto } from "../dtos";
 // others
 import { buildLoginHistoryFilter } from "../helpers";
 
@@ -24,7 +24,7 @@ export const getAllLoginHistory = async (
   });
 
   return {
-    items: data.map(toAllHistoryItemDto),
+    items: toDto(AllHistoryItemDto, data),
     meta: toPageMeta(total, page, limit)
   };
 };

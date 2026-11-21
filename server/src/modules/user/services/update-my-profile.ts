@@ -1,11 +1,11 @@
 // types
 import type { UpdateProfileData } from "@/modules/user/types";
-import type { MyProfileDto } from "../dtos";
 import type { UserServiceDeps } from "./deps";
 // common
+import { toDto } from "@/common/dto";
 import { NotFoundError } from "@/exceptions";
 // dtos
-import { toMyProfileDto } from "../dtos";
+import { MyProfileDto } from "../dtos";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { RequestContext } from "@/utils/request-context";
@@ -24,5 +24,5 @@ export const updateMyProfile = async (
     });
   }
 
-  return toMyProfileDto(user, user.avatar ?? null);
+  return toDto(MyProfileDto, user);
 };

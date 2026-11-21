@@ -1,19 +1,10 @@
-// types
-import type { PublicUserRecord } from "@/modules/user/types";
+// common
+import { Expose, ExposeId, ExposeOrNull } from "@/common/dto";
 
-export interface PublicProfileDto {
-  _id: string;
-  fullName: string;
-  avatar: string | null;
-  gender: string | null;
+/** Source: a user record (`PublicUserRecord`). What another user may see. */
+export class PublicProfileDto {
+  @ExposeId() _id!: string;
+  @Expose() fullName!: string;
+  @ExposeOrNull() avatar!: string | null;
+  @ExposeOrNull() gender!: string | null;
 }
-
-export const toPublicProfileDto = (
-  user: PublicUserRecord,
-  avatarUrl: string | null
-): PublicProfileDto => ({
-  _id: String(user._id),
-  fullName: user.fullName,
-  avatar: avatarUrl,
-  gender: user.gender ?? null
-});

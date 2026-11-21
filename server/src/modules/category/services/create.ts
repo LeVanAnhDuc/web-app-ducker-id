@@ -1,11 +1,11 @@
 // types
 import type { CreateCategoryBodyDto } from "../dtos/requests";
-import type { AdminCategoryDto } from "../dtos";
 import type { CategoryServiceDeps } from "./deps";
 // common
+import { toDto } from "@/common/dto";
 import { ConflictRequestError } from "@/exceptions";
 // dtos
-import { toAdminCategoryDto } from "../dtos";
+import { AdminCategoryDto } from "../dtos";
 // others
 import { generateSlug, withSlugRetry } from "./shared/generate-slug";
 import { ERROR_CODES } from "@/constants/error-code";
@@ -29,5 +29,5 @@ export const create = async (
     return deps.categoryRepo.create({ slug, name, sortOrder });
   });
 
-  return toAdminCategoryDto({ ...doc, appCount: 0 });
+  return toDto(AdminCategoryDto, { ...doc, appCount: 0 });
 };
