@@ -124,6 +124,7 @@ describe("routeOperation", () => {
       },
       "400": ref("ValidationError"),
       "401": ref("Unauthorized"),
+      "403": ref("Forbidden"),
       "404": ref("NotFound"),
       "409": ref("Conflict"),
       "429": ref("TooManyRequests")

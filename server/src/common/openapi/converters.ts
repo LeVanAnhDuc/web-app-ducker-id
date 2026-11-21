@@ -35,7 +35,11 @@ export const additionalConverters: Record<string, Converter | Schema> = {
       : perItem(meta, { type: "string" }),
   isObjectId: (meta) =>
     perItem(meta, { type: "string", pattern: OBJECTID_PATTERN.source }),
-  isIsoDateString: { type: "string", format: "date" },
+  // toIsoDateString accepts a date and a date-time alike, so no `format`.
+  isIsoDateString: {
+    type: "string",
+    description: "ISO 8601 date or date-time"
+  },
   // The default adds `not: { type: "null" }`, noise next to `required`.
   isDefined: {},
   // The default adds `type: "number"`, which would override IsInt's

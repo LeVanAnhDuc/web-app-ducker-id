@@ -95,7 +95,7 @@ export class FavoriteController {
 
   | Decorator | Feeds the operation |
   | --- | --- |
-  | `@Auth` / `@Admin` / `@PasswordChangeAuth` | `security: [{ bearerAuth: [] }]`, `401` (and `403` for `@Admin`) |
+  | `@Auth` / `@Admin` / `@PasswordChangeAuth` | `security: [{ bearerAuth: [] }]`, `401`, and `403` for `@Auth` and `@Admin` (`authGuard` answers 403 `AUTH_PASSWORD_CHANGE_REQUIRED` in a temporary-password session; `@PasswordChangeAuth` admits that session) |
   | `@OptionalAuth` | `security: [{}, { bearerAuth: [] }]` |
   | `@RateLimit` | `429` |
   | `@ValidParams(Dto)` / `@ValidQuery(Dto)` | `parameters`: one per DTO property, schema from `class-validator-jsonschema` |

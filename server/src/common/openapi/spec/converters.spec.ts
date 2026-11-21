@@ -12,6 +12,7 @@ import { targetConstructorToSchema } from "class-validator-jsonschema";
 // validators
 import {
   EachItem,
+  IsIsoDateString,
   IsObjectId,
   ToBoolean,
   ToInt,
@@ -47,6 +48,10 @@ class ConverterFixtureDto {
   @EachItem("isIn", (item) => ROLES.includes(item as string), {}, [ROLES])
   @IsArray()
   roles!: string[];
+
+  @IsIsoDateString()
+  @IsString()
+  from!: string;
 
   @IsObjectId("validation:fixture.invalid", { each: true })
   @IsArray()
@@ -93,6 +98,13 @@ describe("additionalConverters", () => {
     expect(properties().roles).toEqual({
       type: "array",
       items: { type: "string", enum: ["user", "admin"] }
+    });
+  });
+
+  it("documents IsIsoDateString as a string, date or date-time", () => {
+    expect(properties().from).toEqual({
+      type: "string",
+      description: "ISO 8601 date or date-time"
     });
   });
 

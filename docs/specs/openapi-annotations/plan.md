@@ -19,7 +19,7 @@ Paths are relative to the worktree root `.worktrees/openapi-annotations/`; `@/` 
 
 - A controller method declares only `@OpenAPI({ summary, description? })`, plus `@ApiErrors(...)` and `@Respond({ type })` when needed. It never restates params, body, security or 400/401/403/429. The class declares `@OpenAPI({ tags: [...] })`.
 - `@ApiErrors(...statuses)` is the only manual error declaration. Each status maps to a shared `components.responses` entry. **422 is never carried over** unless the module's code can actually throw it; dropped codes are listed in the PR.
-- `@ApiProperty` on a **request** DTO accepts only `example` and `description`; anything else throws when the decorator is applied. On a **response** DTO it also accepts `type`, `items`, `nullable`, `enum` and `$ref` (through the function form).
+- `@ApiProperty` on a **request** DTO accepts only `example` and `description`; anything else throws when the decorator is applied. On a **response** DTO it also accepts `type`, `items`, `nullable`, `enum`, `format` (needed by `ExposeDate`) and `$ref` (through the function form).
 - A 2xx with `type` documents `allOf: [SuccessResponse, { properties: { data } }]`. A 2xx without `type` documents the bare `SuccessResponse`. A 204 documents no `content`.
 - `Paginated(Dto)` returns one cached class named `<DtoName>Page` with `items: Dto[]` and `meta: PageMeta`.
 - Schema names are class names. Two classes with one name fail the build, and the error names both files.

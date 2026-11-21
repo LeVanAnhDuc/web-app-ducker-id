@@ -77,7 +77,7 @@ const queryParameters = (Dto: Function): Parameter[] => {
  *   `@ValidQuery` DTO, the request body from the `@ValidBody` DTO;
  * - `security` from the guards (`@OptionalAuth` makes it optional);
  * - `responses`, replaced entirely: the `@Respond` status (204 without
- *   content), 400 for any pipe, 401 for a required guard, 403 for `@Admin`,
+ *   content), 400 for any pipe, 401 for a required guard, 403 for `@Auth` or `@Admin`,
  *   429 for any limiter, and the `@ApiErrors` statuses.
  *
  * The library's default `summary` and `tags` (the method and class names) are
@@ -128,7 +128,12 @@ export const routeOperation = (
   const derived: Record<number, string> = {};
   if (Object.keys(meta.pipes).length) derived[400] = "ValidationError";
   if (required.length) derived[401] = "Unauthorized";
-  if (guards.includes("admin")) derived[403] = "Forbidden";
+  // authGuard also answers 403 AUTH_PASSWORD_CHANGE_REQUIRED inside a
+  // temporary-password session; passwordChangeAuth admits that session and
+  // optionalAuth never refuses.
+  if (guards.some((guard) => guard === "auth" || guard === "admin")) {
+    derived[403] = "Forbidden";
+  }
   if (meta.rateLimits.length) derived[429] = "TooManyRequests";
 
   const responses: OpenAPIV3.ResponsesObject = {

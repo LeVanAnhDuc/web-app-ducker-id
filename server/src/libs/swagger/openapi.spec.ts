@@ -11,6 +11,7 @@ import {
 } from "routing-controllers";
 import { OpenAPI } from "routing-controllers-openapi";
 // types
+import type { Dirent } from "fs";
 import type { Server } from "http";
 import type { AddressInfo } from "net";
 import type { OpenAPIV3 } from "openapi-types";
@@ -62,6 +63,9 @@ const controllersOfModule = (name: string): Function[] => {
     )
     .filter((value): value is Function => known.has(value as Function));
 };
+
+const controllersOfGenerated = (): number =>
+  GENERATED_MODULES.flatMap(controllersOfModule).length;
 
 const collectRefs = (node: unknown, refs: Set<string>): Set<string> => {
   if (Array.isArray(node)) node.forEach((n) => collectRefs(n, refs));
@@ -167,7 +171,10 @@ const driftProblems = (
       };
       expect("400", Object.keys(meta.pipes).length > 0);
       expect("401", required.length > 0);
-      expect("403", guards.includes("admin"));
+      expect(
+        "403",
+        guards.some((guard) => guard === "auth" || guard === "admin")
+      );
       expect("429", meta.rateLimits.length > 0);
     }
   }
@@ -264,6 +271,42 @@ describe("buildOpenApiSpec", () => {
     // The generated operation sits beside the hand-written ones.
     expect(doc.paths["/auth/login"]).toEqual(document.paths["/auth/login"]);
   });
+
+  // Until every module is generated, a hand-written module's paths could
+  // vanish unnoticed (a dropped barrel import in openapi.ts). Every controller
+  // of a module not in GENERATED_MODULES must have a documented path under its
+  // route. Task 6 drops this check once the drift checks assert all 63
+  // operations.
+  const handWrittenRoutes = (
+    readdirSync(MODULES_DIR, { withFileTypes: true }) as Dirent[]
+  )
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .filter((module) => !GENERATED_MODULES.includes(module))
+    .flatMap((module) =>
+      controllersOfModule(module).map((Ctor) => [
+        module,
+        String(
+          getMetadataArgsStorage().controllers.find((c) => c.target === Ctor)
+            ?.route ?? ""
+        )
+      ])
+    );
+
+  it("finds the controllers of the hand-written modules", () => {
+    expect(handWrittenRoutes).toHaveLength(22 - controllersOfGenerated());
+  });
+
+  it.each(handWrittenRoutes)(
+    "documents %s routes under %s while the module is hand-written",
+    (_module, prefix) => {
+      expect(
+        Object.keys(document.paths).some(
+          (p) => p === prefix || p.startsWith(`${prefix}/`)
+        )
+      ).toBe(true);
+    }
+  );
 
   describe("drift checks over GENERATED_MODULES", () => {
     const generated = GENERATED_MODULES.flatMap(controllersOfModule);
