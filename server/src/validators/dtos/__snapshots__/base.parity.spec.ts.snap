@@ -1,0 +1,943 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: limitAtMax 1`] = `
+{
+  "failures": [],
+  "value": PaginationQueryDto {
+    "limit": 100,
+  },
+}
+`;
+
+exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: limitOverMax 1`] = `
+{
+  "failures": [
+    {
+      "field": "limit",
+      "key": "validation:limit.invalid",
+      "reason": "max",
+    },
+  ],
+  "value": PaginationQueryDto {
+    "limit": 101,
+  },
+}
+`;
+
+exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: limitText 1`] = `
+{
+  "failures": [
+    {
+      "field": "limit",
+      "key": "validation:limit.invalid",
+      "reason": "isInt",
+    },
+  ],
+  "value": PaginationQueryDto {
+    "limit": "ten",
+  },
+}
+`;
+
+exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: limitZero 1`] = `
+{
+  "failures": [
+    {
+      "field": "limit",
+      "key": "validation:limit.invalid",
+      "reason": "min",
+    },
+  ],
+  "value": PaginationQueryDto {
+    "limit": 0,
+  },
+}
+`;
+
+exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: none 1`] = `
+{
+  "failures": [],
+  "value": PaginationQueryDto {},
+}
+`;
+
+exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: numbers 1`] = `
+{
+  "failures": [],
+  "value": PaginationQueryDto {
+    "limit": 10,
+    "page": 3,
+  },
+}
+`;
+
+exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: pageDecimal 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "isInt",
+    },
+  ],
+  "value": PaginationQueryDto {
+    "page": "1.5",
+  },
+}
+`;
+
+exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: pageEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "isInt",
+    },
+  ],
+  "value": PaginationQueryDto {
+    "page": "",
+  },
+}
+`;
+
+exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: pageNegative 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "min",
+    },
+  ],
+  "value": PaginationQueryDto {
+    "page": -1,
+  },
+}
+`;
+
+exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: pageText 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "isInt",
+    },
+  ],
+  "value": PaginationQueryDto {
+    "page": "abc",
+  },
+}
+`;
+
+exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: pageZero 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "min",
+    },
+  ],
+  "value": PaginationQueryDto {
+    "page": 0,
+  },
+}
+`;
+
+exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: sortOrderArray 1`] = `
+{
+  "failures": [
+    {
+      "field": "sortOrder",
+      "key": "validation:sortOrder.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": PaginationQueryDto {
+    "sortOrder": [
+      "asc",
+    ],
+  },
+}
+`;
+
+exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: sortOrderEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "sortOrder",
+      "key": "validation:sortOrder.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": PaginationQueryDto {
+    "sortOrder": "",
+  },
+}
+`;
+
+exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: sortOrderUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "sortOrder",
+      "key": "validation:sortOrder.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": PaginationQueryDto {
+    "sortOrder": "up",
+  },
+}
+`;
+
+exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": PaginationQueryDto {
+    "page": 1,
+  },
+}
+`;
+
+exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: valid 1`] = `
+{
+  "failures": [],
+  "value": PaginationQueryDto {
+    "limit": 50,
+    "page": 2,
+    "sortOrder": "asc",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppEmail ≡ emailSchema: controlCharacter 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:email.invalid",
+      "reason": "matches",
+    },
+  ],
+  "value": EmailDto {
+    "v": "us​er@example.com",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppEmail ≡ emailSchema: empty 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:email.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": EmailDto {
+    "v": "",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppEmail ≡ emailSchema: missing 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:email.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": EmailDto {},
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppEmail ≡ emailSchema: notAnEmail 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:email.invalid",
+      "reason": "isEmail",
+    },
+  ],
+  "value": EmailDto {
+    "v": "user",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppEmail ≡ emailSchema: null 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:email.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": EmailDto {
+    "v": null,
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppEmail ≡ emailSchema: object 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:email.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": EmailDto {
+    "v": {
+      "$ne": "",
+    },
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppEmail ≡ emailSchema: paddedUpperCase 1`] = `
+{
+  "failures": [],
+  "value": EmailDto {
+    "v": "user@example.com",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppEmail ≡ emailSchema: tooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:email.invalid",
+      "reason": "isEmail",
+    },
+  ],
+  "value": EmailDto {
+    "v": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb.com",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppEmail ≡ emailSchema: tooLongLocalPart 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:email.invalid",
+      "reason": "isEmail",
+    },
+  ],
+  "value": EmailDto {
+    "v": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa@example.com",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppEmail ≡ emailSchema: tooShort 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:email.invalid",
+      "reason": "isEmail",
+    },
+  ],
+  "value": EmailDto {
+    "v": "a@",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppEmail ≡ emailSchema: valid 1`] = `
+{
+  "failures": [],
+  "value": EmailDto {
+    "v": "user@example.com",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppEmail ≡ emailSchema: whitespaceOnly 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:email.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": EmailDto {
+    "v": "",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppEmail ≡ emailSchema: wrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:email.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": EmailDto {
+    "v": 123,
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppPassword ≡ passwordSchema: empty 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:password.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": PasswordDto {
+    "v": "",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppPassword ≡ passwordSchema: missing 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:password.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": PasswordDto {},
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppPassword ≡ passwordSchema: null 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:password.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": PasswordDto {
+    "v": null,
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppPassword ≡ passwordSchema: object 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:password.required",
+      "reason": "isString",
+    },
+  ],
+  "value": PasswordDto {
+    "v": {
+      "$ne": "",
+    },
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppPassword ≡ passwordSchema: paddedNotTrimmed 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:password.pattern",
+      "reason": "matches",
+    },
+  ],
+  "value": PasswordDto {
+    "v": " Secret1! ",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppPassword ≡ passwordSchema: patternBreak 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:password.pattern",
+      "reason": "matches",
+    },
+  ],
+  "value": PasswordDto {
+    "v": "secretpassword",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppPassword ≡ passwordSchema: tooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:password.maxLength",
+      "reason": "maxLength",
+    },
+  ],
+  "value": PasswordDto {
+    "v": "Secret1!aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppPassword ≡ passwordSchema: tooShort 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:password.minLength",
+      "reason": "minLength",
+    },
+  ],
+  "value": PasswordDto {
+    "v": "Se1!",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppPassword ≡ passwordSchema: valid 1`] = `
+{
+  "failures": [],
+  "value": PasswordDto {
+    "v": "Secret1!",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppPassword ≡ passwordSchema: wrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:password.required",
+      "reason": "isString",
+    },
+  ],
+  "value": PasswordDto {
+    "v": 123,
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsFullName ≡ fullNameSchema: empty 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:fullName.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": FullNameDto {
+    "v": "",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsFullName ≡ fullNameSchema: missing 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:fullName.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": FullNameDto {},
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsFullName ≡ fullNameSchema: null 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:fullName.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": FullNameDto {
+    "v": null,
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsFullName ≡ fullNameSchema: object 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:fullName.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": FullNameDto {
+    "v": {
+      "$ne": "",
+    },
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsFullName ≡ fullNameSchema: patternBreak 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:fullName.invalid",
+      "reason": "matches",
+    },
+  ],
+  "value": FullNameDto {
+    "v": "<script>",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsFullName ≡ fullNameSchema: shortAndPatternBreak 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:fullName.minLength",
+      "reason": "minLength",
+    },
+  ],
+  "value": FullNameDto {
+    "v": "1",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsFullName ≡ fullNameSchema: tooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:fullName.maxLength",
+      "reason": "maxLength",
+    },
+  ],
+  "value": FullNameDto {
+    "v": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsFullName ≡ fullNameSchema: tooShort 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:fullName.minLength",
+      "reason": "minLength",
+    },
+  ],
+  "value": FullNameDto {
+    "v": "A",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsFullName ≡ fullNameSchema: valid 1`] = `
+{
+  "failures": [],
+  "value": FullNameDto {
+    "v": "Nguyễn Văn A",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsFullName ≡ fullNameSchema: wrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:fullName.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": FullNameDto {
+    "v": 123,
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsGender ≡ genderSchema: empty 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:gender.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": GenderDto {
+    "v": "",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsGender ≡ genderSchema: missing 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:gender.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": GenderDto {},
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsGender ≡ genderSchema: null 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:gender.invalid",
+      "reason": "isDefined",
+    },
+  ],
+  "value": GenderDto {
+    "v": null,
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsGender ≡ genderSchema: object 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:gender.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": GenderDto {
+    "v": {
+      "$ne": "",
+    },
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsGender ≡ genderSchema: unknownValue 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:gender.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": GenderDto {
+    "v": "robot",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsGender ≡ genderSchema: upperCase 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:gender.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": GenderDto {
+    "v": "MALE",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsGender ≡ genderSchema: valid 1`] = `
+{
+  "failures": [],
+  "value": GenderDto {
+    "v": "male",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsGender ≡ genderSchema: wrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:gender.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": GenderDto {
+    "v": 123,
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsOtp ≡ otpSchema: empty 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:otp.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": OtpDto {
+    "v": "",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsOtp ≡ otpSchema: missing 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:otp.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": OtpDto {},
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsOtp ≡ otpSchema: null 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:otp.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": OtpDto {
+    "v": null,
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsOtp ≡ otpSchema: object 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:otp.required",
+      "reason": "isString",
+    },
+  ],
+  "value": OtpDto {
+    "v": {
+      "$ne": "",
+    },
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsOtp ≡ otpSchema: patternBreak 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:otp.digitsOnly",
+      "reason": "matches",
+    },
+  ],
+  "value": OtpDto {
+    "v": "12a456",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsOtp ≡ otpSchema: shortAndNonNumeric 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:otp.length",
+      "reason": "isLength",
+    },
+  ],
+  "value": OtpDto {
+    "v": "12a",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsOtp ≡ otpSchema: tooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:otp.length",
+      "reason": "isLength",
+    },
+  ],
+  "value": OtpDto {
+    "v": "1234567",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsOtp ≡ otpSchema: tooShort 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:otp.length",
+      "reason": "isLength",
+    },
+  ],
+  "value": OtpDto {
+    "v": "12345",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsOtp ≡ otpSchema: valid 1`] = `
+{
+  "failures": [],
+  "value": OtpDto {
+    "v": "123456",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsOtp ≡ otpSchema: wrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:otp.required",
+      "reason": "isString",
+    },
+  ],
+  "value": OtpDto {
+    "v": 123,
+  },
+}
+`;
