@@ -19,8 +19,9 @@ import { InternalServerError } from "@/exceptions";
 import { Logger } from "@/libs/logger";
 import { withRetry } from "@/utils/resilience/retry";
 import {
-  CircuitBreaker,
-  CircuitOpenError
+  createCircuitBreaker,
+  isCircuitOpenError,
+  type CircuitBreaker
 } from "@/utils/resilience/circuit-breaker";
 import { EmailType } from "@/types/services/email";
 import { getEmailT } from "./email.helper";
@@ -34,18 +35,26 @@ import { AdminResetPasswordEmail } from "./templates/admin-reset-password";
 
 const CIRCUIT_BREAKER_CONFIG = {
   FAILURE_THRESHOLD: 5,
-  RESET_TIMEOUT_MS: 30000
+  RESET_TIMEOUT_MS: 30_000,
+  // Render + SMTP handshake + send; past this the server is treated as down.
+  TIMEOUT_MS: 15_000
 } as const;
 
 export class SendEmailService implements Mailer {
   private readonly circuitBreaker: CircuitBreaker;
 
   constructor(private readonly transport: EmailTransport) {
-    this.circuitBreaker = new CircuitBreaker({
+    this.circuitBreaker = createCircuitBreaker({
       name: "email-smtp",
       failureThreshold: CIRCUIT_BREAKER_CONFIG.FAILURE_THRESHOLD,
-      resetTimeoutMs: CIRCUIT_BREAKER_CONFIG.RESET_TIMEOUT_MS
+      resetTimeoutMs: CIRCUIT_BREAKER_CONFIG.RESET_TIMEOUT_MS,
+      timeoutMs: CIRCUIT_BREAKER_CONFIG.TIMEOUT_MS
     });
+  }
+
+  /** How long a job should wait when the circuit is open. */
+  get circuitResetTimeoutMs(): number {
+    return this.circuitBreaker.resetTimeoutMs;
   }
 
   send<T extends EmailType>(type: T, options: SendEmailOptions<T>): void {
@@ -56,7 +65,7 @@ export class SendEmailService implements Mailer {
         initialDelayMs: 2000,
         operationName: `email:${type}`,
         context: { email: options.email },
-        shouldRetry: (error) => !(error instanceof CircuitOpenError)
+        shouldRetry: (error) => !isCircuitOpenError(error)
       }
     );
   }

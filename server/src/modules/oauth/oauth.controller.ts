@@ -58,8 +58,9 @@ export class OAuthController {
   };
 
   token = async (req: TokenRequest, res: Response): Promise<void> => {
+    // Express 5 leaves req.body undefined when nothing was posted.
     const tokens = await this.service.exchangeToken(
-      req.body,
+      req.body ?? {},
       req.headers.authorization
     );
 

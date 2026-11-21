@@ -1,9 +1,12 @@
 // libs
+import express from "express";
 import { StatusCodes } from "http-status-codes";
 // types
-import type { Request, Response } from "express";
+import type { Server } from "http";
+import type { AddressInfo } from "net";
+import type { ErrorRequestHandler, Request, Response } from "express";
 // common
-import { NotFoundError } from "@/exceptions";
+import { AppError, NotFoundError } from "@/exceptions";
 // others
 import { handle, sendSuccess } from "./index";
 
@@ -24,7 +27,7 @@ describe("handle", () => {
 
     await handle(async () => [1], {
       message: "user:success.getAdminUsers"
-    })(createReq(t), res, jest.fn());
+    })(createReq(t), res);
 
     expect(t).toHaveBeenCalledWith("user:success.getAdminUsers");
     expect(status).toHaveBeenCalledWith(StatusCodes.OK);
@@ -43,8 +46,7 @@ describe("handle", () => {
       message: "favorite:success.add"
     })(
       createReq((key) => `T:${key}`),
-      res,
-      jest.fn()
+      res
     );
 
     expect(status).toHaveBeenCalledWith(StatusCodes.CREATED);
@@ -56,7 +58,7 @@ describe("handle", () => {
 
     await handle(async () => undefined, {
       status: StatusCodes.NO_CONTENT
-    })(createReq(), res, jest.fn());
+    })(createReq(), res);
 
     expect(status).toHaveBeenCalledWith(StatusCodes.NO_CONTENT);
     expect(end).toHaveBeenCalled();
@@ -67,23 +69,49 @@ describe("handle", () => {
     const t = jest.fn();
     const { res, json } = createRes();
 
-    await handle(async () => 1)(createReq(t), res, jest.fn());
+    await handle(async () => 1)(createReq(t), res);
 
     expect(t).not.toHaveBeenCalled();
     expect(json.mock.calls[0][0].message).toBe("");
   });
 
-  it("passes a thrown error to next instead of answering", async () => {
+  it("rejects with a thrown error instead of answering", async () => {
+    // Express 5 forwards the rejection to the error filter itself.
     const error = new NotFoundError();
-    const next = jest.fn();
     const { res, status } = createRes();
 
-    await handle(async () => {
-      throw error;
-    })(createReq(), res, next);
+    await expect(
+      handle(async () => {
+        throw error;
+      })(createReq(), res)
+    ).rejects.toBe(error);
 
-    expect(next).toHaveBeenCalledWith(error);
     expect(status).not.toHaveBeenCalled();
+  });
+
+  it("reaches the error handler of a real Express app", async () => {
+    const app = express();
+    app.get(
+      "/missing",
+      handle(async () => {
+        throw new NotFoundError();
+      })
+    );
+    const reportErrors: ErrorRequestHandler = (err, _req, res, _next) => {
+      res.status(err instanceof AppError ? err.status : 500).end();
+    };
+    app.use(reportErrors);
+
+    const server = await new Promise<Server>((resolve) => {
+      const s = app.listen(0, () => resolve(s));
+    });
+    try {
+      const { port } = server.address() as AddressInfo;
+      const res = await fetch(`http://127.0.0.1:${port}/missing`);
+      expect(res.status).toBe(404);
+    } finally {
+      await new Promise<void>((resolve) => server.close(() => resolve()));
+    }
   });
 });
 

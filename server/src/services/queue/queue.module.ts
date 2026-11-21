@@ -9,6 +9,7 @@ import type { EmailJobData } from "@/types/services/queue";
 import type { NotificationJobData } from "@/types/services/notification";
 // others
 import { Logger } from "@/libs/logger";
+import { isCircuitOpenError } from "@/utils/resilience/circuit-breaker";
 import { withRetry } from "@/utils/resilience/retry";
 import { QueueService } from "./queue.service";
 import { buildQueueConnection } from "./queue.config";
@@ -44,7 +45,8 @@ export const createQueueModule = (
         maxAttempts: 3,
         initialDelayMs: 2000,
         operationName: `email-fallback:${data.type}`,
-        context: { email: data.email }
+        context: { email: data.email },
+        shouldRetry: (error) => !isCircuitOpenError(error)
       });
     }
   });

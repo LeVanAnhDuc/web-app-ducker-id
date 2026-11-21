@@ -78,6 +78,7 @@ export default tseslint.config(
       ".doc",
       "*.json",
       "eslint.config.mts",
+      "migrate-mongo-config.js",
       ".eslintignore",
       ".prettierrc",
       ".prettierignore"

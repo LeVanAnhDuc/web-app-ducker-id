@@ -4,24 +4,44 @@ import { getReasonPhrase, StatusCodes } from "http-status-codes";
 import type { ValidationErrorItem } from "@/types/common";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
-import { AppError, type AppErrorOptions } from "./base.exception";
+import { AppError, httpError, type AppErrorOptions } from "./base.exception";
 
-export class BadRequestError extends AppError {
-  constructor(opts: AppErrorOptions = {}) {
-    super({
-      status: StatusCodes.BAD_REQUEST,
-      code: opts.code ?? ERROR_CODES.BAD_REQUEST,
-      message: opts.message ?? getReasonPhrase(StatusCodes.BAD_REQUEST),
-      key: opts.key,
-      params: opts.params
-    });
-  }
-}
+export class BadRequestError extends httpError(
+  StatusCodes.BAD_REQUEST,
+  ERROR_CODES.BAD_REQUEST
+) {}
+
+export class UnauthorizedError extends httpError(
+  StatusCodes.UNAUTHORIZED,
+  ERROR_CODES.UNAUTHORIZED
+) {}
+
+export class ForbiddenError extends httpError(
+  StatusCodes.FORBIDDEN,
+  ERROR_CODES.FORBIDDEN
+) {}
+
+export class NotFoundError extends httpError(
+  StatusCodes.NOT_FOUND,
+  ERROR_CODES.NOT_FOUND
+) {}
+
+export class ConflictRequestError extends httpError(
+  StatusCodes.CONFLICT,
+  ERROR_CODES.CONFLICT
+) {}
+
+export class TooManyRequestsError extends httpError(
+  StatusCodes.TOO_MANY_REQUESTS,
+  ERROR_CODES.TOO_MANY_REQUESTS
+) {}
 
 export interface ValidationErrorOptions extends AppErrorOptions {
   errors?: ValidationErrorItem[];
 }
 
+// The one client error that carries per-field details, so it keeps its own
+// constructor instead of the shared httpError one.
 export class ValidationError extends AppError {
   constructor(opts: ValidationErrorOptions = {}) {
     super({
@@ -30,67 +50,8 @@ export class ValidationError extends AppError {
       message: opts.message ?? getReasonPhrase(StatusCodes.BAD_REQUEST),
       errors: opts.errors ?? [],
       key: opts.key,
-      params: opts.params
-    });
-  }
-}
-
-export class UnauthorizedError extends AppError {
-  constructor(opts: AppErrorOptions = {}) {
-    super({
-      status: StatusCodes.UNAUTHORIZED,
-      code: opts.code ?? ERROR_CODES.UNAUTHORIZED,
-      message: opts.message ?? getReasonPhrase(StatusCodes.UNAUTHORIZED),
-      key: opts.key,
-      params: opts.params
-    });
-  }
-}
-
-export class ForbiddenError extends AppError {
-  constructor(opts: AppErrorOptions = {}) {
-    super({
-      status: StatusCodes.FORBIDDEN,
-      code: opts.code ?? ERROR_CODES.FORBIDDEN,
-      message: opts.message ?? getReasonPhrase(StatusCodes.FORBIDDEN),
-      key: opts.key,
-      params: opts.params
-    });
-  }
-}
-
-export class NotFoundError extends AppError {
-  constructor(opts: AppErrorOptions = {}) {
-    super({
-      status: StatusCodes.NOT_FOUND,
-      code: opts.code ?? ERROR_CODES.NOT_FOUND,
-      message: opts.message ?? getReasonPhrase(StatusCodes.NOT_FOUND),
-      key: opts.key,
-      params: opts.params
-    });
-  }
-}
-
-export class ConflictRequestError extends AppError {
-  constructor(opts: AppErrorOptions = {}) {
-    super({
-      status: StatusCodes.CONFLICT,
-      code: opts.code ?? ERROR_CODES.CONFLICT,
-      message: opts.message ?? getReasonPhrase(StatusCodes.CONFLICT),
-      key: opts.key,
-      params: opts.params
-    });
-  }
-}
-
-export class TooManyRequestsError extends AppError {
-  constructor(opts: AppErrorOptions = {}) {
-    super({
-      status: StatusCodes.TOO_MANY_REQUESTS,
-      code: opts.code ?? ERROR_CODES.TOO_MANY_REQUESTS,
-      message: opts.message ?? getReasonPhrase(StatusCodes.TOO_MANY_REQUESTS),
-      key: opts.key,
-      params: opts.params
+      params: opts.params,
+      cause: opts.cause
     });
   }
 }

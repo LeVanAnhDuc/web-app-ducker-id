@@ -34,7 +34,6 @@ export class OAuthError extends AppError {
       code: ERROR_CODES.OAUTH_ERROR,
       message: opts.description ?? opts.error
     });
-    this.name = "OAuthError";
     this.oauthError = opts.error;
     this.description = opts.description;
     this.redirectUri = opts.redirectUri;

@@ -21,51 +21,47 @@ const createAuthGuard =
     allowPasswordChangeRequired: boolean;
   }): RequestHandler =>
   (req, _res, next) => {
-    try {
-      const authHeader = req.headers.authorization;
+    const authHeader = req.headers.authorization;
 
-      if (!authHeader || !authHeader.startsWith("Bearer ")) {
-        throw new UnauthorizedError({
-          key: "common:errors.unauthorized",
-          code: ERROR_CODES.AUTH_MISSING_TOKEN
-        });
-      }
-
-      const token = authHeader.substring(7);
-
-      if (!token) {
-        throw new UnauthorizedError({
-          key: "common:errors.unauthorized",
-          code: ERROR_CODES.AUTH_MISSING_TOKEN
-        });
-      }
-
-      const payload = verifyAccessToken(token);
-
-      if (!payload || !payload.sub || !payload.authId) {
-        throw new UnauthorizedError({
-          key: "common:errors.invalidToken",
-          code: ERROR_CODES.AUTH_INVALID_TOKEN
-        });
-      }
-
-      if (payload.mustChangePassword && !allowPasswordChangeRequired) {
-        throw new ForbiddenError({
-          key: "common:errors.passwordChangeRequired",
-          code: ERROR_CODES.AUTH_PASSWORD_CHANGE_REQUIRED
-        });
-      }
-
-      RequestContext.setUser({
-        sub: payload.sub,
-        authId: payload.authId,
-        roles: payload.roles
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      throw new UnauthorizedError({
+        key: "common:errors.unauthorized",
+        code: ERROR_CODES.AUTH_MISSING_TOKEN
       });
-
-      next();
-    } catch (error) {
-      next(error);
     }
+
+    const token = authHeader.substring(7);
+
+    if (!token) {
+      throw new UnauthorizedError({
+        key: "common:errors.unauthorized",
+        code: ERROR_CODES.AUTH_MISSING_TOKEN
+      });
+    }
+
+    const payload = verifyAccessToken(token);
+
+    if (!payload || !payload.sub || !payload.authId) {
+      throw new UnauthorizedError({
+        key: "common:errors.invalidToken",
+        code: ERROR_CODES.AUTH_INVALID_TOKEN
+      });
+    }
+
+    if (payload.mustChangePassword && !allowPasswordChangeRequired) {
+      throw new ForbiddenError({
+        key: "common:errors.passwordChangeRequired",
+        code: ERROR_CODES.AUTH_PASSWORD_CHANGE_REQUIRED
+      });
+    }
+
+    RequestContext.setUser({
+      sub: payload.sub,
+      authId: payload.authId,
+      roles: payload.roles
+    });
+
+    next();
   };
 
 export const authGuard = createAuthGuard({

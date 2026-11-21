@@ -1,5 +1,3 @@
-// types
-import type { NextFunction, Request, Response } from "express";
 // common
 import { DatabaseError, AppError } from "@/exceptions";
 // others
@@ -9,22 +7,6 @@ import {
   isMongooseValidationError,
   isMongooseCastError
 } from "@/utils/mongo-errors";
-
-type ControllerFn = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => Promise<void> | void;
-
-export const asyncHandler =
-  (fn: ControllerFn) =>
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      await fn(req, res, next);
-    } catch (error) {
-      next(error);
-    }
-  };
 
 export async function asyncDatabaseHandler<T>(
   operation: string,

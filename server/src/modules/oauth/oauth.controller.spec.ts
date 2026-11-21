@@ -78,3 +78,23 @@ describe("OAuthController.userInfo — RFC 6750 errors (BUG-OIDC-04)", () => {
     expect(res.json).toHaveBeenCalledWith({ sub: "user-1" });
   });
 });
+
+describe("OAuthController.token — request without a body", () => {
+  it("hands the service an empty body rather than undefined", async () => {
+    // Express 5 leaves req.body undefined when nothing was posted; the service
+    // must still get an object so it answers with an RFC 6749 error, not a
+    // TypeError on body.grant_type.
+    const service = {
+      exchangeToken: jest.fn().mockResolvedValue({ access_token: "t" })
+    } as unknown as jest.Mocked<OAuthService>;
+    const res = { set: jest.fn(), json: jest.fn() };
+    const req = { headers: {}, body: undefined } as unknown as Request;
+
+    await new OAuthController(service).token(
+      req as Parameters<OAuthController["token"]>[0],
+      res as unknown as Response
+    );
+
+    expect(service.exchangeToken).toHaveBeenCalledWith({}, undefined);
+  });
+});

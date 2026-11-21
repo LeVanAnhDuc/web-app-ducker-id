@@ -15,6 +15,7 @@ import {
   extractValidationErrors
 } from "@/utils/mongo-errors";
 import { isBodyParserError } from "@/utils/http-errors";
+import { Logger } from "@/libs/logger";
 
 const BODY_ERRORS: Record<number, { code: string; key: I18n.Key }> = {
   [StatusCodes.REQUEST_TOO_LONG]: {
@@ -30,6 +31,20 @@ const MALFORMED_BODY = {
   code: ERROR_CODES.MALFORMED_BODY,
   key: "common:errors.malformedBody"
 } as const;
+
+// A 4xx is the client's mistake and already shows in the request log; a 5xx
+// is ours, and without this its stack would be lost behind a generic body.
+const logServerError = (req: Request, err: unknown) => {
+  const cause = err instanceof AppError ? err.cause : undefined;
+
+  Logger.error(`${req.method} ${req.originalUrl} failed`, err, {
+    requestId: req.requestId,
+    ...(err instanceof AppError && { code: err.code }),
+    ...(cause !== undefined && {
+      cause: cause instanceof Error ? cause.stack : cause
+    })
+  });
+};
 
 export const handleNotFound = (
   req: Request,
@@ -115,6 +130,9 @@ export const handleError = (
   }
 
   if (err instanceof AppError) {
+    if (err.status >= StatusCodes.INTERNAL_SERVER_ERROR)
+      logServerError(req, err);
+
     const message = err.key ? req.t(err.key, err.params) : err.message;
     const body: ErrorPattern = {
       code: err.code,
@@ -125,6 +143,8 @@ export const handleError = (
 
     return res.status(err.status).json(body);
   }
+
+  logServerError(req, err);
 
   const body: ErrorPattern = {
     code: ERROR_CODES.INTERNAL_SERVER_ERROR,

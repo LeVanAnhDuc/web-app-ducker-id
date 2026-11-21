@@ -104,7 +104,7 @@ These have a user interface but no working backend, or are named in `docs/projec
 | Layer     | Stack                                                                                                                    |
 | --------- | ------------------------------------------------------------------------------------------------------------------------ |
 | Client    | Next.js 15.3 (App Router) · React 19 · TypeScript 5 · Tailwind CSS v4 · shadcn/ui + Radix · TanStack Query 5 · Zustand 5 · React Hook Form 7 + Zod 4 · next-intl 4 · Axios · Framer Motion |
-| Server    | Node.js · Express 4 · TypeScript 5 · MongoDB with Mongoose 8 · Redis + BullMQ · JWT + bcrypt · class-validator + class-transformer · i18next · Nodemailer + React Email · Winston · Swagger UI |
+| Server    | Node.js · Express 5 · TypeScript 5 · MongoDB with Mongoose 8 · Redis + BullMQ · cockatiel (retry, circuit breaker) · JWT + bcrypt · class-validator + class-transformer · i18next · Nodemailer + React Email · Winston · Swagger UI |
 | Testing   | Jest 30 + ts-jest on the server — **118 suites / 878 tests, all passing**. Playwright 1.60 in `automation-test/` — **1306 tests** (776 UI E2E + 529 API + seed) proving 992 test cases over 149 requirements, plus 32 unit tests of its own config; last run 2026-10-15, module by module: 0 unexpected failures, 0 open bugs (the 53 it had logged were fixed on 2026-10-15) (needs a running client, server, MongoDB and Redis — see `automation-test/README.md`) |
 | Tooling   | pnpm · ESLint · Prettier · Husky pre-commit running lint-staged in both `client/` and `server/`                 |
 
@@ -127,7 +127,7 @@ pnpm seed             # optional: seed apps, categories, users, contacts, notifi
 pnpm dev              # API on http://localhost:5000, Swagger UI at /api-docs
 ```
 
-Required environment variables are listed in `server/.env.example`: `APP_PORT`, `CLIENT_URL`, `CORS_ORIGINS`, `TRUST_PROXY`, `DB_URL` / `DB_NAME` (plus optional `DB_*` pool and timeout tuning), `REDIS_URL`, `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` / `JWT_ID_SECRET`, and `USERNAME_EMAIL` / `PASSWORD_EMAIL` for outgoing mail. There is no migration framework — Mongoose creates collections and indexes on boot, and `pnpm seed` / `pnpm seed:clear` manage sample data.
+Required environment variables are listed in `server/.env.example`: `APP_PORT`, `CLIENT_URL`, `CORS_ORIGINS`, `TRUST_PROXY`, `DB_URL` / `DB_NAME` (plus optional `DB_*` pool and timeout tuning), `REDIS_URL`, `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` / `JWT_ID_SECRET`, and `USERNAME_EMAIL` / `PASSWORD_EMAIL` for outgoing mail. Mongoose creates collections and indexes on boot, `pnpm seed` / `pnpm seed:clear` manage sample data, and `pnpm migrate up` applies data migrations to an existing database (see `server/src/database/migrations/README.md`).
 
 **3. Client** — from `client/`
 
