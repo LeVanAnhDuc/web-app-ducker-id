@@ -127,7 +127,7 @@ pnpm seed             # optional: seed apps, categories, users, contacts, notifi
 pnpm dev              # API on http://localhost:5000, Swagger UI at /api-docs
 ```
 
-Required environment variables are listed in `server/.env.example`: `APP_PORT`, `CLIENT_URL`, `CORS_ORIGINS`, `TRUST_PROXY`, `DB_URL` / `DB_NAME` (plus optional `DB_*` pool and timeout tuning), `REDIS_URL`, `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` / `JWT_ID_SECRET`, and `USERNAME_EMAIL` / `PASSWORD_EMAIL` for outgoing mail. There is no migration framework — Mongoose creates collections and indexes on boot, and `pnpm seed` / `pnpm seed:clear` manage sample data.
+Required environment variables are listed in `server/.env.example`: `APP_PORT`, `CLIENT_URL`, `CORS_ORIGINS`, `TRUST_PROXY`, `DB_URL` / `DB_NAME` (plus optional `DB_*` pool and timeout tuning), `REDIS_URL`, `JWT_ACCESS_SECRET` / `JWT_REFRESH_SECRET` / `JWT_ID_SECRET`, and `USERNAME_EMAIL` / `PASSWORD_EMAIL` for outgoing mail. Mongoose creates collections and indexes on boot, `pnpm seed` / `pnpm seed:clear` manage sample data, and `pnpm migrate up` applies data migrations to an existing database (see `server/src/database/migrations/README.md`).
 
 **3. Client** — from `client/`
 
