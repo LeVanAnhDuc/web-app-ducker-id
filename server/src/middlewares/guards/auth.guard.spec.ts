@@ -20,27 +20,35 @@ const mockedVerify = verifyAccessToken as jest.MockedFunction<
 
 const PAYLOAD = { sub: "user-1", authId: "auth-1", roles: "user" };
 
+// A refusal is thrown, not passed to next: Express 5 forwards a thrown error
+// to the error filter itself.
 const run = (guard: typeof authGuard, authorization?: string) => {
   const req = { headers: { authorization } } as unknown as Request;
   const next = jest.fn() as jest.MockedFunction<NextFunction>;
-  guard(req, {} as Response, next);
-  return next;
+  let error: unknown;
+  try {
+    guard(req, {} as Response, next);
+  } catch (thrown) {
+    error = thrown;
+  }
+  return { next, error };
 };
 
 describe("authGuard", () => {
   it("lets a normal session through and records the user", () => {
     mockedVerify.mockReturnValue(PAYLOAD);
 
-    const next = run(authGuard, "Bearer token");
+    const { next, error } = run(authGuard, "Bearer token");
 
+    expect(error).toBeUndefined();
     expect(next).toHaveBeenCalledWith();
     expect(RequestContext.setUser).toHaveBeenCalledWith(PAYLOAD);
   });
 
   it("refuses a request without a bearer token", () => {
-    const next = run(authGuard);
+    const { next, error } = run(authGuard);
 
-    const [error] = next.mock.calls[0];
+    expect(next).not.toHaveBeenCalled();
     expect(error).toBeInstanceOf(UnauthorizedError);
     expect(error).toMatchObject({ code: ERROR_CODES.AUTH_MISSING_TOKEN });
   });
@@ -48,9 +56,9 @@ describe("authGuard", () => {
   it("refuses a temporary-password session (BUG-PASSWORD-01)", () => {
     mockedVerify.mockReturnValue({ ...PAYLOAD, mustChangePassword: true });
 
-    const next = run(authGuard, "Bearer token");
+    const { next, error } = run(authGuard, "Bearer token");
 
-    const [error] = next.mock.calls[0];
+    expect(next).not.toHaveBeenCalled();
     expect(error).toBeInstanceOf(ForbiddenError);
     expect(error).toMatchObject({
       code: ERROR_CODES.AUTH_PASSWORD_CHANGE_REQUIRED
@@ -63,15 +71,17 @@ describe("passwordChangeAuthGuard", () => {
   it("lets a temporary-password session through", () => {
     mockedVerify.mockReturnValue({ ...PAYLOAD, mustChangePassword: true });
 
-    const next = run(passwordChangeAuthGuard, "Bearer token");
+    const { next, error } = run(passwordChangeAuthGuard, "Bearer token");
 
+    expect(error).toBeUndefined();
     expect(next).toHaveBeenCalledWith();
     expect(RequestContext.setUser).toHaveBeenCalledWith(PAYLOAD);
   });
 
   it("still refuses a request without a bearer token", () => {
-    const next = run(passwordChangeAuthGuard);
+    const { next, error } = run(passwordChangeAuthGuard);
 
-    expect(next.mock.calls[0][0]).toBeInstanceOf(UnauthorizedError);
+    expect(next).not.toHaveBeenCalled();
+    expect(error).toBeInstanceOf(UnauthorizedError);
   });
 });

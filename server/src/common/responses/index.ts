@@ -1,7 +1,7 @@
 // libs
 import { StatusCodes } from "http-status-codes";
 // types
-import type { NextFunction, Request, Response } from "express";
+import type { Request, Response } from "express";
 
 interface SuccessBody<T> {
   status: number;
@@ -37,20 +37,17 @@ export const sendSuccess = <T>(
 
 // Controllers return the data; the route declares the status (200 unless
 // stated) and the i18next key of the message, translated here per request.
+// A thrown error is left to reject: Express 5 forwards it to the error filter.
 export const handle =
   (
     handler: Handler,
     { status = StatusCodes.OK, message }: HandleOptions = {}
   ) =>
-  async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    try {
-      const data = await handler(req, res);
-      sendSuccess(req, res, {
-        status,
-        message: message && req.t ? req.t(message) : "",
-        data
-      });
-    } catch (error) {
-      next(error);
-    }
+  async (req: Request, res: Response): Promise<void> => {
+    const data = await handler(req, res);
+    sendSuccess(req, res, {
+      status,
+      message: message && req.t ? req.t(message) : "",
+      data
+    });
   };
