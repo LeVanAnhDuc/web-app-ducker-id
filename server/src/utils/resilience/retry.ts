@@ -1,7 +1,10 @@
+// libs
+import { ExponentialBackoff, handleAll, handleWhen, retry } from "cockatiel";
 // others
 import { Logger } from "@/libs/logger";
 
 interface RetryOptions {
+  /** Total runs, the first one included. */
   maxAttempts?: number;
   initialDelayMs?: number;
   operationName?: string;
@@ -9,63 +12,62 @@ interface RetryOptions {
   shouldRetry?: (error: unknown) => boolean;
 }
 
-const DEFAULT_OPTIONS: Required<Omit<RetryOptions, "context" | "shouldRetry">> =
-  {
-    maxAttempts: 3,
-    initialDelayMs: 1000,
-    operationName: "operation"
-  };
+const DEFAULTS = {
+  MAX_ATTEMPTS: 3,
+  INITIAL_DELAY_MS: 1000,
+  MAX_DELAY_MS: 30_000,
+  OPERATION_NAME: "operation"
+} as const;
 
-const delay = (ms: number): Promise<void> =>
-  new Promise((resolve) => setTimeout(resolve, ms));
-
+/**
+ * Best-effort retry for a side effect the caller does not wait on (Redis
+ * cleanup after the request already succeeded): it returns nothing, never
+ * throws, and logs how it ended. Backoff is exponential with decorrelated
+ * jitter, so instances retrying the same failure do not line up.
+ */
 export const withRetry = (
   fn: () => Promise<unknown>,
   options: RetryOptions = {}
 ): void => {
-  const { maxAttempts, initialDelayMs, operationName } = {
-    ...DEFAULT_OPTIONS,
-    ...options
-  };
+  const maxAttempts = options.maxAttempts ?? DEFAULTS.MAX_ATTEMPTS;
+  const operationName = options.operationName ?? DEFAULTS.OPERATION_NAME;
   const context = options.context ?? {};
-  const shouldRetry = options.shouldRetry;
+  const { shouldRetry } = options;
 
-  const execute = async (attempt: number): Promise<void> => {
-    try {
-      await fn();
-    } catch (error) {
+  const policy = retry(
+    shouldRetry ? handleWhen((error) => shouldRetry(error)) : handleAll,
+    {
+      // cockatiel counts retries, not runs.
+      maxAttempts: maxAttempts - 1,
+      backoff: new ExponentialBackoff({
+        initialDelay: options.initialDelayMs ?? DEFAULTS.INITIAL_DELAY_MS,
+        maxDelay: DEFAULTS.MAX_DELAY_MS
+      })
+    }
+  );
+
+  policy.onRetry(({ delay, attempt }) => {
+    Logger.warn(`${operationName} failed, retrying...`, {
+      ...context,
+      attempt,
+      maxAttempts,
+      nextRetryMs: Math.round(delay)
+    });
+  });
+
+  policy
+    .execute(() => fn())
+    .catch((error: unknown) => {
       if (shouldRetry && !shouldRetry(error)) {
         Logger.warn(`${operationName} failed with non-retryable error`, {
           ...context,
-          attempt,
           error
         });
         return;
       }
-
-      if (attempt >= maxAttempts) {
-        Logger.error(`${operationName} failed after ${maxAttempts} attempts`, {
-          ...context,
-          error
-        });
-        return;
-      }
-
-      const delayMs = initialDelayMs * Math.pow(2, attempt - 1);
-
-      Logger.warn(`${operationName} failed, retrying...`, {
+      Logger.error(`${operationName} failed after ${maxAttempts} attempts`, {
         ...context,
-        attempt,
-        maxAttempts,
-        nextRetryMs: delayMs
+        error
       });
-
-      await delay(delayMs);
-      await execute(attempt + 1);
-    }
-  };
-
-  execute(1).catch((error) => {
-    Logger.error(`${operationName} unexpected error`, { ...context, error });
-  });
+    });
 };
