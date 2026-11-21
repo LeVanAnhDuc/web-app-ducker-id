@@ -161,7 +161,17 @@ describe("contact-admin request DTOs match the Joi schemas", () => {
         toDate: "2026-01-01T05:00:00+07:00"
       },
       rangeFromInvalid: { fromDate: "bad", toDate: "2026-01-01" },
-      rangeToInvalid: { fromDate: "2026-02-01", toDate: "bad" }
+      rangeToInvalid: { fromDate: "2026-02-01", toDate: "bad" },
+      // Joi ran the object-level range rule only once every key passed.
+      rangeInvertedWithBadPage: {
+        page: "0",
+        fromDate: "2026-02-01",
+        toDate: "2026-01-01"
+      },
+      rangeFromNotIsoButParsable: {
+        fromDate: "01/02/2026",
+        toDate: "2025-01-01"
+      }
     });
   });
 

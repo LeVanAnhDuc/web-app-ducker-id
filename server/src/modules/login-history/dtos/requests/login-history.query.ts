@@ -19,10 +19,15 @@ import {
   LOGIN_STATUSES
 } from "@/modules/login-history/constants";
 // validators
-import { IsOnOrAfter, ToBoolean } from "@/validators/decorators";
+import {
+  IsOnOrAfter,
+  ObjectIdFilter,
+  SearchFilter,
+  ToBoolean
+} from "@/validators/decorators";
 import { PaginationQueryDto } from "@/validators/dtos/pagination.query";
 // others
-import { IsoDateFilter, ObjectIdFilter, OneOf, SearchText } from "./filters";
+import { IsoDateFilter, OneOf } from "./filters";
 
 /** The filters on a user's own sign-ins; the admin list extends it. */
 export class LoginHistoryQueryDto extends PaginationQueryDto {
@@ -38,16 +43,16 @@ export class LoginHistoryQueryDto extends PaginationQueryDto {
   @OneOf(Object.values(CLIENT_TYPES), "validation:clientType.invalid")
   clientType?: ClientType;
 
-  @SearchText()
+  @SearchFilter()
   country?: string;
 
-  @SearchText()
+  @SearchFilter()
   city?: string;
 
-  @SearchText()
+  @SearchFilter()
   os?: string;
 
-  @SearchText()
+  @SearchFilter()
   browser?: string;
 
   @OneOf(Object.values(LOGIN_SOURCES), "validation:source.invalid")

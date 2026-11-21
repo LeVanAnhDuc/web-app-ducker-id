@@ -52,6 +52,11 @@ class RootDto {
   to!: string;
 }
 
+class RootAndFieldDto extends RootDto {
+  @IsString({ message: "validation:other.invalid" })
+  other!: string;
+}
+
 class RequiredDto {
   @IsDefined({ message: "validation:a.required" })
   a!: string;
@@ -101,6 +106,28 @@ describe("validateDto", () => {
 
   it('reports root-context constraints at field ""', async () => {
     const { failures } = await validateDto(RootDto, { to: "x" });
+
+    expect(failures).toEqual([
+      { field: "", reason: "alwaysFails", key: "validation:range.invalid" }
+    ]);
+  });
+
+  it("drops root failures while any field fails, as Joi skipped object rules", async () => {
+    const { failures } = await validateDto(RootAndFieldDto, {
+      to: "x",
+      other: 5
+    });
+
+    expect(failures).toEqual([
+      { field: "other", reason: "isString", key: "validation:other.invalid" }
+    ]);
+  });
+
+  it("keeps a root failure once every field passes", async () => {
+    const { failures } = await validateDto(RootAndFieldDto, {
+      to: "x",
+      other: "y"
+    });
 
     expect(failures).toEqual([
       { field: "", reason: "alwaysFails", key: "validation:range.invalid" }

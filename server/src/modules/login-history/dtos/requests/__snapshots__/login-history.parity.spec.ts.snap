@@ -498,6 +498,22 @@ exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQuery
 }
 `;
 
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: rangeFromNotIsoButParsable 1`] = `
+{
+  "failures": [
+    {
+      "field": "fromDate",
+      "key": "validation:fromDate.invalid",
+      "reason": "isIsoDateString",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "fromDate": "01/02/2026",
+    "toDate": "2025-01-01",
+  },
+}
+`;
+
 exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: rangeInverted 1`] = `
 {
   "failures": [
@@ -526,6 +542,23 @@ exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQuery
   "value": LoginHistoryAdminQueryDto {
     "fromDate": "2026-10-04T00:00:00Z",
     "toDate": "2026-10-04T05:00:00+07:00",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: rangeInvertedWithBadPage 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "min",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "fromDate": "2026-10-05",
+    "page": 0,
+    "toDate": "2026-10-04",
   },
 }
 `;
@@ -1397,6 +1430,22 @@ exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto �
 }
 `;
 
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: rangeFromNotIsoButParsable 1`] = `
+{
+  "failures": [
+    {
+      "field": "fromDate",
+      "key": "validation:fromDate.invalid",
+      "reason": "isIsoDateString",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "fromDate": "01/02/2026",
+    "toDate": "2025-01-01",
+  },
+}
+`;
+
 exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: rangeInverted 1`] = `
 {
   "failures": [
@@ -1425,6 +1474,23 @@ exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto �
   "value": LoginHistoryQueryDto {
     "fromDate": "2026-10-04T00:00:00Z",
     "toDate": "2026-10-04T05:00:00+07:00",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: rangeInvertedWithBadPage 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "min",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "fromDate": "2026-10-05",
+    "page": 0,
+    "toDate": "2026-10-04",
   },
 }
 `;

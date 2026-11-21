@@ -85,6 +85,13 @@ const sharedQueryCases = {
   },
   rangeFromInvalid: { fromDate: "bad", toDate: "2026-10-04" },
   rangeToInvalid: { fromDate: "2026-10-05", toDate: "bad" },
+  // Joi ran the object-level range rule only once every key passed.
+  rangeInvertedWithBadPage: {
+    page: "0",
+    fromDate: "2026-10-05",
+    toDate: "2026-10-04"
+  },
+  rangeFromNotIsoButParsable: { fromDate: "01/02/2026", toDate: "2025-01-01" },
 
   sortByCreatedAt: { sortBy: "createdAt", sortOrder: "asc" },
   sortByEmpty: { sortBy: "" },

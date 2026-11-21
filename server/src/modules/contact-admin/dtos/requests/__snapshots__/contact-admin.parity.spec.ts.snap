@@ -255,6 +255,22 @@ exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto 
 }
 `;
 
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: rangeFromNotIsoButParsable 1`] = `
+{
+  "failures": [
+    {
+      "field": "fromDate",
+      "key": "validation:fromDate.invalid",
+      "reason": "isIsoDateString",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "fromDate": "01/02/2026",
+    "toDate": "2025-01-01T00:00:00.000Z",
+  },
+}
+`;
+
 exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: rangeInverted 1`] = `
 {
   "failures": [
@@ -283,6 +299,23 @@ exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto 
   "value": AdminContactsQueryDto {
     "fromDate": "2026-01-01T00:00:00.000Z",
     "toDate": "2025-12-31T22:00:00.000Z",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: rangeInvertedWithBadPage 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "min",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "fromDate": "2026-02-01T00:00:00.000Z",
+    "page": 0,
+    "toDate": "2026-01-01T00:00:00.000Z",
   },
 }
 `;

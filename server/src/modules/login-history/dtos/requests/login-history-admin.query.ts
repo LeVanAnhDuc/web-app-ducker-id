@@ -2,8 +2,10 @@
 import type { LoginHistorySortByAdmin } from "@/modules/login-history/types";
 // modules
 import { LOGIN_HISTORY_SORT_BY_ADMIN } from "@/modules/login-history/constants";
+// validators
+import { ObjectIdFilter, SearchFilter } from "@/validators/decorators";
 // others
-import { ObjectIdFilter, OneOf, SearchText } from "./filters";
+import { OneOf } from "./filters";
 import { LoginHistoryQueryDto } from "./login-history.query";
 
 // Mirrors Joi `.keys()`: every user filter, plus who and from where. The
@@ -13,7 +15,7 @@ export class LoginHistoryAdminQueryDto extends LoginHistoryQueryDto {
   @ObjectIdFilter("validation:userId.invalid")
   userId?: string;
 
-  @SearchText()
+  @SearchFilter()
   ip?: string;
 
   @OneOf(LOGIN_HISTORY_SORT_BY_ADMIN, "validation:sortBy.invalid")

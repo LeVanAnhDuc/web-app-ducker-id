@@ -90,5 +90,18 @@ export const validateDto = async <T extends object>(
     validationError: { target: false, value: true }
   });
 
-  return { value, failures: flatten(errors, "") };
+  // Joi ran an object's own rules (`.custom()` date range, `.min(1)`) only once
+  // every key had passed, so a root failure never sat beside a field failure.
+  // class-validator checks the root rule's property regardless; drop it here.
+  const failures = flatten(errors, "");
+  const anyFieldFailed = failures.some(
+    (failure) => failure.field !== ROOT_FIELD
+  );
+
+  return {
+    value,
+    failures: anyFieldFailed
+      ? failures.filter((failure) => failure.field !== ROOT_FIELD)
+      : failures
+  };
 };

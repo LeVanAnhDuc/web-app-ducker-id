@@ -14,9 +14,9 @@ const RANGE_DAYS: readonly number[] = LOGIN_HISTORY_STATS.RANGE_DAYS;
 
 /**
  * `range` arrives as `7d` / `30d` / `90d` and `tz` as an IANA zone, both
- * already checked by Joi. They are re-checked here because the service is also
- * reachable without the route — an unknown value falls back rather than
- * reaching `$dateToString`.
+ * already checked by the route's query DTO. They are re-checked here because
+ * the service is also reachable without the route — an unknown value falls
+ * back rather than reaching `$dateToString`.
  */
 const resolveOptions = (
   query: LoginHistoryStatsQueryDto

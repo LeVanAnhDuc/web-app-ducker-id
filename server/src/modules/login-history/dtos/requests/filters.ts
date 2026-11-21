@@ -1,43 +1,10 @@
 // libs
-import {
-  IsIn,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  MaxLength
-} from "class-validator";
+import { IsIn, IsNotEmpty, IsOptional, IsString } from "class-validator";
 // validators
-import { SEARCH_MAX_LENGTH } from "@/validators/constants";
-import {
-  composeDecorators,
-  IsIsoDateString,
-  IsObjectId,
-  Trim
-} from "@/validators/decorators";
+import { composeDecorators, IsIsoDateString } from "@/validators/decorators";
 
-// Joi keyed only the rule each filter exists for; a blank or wrong-typed value
-// shipped English, so it takes that same key.
-
-/**
- * A free-text filter (country, city, os, browser, ip): trimmed before the
- * length check, so padding does not count toward the max.
- */
-export const SearchText = (): PropertyDecorator =>
-  composeDecorators(
-    MaxLength(SEARCH_MAX_LENGTH, { message: "validation:search.invalid" }),
-    IsNotEmpty({ message: "validation:search.invalid" }),
-    IsString({ message: "validation:search.invalid" }),
-    IsOptional(),
-    Trim()
-  );
-
-export const ObjectIdFilter = (key: string): PropertyDecorator =>
-  composeDecorators(
-    IsObjectId(key),
-    IsNotEmpty({ message: key }),
-    IsString({ message: key }),
-    IsOptional()
-  );
+// The login-history-only filters; search and id filters are shared ones from
+// `@/validators/decorators`. A blank or wrong-typed value takes the rule's key.
 
 /** One of a fixed set: Joi checks `.valid()` first, so blank is unknown too. */
 export const OneOf = (

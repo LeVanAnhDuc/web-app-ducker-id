@@ -4,8 +4,8 @@ import { IsIn, IsOptional, IsString } from "class-validator";
 import type { WebAppStatusPublic } from "@/modules/web-app/types";
 // modules
 import { WEB_APP_STATUS_PUBLIC } from "@/modules/web-app/constants";
-// others
-import { CategoryIdFilter, SearchFilter } from "./app-filters";
+// validators
+import { ObjectIdFilter, SearchFilter } from "@/validators/decorators";
 
 const STATUS_VALUES = Object.values(WEB_APP_STATUS_PUBLIC);
 
@@ -19,6 +19,6 @@ export class AdminAppsQueryDto {
   @IsOptional()
   status?: WebAppStatusPublic;
 
-  @CategoryIdFilter()
+  @ObjectIdFilter("validation:categoryId.invalid")
   categoryId?: string;
 }
