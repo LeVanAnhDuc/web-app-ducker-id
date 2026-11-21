@@ -2,7 +2,10 @@
 import type { Request } from "express";
 import type { UnlockRequestBodyDto } from "../dtos/requests";
 import type { UnlockRequestDto } from "../dtos";
-import type { UnlockAccountServiceDeps } from "./deps";
+import type { EmailDispatcher } from "@/services/email/email.dispatcher";
+import type { LoginService } from "@/modules/login/services/login";
+import type { UnlockAccountRepository } from "../repository/unlock-account.repository";
+import type { CooldownGuard, RateLimitGuard, AuthExistsGuard } from "../guards";
 // common
 import { BadRequestError } from "@/exceptions";
 // dtos
@@ -15,7 +18,14 @@ import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
 
 export const unlockRequest = async (
-  deps: UnlockAccountServiceDeps,
+  deps: {
+    loginService: LoginService;
+    unlockAccountRepo: UnlockAccountRepository;
+    emailDispatcher: EmailDispatcher;
+    cooldownGuard: CooldownGuard;
+    rateLimitGuard: RateLimitGuard;
+    authExistsGuard: AuthExistsGuard;
+  },
   body: UnlockRequestBodyDto,
   req: Request
 ): Promise<UnlockRequestDto> => {

@@ -14,7 +14,12 @@ import type {
   SendOtpDto,
   VerifyOtpDto
 } from "../dtos";
-import type { SignupServiceDeps } from "./deps";
+import type { AuthenticationService } from "@/modules/authentication/services";
+import type { UserService } from "@/modules/user/services";
+import type { OtpSignupRepository } from "../repositories/otp-signup.repository";
+import type { SessionSignupRepository } from "../repositories/session-signup.repository";
+import type { EmailDispatcher } from "@/services/email/email.dispatcher";
+import type { EmailAvailableGuard, CooldownGuard } from "../guards";
 // others
 import { LogMethod } from "@/libs/logger";
 import { checkEmail } from "./check-email";
@@ -24,30 +29,71 @@ import { sendOtp } from "./send-otp";
 import { verifyOtp } from "./verify-otp";
 
 export class SignupService {
-  constructor(private readonly deps: SignupServiceDeps) {}
+  constructor(
+    private readonly authService: AuthenticationService,
+    private readonly userService: UserService,
+    private readonly otpSignupRepo: OtpSignupRepository,
+    private readonly sessionSignupRepo: SessionSignupRepository,
+    private readonly emailDispatcher: EmailDispatcher,
+    private readonly emailAvailableGuard: EmailAvailableGuard,
+    private readonly cooldownGuard: CooldownGuard
+  ) {}
 
   @LogMethod({ name: "SendOtp" })
   sendOtp(body: SendOtpBodyDto, req: Request): Promise<SendOtpDto> {
-    return sendOtp(this.deps, body, req);
+    return sendOtp(
+      {
+        otpSignupRepo: this.otpSignupRepo,
+        emailDispatcher: this.emailDispatcher,
+        emailAvailableGuard: this.emailAvailableGuard,
+        cooldownGuard: this.cooldownGuard
+      },
+      body,
+      req
+    );
   }
 
   @LogMethod({ name: "VerifyOtp" })
   verifyOtp(body: VerifyOtpBodyDto): Promise<VerifyOtpDto> {
-    return verifyOtp(this.deps, body);
+    return verifyOtp(
+      {
+        otpSignupRepo: this.otpSignupRepo,
+        sessionSignupRepo: this.sessionSignupRepo
+      },
+      body
+    );
   }
 
   @LogMethod({ name: "ResendOtp" })
   resendOtp(body: ResendOtpBodyDto, req: Request): Promise<ResendOtpDto> {
-    return resendOtp(this.deps, body, req);
+    return resendOtp(
+      {
+        otpSignupRepo: this.otpSignupRepo,
+        emailDispatcher: this.emailDispatcher,
+        emailAvailableGuard: this.emailAvailableGuard,
+        cooldownGuard: this.cooldownGuard
+      },
+      body,
+      req
+    );
   }
 
   @LogMethod({ name: "CompleteSignup" })
   completeSignup(body: CompleteSignupBodyDto): Promise<CompleteSignupDto> {
-    return completeSignup(this.deps, body);
+    return completeSignup(
+      {
+        authService: this.authService,
+        userService: this.userService,
+        otpSignupRepo: this.otpSignupRepo,
+        sessionSignupRepo: this.sessionSignupRepo,
+        emailAvailableGuard: this.emailAvailableGuard
+      },
+      body
+    );
   }
 
   @LogMethod({ name: "CheckEmail" })
   checkEmail(params: CheckEmailParamsDto): Promise<CheckEmailDto> {
-    return checkEmail(this.deps, params);
+    return checkEmail(this.userService, params);
   }
 }

@@ -9,7 +9,8 @@ import type {
   DeleteImpactDto,
   PublicCategoryDto
 } from "../dtos";
-import type { CategoryServiceDeps } from "./deps";
+import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
+import type { CategoryRepository } from "../repository/category.repository";
 // others
 import { create } from "./create";
 import { deleteImpact } from "./delete-impact";
@@ -20,36 +21,50 @@ import { remove } from "./remove";
 import { update } from "./update";
 
 export class CategoryService {
-  constructor(private readonly deps: CategoryServiceDeps) {}
+  constructor(
+    private readonly categoryRepo: CategoryRepository,
+    private readonly webAppRepo: WebAppRepository
+  ) {}
 
   list(): Promise<AdminCategoryDto[]> {
-    return list(this.deps);
+    return list(this.categoryRepo);
   }
 
   listPublic(): Promise<PublicCategoryDto[]> {
-    return listPublic(this.deps);
+    return listPublic(this.categoryRepo);
   }
 
   create(body: CreateCategoryBodyDto): Promise<AdminCategoryDto> {
-    return create(this.deps, body);
+    return create(this.categoryRepo, body);
   }
 
   update(id: string, body: UpdateCategoryBodyDto): Promise<AdminCategoryDto> {
-    return update(this.deps, id, body);
+    return update(
+      { categoryRepo: this.categoryRepo, webAppRepo: this.webAppRepo },
+      id,
+      body
+    );
   }
 
   move(
     id: string,
     direction: CategoryMoveDirection
   ): Promise<AdminCategoryDto[]> {
-    return move(this.deps, id, direction);
+    return move(this.categoryRepo, id, direction);
   }
 
   deleteImpact(id: string): Promise<DeleteImpactDto> {
-    return deleteImpact(this.deps, id);
+    return deleteImpact(
+      { categoryRepo: this.categoryRepo, webAppRepo: this.webAppRepo },
+      id
+    );
   }
 
   remove(id: string, reassignments: CategoryReassignment[]): Promise<void> {
-    return remove(this.deps, id, reassignments);
+    return remove(
+      { categoryRepo: this.categoryRepo, webAppRepo: this.webAppRepo },
+      id,
+      reassignments
+    );
   }
 }

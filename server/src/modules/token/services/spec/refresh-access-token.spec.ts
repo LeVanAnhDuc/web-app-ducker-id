@@ -85,19 +85,17 @@ const setup = (
     isRevoked: jest.fn().mockResolvedValue(over.revoked ?? false)
   } as jest.Mocked<RevokedRefreshTokenRepository>;
 
-  const service = new TokenService({
+  const service = new TokenService(
     authService,
     userService,
     revokedRefreshTokenRepo,
-    refreshTokenPresentGuard: new RefreshTokenPresentGuard(),
+    new RefreshTokenPresentGuard(),
     refreshTokenValidGuard,
-    refreshTokenNotRevokedGuard: new RefreshTokenNotRevokedGuard(
-      revokedRefreshTokenRepo
-    ),
-    authActiveGuard: new AuthActiveGuard(),
-    passwordNotChangedGuard: new PasswordNotChangedGuard(),
-    userExistsGuard: new UserExistsGuard()
-  });
+    new RefreshTokenNotRevokedGuard(revokedRefreshTokenRepo),
+    new AuthActiveGuard(),
+    new PasswordNotChangedGuard(),
+    new UserExistsGuard()
+  );
 
   return {
     service,

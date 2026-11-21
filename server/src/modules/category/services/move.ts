@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 // types
 import type { CategoryMoveDirection } from "../types";
 import type { AdminCategoryDto } from "../dtos";
-import type { CategoryServiceDeps } from "./deps";
+import type { CategoryRepository } from "../repository/category.repository";
 // common
 import { NotFoundError } from "@/exceptions";
 // modules
@@ -19,7 +19,7 @@ import { ERROR_CODES } from "@/constants/error-code";
  * tab may already have moved the row there.
  */
 export const move = async (
-  deps: CategoryServiceDeps,
+  categoryRepo: CategoryRepository,
   id: string,
   direction: CategoryMoveDirection
 ): Promise<AdminCategoryDto[]> => {
@@ -27,7 +27,7 @@ export const move = async (
 
   try {
     await session.withTransaction(async () => {
-      const ordered = (await deps.categoryRepo.findAll(session)).map((doc) =>
+      const ordered = (await categoryRepo.findAll(session)).map((doc) =>
         doc._id.toString()
       );
       const from = ordered.indexOf(id);
@@ -44,11 +44,11 @@ export const move = async (
         [ordered[from], ordered[to]] = [ordered[to], ordered[from]];
       }
 
-      await deps.categoryRepo.setSortOrders(ordered, session);
+      await categoryRepo.setSortOrders(ordered, session);
     });
   } finally {
     await session.endSession();
   }
 
-  return list(deps);
+  return list(categoryRepo);
 };

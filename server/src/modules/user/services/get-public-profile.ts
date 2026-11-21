@@ -1,5 +1,5 @@
 // types
-import type { UserServiceDeps } from "./deps";
+import type { UserRepository } from "../repository/user.repository";
 // common
 import { toDto } from "@/common/dto";
 import { NotFoundError } from "@/exceptions";
@@ -9,10 +9,10 @@ import { PublicProfileDto } from "../dtos";
 import { ERROR_CODES } from "@/constants/error-code";
 
 export const getPublicProfile = async (
-  deps: UserServiceDeps,
+  userRepo: UserRepository,
   userId: string
 ): Promise<PublicProfileDto> => {
-  const user = await deps.userRepo.findPublicById(userId);
+  const user = await userRepo.findPublicById(userId);
 
   if (!user) {
     throw new NotFoundError({

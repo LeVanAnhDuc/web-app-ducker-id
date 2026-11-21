@@ -1,5 +1,5 @@
 // types
-import type { WebAppServiceDeps } from "../deps";
+import type { CategoryRepository } from "@/modules/category/repository/category.repository";
 // common
 import { BadRequestError } from "@/exceptions";
 // others
@@ -11,10 +11,10 @@ import { ERROR_CODES } from "@/constants/error-code";
  * The body pipe has already rejected duplicates.
  */
 export const assertCategoriesExist = async (
-  deps: WebAppServiceDeps,
+  categoryRepo: CategoryRepository,
   categoryIds: string[]
 ): Promise<void> => {
-  const found = await deps.categoryRepo.countByIds(categoryIds);
+  const found = await categoryRepo.countByIds(categoryIds);
   if (found !== categoryIds.length) {
     throw new BadRequestError({
       key: "webApp:validation.categoryIds.notFound",

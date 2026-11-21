@@ -1,7 +1,9 @@
 // types
 import type { CreateAppBodyDto } from "../dtos/requests";
 import type { AdminAppCreatedDto } from "../dtos";
-import type { WebAppServiceDeps } from "./deps";
+import type { CategoryRepository } from "@/modules/category/repository/category.repository";
+import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
+import type { WebAppRepository } from "../repository/web-app.repository";
 // common
 import { ConflictRequestError } from "@/exceptions";
 // dtos
@@ -22,7 +24,11 @@ import { ERROR_CODES } from "@/constants/error-code";
 import { hashValue } from "@/utils/crypto/bcrypt";
 
 export const createApp = async (
-  deps: WebAppServiceDeps,
+  deps: {
+    webAppRepo: WebAppRepository;
+    categoryRepo: CategoryRepository;
+    notificationDispatcher: NotificationDispatcher;
+  },
   body: CreateAppBodyDto
 ): Promise<AdminAppCreatedDto> => {
   const nameTaken = await deps.webAppRepo.existsByName(body.name);
@@ -33,7 +39,7 @@ export const createApp = async (
     });
   }
 
-  await assertCategoriesExist(deps, body.categoryIds);
+  await assertCategoriesExist(deps.categoryRepo, body.categoryIds);
 
   const clientId = generateClientId();
 

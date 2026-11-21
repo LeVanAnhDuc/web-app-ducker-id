@@ -1,5 +1,5 @@
 // types
-import type { RecentAppServiceDeps } from "./deps";
+import type { RecentAppRepository } from "../repository/recent-app.repository";
 // constants
 import { RECENT_APP_CONFIG } from "../constants";
 
@@ -8,11 +8,11 @@ import { RECENT_APP_CONFIG } from "../constants";
  * authorize step), so there is no visibility check here.
  */
 export const record = (
-  deps: RecentAppServiceDeps,
+  recentAppRepo: RecentAppRepository,
   userId: string,
   webAppId: string
 ): Promise<void> =>
-  deps.recentAppRepo.record(
+  recentAppRepo.record(
     userId,
     webAppId,
     new Date(),

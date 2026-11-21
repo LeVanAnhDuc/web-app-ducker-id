@@ -2,7 +2,6 @@
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { OtpSignupRepository } from "../../repositories/otp-signup.repository";
 import type { SessionSignupRepository } from "../../repositories/session-signup.repository";
-import type { SignupServiceDeps } from "../deps";
 // common
 import { BadRequestError, ConflictRequestError } from "@/exceptions";
 // others
@@ -49,23 +48,22 @@ const setup = () => {
 
   const emailDispatcher = createEmailDispatcherMock();
 
-  const deps = {
-    authService: {},
-    userService,
+  const service = new SignupService(
+    {} as never,
+    userService as never,
     otpSignupRepo,
     sessionSignupRepo,
     emailDispatcher,
-    emailAvailableGuard: new EmailAvailableGuard(userService as never),
-    cooldownGuard: new CooldownGuard(otpSignupRepo)
-  } as unknown as SignupServiceDeps;
+    new EmailAvailableGuard(userService as never),
+    new CooldownGuard(otpSignupRepo)
+  );
 
   return {
-    deps,
     otpSignupRepo,
     sessionSignupRepo,
     userService,
     emailDispatcher: emailDispatcher as jest.Mocked<EmailDispatcher>,
-    service: new SignupService(deps)
+    service
   };
 };
 

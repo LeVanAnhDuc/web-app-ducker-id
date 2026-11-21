@@ -1,5 +1,6 @@
 // types
-import type { CategoryServiceDeps } from "../deps";
+import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
+import type { CategoryRepository } from "../../repository/category.repository";
 
 export const CATEGORY_ID = "64b2f0c2f1a2b3c4d5e6f7a1";
 export const OTHER_ID = "64b2f0c2f1a2b3c4d5e6f7a2";
@@ -43,7 +44,10 @@ export const makeDeps = () => {
     reassignOrphans: jest.fn(),
     pullCategory: jest.fn()
   };
-  const deps = { categoryRepo, webAppRepo } as unknown as CategoryServiceDeps;
+  const deps = { categoryRepo, webAppRepo } as unknown as {
+    categoryRepo: CategoryRepository;
+    webAppRepo: WebAppRepository;
+  };
   return { deps, categoryRepo, webAppRepo };
 };
 

@@ -1,5 +1,7 @@
 // types
-import type { RecentAppServiceDeps } from "./deps";
+import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
+import type { AccessPolicy } from "@/modules/entitlement/services/access-policy";
+import type { RecentAppRepository } from "../repository/recent-app.repository";
 // commons
 import { NotFoundError } from "@/exceptions";
 // modules
@@ -11,7 +13,11 @@ import { ERROR_CODES } from "@/constants/error-code";
 import { RequestContext } from "@/utils/request-context";
 
 export const recordLaunch = async (
-  deps: RecentAppServiceDeps,
+  deps: {
+    recentAppRepo: RecentAppRepository;
+    webAppRepo: WebAppRepository;
+    accessPolicy: AccessPolicy;
+  },
   appId: string
 ): Promise<void> => {
   const userId = RequestContext.requireUserId();

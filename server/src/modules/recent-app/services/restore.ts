@@ -1,10 +1,10 @@
 // types
-import type { RecentAppServiceDeps } from "./deps";
+import type { RecentAppRepository } from "../repository/recent-app.repository";
 // others
 import { RequestContext } from "@/utils/request-context";
 
 export const restore = (
-  deps: RecentAppServiceDeps,
+  recentAppRepo: RecentAppRepository,
   appId: string
 ): Promise<void> =>
-  deps.recentAppRepo.restore(RequestContext.requireUserId(), appId);
+  recentAppRepo.restore(RequestContext.requireUserId(), appId);

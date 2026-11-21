@@ -51,35 +51,35 @@ export const createForgotPasswordModule = (
   const authExistsGuard = new AuthExistsGuard(userService);
   const resetTokenValidGuard = new ResetTokenValidGuard(resetTokenRepo);
 
-  const otpStrategy = new OtpForgotPasswordStrategy({
+  const otpStrategy = new OtpForgotPasswordStrategy(
     otpRepo,
     resetTokenRepo,
     emailDispatcher,
-    cooldownGuard: otpCooldownGuard,
-    resendLimitGuard: otpResendLimitGuard,
-    lockoutGuard: otpLockoutGuard,
+    otpCooldownGuard,
+    otpResendLimitGuard,
+    otpLockoutGuard,
     authExistsGuard,
-    audit: auditService
-  });
-  const magicLinkStrategy = new MagicLinkForgotPasswordStrategy({
+    auditService
+  );
+  const magicLinkStrategy = new MagicLinkForgotPasswordStrategy(
     magicLinkRepo,
     resetTokenRepo,
     emailDispatcher,
-    cooldownGuard: magicLinkCooldownGuard,
-    resendLimitGuard: magicLinkResendLimitGuard,
+    magicLinkCooldownGuard,
+    magicLinkResendLimitGuard,
     authExistsGuard,
-    audit: auditService
-  });
+    auditService
+  );
 
-  const forgotPasswordService = new ForgotPasswordService({
+  const forgotPasswordService = new ForgotPasswordService(
     authService,
     resetTokenRepo,
     otpStrategy,
     magicLinkStrategy,
     authExistsGuard,
     resetTokenValidGuard,
-    audit: auditService
-  });
+    auditService
+  );
   const forgotPasswordController = new ForgotPasswordController(
     forgotPasswordService
   );

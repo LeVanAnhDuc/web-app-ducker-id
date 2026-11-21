@@ -1,7 +1,8 @@
 // types
 import type { VerifyOtpBodyDto } from "../dtos/requests";
 import type { VerifyOtpDto } from "../dtos";
-import type { SignupServiceDeps } from "./deps";
+import type { OtpSignupRepository } from "../repositories/otp-signup.repository";
+import type { SessionSignupRepository } from "../repositories/session-signup.repository";
 // common
 import { BadRequestError } from "@/exceptions";
 // dtos
@@ -20,15 +21,15 @@ import {
  * dùng tới — trước kia là private method của `SignupService`.
  */
 const verifyOtpOrFail = async (
-  deps: SignupServiceDeps,
+  otpSignupRepo: OtpSignupRepository,
   email: string,
   otp: string
 ): Promise<void> => {
-  const isValid = await deps.otpSignupRepo.verify(email, otp);
+  const isValid = await otpSignupRepo.verify(email, otp);
 
   if (isValid) return;
 
-  const failedCount = await deps.otpSignupRepo.incrementFailedAttempts(
+  const failedCount = await otpSignupRepo.incrementFailedAttempts(
     email,
     LOCKOUT_DURATION_MINUTES
   );
@@ -56,7 +57,10 @@ const verifyOtpOrFail = async (
 };
 
 export const verifyOtp = async (
-  deps: SignupServiceDeps,
+  deps: {
+    otpSignupRepo: OtpSignupRepository;
+    sessionSignupRepo: SessionSignupRepository;
+  },
   body: VerifyOtpBodyDto
 ): Promise<VerifyOtpDto> => {
   const { email, otp } = body;
@@ -77,7 +81,7 @@ export const verifyOtp = async (
     });
   }
 
-  await verifyOtpOrFail(deps, email, otp);
+  await verifyOtpOrFail(deps.otpSignupRepo, email, otp);
 
   const sessionToken = await deps.sessionSignupRepo.createAndStore(
     email,

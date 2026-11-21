@@ -42,12 +42,12 @@ const makeDeps = () => {
     entitlementRepo as unknown as EntitlementRepository
   );
   const makeService = () =>
-    new FavoriteService({
-      favoriteRepo: favoriteRepo as unknown as FavoriteRepository,
-      webAppRepo: webAppRepo as unknown as WebAppRepository,
-      favoritableGuard: guard as unknown as AppFavoritableGuard,
+    new FavoriteService(
+      favoriteRepo as unknown as FavoriteRepository,
+      webAppRepo as unknown as WebAppRepository,
+      guard as unknown as AppFavoritableGuard,
       accessPolicy
-    });
+    );
   return { favoriteRepo, webAppRepo, guard, entitlementRepo, makeService };
 };
 

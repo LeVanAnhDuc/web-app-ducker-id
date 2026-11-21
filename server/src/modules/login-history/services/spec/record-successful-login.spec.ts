@@ -33,10 +33,7 @@ const setup = (history: SignInTraits) => {
     findSignInTraits: jest.fn().mockResolvedValue(history)
   } as unknown as jest.Mocked<LoginHistoryRepository>;
   const notificationDispatcher = createNotificationDispatcherMock();
-  const service = new LoginHistoryService({
-    loginHistoryRepo: repo,
-    notificationDispatcher
-  });
+  const service = new LoginHistoryService(repo, notificationDispatcher);
   return { repo, notificationDispatcher, service };
 };
 

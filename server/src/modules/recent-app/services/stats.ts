@@ -1,7 +1,9 @@
 // types
 import type { RecentAppsStatsDto } from "../dtos";
 import type { RecentAppsStatsQueryDto } from "../dtos/requests";
-import type { RecentAppServiceDeps } from "./deps";
+import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
+import type { AccessPolicy } from "@/modules/entitlement/services/access-policy";
+import type { RecentAppRepository } from "../repository/recent-app.repository";
 // dtos
 import { toRecentAppsStatsDto } from "../dtos";
 // constants
@@ -15,7 +17,11 @@ import { RequestContext } from "@/utils/request-context";
  * the totals either, or the number on the card and the rows behind it disagree.
  */
 export const stats = async (
-  deps: RecentAppServiceDeps,
+  deps: {
+    recentAppRepo: RecentAppRepository;
+    webAppRepo: WebAppRepository;
+    accessPolicy: AccessPolicy;
+  },
   query: RecentAppsStatsQueryDto = {}
 ): Promise<RecentAppsStatsDto> => {
   const userId = RequestContext.requireUserId();

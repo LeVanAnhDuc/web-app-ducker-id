@@ -1,7 +1,13 @@
 // types
 import type { FPMagicLinkSendRequest } from "../../types";
 import type { SendMagicLinkResponseDto } from "../../dtos";
-import type { MagicLinkForgotPasswordStrategyDeps } from "./deps";
+import type { EmailDispatcher } from "@/services/email/email.dispatcher";
+import type { MagicLinkForgotPasswordRepository } from "../../repositories/magic-link-forgot-password.repository";
+import type {
+  MagicLinkCooldownGuard,
+  MagicLinkResendLimitGuard,
+  AuthExistsGuard
+} from "../../guards";
 // dtos
 import { toSendMagicLinkResponseDto } from "../../dtos";
 // others
@@ -12,13 +18,13 @@ import { withRetry } from "@/utils/resilience/retry";
 import { FORGOT_PASSWORD_MAGIC_LINK_CONFIG } from "../../constants";
 
 const sendMagicLinkEmail = (
-  deps: MagicLinkForgotPasswordStrategyDeps,
+  emailDispatcher: EmailDispatcher,
   email: string,
   token: string,
   language: string
 ): void => {
   const magicLinkUrl = `${ENV.app.clientUrl}/forgot-password/reset?email=${encodeURIComponent(email)}&token=${token}&method=magic-link`;
-  deps.emailDispatcher.send(EmailType.MAGIC_LINK, {
+  emailDispatcher.send(EmailType.MAGIC_LINK, {
     email,
     data: {
       magicLinkUrl,
@@ -29,7 +35,13 @@ const sendMagicLinkEmail = (
 };
 
 export const sendLink = async (
-  deps: MagicLinkForgotPasswordStrategyDeps,
+  deps: {
+    magicLinkRepo: MagicLinkForgotPasswordRepository;
+    emailDispatcher: EmailDispatcher;
+    cooldownGuard: MagicLinkCooldownGuard;
+    resendLimitGuard: MagicLinkResendLimitGuard;
+    authExistsGuard: AuthExistsGuard;
+  },
   req: FPMagicLinkSendRequest
 ): Promise<SendMagicLinkResponseDto> => {
   const { email } = req.body;
@@ -58,7 +70,7 @@ export const sendLink = async (
     context: { email }
   });
 
-  sendMagicLinkEmail(deps, email, token, language);
+  sendMagicLinkEmail(deps.emailDispatcher, email, token, language);
 
   Logger.info("Forgot-password magic link sent", {
     email,

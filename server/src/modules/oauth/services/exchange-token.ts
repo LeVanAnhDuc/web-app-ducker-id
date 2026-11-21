@@ -3,7 +3,10 @@ import { StatusCodes } from "http-status-codes";
 // types
 import type { WebAppDocument } from "@/modules/web-app/types";
 import type { TokenRequestBody, TokenResponse } from "../types";
-import type { OAuthServiceDeps } from "./deps";
+import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
+import type { AuthenticationService } from "@/modules/authentication/services";
+import type { UserService } from "@/modules/user/services";
+import type { OAuthRepository } from "../repository/oauth.repository";
 // common
 import { OAuthError } from "@/exceptions";
 // modules
@@ -63,7 +66,10 @@ const assertClientAuthentication = (
 };
 
 const issueTokens = async (
-  deps: OAuthServiceDeps,
+  deps: {
+    authService: AuthenticationService;
+    userService: UserService;
+  },
   record: {
     clientId: string;
     scopes: string[];
@@ -114,7 +120,12 @@ const issueTokens = async (
 };
 
 export const exchangeToken = async (
-  deps: OAuthServiceDeps,
+  deps: {
+    oauthRepo: OAuthRepository;
+    webAppRepo: WebAppRepository;
+    authService: AuthenticationService;
+    userService: UserService;
+  },
   body: TokenRequestBody,
   authorizationHeader?: string
 ): Promise<TokenResponse> => {
@@ -151,7 +162,7 @@ export const exchangeToken = async (
     });
   }
 
-  const client = await resolveClient(deps, record.clientId);
+  const client = await resolveClient(deps.webAppRepo, record.clientId);
 
   if (body.client_id && body.client_id !== record.clientId) {
     throw new OAuthError({

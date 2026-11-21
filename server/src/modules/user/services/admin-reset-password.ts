@@ -1,6 +1,9 @@
 // types
 import type { AdminResetPasswordResult } from "@/modules/user/types";
-import type { UserServiceDeps } from "./deps";
+import type { AuthenticationService } from "@/modules/authentication/services";
+import type { EmailDispatcher } from "@/services/email/email.dispatcher";
+import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
+import type { UserRepository } from "../repository/user.repository";
 // common
 import { ForbiddenError, NotFoundError } from "@/exceptions";
 // modules
@@ -21,7 +24,12 @@ import { hashValue } from "@/utils/crypto/bcrypt";
 import { generateTempPassword } from "@/utils/crypto/temp-password";
 
 export const adminResetPassword = async (
-  deps: UserServiceDeps,
+  deps: {
+    userRepo: UserRepository;
+    authService: AuthenticationService;
+    emailDispatcher: EmailDispatcher;
+    notificationDispatcher: NotificationDispatcher;
+  },
   id: string
 ): Promise<AdminResetPasswordResult> => {
   validateObjectId(id, "id");

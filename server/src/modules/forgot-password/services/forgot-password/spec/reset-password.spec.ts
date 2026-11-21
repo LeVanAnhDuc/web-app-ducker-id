@@ -4,7 +4,6 @@ jest.mock("@/utils/crypto/bcrypt");
 import type { AuthenticationService } from "@/modules/authentication/services";
 import type { FPResetPasswordRequest } from "../../../types";
 import type { ResetTokenRepository } from "../../../repositories/reset-token.repository";
-import type { ForgotPasswordServiceDeps } from "../deps";
 // common
 import { UnauthorizedError } from "@/exceptions";
 // others
@@ -52,22 +51,20 @@ const setup = () => {
 
   const historyService = createLoginHistoryServiceMock();
 
-  const deps = {
-    authService,
-    resetTokenRepo,
-    otpStrategy: {},
-    magicLinkStrategy: {},
-    authExistsGuard: new AuthExistsGuard(userService as never),
-    resetTokenValidGuard: new ResetTokenValidGuard(resetTokenRepo),
-    audit: new ForgotPasswordAuditService(historyService)
-  } as unknown as ForgotPasswordServiceDeps;
-
   return {
     authService,
     resetTokenRepo,
     userService,
     historyService,
-    service: new ForgotPasswordService(deps)
+    service: new ForgotPasswordService(
+      authService,
+      resetTokenRepo,
+      {} as never,
+      {} as never,
+      new AuthExistsGuard(userService as never),
+      new ResetTokenValidGuard(resetTokenRepo),
+      new ForgotPasswordAuditService(historyService)
+    )
   };
 };
 

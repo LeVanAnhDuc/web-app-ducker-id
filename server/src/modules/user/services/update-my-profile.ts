@@ -1,6 +1,6 @@
 // types
 import type { UpdateProfileData } from "@/modules/user/types";
-import type { UserServiceDeps } from "./deps";
+import type { UserRepository } from "../repository/user.repository";
 // common
 import { toDto } from "@/common/dto";
 import { NotFoundError } from "@/exceptions";
@@ -11,11 +11,11 @@ import { ERROR_CODES } from "@/constants/error-code";
 import { RequestContext } from "@/utils/request-context";
 
 export const updateMyProfile = async (
-  deps: UserServiceDeps,
+  userRepo: UserRepository,
   data: Partial<UpdateProfileData>
 ): Promise<MyProfileDto> => {
   const userId = RequestContext.requireUserId();
-  const user = await deps.userRepo.updateById(userId, data);
+  const user = await userRepo.updateById(userId, data);
 
   if (!user) {
     throw new NotFoundError({

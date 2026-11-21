@@ -7,7 +7,13 @@ import type {
   AuthorizeOutcome,
   AuthorizeParams
 } from "../types";
-import type { OAuthServiceDeps } from "./deps";
+import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
+import type { UserService } from "@/modules/user/services";
+import type { SessionService } from "@/modules/session/services";
+import type { LoginHistoryService } from "@/modules/login-history/services";
+import type { RecentAppService } from "@/modules/recent-app/services";
+import type { AccessPolicy } from "@/modules/entitlement/services/access-policy";
+import type { OAuthRepository } from "../repository/oauth.repository";
 // common
 import { OAuthError } from "@/exceptions";
 // others
@@ -111,7 +117,11 @@ const validateAuthorizeParams = (
  * because SessionRecord does not carry it.
  */
 const auditAppSignIn = async (
-  deps: OAuthServiceDeps,
+  deps: {
+    userService: UserService;
+    loginHistoryService: LoginHistoryService;
+    recentAppService: RecentAppService;
+  },
   { client, session, interactive, req, denied }: AppSignInAudit
 ): Promise<void> => {
   try {
@@ -150,7 +160,12 @@ const auditAppSignIn = async (
 
 /** Same rule as the launcher: the role default plus the user's overrides. */
 const assertEntitled = async (
-  deps: OAuthServiceDeps,
+  deps: {
+    accessPolicy: AccessPolicy;
+    userService: UserService;
+    loginHistoryService: LoginHistoryService;
+    recentAppService: RecentAppService;
+  },
   client: WebAppDocument,
   session: SessionRecord,
   params: AuthorizeParams,
@@ -173,7 +188,10 @@ const assertEntitled = async (
 };
 
 const issueCode = async (
-  deps: OAuthServiceDeps,
+  deps: {
+    oauthRepo: OAuthRepository;
+    sessionService: SessionService;
+  },
   session: SessionRecord,
   params: AuthorizeParams
 ): Promise<string> => {
@@ -218,19 +236,19 @@ const isInteractiveSignIn = (
 };
 
 const buildParamsFromQuery = async (
-  deps: OAuthServiceDeps,
+  webAppRepo: WebAppRepository,
   query: Record<string, string | undefined>
 ): Promise<AuthorizeParams> => {
-  const client = await resolveClient(deps, query.client_id);
+  const client = await resolveClient(webAppRepo, query.client_id);
   assertRedirectUri(client, query.redirect_uri);
   return validateAuthorizeParams(client, query);
 };
 
 const restorePendingRequest = async (
-  deps: OAuthServiceDeps,
+  oauthRepo: OAuthRepository,
   id: string
 ): Promise<AuthorizeParams> => {
-  const pending = await deps.oauthRepo.consumePendingRequest(id);
+  const pending = await oauthRepo.consumePendingRequest(id);
 
   if (!pending) {
     throw new OAuthError({
@@ -248,16 +266,24 @@ const restorePendingRequest = async (
  * được giữa chừng).
  */
 export const authorize = async (
-  deps: OAuthServiceDeps,
+  deps: {
+    oauthRepo: OAuthRepository;
+    webAppRepo: WebAppRepository;
+    sessionService: SessionService;
+    userService: UserService;
+    loginHistoryService: LoginHistoryService;
+    recentAppService: RecentAppService;
+    accessPolicy: AccessPolicy;
+  },
   req: Request
 ): Promise<AuthorizeOutcome> => {
   const query = req.query as Record<string, string | undefined>;
 
   const params = query.auth_req
-    ? await restorePendingRequest(deps, query.auth_req)
-    : await buildParamsFromQuery(deps, query);
+    ? await restorePendingRequest(deps.oauthRepo, query.auth_req)
+    : await buildParamsFromQuery(deps.webAppRepo, query);
 
-  const client = await resolveClient(deps, params.clientId);
+  const client = await resolveClient(deps.webAppRepo, params.clientId);
   const session = await deps.sessionService.resolve(req);
 
   if (!session) {

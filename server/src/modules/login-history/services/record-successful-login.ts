@@ -2,7 +2,8 @@
 import type { Schema } from "mongoose";
 import type { Request } from "express";
 import type { LoginMethod } from "../types";
-import type { LoginHistoryServiceDeps } from "./deps";
+import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
+import type { LoginHistoryRepository } from "../repository/login-history.repository";
 // modules
 import {
   LOGIN_ANOMALY_CONFIG,
@@ -38,14 +39,20 @@ interface SuccessfulLoginParams {
  * Fire-and-forget like every `record*`: nothing here may fail the login.
  */
 export const recordSuccessfulLogin = (
-  deps: LoginHistoryServiceDeps,
+  deps: {
+    loginHistoryRepo: LoginHistoryRepository;
+    notificationDispatcher: NotificationDispatcher;
+  },
   params: SuccessfulLoginParams
 ): void => {
   void recordAndAssess(deps, params);
 };
 
 const recordAndAssess = async (
-  deps: LoginHistoryServiceDeps,
+  deps: {
+    loginHistoryRepo: LoginHistoryRepository;
+    notificationDispatcher: NotificationDispatcher;
+  },
   { userId, usernameAttempted, loginMethod, req }: SuccessfulLoginParams
 ): Promise<void> => {
   const authId = userId.toString();

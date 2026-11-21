@@ -1,7 +1,10 @@
 // types
 import type { Request } from "express";
 import type { UnlockVerifyBodyDto } from "../dtos/requests";
-import type { UnlockAccountServiceDeps } from "./deps";
+import type { AuthenticationService } from "@/modules/authentication/services";
+import type { LoginHistoryService } from "@/modules/login-history/services";
+import type { LoginService } from "@/modules/login/services/login";
+import type { AuthExistsGuard, TempPasswordValidGuard } from "../guards";
 // common
 import { toDto } from "@/common/dto";
 // modules
@@ -14,7 +17,13 @@ import { Logger } from "@/libs/logger";
 import { withRetry } from "@/utils/resilience/retry";
 
 export const unlockVerify = async (
-  deps: UnlockAccountServiceDeps,
+  deps: {
+    authService: AuthenticationService;
+    loginHistoryService: LoginHistoryService;
+    loginService: LoginService;
+    authExistsGuard: AuthExistsGuard;
+    tempPasswordValidGuard: TempPasswordValidGuard;
+  },
   body: UnlockVerifyBodyDto,
   req: Request
 ): Promise<UnlockVerifyDto> => {

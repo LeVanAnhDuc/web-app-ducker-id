@@ -1,6 +1,7 @@
 // types
 import type { WebAppDocument } from "../../types";
-import type { WebAppServiceDeps } from "../deps";
+import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
+import type { WebAppRepository } from "../../repository/web-app.repository";
 // modules
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 import {
@@ -19,7 +20,10 @@ import { WEB_APP_STATUSES } from "../../constants";
  * Never throws: the admin's save already succeeded.
  */
 export const announceApp = async (
-  deps: WebAppServiceDeps,
+  deps: {
+    webAppRepo: WebAppRepository;
+    notificationDispatcher: NotificationDispatcher;
+  },
   app: WebAppDocument
 ): Promise<void> => {
   if (app.status !== WEB_APP_STATUSES.ACTIVE) return;

@@ -2,7 +2,9 @@
 import type { Request } from "express";
 import type { SendOtpBodyDto } from "../dtos/requests";
 import type { SendOtpDto } from "../dtos";
-import type { SignupServiceDeps } from "./deps";
+import type { OtpSignupRepository } from "../repositories/otp-signup.repository";
+import type { EmailDispatcher } from "@/services/email/email.dispatcher";
+import type { EmailAvailableGuard, CooldownGuard } from "../guards";
 // dtos
 import { toSendOtpDto } from "../dtos";
 // others
@@ -15,7 +17,12 @@ import {
 } from "../constants";
 
 export const sendOtp = async (
-  deps: SignupServiceDeps,
+  deps: {
+    otpSignupRepo: OtpSignupRepository;
+    emailDispatcher: EmailDispatcher;
+    emailAvailableGuard: EmailAvailableGuard;
+    cooldownGuard: CooldownGuard;
+  },
   body: SendOtpBodyDto,
   req: Request
 ): Promise<SendOtpDto> => {

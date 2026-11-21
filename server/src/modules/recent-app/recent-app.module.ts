@@ -15,12 +15,12 @@ export const createRecentAppModule = (
   accessPolicy: AccessPolicy,
   rateLimiter: RateLimiters
 ) => {
-  const service = new RecentAppService({
-    recentAppRepo: new MongoRecentAppRepository(),
-    webAppRepo: new MongoWebAppRepository(),
+  const service = new RecentAppService(
+    new MongoRecentAppRepository(),
+    new MongoWebAppRepository(),
     favoriteRepo,
     accessPolicy
-  });
+  );
   const controller = new RecentAppController(service);
 
   return {

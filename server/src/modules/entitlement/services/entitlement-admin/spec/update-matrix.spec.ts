@@ -25,7 +25,15 @@ describe("EntitlementAdminService.updateMatrix", () => {
     );
     ctx.entitlementRepo.findByUsers.mockResolvedValue([]);
     ctx.entitlementRepo.applyChanges.mockResolvedValue(undefined);
-    return { ...ctx, service: new EntitlementAdminService(ctx.deps) };
+    return {
+      ...ctx,
+      service: new EntitlementAdminService(
+        ctx.deps.entitlementRepo,
+        ctx.deps.userRepo,
+        ctx.deps.webAppRepo,
+        ctx.deps.notificationDispatcher
+      )
+    };
   };
 
   // Decision table: role default × requested value → stored override.
@@ -157,7 +165,15 @@ describe("EntitlementAdminService.updateMatrix — access notifications", () => 
       .mockResolvedValueOnce(overridesBefore)
       .mockResolvedValue([]);
     ctx.entitlementRepo.applyChanges.mockResolvedValue(undefined);
-    return { ...ctx, service: new EntitlementAdminService(ctx.deps) };
+    return {
+      ...ctx,
+      service: new EntitlementAdminService(
+        ctx.deps.entitlementRepo,
+        ctx.deps.userRepo,
+        ctx.deps.webAppRepo,
+        ctx.deps.notificationDispatcher
+      )
+    };
   };
 
   it("tells a user they lost an app the role gave them, with no link", async () => {

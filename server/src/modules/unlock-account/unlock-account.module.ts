@@ -36,9 +36,9 @@ export const createUnlockAccountModule = (
   const authExistsGuard = new AuthExistsGuard(userService);
   const tempPasswordValidGuard = new TempPasswordValidGuard(unlockAccountRepo);
 
-  const unlockAccountService = new UnlockAccountService({
+  const unlockAccountService = new UnlockAccountService(
     authService,
-    loginHistoryService: loginHistorySvc,
+    loginHistorySvc,
     loginService,
     unlockAccountRepo,
     emailDispatcher,
@@ -46,7 +46,7 @@ export const createUnlockAccountModule = (
     rateLimitGuard,
     authExistsGuard,
     tempPasswordValidGuard
-  });
+  );
   const unlockAccountController = new UnlockAccountController(
     unlockAccountService
   );

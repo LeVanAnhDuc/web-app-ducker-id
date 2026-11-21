@@ -1,12 +1,16 @@
 // types
 import type { UserInfoResponse } from "../types";
-import type { OAuthServiceDeps } from "./deps";
+import type { AuthenticationService } from "@/modules/authentication/services";
+import type { UserService } from "@/modules/user/services";
 // others
 import { filterClaimsByScopes, parseScopeParam } from "../helpers";
 import { loadClaims } from "./shared/load-claims";
 
 export const getUserInfo = async (
-  deps: OAuthServiceDeps,
+  deps: {
+    authService: AuthenticationService;
+    userService: UserService;
+  },
   authId: string,
   userId: string,
   scope: string

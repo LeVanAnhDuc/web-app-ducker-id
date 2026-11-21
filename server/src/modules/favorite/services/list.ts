@@ -1,7 +1,9 @@
 // types
 import type { UserAppDto } from "@/modules/web-app/dtos";
 import type { ListFavoritesQueryDto } from "../dtos/requests";
-import type { FavoriteServiceDeps } from "./deps";
+import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
+import type { AccessPolicy } from "@/modules/entitlement/services/access-policy";
+import type { FavoriteRepository } from "../repository/favorite.repository";
 // dtos
 import { toFavoriteAppDto } from "../dtos";
 // constants
@@ -10,7 +12,11 @@ import { FAVORITE_SORTS } from "../constants";
 import { RequestContext } from "@/utils/request-context";
 
 export const list = async (
-  deps: FavoriteServiceDeps,
+  deps: {
+    favoriteRepo: FavoriteRepository;
+    webAppRepo: WebAppRepository;
+    accessPolicy: AccessPolicy;
+  },
   query: ListFavoritesQueryDto
 ): Promise<{ items: UserAppDto[] }> => {
   const userId = RequestContext.requireUserId();

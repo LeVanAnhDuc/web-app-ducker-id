@@ -1,14 +1,23 @@
 // types
 import type { FPResetPasswordRequest } from "../../types";
 import type { ResetPasswordResponseDto } from "../../dtos";
-import type { ForgotPasswordServiceDeps } from "./deps";
+import type { AuthenticationService } from "@/modules/authentication/services";
+import type { ResetTokenRepository } from "../../repositories/reset-token.repository";
+import type { AuthExistsGuard, ResetTokenValidGuard } from "../../guards";
+import type { ForgotPasswordAuditService } from "../forgot-password-audit";
 // dtos
 import { toResetPasswordResponseDto } from "../../dtos";
 // others
 import { hashValue } from "@/utils/crypto/bcrypt";
 
 export const resetPassword = async (
-  deps: ForgotPasswordServiceDeps,
+  deps: {
+    authService: AuthenticationService;
+    resetTokenRepo: ResetTokenRepository;
+    authExistsGuard: AuthExistsGuard;
+    resetTokenValidGuard: ResetTokenValidGuard;
+    audit: ForgotPasswordAuditService;
+  },
   req: FPResetPasswordRequest
 ): Promise<ResetPasswordResponseDto> => {
   const { email, resetToken, newPassword } = req.body;

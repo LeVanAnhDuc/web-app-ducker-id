@@ -1,5 +1,5 @@
 // types
-import type { CategoryServiceDeps } from "../deps";
+import type { CategoryRepository } from "../../repository/category.repository";
 // common
 import { BadRequestError } from "@/exceptions";
 // modules
@@ -14,7 +14,7 @@ import { isDuplicateKeyError, getDuplicatedField } from "@/utils/mongo-errors";
  * keep its own slug, so changing only the case of `name.en` adds no suffix.
  */
 export const generateSlug = async (
-  deps: CategoryServiceDeps,
+  categoryRepo: CategoryRepository,
   nameEn: string,
   excludeId?: string
 ): Promise<string> => {
@@ -26,7 +26,7 @@ export const generateSlug = async (
       code: ERROR_CODES.CATEGORY_NAME_NO_SLUG
     });
   }
-  const taken = await deps.categoryRepo.findSlugFamily(base, excludeId);
+  const taken = await categoryRepo.findSlugFamily(base, excludeId);
   return pickFreeSlug(base, taken);
 };
 

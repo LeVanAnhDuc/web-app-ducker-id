@@ -20,12 +20,12 @@ export const createEntitlementModule = (
   notificationDispatcher: NotificationDispatcher
 ) => {
   const entitlementRepo = new MongoEntitlementRepository();
-  const service = new EntitlementAdminService({
+  const service = new EntitlementAdminService(
     entitlementRepo,
-    userRepo: new MongoUserRepository(),
-    webAppRepo: new MongoWebAppRepository(),
+    new MongoUserRepository(),
+    new MongoWebAppRepository(),
     notificationDispatcher
-  });
+  );
   const controller = new EntitlementController(service);
 
   return {

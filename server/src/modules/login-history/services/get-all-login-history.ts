@@ -1,6 +1,6 @@
 // types
 import type { LoginHistoryAdminQueryDto } from "../dtos/requests";
-import type { LoginHistoryServiceDeps } from "./deps";
+import type { LoginHistoryRepository } from "../repository/login-history.repository";
 import type { PaginatedResult } from "@/common/pagination";
 // common
 import { toDto } from "@/common/dto";
@@ -11,13 +11,13 @@ import { AllHistoryItemDto } from "../dtos";
 import { buildLoginHistoryFilter } from "../helpers";
 
 export const getAllLoginHistory = async (
-  deps: LoginHistoryServiceDeps,
+  loginHistoryRepo: LoginHistoryRepository,
   query: LoginHistoryAdminQueryDto
 ): Promise<PaginatedResult<AllHistoryItemDto>> => {
   const { page, limit, skip, sort } = resolvePaging(query);
 
   const filter = buildLoginHistoryFilter(query);
-  const { data, total } = await deps.loginHistoryRepo.findAll(filter, {
+  const { data, total } = await loginHistoryRepo.findAll(filter, {
     skip,
     limit,
     sort

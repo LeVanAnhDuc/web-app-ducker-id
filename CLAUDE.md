@@ -91,7 +91,7 @@ Service and repository live in folders rather than single files (`docs/specs/mod
 Two shapes fall out of that:
 
 - A service with **one** public method keeps class and logic together in `services/index.ts` — splitting 23 lines across two files buys nothing the module name does not already give. The uniform `@/modules/<name>/services` import path is the part worth keeping.
-- A service with **two or more** dependencies declares them in `services/deps.ts` as `interface <Name>ServiceDeps`; method files take `deps` as their first argument and the façade constructor takes one object instead of a positional list. With seven dependencies, `refreshAccessToken(authService, userService, g1, g2, g3, g4, g5, token)` is not a signature anyone can read.
+- The façade constructor lists every dependency explicitly as `private readonly` parameters — there is no `deps.ts` / `<Name>ServiceDeps` bag, so the constructor itself says what the service depends on. A method file takes only what it uses: **one** dependency positionally (`getMyProfile(userRepo)`), **two or more** as a `deps` object typed inline with exactly those (`deps: { userRepo: UserRepository; authService: AuthenticationService }`), and the façade passes `{ userRepo: this.userRepo, authService: this.authService }`. A positional list stays unreadable past two (`refreshAccessToken(authService, userService, g1, g2, g3, g4, g5, token)`), which is why the method side keeps the named object. Strategies follow the same shape.
 
 A module with two or more **different** repositories (not two implementations of one contract) uses `repositories/` instead, laid out the same way: interfaces at the folder root, classes under `repositories/impl/`. Repository tests sit in `repository/spec/`, mirroring `services/spec/`.
 

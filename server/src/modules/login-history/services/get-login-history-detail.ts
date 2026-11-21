@@ -1,5 +1,5 @@
 // types
-import type { LoginHistoryServiceDeps } from "./deps";
+import type { LoginHistoryRepository } from "../repository/login-history.repository";
 // common
 import { toDto } from "@/common/dto";
 import { NotFoundError } from "@/exceptions";
@@ -9,10 +9,10 @@ import { HistoryDetailItemDto } from "../dtos";
 import { ERROR_CODES } from "@/constants/error-code";
 
 export const getLoginHistoryDetail = async (
-  deps: LoginHistoryServiceDeps,
+  loginHistoryRepo: LoginHistoryRepository,
   id: string
 ): Promise<HistoryDetailItemDto> => {
-  const doc = await deps.loginHistoryRepo.findById(id);
+  const doc = await loginHistoryRepo.findById(id);
 
   if (!doc) {
     throw new NotFoundError({
