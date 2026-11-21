@@ -1,5 +1,5 @@
 // types
-import type { AdminAppsQuery } from "../types";
+import type { AdminAppsQueryDto } from "../dtos/requests";
 import type { AdminAppDto } from "../dtos";
 import type { WebAppServiceDeps } from "./deps";
 // dtos
@@ -9,7 +9,7 @@ import { buildWebAppFilter } from "../helpers";
 
 export const listApps = async (
   deps: WebAppServiceDeps,
-  query: AdminAppsQuery
+  query: AdminAppsQueryDto
 ): Promise<{ items: AdminAppDto[] }> => {
   const filter = buildWebAppFilter(query);
   const docs = await deps.webAppRepo.findAll(filter);

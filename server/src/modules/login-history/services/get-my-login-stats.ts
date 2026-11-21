@@ -1,6 +1,6 @@
 // types
 import type { MyLoginStatsDto } from "../dtos";
-import type { LoginStatsQuery } from "@/modules/login-history/types";
+import type { LoginHistoryStatsQueryDto } from "../dtos/requests";
 import type { LoginHistoryServiceDeps } from "./deps";
 // modules
 import { LOGIN_HISTORY_STATS } from "@/modules/login-history/constants";
@@ -14,12 +14,12 @@ const RANGE_DAYS: readonly number[] = LOGIN_HISTORY_STATS.RANGE_DAYS;
 
 /**
  * `range` arrives as `7d` / `30d` / `90d` and `tz` as an IANA zone, both
- * already checked by Joi. They are re-checked here because the service is also
- * reachable without the route — an unknown value falls back rather than
- * reaching `$dateToString`.
+ * already checked by the route's query DTO. They are re-checked here because
+ * the service is also reachable without the route — an unknown value falls
+ * back rather than reaching `$dateToString`.
  */
 const resolveOptions = (
-  query: LoginStatsQuery
+  query: LoginHistoryStatsQueryDto
 ): { days: number; timezone: string } => {
   const requested = Number.parseInt(query.range ?? "", 10);
   return {
@@ -32,7 +32,7 @@ const resolveOptions = (
 
 export const getMyLoginStats = async (
   deps: LoginHistoryServiceDeps,
-  query: LoginStatsQuery = {}
+  query: LoginHistoryStatsQueryDto = {}
 ): Promise<MyLoginStatsDto> => {
   const userId = RequestContext.requireAuthId();
   const { days, timezone } = resolveOptions(query);

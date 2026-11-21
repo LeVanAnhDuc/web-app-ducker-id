@@ -4,14 +4,13 @@ import { Router } from "express";
 import type { LoginHistoryController } from "./login-history.controller";
 // common
 import { handle } from "@/common/responses";
-// validators
-import {
-  loginHistoryQuerySchema,
-  loginHistoryAdminQuerySchema,
-  loginHistoryIdParamSchema,
-  loginHistoryStatsQuerySchema
-} from "@/validators/schemas/login-history";
 // others
+import {
+  LoginHistoryAdminQueryDto,
+  LoginHistoryIdParamsDto,
+  LoginHistoryQueryDto,
+  LoginHistoryStatsQueryDto
+} from "./dtos/requests";
 import { adminGuard, authGuard, paramsPipe, queryPipe } from "@/middlewares";
 
 export const createLoginHistoryUserRoutes = (
@@ -24,7 +23,7 @@ export const createLoginHistoryUserRoutes = (
 
   loginHistory.get(
     "/stats",
-    queryPipe(loginHistoryStatsQuerySchema),
+    queryPipe(LoginHistoryStatsQueryDto),
     handle(controller.getMyStats, {
       message: "loginHistory:success.getMyStats"
     })
@@ -32,7 +31,7 @@ export const createLoginHistoryUserRoutes = (
 
   loginHistory.get(
     "/",
-    queryPipe(loginHistoryQuerySchema),
+    queryPipe(LoginHistoryQueryDto),
     handle(controller.getMyHistory, {
       message: "loginHistory:success.getMyHistory"
     })
@@ -52,7 +51,7 @@ export const createLoginHistoryAdminRoutes = (
 
   adminLoginHistory.get(
     "/",
-    queryPipe(loginHistoryAdminQuerySchema),
+    queryPipe(LoginHistoryAdminQueryDto),
     handle(controller.getAllHistory, {
       message: "loginHistory:success.getAllHistory"
     })
@@ -60,7 +59,7 @@ export const createLoginHistoryAdminRoutes = (
 
   adminLoginHistory.get(
     "/:id",
-    paramsPipe(loginHistoryIdParamSchema),
+    paramsPipe(LoginHistoryIdParamsDto),
     handle(controller.getHistoryDetail, {
       message: "loginHistory:success.getHistoryDetail"
     })

@@ -1,0 +1,789 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`login request DTOs match the Joi schemas LoginBodyDto ≡ loginSchema: emailInvalid 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.invalid",
+      "reason": "isEmail",
+    },
+  ],
+  "value": LoginBodyDto {
+    "email": "not-an-email",
+    "password": "x",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas LoginBodyDto ≡ loginSchema: emailInvalidPasswordMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.invalid",
+      "reason": "isEmail",
+    },
+    {
+      "field": "password",
+      "key": "validation:password.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": LoginBodyDto {
+    "email": "not-an-email",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas LoginBodyDto ≡ loginSchema: emailMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": LoginBodyDto {
+    "password": "x",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas LoginBodyDto ≡ loginSchema: emailWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": LoginBodyDto {
+    "email": 123,
+    "password": "x",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas LoginBodyDto ≡ loginSchema: empty 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isDefined",
+    },
+    {
+      "field": "password",
+      "key": "validation:password.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": LoginBodyDto {},
+}
+`;
+
+exports[`login request DTOs match the Joi schemas LoginBodyDto ≡ loginSchema: paddedPasswordKept 1`] = `
+{
+  "failures": [],
+  "value": LoginBodyDto {
+    "email": "user@example.com",
+    "password": " secret ",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas LoginBodyDto ≡ loginSchema: passwordEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "password",
+      "key": "validation:password.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": LoginBodyDto {
+    "email": "user@example.com",
+    "password": "",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas LoginBodyDto ≡ loginSchema: passwordMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "password",
+      "key": "validation:password.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": LoginBodyDto {
+    "email": "user@example.com",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas LoginBodyDto ≡ loginSchema: passwordNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "password",
+      "key": "validation:password.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": LoginBodyDto {
+    "email": "user@example.com",
+    "password": null,
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas LoginBodyDto ≡ loginSchema: passwordOperator 1`] = `
+{
+  "failures": [
+    {
+      "field": "password",
+      "key": "validation:password.required",
+      "reason": "isString",
+    },
+  ],
+  "value": LoginBodyDto {
+    "email": "user@example.com",
+    "password": {
+      "$ne": "",
+    },
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas LoginBodyDto ≡ loginSchema: passwordWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "password",
+      "key": "validation:password.required",
+      "reason": "isString",
+    },
+  ],
+  "value": LoginBodyDto {
+    "email": "user@example.com",
+    "password": 123,
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas LoginBodyDto ≡ loginSchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": LoginBodyDto {
+    "email": "user@example.com",
+    "password": "x",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas LoginBodyDto ≡ loginSchema: valid 1`] = `
+{
+  "failures": [],
+  "value": LoginBodyDto {
+    "email": "user@example.com",
+    "password": "anything",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas LoginBodyDto ≡ loginSchema: weakPasswordAccepted 1`] = `
+{
+  "failures": [],
+  "value": LoginBodyDto {
+    "email": "user@example.com",
+    "password": "a",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas MagicLinkSendBodyDto ≡ magicLinkSendSchema: empty 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": MagicLinkSendBodyDto {
+    "email": "",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas MagicLinkSendBodyDto ≡ magicLinkSendSchema: missing 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": MagicLinkSendBodyDto {},
+}
+`;
+
+exports[`login request DTOs match the Joi schemas MagicLinkSendBodyDto ≡ magicLinkSendSchema: notAnEmail 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.invalid",
+      "reason": "isEmail",
+    },
+  ],
+  "value": MagicLinkSendBodyDto {
+    "email": "user",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas MagicLinkSendBodyDto ≡ magicLinkSendSchema: null 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": MagicLinkSendBodyDto {
+    "email": null,
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas MagicLinkSendBodyDto ≡ magicLinkSendSchema: paddedUpperCase 1`] = `
+{
+  "failures": [],
+  "value": MagicLinkSendBodyDto {
+    "email": "user@example.com",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas MagicLinkSendBodyDto ≡ magicLinkSendSchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": MagicLinkSendBodyDto {
+    "email": "user@example.com",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas MagicLinkSendBodyDto ≡ magicLinkSendSchema: valid 1`] = `
+{
+  "failures": [],
+  "value": MagicLinkSendBodyDto {
+    "email": "user@example.com",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas MagicLinkSendBodyDto ≡ magicLinkSendSchema: wrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": MagicLinkSendBodyDto {
+    "email": 123,
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas MagicLinkVerifyBodyDto ≡ magicLinkVerifySchema: bothMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isDefined",
+    },
+    {
+      "field": "token",
+      "key": "login:validation.tokenRequired",
+      "reason": "isDefined",
+    },
+  ],
+  "value": MagicLinkVerifyBodyDto {},
+}
+`;
+
+exports[`login request DTOs match the Joi schemas MagicLinkVerifyBodyDto ≡ magicLinkVerifySchema: emailInvalid 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.invalid",
+      "reason": "isEmail",
+    },
+  ],
+  "value": MagicLinkVerifyBodyDto {
+    "email": "user",
+    "token": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas MagicLinkVerifyBodyDto ≡ magicLinkVerifySchema: emailMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": MagicLinkVerifyBodyDto {
+    "token": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas MagicLinkVerifyBodyDto ≡ magicLinkVerifySchema: tokenEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "token",
+      "key": "login:validation.tokenRequired",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": MagicLinkVerifyBodyDto {
+    "email": "user@example.com",
+    "token": "",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas MagicLinkVerifyBodyDto ≡ magicLinkVerifySchema: tokenMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "token",
+      "key": "login:validation.tokenRequired",
+      "reason": "isDefined",
+    },
+  ],
+  "value": MagicLinkVerifyBodyDto {
+    "email": "user@example.com",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas MagicLinkVerifyBodyDto ≡ magicLinkVerifySchema: tokenNotHex 1`] = `
+{
+  "failures": [
+    {
+      "field": "token",
+      "key": "login:validation.tokenInvalid",
+      "reason": "matches",
+    },
+  ],
+  "value": MagicLinkVerifyBodyDto {
+    "email": "user@example.com",
+    "token": "zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas MagicLinkVerifyBodyDto ≡ magicLinkVerifySchema: tokenNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "token",
+      "key": "login:validation.tokenRequired",
+      "reason": "isDefined",
+    },
+  ],
+  "value": MagicLinkVerifyBodyDto {
+    "email": "user@example.com",
+    "token": null,
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas MagicLinkVerifyBodyDto ≡ magicLinkVerifySchema: tokenShortAndNotHex 1`] = `
+{
+  "failures": [
+    {
+      "field": "token",
+      "key": "login:validation.tokenInvalid",
+      "reason": "isLength",
+    },
+  ],
+  "value": MagicLinkVerifyBodyDto {
+    "email": "user@example.com",
+    "token": "zz",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas MagicLinkVerifyBodyDto ≡ magicLinkVerifySchema: tokenTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "token",
+      "key": "login:validation.tokenInvalid",
+      "reason": "isLength",
+    },
+  ],
+  "value": MagicLinkVerifyBodyDto {
+    "email": "user@example.com",
+    "token": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas MagicLinkVerifyBodyDto ≡ magicLinkVerifySchema: tokenTooShort 1`] = `
+{
+  "failures": [
+    {
+      "field": "token",
+      "key": "login:validation.tokenInvalid",
+      "reason": "isLength",
+    },
+  ],
+  "value": MagicLinkVerifyBodyDto {
+    "email": "user@example.com",
+    "token": "1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas MagicLinkVerifyBodyDto ≡ magicLinkVerifySchema: tokenUpperCase 1`] = `
+{
+  "failures": [
+    {
+      "field": "token",
+      "key": "login:validation.tokenInvalid",
+      "reason": "matches",
+    },
+  ],
+  "value": MagicLinkVerifyBodyDto {
+    "email": "user@example.com",
+    "token": "A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1A1",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas MagicLinkVerifyBodyDto ≡ magicLinkVerifySchema: tokenWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "token",
+      "key": "login:validation.tokenInvalid",
+      "reason": "isString",
+    },
+  ],
+  "value": MagicLinkVerifyBodyDto {
+    "email": "user@example.com",
+    "token": 123,
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas MagicLinkVerifyBodyDto ≡ magicLinkVerifySchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": MagicLinkVerifyBodyDto {
+    "email": "user@example.com",
+    "token": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas MagicLinkVerifyBodyDto ≡ magicLinkVerifySchema: valid 1`] = `
+{
+  "failures": [],
+  "value": MagicLinkVerifyBodyDto {
+    "email": "user@example.com",
+    "token": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas OtpSendBodyDto ≡ otpSendSchema: empty 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": OtpSendBodyDto {
+    "email": "",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas OtpSendBodyDto ≡ otpSendSchema: missing 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": OtpSendBodyDto {},
+}
+`;
+
+exports[`login request DTOs match the Joi schemas OtpSendBodyDto ≡ otpSendSchema: notAnEmail 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.invalid",
+      "reason": "isEmail",
+    },
+  ],
+  "value": OtpSendBodyDto {
+    "email": "user",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas OtpSendBodyDto ≡ otpSendSchema: null 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": OtpSendBodyDto {
+    "email": null,
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas OtpSendBodyDto ≡ otpSendSchema: paddedUpperCase 1`] = `
+{
+  "failures": [],
+  "value": OtpSendBodyDto {
+    "email": "user@example.com",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas OtpSendBodyDto ≡ otpSendSchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": OtpSendBodyDto {
+    "email": "user@example.com",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas OtpSendBodyDto ≡ otpSendSchema: valid 1`] = `
+{
+  "failures": [],
+  "value": OtpSendBodyDto {
+    "email": "user@example.com",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas OtpSendBodyDto ≡ otpSendSchema: wrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": OtpSendBodyDto {
+    "email": 123,
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas OtpVerifyBodyDto ≡ otpVerifySchema: bothMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isDefined",
+    },
+    {
+      "field": "otp",
+      "key": "validation:otp.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": OtpVerifyBodyDto {},
+}
+`;
+
+exports[`login request DTOs match the Joi schemas OtpVerifyBodyDto ≡ otpVerifySchema: emailInvalid 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.invalid",
+      "reason": "isEmail",
+    },
+  ],
+  "value": OtpVerifyBodyDto {
+    "email": "user",
+    "otp": "123456",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas OtpVerifyBodyDto ≡ otpVerifySchema: emailMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": OtpVerifyBodyDto {
+    "otp": "123456",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas OtpVerifyBodyDto ≡ otpVerifySchema: otpEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "otp",
+      "key": "validation:otp.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": OtpVerifyBodyDto {
+    "email": "user@example.com",
+    "otp": "",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas OtpVerifyBodyDto ≡ otpVerifySchema: otpMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "otp",
+      "key": "validation:otp.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": OtpVerifyBodyDto {
+    "email": "user@example.com",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas OtpVerifyBodyDto ≡ otpVerifySchema: otpNotDigits 1`] = `
+{
+  "failures": [
+    {
+      "field": "otp",
+      "key": "validation:otp.digitsOnly",
+      "reason": "matches",
+    },
+  ],
+  "value": OtpVerifyBodyDto {
+    "email": "user@example.com",
+    "otp": "12a456",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas OtpVerifyBodyDto ≡ otpVerifySchema: otpNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "otp",
+      "key": "validation:otp.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": OtpVerifyBodyDto {
+    "email": "user@example.com",
+    "otp": null,
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas OtpVerifyBodyDto ≡ otpVerifySchema: otpTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "otp",
+      "key": "validation:otp.length",
+      "reason": "isLength",
+    },
+  ],
+  "value": OtpVerifyBodyDto {
+    "email": "user@example.com",
+    "otp": "1234567",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas OtpVerifyBodyDto ≡ otpVerifySchema: otpTooShort 1`] = `
+{
+  "failures": [
+    {
+      "field": "otp",
+      "key": "validation:otp.length",
+      "reason": "isLength",
+    },
+  ],
+  "value": OtpVerifyBodyDto {
+    "email": "user@example.com",
+    "otp": "12345",
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas OtpVerifyBodyDto ≡ otpVerifySchema: otpWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "otp",
+      "key": "validation:otp.required",
+      "reason": "isString",
+    },
+  ],
+  "value": OtpVerifyBodyDto {
+    "email": "user@example.com",
+    "otp": 123456,
+  },
+}
+`;
+
+exports[`login request DTOs match the Joi schemas OtpVerifyBodyDto ≡ otpVerifySchema: valid 1`] = `
+{
+  "failures": [],
+  "value": OtpVerifyBodyDto {
+    "email": "user@example.com",
+    "otp": "123456",
+  },
+}
+`;

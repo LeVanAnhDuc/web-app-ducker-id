@@ -1,12 +1,12 @@
 // types
 import type { Request } from "express";
 import type {
-  CheckEmailParams,
-  CompleteSignupBody,
-  ResendOtpBody,
-  SendOtpBody,
-  VerifyOtpBody
-} from "../types";
+  CheckEmailParamsDto,
+  CompleteSignupBodyDto,
+  ResendOtpBodyDto,
+  SendOtpBodyDto,
+  VerifyOtpBodyDto
+} from "../dtos/requests";
 import type {
   CheckEmailDto,
   CompleteSignupDto,
@@ -27,27 +27,27 @@ export class SignupService {
   constructor(private readonly deps: SignupServiceDeps) {}
 
   @LogMethod({ name: "SendOtp" })
-  sendOtp(body: SendOtpBody, req: Request): Promise<SendOtpDto> {
+  sendOtp(body: SendOtpBodyDto, req: Request): Promise<SendOtpDto> {
     return sendOtp(this.deps, body, req);
   }
 
   @LogMethod({ name: "VerifyOtp" })
-  verifyOtp(body: VerifyOtpBody): Promise<VerifyOtpDto> {
+  verifyOtp(body: VerifyOtpBodyDto): Promise<VerifyOtpDto> {
     return verifyOtp(this.deps, body);
   }
 
   @LogMethod({ name: "ResendOtp" })
-  resendOtp(body: ResendOtpBody, req: Request): Promise<ResendOtpDto> {
+  resendOtp(body: ResendOtpBodyDto, req: Request): Promise<ResendOtpDto> {
     return resendOtp(this.deps, body, req);
   }
 
   @LogMethod({ name: "CompleteSignup" })
-  completeSignup(body: CompleteSignupBody): Promise<CompleteSignupDto> {
+  completeSignup(body: CompleteSignupBodyDto): Promise<CompleteSignupDto> {
     return completeSignup(this.deps, body);
   }
 
   @LogMethod({ name: "CheckEmail" })
-  checkEmail(params: CheckEmailParams): Promise<CheckEmailDto> {
+  checkEmail(params: CheckEmailParamsDto): Promise<CheckEmailDto> {
     return checkEmail(this.deps, params);
   }
 }

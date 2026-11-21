@@ -2,6 +2,13 @@
 import type { Request } from "express";
 import type { Schema } from "mongoose";
 import type { CATEGORY_MOVE_DIRECTIONS } from "@/modules/category/constants";
+import type {
+  CategoryIdParamsDto,
+  CreateCategoryBodyDto,
+  DeleteCategoryBodyDto,
+  MoveCategoryBodyDto,
+  UpdateCategoryBodyDto
+} from "../dtos/requests";
 
 export interface CategoryName {
   en: string;
@@ -46,51 +53,35 @@ export interface OrphanApp {
   displayName: string;
 }
 
-export interface CreateCategoryBody {
-  name: CategoryName;
-}
-
-export interface UpdateCategoryBody {
-  name: Partial<CategoryName>;
-}
-
-export interface MoveCategoryBody {
-  direction: CategoryMoveDirection;
-}
-
-export interface DeleteCategoryBody {
-  reassignments: CategoryReassignment[];
-}
-
-export interface CategoryIdParams {
-  id: string;
-}
+// The index signature keeps the handlers assignable to Express's own, whose
+// params are a string dictionary.
+type CategoryIdParams = CategoryIdParamsDto & Record<string, string>;
 
 export interface CreateCategoryRequest extends Omit<Request, "body"> {
-  body: CreateCategoryBody;
+  body: CreateCategoryBodyDto;
 }
 
 export interface UpdateCategoryRequest extends Omit<
   Request,
   "body" | "params"
 > {
-  body: UpdateCategoryBody;
-  params: { id: string };
+  body: UpdateCategoryBodyDto;
+  params: CategoryIdParams;
 }
 
 export interface MoveCategoryRequest extends Omit<Request, "body" | "params"> {
-  body: MoveCategoryBody;
-  params: { id: string };
+  body: MoveCategoryBodyDto;
+  params: CategoryIdParams;
 }
 
 export interface CategoryIdRequest extends Omit<Request, "params"> {
-  params: { id: string };
+  params: CategoryIdParams;
 }
 
 export interface DeleteCategoryRequest extends Omit<
   Request,
   "body" | "params"
 > {
-  body: DeleteCategoryBody;
-  params: { id: string };
+  body: DeleteCategoryBodyDto;
+  params: CategoryIdParams;
 }

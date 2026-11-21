@@ -5,11 +5,11 @@ import type { RateLimiterMiddleware } from "@/middlewares";
 import type { UnlockAccountController } from "./unlock-account.controller";
 // common
 import { handle } from "@/common/responses";
-// validators
+// modules
 import {
-  unlockRequestSchema,
-  unlockVerifySchema
-} from "@/validators/schemas/unlock-account";
+  UnlockRequestBodyDto,
+  UnlockVerifyBodyDto
+} from "@/modules/unlock-account/dtos/requests";
 // others
 import { bodyPipe } from "@/middlewares";
 
@@ -22,7 +22,7 @@ export const createUnlockAccountRoutes = (
 
   unlock.post(
     "/request",
-    bodyPipe(unlockRequestSchema),
+    bodyPipe(UnlockRequestBodyDto),
     handle(controller.unlockRequest, {
       message: "unlockAccount:success.unlockEmailSent"
     })
@@ -31,7 +31,7 @@ export const createUnlockAccountRoutes = (
   unlock.post(
     "/verify",
     rl.loginByIp,
-    bodyPipe(unlockVerifySchema),
+    bodyPipe(UnlockVerifyBodyDto),
     handle(controller.unlockVerify, {
       message: "unlockAccount:success.accountUnlocked"
     })

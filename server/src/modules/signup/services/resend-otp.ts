@@ -1,6 +1,6 @@
 // types
 import type { Request } from "express";
-import type { ResendOtpBody } from "../types";
+import type { ResendOtpBodyDto } from "../dtos/requests";
 import type { ResendOtpDto } from "../dtos";
 import type { SignupServiceDeps } from "./deps";
 // common
@@ -21,7 +21,7 @@ import {
 
 export const resendOtp = async (
   deps: SignupServiceDeps,
-  body: ResendOtpBody,
+  body: ResendOtpBodyDto,
   req: Request
 ): Promise<ResendOtpDto> => {
   const { email } = body;

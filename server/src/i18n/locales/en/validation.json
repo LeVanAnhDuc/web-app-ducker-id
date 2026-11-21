@@ -1,4 +1,7 @@
 {
+  "body": {
+    "invalid": "Request must be a JSON object."
+  },
   "email": {
     "required": "Email is required",
     "invalid": "Please provide a valid email address",

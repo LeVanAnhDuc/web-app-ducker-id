@@ -1,5 +1,5 @@
 // types
-import type { CreateCategoryBody } from "../types";
+import type { CreateCategoryBodyDto } from "../dtos/requests";
 import type { AdminCategoryDto } from "../dtos";
 import type { CategoryServiceDeps } from "./deps";
 // common
@@ -12,7 +12,7 @@ import { ERROR_CODES } from "@/constants/error-code";
 
 export const create = async (
   deps: CategoryServiceDeps,
-  body: CreateCategoryBody
+  body: CreateCategoryBodyDto
 ): Promise<AdminCategoryDto> => {
   const { name } = body;
 

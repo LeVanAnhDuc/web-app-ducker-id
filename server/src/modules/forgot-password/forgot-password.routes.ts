@@ -5,14 +5,14 @@ import type { RateLimiterMiddleware } from "@/middlewares";
 import type { ForgotPasswordController } from "./forgot-password.controller";
 // common
 import { handle } from "@/common/responses";
-// validators
+// modules
 import {
-  fpOtpSendSchema,
-  fpOtpVerifySchema,
-  fpMagicLinkSendSchema,
-  fpMagicLinkVerifySchema,
-  fpResetPasswordSchema
-} from "@/validators/schemas/forgot-password";
+  OtpSendBodyDto,
+  OtpVerifyBodyDto,
+  MagicLinkSendBodyDto,
+  MagicLinkVerifyBodyDto,
+  ResetPasswordBodyDto
+} from "@/modules/forgot-password/dtos/requests";
 // others
 import { bodyPipe } from "@/middlewares";
 
@@ -27,14 +27,14 @@ export const createForgotPasswordRoutes = (
     "/otp/send",
     rl.forgotPasswordOtpByIp,
     rl.forgotPasswordOtpByEmail,
-    bodyPipe(fpOtpSendSchema),
+    bodyPipe(OtpSendBodyDto),
     handle(controller.sendOtp, { message: "forgotPassword:success.otpSent" })
   );
 
   forgotPassword.post(
     "/otp/verify",
     rl.forgotPasswordOtpByIp,
-    bodyPipe(fpOtpVerifySchema),
+    bodyPipe(OtpVerifyBodyDto),
     handle(controller.verifyOtp, {
       message: "forgotPassword:success.otpVerified"
     })
@@ -44,7 +44,7 @@ export const createForgotPasswordRoutes = (
     "/magic-link/send",
     rl.forgotPasswordMagicLinkByIp,
     rl.forgotPasswordMagicLinkByEmail,
-    bodyPipe(fpMagicLinkSendSchema),
+    bodyPipe(MagicLinkSendBodyDto),
     handle(controller.sendMagicLink, {
       message: "forgotPassword:success.magicLinkSent"
     })
@@ -53,7 +53,7 @@ export const createForgotPasswordRoutes = (
   forgotPassword.post(
     "/magic-link/verify",
     rl.forgotPasswordMagicLinkByIp,
-    bodyPipe(fpMagicLinkVerifySchema),
+    bodyPipe(MagicLinkVerifyBodyDto),
     handle(controller.verifyMagicLink, {
       message: "forgotPassword:success.magicLinkVerified"
     })
@@ -62,7 +62,7 @@ export const createForgotPasswordRoutes = (
   forgotPassword.post(
     "/reset",
     rl.forgotPasswordResetByIp,
-    bodyPipe(fpResetPasswordSchema),
+    bodyPipe(ResetPasswordBodyDto),
     handle(controller.resetPassword, {
       message: "forgotPassword:success.passwordReset"
     })

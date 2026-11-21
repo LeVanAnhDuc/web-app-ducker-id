@@ -1,0 +1,1027 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`user request DTOs match the Joi schemas AdminUserIdParamsDto ≡ adminUserIdParamsSchema: empty 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "user:errors.invalidId",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": AdminUserIdParamsDto {
+    "id": "",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUserIdParamsDto ≡ adminUserIdParamsSchema: missing 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "user:errors.invalidId",
+      "reason": "isDefined",
+    },
+  ],
+  "value": AdminUserIdParamsDto {},
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUserIdParamsDto ≡ adminUserIdParamsSchema: notHex 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "user:errors.invalidId",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": AdminUserIdParamsDto {
+    "id": "507f1f77bcf86cd79943901z",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUserIdParamsDto ≡ adminUserIdParamsSchema: null 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "user:errors.invalidId",
+      "reason": "isDefined",
+    },
+  ],
+  "value": AdminUserIdParamsDto {
+    "id": null,
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUserIdParamsDto ≡ adminUserIdParamsSchema: tooShort 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "user:errors.invalidId",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": AdminUserIdParamsDto {
+    "id": "507f1f77bcf86cd79943901",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUserIdParamsDto ≡ adminUserIdParamsSchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": AdminUserIdParamsDto {
+    "id": "507f1f77bcf86cd799439011",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUserIdParamsDto ≡ adminUserIdParamsSchema: valid 1`] = `
+{
+  "failures": [],
+  "value": AdminUserIdParamsDto {
+    "id": "507f1f77bcf86cd799439011",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUserIdParamsDto ≡ adminUserIdParamsSchema: validUpperCase 1`] = `
+{
+  "failures": [],
+  "value": AdminUserIdParamsDto {
+    "id": "507F1F77BCF86CD799439011",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUserIdParamsDto ≡ adminUserIdParamsSchema: wrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "user:errors.invalidId",
+      "reason": "isString",
+    },
+  ],
+  "value": AdminUserIdParamsDto {
+    "id": 123,
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUsersQueryDto ≡ adminUsersQuerySchema: allFields 1`] = `
+{
+  "failures": [],
+  "value": AdminUsersQueryDto {
+    "limit": 20,
+    "page": 2,
+    "role": "admin",
+    "search": "hoa",
+    "sortBy": "lastLoginAt",
+    "sortOrder": "asc",
+    "status": "locked",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUsersQueryDto ≡ adminUsersQuerySchema: empty 1`] = `
+{
+  "failures": [],
+  "value": AdminUsersQueryDto {},
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUsersQueryDto ≡ adminUsersQuerySchema: limitTooLarge 1`] = `
+{
+  "failures": [
+    {
+      "field": "limit",
+      "key": "validation:limit.invalid",
+      "reason": "max",
+    },
+  ],
+  "value": AdminUsersQueryDto {
+    "limit": 101,
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUsersQueryDto ≡ adminUsersQuerySchema: limitZero 1`] = `
+{
+  "failures": [
+    {
+      "field": "limit",
+      "key": "validation:limit.invalid",
+      "reason": "min",
+    },
+  ],
+  "value": AdminUsersQueryDto {
+    "limit": 0,
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUsersQueryDto ≡ adminUsersQuerySchema: pageEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "isInt",
+    },
+  ],
+  "value": AdminUsersQueryDto {
+    "page": "",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUsersQueryDto ≡ adminUsersQuerySchema: pageFraction 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "isInt",
+    },
+  ],
+  "value": AdminUsersQueryDto {
+    "page": 1.5,
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUsersQueryDto ≡ adminUsersQuerySchema: pageNotNumber 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "isInt",
+    },
+  ],
+  "value": AdminUsersQueryDto {
+    "page": "abc",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUsersQueryDto ≡ adminUsersQuerySchema: pageZero 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "min",
+    },
+  ],
+  "value": AdminUsersQueryDto {
+    "page": 0,
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUsersQueryDto ≡ adminUsersQuerySchema: roleArray 1`] = `
+{
+  "failures": [
+    {
+      "field": "role",
+      "key": "validation:role.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": AdminUsersQueryDto {
+    "role": [
+      "admin",
+    ],
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUsersQueryDto ≡ adminUsersQuerySchema: roleEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "role",
+      "key": "validation:role.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": AdminUsersQueryDto {
+    "role": "",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUsersQueryDto ≡ adminUsersQuerySchema: roleUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "role",
+      "key": "validation:role.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": AdminUsersQueryDto {
+    "role": "root",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUsersQueryDto ≡ adminUsersQuerySchema: searchAtMaxPadded 1`] = `
+{
+  "failures": [],
+  "value": AdminUsersQueryDto {
+    "search": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUsersQueryDto ≡ adminUsersQuerySchema: searchEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": AdminUsersQueryDto {
+    "search": "",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUsersQueryDto ≡ adminUsersQuerySchema: searchTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "maxLength",
+    },
+  ],
+  "value": AdminUsersQueryDto {
+    "search": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUsersQueryDto ≡ adminUsersQuerySchema: searchWhitespaceOnly 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": AdminUsersQueryDto {
+    "search": "",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUsersQueryDto ≡ adminUsersQuerySchema: searchWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": AdminUsersQueryDto {
+    "search": [
+      "a",
+    ],
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUsersQueryDto ≡ adminUsersQuerySchema: sortByEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "sortBy",
+      "key": "validation:sortBy.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": AdminUsersQueryDto {
+    "sortBy": "",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUsersQueryDto ≡ adminUsersQuerySchema: sortByUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "sortBy",
+      "key": "validation:sortBy.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": AdminUsersQueryDto {
+    "sortBy": "email",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUsersQueryDto ≡ adminUsersQuerySchema: sortOrderArray 1`] = `
+{
+  "failures": [
+    {
+      "field": "sortOrder",
+      "key": "validation:sortOrder.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": AdminUsersQueryDto {
+    "sortOrder": [
+      "asc",
+    ],
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUsersQueryDto ≡ adminUsersQuerySchema: sortOrderUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "sortOrder",
+      "key": "validation:sortOrder.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": AdminUsersQueryDto {
+    "sortOrder": "up",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUsersQueryDto ≡ adminUsersQuerySchema: statusEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "validation:status.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": AdminUsersQueryDto {
+    "status": "",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUsersQueryDto ≡ adminUsersQuerySchema: statusUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "validation:status.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": AdminUsersQueryDto {
+    "status": "deleted",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas AdminUsersQueryDto ≡ adminUsersQuerySchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": AdminUsersQueryDto {},
+}
+`;
+
+exports[`user request DTOs match the Joi schemas PublicProfileParamsDto ≡ getPublicProfileSchema: empty 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "user:errors.invalidId",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": PublicProfileParamsDto {
+    "id": "",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas PublicProfileParamsDto ≡ getPublicProfileSchema: missing 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "user:errors.invalidId",
+      "reason": "isDefined",
+    },
+  ],
+  "value": PublicProfileParamsDto {},
+}
+`;
+
+exports[`user request DTOs match the Joi schemas PublicProfileParamsDto ≡ getPublicProfileSchema: notHex 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "user:errors.invalidId",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": PublicProfileParamsDto {
+    "id": "507f1f77bcf86cd79943901z",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas PublicProfileParamsDto ≡ getPublicProfileSchema: null 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "user:errors.invalidId",
+      "reason": "isDefined",
+    },
+  ],
+  "value": PublicProfileParamsDto {
+    "id": null,
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas PublicProfileParamsDto ≡ getPublicProfileSchema: tooShort 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "user:errors.invalidId",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": PublicProfileParamsDto {
+    "id": "507f1f77bcf86cd79943901",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas PublicProfileParamsDto ≡ getPublicProfileSchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": PublicProfileParamsDto {
+    "id": "507f1f77bcf86cd799439011",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas PublicProfileParamsDto ≡ getPublicProfileSchema: valid 1`] = `
+{
+  "failures": [],
+  "value": PublicProfileParamsDto {
+    "id": "507f1f77bcf86cd799439011",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas PublicProfileParamsDto ≡ getPublicProfileSchema: validUpperCase 1`] = `
+{
+  "failures": [],
+  "value": PublicProfileParamsDto {
+    "id": "507F1F77BCF86CD799439011",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas PublicProfileParamsDto ≡ getPublicProfileSchema: wrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "user:errors.invalidId",
+      "reason": "isString",
+    },
+  ],
+  "value": PublicProfileParamsDto {
+    "id": 123,
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: addressEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "address",
+      "key": "validation:address.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": UpdateProfileBodyDto {
+    "address": "",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: addressPatternBreak 1`] = `
+{
+  "failures": [
+    {
+      "field": "address",
+      "key": "validation:address.invalid",
+      "reason": "matches",
+    },
+  ],
+  "value": UpdateProfileBodyDto {
+    "address": "<script>",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: addressTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "address",
+      "key": "validation:address.tooLong",
+      "reason": "maxLength",
+    },
+  ],
+  "value": UpdateProfileBodyDto {
+    "address": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: addressWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "address",
+      "key": "validation:address.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": UpdateProfileBodyDto {
+    "address": 123,
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: allFields 1`] = `
+{
+  "failures": [],
+  "value": UpdateProfileBodyDto {
+    "address": "12/3 Lê Lợi, Q.1",
+    "dateOfBirth": "1995-05-15T00:00:00.000Z",
+    "fullName": "Nguyễn Văn A",
+    "gender": "female",
+    "phone": "+84 (90) 123-4567",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: allNullableNull 1`] = `
+{
+  "failures": [],
+  "value": UpdateProfileBodyDto {
+    "address": null,
+    "dateOfBirth": null,
+    "gender": null,
+    "phone": null,
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: dateOfBirthEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "dateOfBirth",
+      "key": "validation:dateOfBirth.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": UpdateProfileBodyDto {
+    "dateOfBirth": "",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: dateOfBirthIsoDateTime 1`] = `
+{
+  "failures": [],
+  "value": UpdateProfileBodyDto {
+    "dateOfBirth": "1995-05-15T03:30:00.000Z",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: dateOfBirthNotIso 1`] = `
+{
+  "failures": [
+    {
+      "field": "dateOfBirth",
+      "key": "validation:dateOfBirth.invalid",
+      "reason": "isIsoDateString",
+    },
+  ],
+  "value": UpdateProfileBodyDto {
+    "dateOfBirth": "15/05/1995",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: dateOfBirthOldButInRange 1`] = `
+{
+  "failures": [],
+  "value": UpdateProfileBodyDto {
+    "dateOfBirth": "1950-01-01T00:00:00.000Z",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: dateOfBirthPadded 1`] = `
+{
+  "failures": [
+    {
+      "field": "dateOfBirth",
+      "key": "validation:dateOfBirth.invalid",
+      "reason": "isIsoDateString",
+    },
+  ],
+  "value": UpdateProfileBodyDto {
+    "dateOfBirth": " 1995-05-15 ",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: dateOfBirthTooOld 1`] = `
+{
+  "failures": [
+    {
+      "field": "dateOfBirth",
+      "key": "validation:dateOfBirth.tooOld",
+      "reason": "isDateOfBirthNotTooOld",
+    },
+  ],
+  "value": UpdateProfileBodyDto {
+    "dateOfBirth": "1900-01-01T00:00:00.000Z",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: dateOfBirthTooYoung 1`] = `
+{
+  "failures": [
+    {
+      "field": "dateOfBirth",
+      "key": "validation:dateOfBirth.tooYoung",
+      "reason": "isDateOfBirthNotTooYoung",
+    },
+  ],
+  "value": UpdateProfileBodyDto {
+    "dateOfBirth": "2025-01-01T00:00:00.000Z",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: dateOfBirthWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "dateOfBirth",
+      "key": "validation:dateOfBirth.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": UpdateProfileBodyDto {
+    "dateOfBirth": 800000000000,
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: dateOfBirthYearOnly 1`] = `
+{
+  "failures": [],
+  "value": UpdateProfileBodyDto {
+    "dateOfBirth": "1995-01-01T00:00:00.000Z",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: emptyBody 1`] = `
+{
+  "failures": [],
+  "value": UpdateProfileBodyDto {},
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: fullNameEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "fullName",
+      "key": "validation:fullName.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": UpdateProfileBodyDto {
+    "fullName": "",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: fullNameNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "fullName",
+      "key": "validation:fullName.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": UpdateProfileBodyDto {
+    "fullName": null,
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: fullNamePadded 1`] = `
+{
+  "failures": [],
+  "value": UpdateProfileBodyDto {
+    "fullName": "Hoa Tran",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: fullNamePaddedTooShort 1`] = `
+{
+  "failures": [
+    {
+      "field": "fullName",
+      "key": "validation:fullName.minLength",
+      "reason": "minLength",
+    },
+  ],
+  "value": UpdateProfileBodyDto {
+    "fullName": "A",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: fullNamePatternBreak 1`] = `
+{
+  "failures": [
+    {
+      "field": "fullName",
+      "key": "validation:fullName.invalid",
+      "reason": "matches",
+    },
+  ],
+  "value": UpdateProfileBodyDto {
+    "fullName": "John3",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: fullNameTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "fullName",
+      "key": "validation:fullName.maxLength",
+      "reason": "maxLength",
+    },
+  ],
+  "value": UpdateProfileBodyDto {
+    "fullName": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: fullNameTooShort 1`] = `
+{
+  "failures": [
+    {
+      "field": "fullName",
+      "key": "validation:fullName.minLength",
+      "reason": "minLength",
+    },
+  ],
+  "value": UpdateProfileBodyDto {
+    "fullName": "A",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: fullNameWhitespaceOnly 1`] = `
+{
+  "failures": [
+    {
+      "field": "fullName",
+      "key": "validation:fullName.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": UpdateProfileBodyDto {
+    "fullName": "",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: fullNameWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "fullName",
+      "key": "validation:fullName.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": UpdateProfileBodyDto {
+    "fullName": 123,
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: genderArray 1`] = `
+{
+  "failures": [
+    {
+      "field": "gender",
+      "key": "validation:gender.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": UpdateProfileBodyDto {
+    "gender": [
+      "male",
+    ],
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: genderEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "gender",
+      "key": "validation:gender.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": UpdateProfileBodyDto {
+    "gender": "",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: genderUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "gender",
+      "key": "validation:gender.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": UpdateProfileBodyDto {
+    "gender": "unknown",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: genderWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "gender",
+      "key": "validation:gender.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": UpdateProfileBodyDto {
+    "gender": 1,
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: phoneEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "phone",
+      "key": "validation:phone.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": UpdateProfileBodyDto {
+    "phone": "",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: phonePatternBreak 1`] = `
+{
+  "failures": [
+    {
+      "field": "phone",
+      "key": "validation:phone.invalid",
+      "reason": "matches",
+    },
+  ],
+  "value": UpdateProfileBodyDto {
+    "phone": "090-abc",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: phoneTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "phone",
+      "key": "validation:phone.invalid",
+      "reason": "maxLength",
+    },
+  ],
+  "value": UpdateProfileBodyDto {
+    "phone": "111111111111111111111",
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: phoneWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "phone",
+      "key": "validation:phone.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": UpdateProfileBodyDto {
+    "phone": 123,
+  },
+}
+`;
+
+exports[`user request DTOs match the Joi schemas UpdateProfileBodyDto ≡ updateProfileSchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": UpdateProfileBodyDto {},
+}
+`;

@@ -1,6 +1,7 @@
 // types
 import type { PaginatedResult } from "@/common/pagination";
-import type { ListRecentAppsQuery, RecentAppDto } from "../types";
+import type { RecentAppDto } from "../types";
+import type { ListRecentAppsQueryDto } from "../dtos/requests";
 import type { RecentAppServiceDeps } from "./deps";
 // common
 import { resolvePaging, toPageMeta } from "@/common/pagination";
@@ -18,7 +19,7 @@ import { RequestContext } from "@/utils/request-context";
  */
 export const list = async (
   deps: RecentAppServiceDeps,
-  query: ListRecentAppsQuery
+  query: ListRecentAppsQueryDto
 ): Promise<PaginatedResult<RecentAppDto>> => {
   const userId = RequestContext.requireUserId();
   const role = RequestContext.getUser()?.roles;

@@ -1,5 +1,5 @@
 // types
-import type { VerifyOtpBody } from "../types";
+import type { VerifyOtpBodyDto } from "../dtos/requests";
 import type { VerifyOtpDto } from "../dtos";
 import type { SignupServiceDeps } from "./deps";
 // common
@@ -57,7 +57,7 @@ const verifyOtpOrFail = async (
 
 export const verifyOtp = async (
   deps: SignupServiceDeps,
-  body: VerifyOtpBody
+  body: VerifyOtpBodyDto
 ): Promise<VerifyOtpDto> => {
   const { email, otp } = body;
 

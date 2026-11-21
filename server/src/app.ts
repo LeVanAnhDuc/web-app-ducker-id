@@ -17,8 +17,8 @@ const app = express();
 app.set("trust proxy", config.app.trustProxy);
 
 // Express 5 defaults to the "simple" parser, which leaves `status[$ne]=x` as a
-// flat key that the Joi schemas strip without a word. "extended" (Express 4's
-// default) parses it into an object, so the schema refuses the query operator
+// flat key that the DTO whitelist strips without a word. "extended" (Express 4's
+// default) parses it into an object, so the DTO refuses the query operator
 // with 400 as the requirements state.
 app.set("query parser", "extended");
 

@@ -5,11 +5,11 @@ import type { RateLimiterMiddleware } from "@/middlewares";
 import type { EntitlementController } from "./entitlement.controller";
 // common
 import { handle } from "@/common/responses";
-// validators
+// modules
 import {
-  entitlementMatrixQuerySchema,
-  updateEntitlementsBodySchema
-} from "@/validators/schemas/entitlement";
+  EntitlementMatrixQueryDto,
+  UpdateEntitlementsBodyDto
+} from "@/modules/entitlement/dtos/requests";
 // others
 import { adminGuard, authGuard, bodyPipe, queryPipe } from "@/middlewares";
 
@@ -24,13 +24,13 @@ export const createEntitlementAdminRoutes = (
 
   entitlements.get(
     "/",
-    queryPipe(entitlementMatrixQuerySchema),
+    queryPipe(EntitlementMatrixQueryDto),
     handle(controller.getMatrix, { message: "entitlement:success.get" })
   );
   entitlements.patch(
     "/",
     rl.entitlementMutationByIpAndUser,
-    bodyPipe(updateEntitlementsBodySchema),
+    bodyPipe(UpdateEntitlementsBodyDto),
     handle(controller.updateMatrix, { message: "entitlement:success.update" })
   );
 

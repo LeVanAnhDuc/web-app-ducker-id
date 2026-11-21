@@ -1,10 +1,9 @@
 // types
+import type { CategoryMoveDirection, CategoryReassignment } from "../types";
 import type {
-  CategoryMoveDirection,
-  CategoryReassignment,
-  CreateCategoryBody,
-  UpdateCategoryBody
-} from "../types";
+  CreateCategoryBodyDto,
+  UpdateCategoryBodyDto
+} from "../dtos/requests";
 import type {
   AdminCategoryDto,
   DeleteImpactDto,
@@ -31,11 +30,11 @@ export class CategoryService {
     return listPublic(this.deps);
   }
 
-  create(body: CreateCategoryBody): Promise<AdminCategoryDto> {
+  create(body: CreateCategoryBodyDto): Promise<AdminCategoryDto> {
     return create(this.deps, body);
   }
 
-  update(id: string, body: UpdateCategoryBody): Promise<AdminCategoryDto> {
+  update(id: string, body: UpdateCategoryBodyDto): Promise<AdminCategoryDto> {
     return update(this.deps, id, body);
   }
 

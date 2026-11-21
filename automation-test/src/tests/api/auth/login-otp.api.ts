@@ -125,10 +125,10 @@ test(
     const account = await createAccount({ tag: "auth-otp-bva" });
 
     const cases: [string, string][] = [
-      ["12345", "string.length"], // 5 — min − 1
-      ["1234567", "string.length"], // 7 — max + 1
-      ["12a456", "string.pattern.base"], // 6, not all digits
-      ["", "string.empty"]
+      ["12345", "isLength"], // 5 — min − 1
+      ["1234567", "isLength"], // 7 — max + 1
+      ["12a456", "matches"], // 6, not all digits
+      ["", "isNotEmpty"]
     ];
     for (const [otp, reason] of cases) {
       const res = await api.auth.verifyLoginOtp(account.email, otp);

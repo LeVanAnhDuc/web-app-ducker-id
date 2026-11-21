@@ -1,5 +1,5 @@
 // types
-import type { SubmitContactBody } from "../types";
+import type { SubmitContactBodyDto } from "../dtos/requests";
 import type { SubmitContactResponseDto } from "../dtos";
 import type { ContactRepository } from "../repository/contact-admin.repository";
 // validators
@@ -13,7 +13,7 @@ import { RequestContext } from "@/utils/request-context";
 
 export const submitContact = async (
   contactRepo: ContactRepository,
-  body: SubmitContactBody,
+  body: SubmitContactBodyDto,
   ipAddress: string | null
 ): Promise<SubmitContactResponseDto> => {
   const { message, subject, email } = body;

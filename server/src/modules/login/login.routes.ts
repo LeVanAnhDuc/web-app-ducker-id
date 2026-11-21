@@ -5,14 +5,14 @@ import type { RateLimiterMiddleware } from "@/middlewares";
 import type { LoginController } from "./login.controller";
 // common
 import { handle } from "@/common/responses";
-// validators
+// modules
 import {
-  loginSchema,
-  otpSendSchema,
-  otpVerifySchema,
-  magicLinkSendSchema,
-  magicLinkVerifySchema
-} from "@/validators/schemas/login";
+  LoginBodyDto,
+  OtpSendBodyDto,
+  OtpVerifyBodyDto,
+  MagicLinkSendBodyDto,
+  MagicLinkVerifyBodyDto
+} from "@/modules/login/dtos/requests";
 // others
 import { bodyPipe } from "@/middlewares";
 
@@ -26,7 +26,7 @@ export const createLoginRoutes = (
   login.post(
     "/",
     rl.loginByIp,
-    bodyPipe(loginSchema),
+    bodyPipe(LoginBodyDto),
     handle(controller.login, { message: "login:success.loginSuccessful" })
   );
 
@@ -34,14 +34,14 @@ export const createLoginRoutes = (
     "/otp/send",
     rl.loginOtpByIp,
     rl.loginOtpByEmail,
-    bodyPipe(otpSendSchema),
+    bodyPipe(OtpSendBodyDto),
     handle(controller.sendOtp, { message: "login:success.otpSent" })
   );
 
   login.post(
     "/otp/verify",
     rl.loginByIp,
-    bodyPipe(otpVerifySchema),
+    bodyPipe(OtpVerifyBodyDto),
     handle(controller.verifyOtp, { message: "login:success.loginSuccessful" })
   );
 
@@ -49,14 +49,14 @@ export const createLoginRoutes = (
     "/magic-link/send",
     rl.magicLinkByIp,
     rl.magicLinkByEmail,
-    bodyPipe(magicLinkSendSchema),
+    bodyPipe(MagicLinkSendBodyDto),
     handle(controller.sendMagicLink, { message: "login:success.magicLinkSent" })
   );
 
   login.post(
     "/magic-link/verify",
     rl.loginByIp,
-    bodyPipe(magicLinkVerifySchema),
+    bodyPipe(MagicLinkVerifyBodyDto),
     handle(controller.verifyMagicLink, {
       message: "login:success.loginSuccessful"
     })

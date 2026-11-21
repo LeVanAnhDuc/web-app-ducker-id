@@ -6,14 +6,14 @@ import type { RateLimiterMiddleware } from "@/middlewares";
 import type { ContactAdminController } from "./contact-admin.controller";
 // common
 import { handle } from "@/common/responses";
-// validators
+// modules
 import {
-  submitContactSchema,
-  contactIdParamSchema,
-  updateContactStatusSchema,
-  adminListContactsQuerySchema,
-  myContactsQuerySchema
-} from "@/validators/schemas/contact-admin";
+  AdminContactsQueryDto,
+  ContactIdParamsDto,
+  MyContactsQueryDto,
+  SubmitContactBodyDto,
+  UpdateContactStatusBodyDto
+} from "@/modules/contact-admin/dtos/requests";
 // others
 import {
   adminGuard,
@@ -35,7 +35,7 @@ export const createContactRoutes = (
     "/submit",
     rl.contactByIp,
     optionalAuthGuard,
-    bodyPipe(submitContactSchema),
+    bodyPipe(SubmitContactBodyDto),
     handle(controller.submit, {
       status: StatusCodes.CREATED,
       message: "contactAdmin:success.submitted"
@@ -56,7 +56,7 @@ export const createAdminContactsRoutes = (
 
   adminContacts.get(
     "/",
-    queryPipe(adminListContactsQuerySchema),
+    queryPipe(AdminContactsQueryDto),
     handle(controller.getContactList, {
       message: "contactAdmin:success.getContactList"
     })
@@ -64,7 +64,7 @@ export const createAdminContactsRoutes = (
 
   adminContacts.get(
     "/:id",
-    paramsPipe(contactIdParamSchema),
+    paramsPipe(ContactIdParamsDto),
     handle(controller.getContactDetail, {
       message: "contactAdmin:success.getContactDetail"
     })
@@ -72,8 +72,8 @@ export const createAdminContactsRoutes = (
 
   adminContacts.patch(
     "/:id/status",
-    paramsPipe(contactIdParamSchema),
-    bodyPipe(updateContactStatusSchema),
+    paramsPipe(ContactIdParamsDto),
+    bodyPipe(UpdateContactStatusBodyDto),
     handle(controller.updateContactStatus, {
       message: "contactAdmin:success.updateContactStatus"
     })
@@ -93,7 +93,7 @@ export const createMyContactsRoutes = (
 
   myContacts.get(
     "/",
-    queryPipe(myContactsQuerySchema),
+    queryPipe(MyContactsQueryDto),
     handle(controller.getMyContacts, {
       message: "contactAdmin:success.getMyContacts"
     })
@@ -101,7 +101,7 @@ export const createMyContactsRoutes = (
 
   myContacts.get(
     "/:id",
-    paramsPipe(contactIdParamSchema),
+    paramsPipe(ContactIdParamsDto),
     handle(controller.getMyContactDetail, {
       message: "contactAdmin:success.getMyContactDetail"
     })

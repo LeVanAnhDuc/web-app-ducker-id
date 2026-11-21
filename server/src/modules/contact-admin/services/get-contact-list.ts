@@ -1,5 +1,5 @@
 // types
-import type { AdminContactsQuery } from "../types";
+import type { AdminContactsQueryDto } from "../dtos/requests";
 import type { ContactListItemDto } from "../dtos";
 import type { ContactRepository } from "../repository/contact-admin.repository";
 import type { PaginatedResult } from "@/common/pagination";
@@ -12,7 +12,7 @@ import { buildContactFilter } from "../helpers";
 
 export const getContactList = async (
   contactRepo: ContactRepository,
-  query: AdminContactsQuery
+  query: AdminContactsQueryDto
 ): Promise<PaginatedResult<ContactListItemDto>> => {
   const { page, limit, skip, sort } = resolvePaging(query);
 

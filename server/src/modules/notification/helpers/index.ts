@@ -1,11 +1,9 @@
 // types
-import type {
-  NotificationFilter,
-  NotificationListQuery
-} from "@/modules/notification/types";
+import type { NotificationFilter } from "@/modules/notification/types";
+import type { NotificationListQueryDto } from "@/modules/notification/dtos/requests";
 
 export const buildNotificationFilter = (
-  query: NotificationListQuery,
+  query: NotificationListQueryDto,
   userId: string
 ): NotificationFilter => {
   const filter: NotificationFilter = { userId };

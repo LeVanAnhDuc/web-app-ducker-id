@@ -1,0 +1,4199 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`web-app request DTOs match the Joi schemas AdminAppsQueryDto ≡ adminListAppsQuerySchema: allFields 1`] = `
+{
+  "failures": [],
+  "value": AdminAppsQueryDto {
+    "categoryId": "64b2f0c2f1a2b3c4d5e6f7a1",
+    "search": "blog",
+    "status": "inactive",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas AdminAppsQueryDto ≡ adminListAppsQuerySchema: categoryIdArray 1`] = `
+{
+  "failures": [
+    {
+      "field": "categoryId",
+      "key": "validation:categoryId.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": AdminAppsQueryDto {
+    "categoryId": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas AdminAppsQueryDto ≡ adminListAppsQuerySchema: categoryIdEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "categoryId",
+      "key": "validation:categoryId.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": AdminAppsQueryDto {
+    "categoryId": "",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas AdminAppsQueryDto ≡ adminListAppsQuerySchema: categoryIdNotHex 1`] = `
+{
+  "failures": [
+    {
+      "field": "categoryId",
+      "key": "validation:categoryId.invalid",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": AdminAppsQueryDto {
+    "categoryId": "garbage",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas AdminAppsQueryDto ≡ adminListAppsQuerySchema: categoryIdValid 1`] = `
+{
+  "failures": [],
+  "value": AdminAppsQueryDto {
+    "categoryId": "64b2f0c2f1a2b3c4d5e6f7a1",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas AdminAppsQueryDto ≡ adminListAppsQuerySchema: empty 1`] = `
+{
+  "failures": [],
+  "value": AdminAppsQueryDto {},
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas AdminAppsQueryDto ≡ adminListAppsQuerySchema: pagingStripped 1`] = `
+{
+  "failures": [],
+  "value": AdminAppsQueryDto {},
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas AdminAppsQueryDto ≡ adminListAppsQuerySchema: searchAtMaxPadded 1`] = `
+{
+  "failures": [],
+  "value": AdminAppsQueryDto {
+    "search": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas AdminAppsQueryDto ≡ adminListAppsQuerySchema: searchEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": AdminAppsQueryDto {
+    "search": "",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas AdminAppsQueryDto ≡ adminListAppsQuerySchema: searchPadded 1`] = `
+{
+  "failures": [],
+  "value": AdminAppsQueryDto {
+    "search": "blog",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas AdminAppsQueryDto ≡ adminListAppsQuerySchema: searchTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "maxLength",
+    },
+  ],
+  "value": AdminAppsQueryDto {
+    "search": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas AdminAppsQueryDto ≡ adminListAppsQuerySchema: searchWhitespaceOnly 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": AdminAppsQueryDto {
+    "search": "",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas AdminAppsQueryDto ≡ adminListAppsQuerySchema: searchWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": AdminAppsQueryDto {
+    "search": [
+      "a",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas AdminAppsQueryDto ≡ adminListAppsQuerySchema: statusArray 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "validation:status.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": AdminAppsQueryDto {
+    "status": [
+      "active",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas AdminAppsQueryDto ≡ adminListAppsQuerySchema: statusEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "validation:status.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": AdminAppsQueryDto {
+    "status": "",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas AdminAppsQueryDto ≡ adminListAppsQuerySchema: statusWrongCase 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "validation:status.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": AdminAppsQueryDto {
+    "status": "ACTIVE",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas AppIdParamsDto ≡ adminAppIdParamSchema: empty 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "webApp:validation.id.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": AppIdParamsDto {
+    "id": "",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas AppIdParamsDto ≡ adminAppIdParamSchema: missing 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "webApp:validation.id.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": AppIdParamsDto {},
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas AppIdParamsDto ≡ adminAppIdParamSchema: notHex 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "webApp:validation.id.invalid",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": AppIdParamsDto {
+    "id": "4b2f0c2f1a2b3c4d5e6f7a1z",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas AppIdParamsDto ≡ adminAppIdParamSchema: tooShort 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "webApp:validation.id.invalid",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": AppIdParamsDto {
+    "id": "4b2f0c2f1a2b3c4d5e6f7a1",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas AppIdParamsDto ≡ adminAppIdParamSchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": AppIdParamsDto {
+    "id": "64b2f0c2f1a2b3c4d5e6f7a1",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas AppIdParamsDto ≡ adminAppIdParamSchema: valid 1`] = `
+{
+  "failures": [],
+  "value": AppIdParamsDto {
+    "id": "64b2f0c2f1a2b3c4d5e6f7a1",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas AppIdParamsDto ≡ adminAppIdParamSchema: validUpperCase 1`] = `
+{
+  "failures": [],
+  "value": AppIdParamsDto {
+    "id": "64B2F0C2F1A2B3C4D5E6F7A1",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas AppIdParamsDto ≡ adminAppIdParamSchema: wrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "webApp:validation.id.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": AppIdParamsDto {
+    "id": 123,
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: allFields 1`] = `
+{
+  "failures": [],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "description": "A blog",
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "iconUrl": "https://cdn.example.com/i.png",
+    "name": "blog",
+    "postLogoutRedirectUris": [
+      "https://blog.example.com/bye",
+    ],
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+    "tokenEndpointAuthMethod": "client_secret_basic",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: categoryIdsBadItem 1`] = `
+{
+  "failures": [
+    {
+      "field": "categoryIds.0",
+      "key": "webApp:validation.categoryIds.invalid",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "garbage",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: categoryIdsBadItems 1`] = `
+{
+  "failures": [
+    {
+      "field": "categoryIds.1",
+      "key": "webApp:validation.categoryIds.invalid",
+      "reason": "isObjectId",
+    },
+    {
+      "field": "categoryIds.2",
+      "key": "webApp:validation.categoryIds.invalid",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+      "garbage",
+      5,
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: categoryIdsDuplicate 1`] = `
+{
+  "failures": [
+    {
+      "field": "categoryIds.2",
+      "key": "webApp:validation.categoryIds.duplicate",
+      "reason": "arrayUnique",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+      "64b2f0c2f1a2b3c4d5e6f7a2",
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: categoryIdsEmptyItem 1`] = `
+{
+  "failures": [
+    {
+      "field": "categoryIds.0",
+      "key": "webApp:validation.categoryIds.invalid",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: categoryIdsEmptyList 1`] = `
+{
+  "failures": [
+    {
+      "field": "categoryIds",
+      "key": "webApp:validation.categoryIds.required",
+      "reason": "arrayMinSize",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: categoryIdsFive 1`] = `
+{
+  "failures": [],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "aaaaaaaaaaaaaaaaaaaaaaa0",
+      "aaaaaaaaaaaaaaaaaaaaaaa1",
+      "aaaaaaaaaaaaaaaaaaaaaaa2",
+      "aaaaaaaaaaaaaaaaaaaaaaa3",
+      "aaaaaaaaaaaaaaaaaaaaaaa4",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: categoryIdsMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "categoryIds",
+      "key": "webApp:validation.categoryIds.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: categoryIdsNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "categoryIds",
+      "key": "webApp:validation.categoryIds.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": null,
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: categoryIdsSix 1`] = `
+{
+  "failures": [
+    {
+      "field": "categoryIds",
+      "key": "webApp:validation.categoryIds.max",
+      "reason": "arrayMaxSize",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "aaaaaaaaaaaaaaaaaaaaaaa0",
+      "aaaaaaaaaaaaaaaaaaaaaaa1",
+      "aaaaaaaaaaaaaaaaaaaaaaa2",
+      "aaaaaaaaaaaaaaaaaaaaaaa3",
+      "aaaaaaaaaaaaaaaaaaaaaaa4",
+      "aaaaaaaaaaaaaaaaaaaaaaa5",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: categoryIdsString 1`] = `
+{
+  "failures": [
+    {
+      "field": "categoryIds",
+      "key": "webApp:validation.categoryIds.required",
+      "reason": "isArray",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": "64b2f0c2f1a2b3c4d5e6f7a1",
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: descriptionEmpty 1`] = `
+{
+  "failures": [],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "description": "",
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: descriptionNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "description",
+      "key": "webApp:validation.description.maxLength",
+      "reason": "isString",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "description": null,
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: descriptionPaddedAtMax 1`] = `
+{
+  "failures": [],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "description": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: descriptionTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "description",
+      "key": "webApp:validation.description.maxLength",
+      "reason": "maxLength",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "description": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: descriptionWhitespaceOnly 1`] = `
+{
+  "failures": [],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "description": "",
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: descriptionWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "description",
+      "key": "webApp:validation.description.maxLength",
+      "reason": "isString",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "description": 123,
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: displayNameEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "displayName",
+      "key": "webApp:validation.displayName.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: displayNameMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "displayName",
+      "key": "webApp:validation.displayName.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: displayNameNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "displayName",
+      "key": "webApp:validation.displayName.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": null,
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: displayNamePadded 1`] = `
+{
+  "failures": [],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "My Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: displayNameTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "displayName",
+      "key": "webApp:validation.displayName.maxLength",
+      "reason": "maxLength",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: displayNameTooShort 1`] = `
+{
+  "failures": [
+    {
+      "field": "displayName",
+      "key": "webApp:validation.displayName.minLength",
+      "reason": "minLength",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "A",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: displayNameWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "displayName",
+      "key": "webApp:validation.displayName.required",
+      "reason": "isString",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": 123,
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: emptyBody 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "webApp:validation.name.required",
+      "reason": "isDefined",
+    },
+    {
+      "field": "displayName",
+      "key": "webApp:validation.displayName.required",
+      "reason": "isDefined",
+    },
+    {
+      "field": "homeUrl",
+      "key": "webApp:validation.homeUrl.required",
+      "reason": "isDefined",
+    },
+    {
+      "field": "categoryIds",
+      "key": "webApp:validation.categoryIds.required",
+      "reason": "isDefined",
+    },
+    {
+      "field": "status",
+      "key": "webApp:validation.status.invalid",
+      "reason": "isDefined",
+    },
+    {
+      "field": "requiredRoles",
+      "key": "webApp:validation.requiredRoles.required",
+      "reason": "isDefined",
+    },
+    {
+      "field": "redirectUris",
+      "key": "webApp:validation.redirectUris.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CreateAppBodyDto {},
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: homeUrlEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "homeUrl",
+      "key": "webApp:validation.homeUrl.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: homeUrlMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "homeUrl",
+      "key": "webApp:validation.homeUrl.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: homeUrlNotHttp 1`] = `
+{
+  "failures": [
+    {
+      "field": "homeUrl",
+      "key": "webApp:validation.homeUrl.invalid",
+      "reason": "matches",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: homeUrlNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "homeUrl",
+      "key": "webApp:validation.homeUrl.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": null,
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: homeUrlTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "homeUrl",
+      "key": "webApp:validation.homeUrl.maxLength",
+      "reason": "maxLength",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: homeUrlWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "homeUrl",
+      "key": "webApp:validation.homeUrl.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": 123,
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: iconUrlEmpty 1`] = `
+{
+  "failures": [],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "iconUrl": "",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: iconUrlNotHttp 1`] = `
+{
+  "failures": [
+    {
+      "field": "iconUrl",
+      "key": "webApp:validation.iconUrl.invalid",
+      "reason": "matches",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "iconUrl": "ftp://cdn.example.com/i.png",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: iconUrlNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "iconUrl",
+      "key": "webApp:validation.iconUrl.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "iconUrl": null,
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: iconUrlPadded 1`] = `
+{
+  "failures": [],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "iconUrl": "https://cdn.example.com/i.png",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: iconUrlTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "iconUrl",
+      "key": "webApp:validation.iconUrl.maxLength",
+      "reason": "maxLength",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "iconUrl": "https://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: iconUrlWhitespaceOnly 1`] = `
+{
+  "failures": [],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "iconUrl": "",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: iconUrlWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "iconUrl",
+      "key": "webApp:validation.iconUrl.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "iconUrl": 123,
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: nameEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "webApp:validation.name.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: nameMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "webApp:validation.name.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: nameNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "webApp:validation.name.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": null,
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: namePaddedUpperCase 1`] = `
+{
+  "failures": [],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "my-app",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: namePatternBreak 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "webApp:validation.name.invalid",
+      "reason": "matches",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "my_app",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: nameTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "webApp:validation.name.maxLength",
+      "reason": "maxLength",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: nameTooShort 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "webApp:validation.name.minLength",
+      "reason": "minLength",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "a",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: nameTooShortAndPatternBreak 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "webApp:validation.name.minLength",
+      "reason": "minLength",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "-",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: nameWhitespaceOnly 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "webApp:validation.name.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: nameWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "webApp:validation.name.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": 123,
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: postLogoutRedirectUrisBadItem 1`] = `
+{
+  "failures": [
+    {
+      "field": "postLogoutRedirectUris.1",
+      "key": "webApp:validation.redirectUris.invalid",
+      "reason": "isRedirectUri",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "postLogoutRedirectUris": [
+      "https://blog.example.com/bye",
+      "javascript:x",
+    ],
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: postLogoutRedirectUrisEmptyList 1`] = `
+{
+  "failures": [],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "postLogoutRedirectUris": [],
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: postLogoutRedirectUrisNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "postLogoutRedirectUris",
+      "key": "webApp:validation.redirectUris.invalid",
+      "reason": "isArray",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "postLogoutRedirectUris": null,
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: postLogoutRedirectUrisString 1`] = `
+{
+  "failures": [
+    {
+      "field": "postLogoutRedirectUris",
+      "key": "webApp:validation.redirectUris.invalid",
+      "reason": "isArray",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "postLogoutRedirectUris": "https://blog.example.com/bye",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: postLogoutRedirectUrisTooMany 1`] = `
+{
+  "failures": [
+    {
+      "field": "postLogoutRedirectUris",
+      "key": "webApp:validation.redirectUris.maxItems",
+      "reason": "arrayMaxSize",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "postLogoutRedirectUris": [
+      "https://blog.example.com/cb0",
+      "https://blog.example.com/cb1",
+      "https://blog.example.com/cb2",
+      "https://blog.example.com/cb3",
+      "https://blog.example.com/cb4",
+      "https://blog.example.com/cb5",
+      "https://blog.example.com/cb6",
+      "https://blog.example.com/cb7",
+      "https://blog.example.com/cb8",
+      "https://blog.example.com/cb9",
+      "https://blog.example.com/cb10",
+      "https://blog.example.com/cb11",
+      "https://blog.example.com/cb12",
+      "https://blog.example.com/cb13",
+      "https://blog.example.com/cb14",
+      "https://blog.example.com/cb15",
+      "https://blog.example.com/cb16",
+      "https://blog.example.com/cb17",
+      "https://blog.example.com/cb18",
+      "https://blog.example.com/cb19",
+      "https://blog.example.com/cb20",
+    ],
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: postLogoutRedirectUrisValid 1`] = `
+{
+  "failures": [],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "postLogoutRedirectUris": [
+      "https://blog.example.com/bye",
+    ],
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: redirectUrisAtMax 1`] = `
+{
+  "failures": [],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb0",
+      "https://blog.example.com/cb1",
+      "https://blog.example.com/cb2",
+      "https://blog.example.com/cb3",
+      "https://blog.example.com/cb4",
+      "https://blog.example.com/cb5",
+      "https://blog.example.com/cb6",
+      "https://blog.example.com/cb7",
+      "https://blog.example.com/cb8",
+      "https://blog.example.com/cb9",
+      "https://blog.example.com/cb10",
+      "https://blog.example.com/cb11",
+      "https://blog.example.com/cb12",
+      "https://blog.example.com/cb13",
+      "https://blog.example.com/cb14",
+      "https://blog.example.com/cb15",
+      "https://blog.example.com/cb16",
+      "https://blog.example.com/cb17",
+      "https://blog.example.com/cb18",
+      "https://blog.example.com/cb19",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: redirectUrisBadItems 1`] = `
+{
+  "failures": [
+    {
+      "field": "redirectUris.0",
+      "key": "webApp:validation.redirectUris.invalid",
+      "reason": "isRedirectUri",
+    },
+    {
+      "field": "redirectUris.1",
+      "key": "webApp:validation.redirectUris.invalid",
+      "reason": "isRedirectUri",
+    },
+    {
+      "field": "redirectUris.2",
+      "key": "webApp:validation.redirectUris.invalid",
+      "reason": "isRedirectUri",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      5,
+      "",
+      "https://blog.example.com/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: redirectUrisEmptyList 1`] = `
+{
+  "failures": [
+    {
+      "field": "redirectUris",
+      "key": "webApp:validation.redirectUris.required",
+      "reason": "arrayMinSize",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: redirectUrisFragment 1`] = `
+{
+  "failures": [
+    {
+      "field": "redirectUris.0",
+      "key": "webApp:validation.redirectUris.invalid",
+      "reason": "isRedirectUri",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb#x",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: redirectUrisHttp 1`] = `
+{
+  "failures": [
+    {
+      "field": "redirectUris.0",
+      "key": "webApp:validation.redirectUris.invalid",
+      "reason": "isRedirectUri",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "http://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: redirectUrisLocalhostHttp 1`] = `
+{
+  "failures": [],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "http://localhost:3000/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: redirectUrisMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "redirectUris",
+      "key": "webApp:validation.redirectUris.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: redirectUrisNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "redirectUris",
+      "key": "webApp:validation.redirectUris.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": null,
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: redirectUrisOneBadEntry 1`] = `
+{
+  "failures": [
+    {
+      "field": "redirectUris.1",
+      "key": "webApp:validation.redirectUris.invalid",
+      "reason": "isRedirectUri",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+      "http://evil.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: redirectUrisPaddedItem 1`] = `
+{
+  "failures": [],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: redirectUrisString 1`] = `
+{
+  "failures": [
+    {
+      "field": "redirectUris",
+      "key": "webApp:validation.redirectUris.invalid",
+      "reason": "isArray",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": "https://blog.example.com/cb",
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: redirectUrisTooMany 1`] = `
+{
+  "failures": [
+    {
+      "field": "redirectUris",
+      "key": "webApp:validation.redirectUris.maxItems",
+      "reason": "arrayMaxSize",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb0",
+      "https://blog.example.com/cb1",
+      "https://blog.example.com/cb2",
+      "https://blog.example.com/cb3",
+      "https://blog.example.com/cb4",
+      "https://blog.example.com/cb5",
+      "https://blog.example.com/cb6",
+      "https://blog.example.com/cb7",
+      "https://blog.example.com/cb8",
+      "https://blog.example.com/cb9",
+      "https://blog.example.com/cb10",
+      "https://blog.example.com/cb11",
+      "https://blog.example.com/cb12",
+      "https://blog.example.com/cb13",
+      "https://blog.example.com/cb14",
+      "https://blog.example.com/cb15",
+      "https://blog.example.com/cb16",
+      "https://blog.example.com/cb17",
+      "https://blog.example.com/cb18",
+      "https://blog.example.com/cb19",
+      "https://blog.example.com/cb20",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: redirectUrisWildcard 1`] = `
+{
+  "failures": [
+    {
+      "field": "redirectUris.0",
+      "key": "webApp:validation.redirectUris.invalid",
+      "reason": "isRedirectUri",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://*.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: requiredRolesBadItems 1`] = `
+{
+  "failures": [
+    {
+      "field": "requiredRoles.1",
+      "key": "webApp:validation.requiredRoles.invalid",
+      "reason": "isIn",
+    },
+    {
+      "field": "requiredRoles.2",
+      "key": "webApp:validation.requiredRoles.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+      5,
+      "",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: requiredRolesBoth 1`] = `
+{
+  "failures": [],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+      "admin",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: requiredRolesEmptyList 1`] = `
+{
+  "failures": [
+    {
+      "field": "requiredRoles",
+      "key": "webApp:validation.requiredRoles.required",
+      "reason": "arrayMinSize",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: requiredRolesMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "requiredRoles",
+      "key": "webApp:validation.requiredRoles.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: requiredRolesNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "requiredRoles",
+      "key": "webApp:validation.requiredRoles.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": null,
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: requiredRolesString 1`] = `
+{
+  "failures": [
+    {
+      "field": "requiredRoles",
+      "key": "webApp:validation.requiredRoles.invalid",
+      "reason": "isArray",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": "user",
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: requiredRolesUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "requiredRoles.0",
+      "key": "webApp:validation.requiredRoles.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "root",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: statusArray 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "webApp:validation.status.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": [
+      "active",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: statusEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "webApp:validation.status.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: statusInactive 1`] = `
+{
+  "failures": [],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "inactive",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: statusMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "webApp:validation.status.invalid",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: statusNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "webApp:validation.status.invalid",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": null,
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: statusWrongCase 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "webApp:validation.status.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "ACTIVE",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: statusWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "webApp:validation.status.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": 1,
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: tokenEndpointAuthMethodEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "tokenEndpointAuthMethod",
+      "key": "webApp:validation.tokenEndpointAuthMethod.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+    "tokenEndpointAuthMethod": "",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: tokenEndpointAuthMethodNone 1`] = `
+{
+  "failures": [],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+    "tokenEndpointAuthMethod": "none",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: tokenEndpointAuthMethodNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "tokenEndpointAuthMethod",
+      "key": "webApp:validation.tokenEndpointAuthMethod.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+    "tokenEndpointAuthMethod": null,
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: tokenEndpointAuthMethodUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "tokenEndpointAuthMethod",
+      "key": "webApp:validation.tokenEndpointAuthMethod.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+    "tokenEndpointAuthMethod": "private_key_jwt",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: tokenEndpointAuthMethodWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "tokenEndpointAuthMethod",
+      "key": "webApp:validation.tokenEndpointAuthMethod.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+    "tokenEndpointAuthMethod": 1,
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas CreateAppBodyDto ≡ adminCreateAppBodySchema: valid 1`] = `
+{
+  "failures": [],
+  "value": CreateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "name": "blog",
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: allFields 1`] = `
+{
+  "failures": [],
+  "value": UpdateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+    "description": "",
+    "displayName": "Blog",
+    "homeUrl": "https://blog.example.com",
+    "iconUrl": "",
+    "name": "blog",
+    "postLogoutRedirectUris": [],
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+    "requiredRoles": [
+      "user",
+    ],
+    "status": "active",
+    "tokenEndpointAuthMethod": "none",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: categoryIdsBadItem 1`] = `
+{
+  "failures": [
+    {
+      "field": "categoryIds.0",
+      "key": "webApp:validation.categoryIds.invalid",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "categoryIds": [
+      "garbage",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: categoryIdsBadItems 1`] = `
+{
+  "failures": [
+    {
+      "field": "categoryIds.1",
+      "key": "webApp:validation.categoryIds.invalid",
+      "reason": "isObjectId",
+    },
+    {
+      "field": "categoryIds.2",
+      "key": "webApp:validation.categoryIds.invalid",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+      "garbage",
+      5,
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: categoryIdsDuplicate 1`] = `
+{
+  "failures": [
+    {
+      "field": "categoryIds.2",
+      "key": "webApp:validation.categoryIds.duplicate",
+      "reason": "arrayUnique",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "categoryIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+      "64b2f0c2f1a2b3c4d5e6f7a2",
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: categoryIdsEmptyItem 1`] = `
+{
+  "failures": [
+    {
+      "field": "categoryIds.0",
+      "key": "webApp:validation.categoryIds.invalid",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "categoryIds": [
+      "",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: categoryIdsEmptyList 1`] = `
+{
+  "failures": [
+    {
+      "field": "categoryIds",
+      "key": "webApp:validation.categoryIds.required",
+      "reason": "arrayMinSize",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "categoryIds": [],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: categoryIdsFive 1`] = `
+{
+  "failures": [],
+  "value": UpdateAppBodyDto {
+    "categoryIds": [
+      "aaaaaaaaaaaaaaaaaaaaaaa0",
+      "aaaaaaaaaaaaaaaaaaaaaaa1",
+      "aaaaaaaaaaaaaaaaaaaaaaa2",
+      "aaaaaaaaaaaaaaaaaaaaaaa3",
+      "aaaaaaaaaaaaaaaaaaaaaaa4",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: categoryIdsNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "categoryIds",
+      "key": "webApp:validation.categoryIds.required",
+      "reason": "isArray",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "categoryIds": null,
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: categoryIdsSix 1`] = `
+{
+  "failures": [
+    {
+      "field": "categoryIds",
+      "key": "webApp:validation.categoryIds.max",
+      "reason": "arrayMaxSize",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "categoryIds": [
+      "aaaaaaaaaaaaaaaaaaaaaaa0",
+      "aaaaaaaaaaaaaaaaaaaaaaa1",
+      "aaaaaaaaaaaaaaaaaaaaaaa2",
+      "aaaaaaaaaaaaaaaaaaaaaaa3",
+      "aaaaaaaaaaaaaaaaaaaaaaa4",
+      "aaaaaaaaaaaaaaaaaaaaaaa5",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: categoryIdsString 1`] = `
+{
+  "failures": [
+    {
+      "field": "categoryIds",
+      "key": "webApp:validation.categoryIds.required",
+      "reason": "isArray",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "categoryIds": "64b2f0c2f1a2b3c4d5e6f7a1",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: descriptionEmpty 1`] = `
+{
+  "failures": [],
+  "value": UpdateAppBodyDto {
+    "description": "",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: descriptionNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "description",
+      "key": "webApp:validation.description.maxLength",
+      "reason": "isString",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "description": null,
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: descriptionPaddedAtMax 1`] = `
+{
+  "failures": [],
+  "value": UpdateAppBodyDto {
+    "description": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: descriptionTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "description",
+      "key": "webApp:validation.description.maxLength",
+      "reason": "maxLength",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "description": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: descriptionWhitespaceOnly 1`] = `
+{
+  "failures": [],
+  "value": UpdateAppBodyDto {
+    "description": "",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: descriptionWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "description",
+      "key": "webApp:validation.description.maxLength",
+      "reason": "isString",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "description": 123,
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: displayNameEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "displayName",
+      "key": "webApp:validation.displayName.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "displayName": "",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: displayNameNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "displayName",
+      "key": "webApp:validation.displayName.required",
+      "reason": "isString",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "displayName": null,
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: displayNamePadded 1`] = `
+{
+  "failures": [],
+  "value": UpdateAppBodyDto {
+    "displayName": "My Blog",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: displayNameTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "displayName",
+      "key": "webApp:validation.displayName.maxLength",
+      "reason": "maxLength",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "displayName": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: displayNameTooShort 1`] = `
+{
+  "failures": [
+    {
+      "field": "displayName",
+      "key": "webApp:validation.displayName.minLength",
+      "reason": "minLength",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "displayName": "A",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: displayNameWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "displayName",
+      "key": "webApp:validation.displayName.required",
+      "reason": "isString",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "displayName": 123,
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: emptyBody 1`] = `
+{
+  "failures": [
+    {
+      "field": "",
+      "key": "webApp:validation.body.empty",
+      "reason": "isNotEmptyBody",
+    },
+  ],
+  "value": UpdateAppBodyDto {},
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: homeUrlEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "homeUrl",
+      "key": "webApp:validation.homeUrl.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "homeUrl": "",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: homeUrlNotHttp 1`] = `
+{
+  "failures": [
+    {
+      "field": "homeUrl",
+      "key": "webApp:validation.homeUrl.invalid",
+      "reason": "matches",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "homeUrl": "blog.example.com",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: homeUrlNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "homeUrl",
+      "key": "webApp:validation.homeUrl.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "homeUrl": null,
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: homeUrlTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "homeUrl",
+      "key": "webApp:validation.homeUrl.maxLength",
+      "reason": "maxLength",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "homeUrl": "https://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: homeUrlWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "homeUrl",
+      "key": "webApp:validation.homeUrl.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "homeUrl": 123,
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: iconUrlEmpty 1`] = `
+{
+  "failures": [],
+  "value": UpdateAppBodyDto {
+    "iconUrl": "",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: iconUrlNotHttp 1`] = `
+{
+  "failures": [
+    {
+      "field": "iconUrl",
+      "key": "webApp:validation.iconUrl.invalid",
+      "reason": "matches",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "iconUrl": "ftp://cdn.example.com/i.png",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: iconUrlNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "iconUrl",
+      "key": "webApp:validation.iconUrl.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "iconUrl": null,
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: iconUrlPadded 1`] = `
+{
+  "failures": [],
+  "value": UpdateAppBodyDto {
+    "iconUrl": "https://cdn.example.com/i.png",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: iconUrlTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "iconUrl",
+      "key": "webApp:validation.iconUrl.maxLength",
+      "reason": "maxLength",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "iconUrl": "https://aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: iconUrlWhitespaceOnly 1`] = `
+{
+  "failures": [],
+  "value": UpdateAppBodyDto {
+    "iconUrl": "",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: iconUrlWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "iconUrl",
+      "key": "webApp:validation.iconUrl.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "iconUrl": 123,
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: nameEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "webApp:validation.name.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "name": "",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: nameNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "webApp:validation.name.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "name": null,
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: namePaddedUpperCase 1`] = `
+{
+  "failures": [],
+  "value": UpdateAppBodyDto {
+    "name": "my-app",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: namePatternBreak 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "webApp:validation.name.invalid",
+      "reason": "matches",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "name": "my_app",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: nameTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "webApp:validation.name.maxLength",
+      "reason": "maxLength",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "name": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: nameTooShort 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "webApp:validation.name.minLength",
+      "reason": "minLength",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "name": "a",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: nameTooShortAndPatternBreak 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "webApp:validation.name.minLength",
+      "reason": "minLength",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "name": "-",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: nameWhitespaceOnly 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "webApp:validation.name.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "name": "",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: nameWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "webApp:validation.name.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "name": 123,
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: postLogoutRedirectUrisBadItem 1`] = `
+{
+  "failures": [
+    {
+      "field": "postLogoutRedirectUris.1",
+      "key": "webApp:validation.redirectUris.invalid",
+      "reason": "isRedirectUri",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "postLogoutRedirectUris": [
+      "https://blog.example.com/bye",
+      "javascript:x",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: postLogoutRedirectUrisEmptyList 1`] = `
+{
+  "failures": [],
+  "value": UpdateAppBodyDto {
+    "postLogoutRedirectUris": [],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: postLogoutRedirectUrisNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "postLogoutRedirectUris",
+      "key": "webApp:validation.redirectUris.invalid",
+      "reason": "isArray",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "postLogoutRedirectUris": null,
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: postLogoutRedirectUrisString 1`] = `
+{
+  "failures": [
+    {
+      "field": "postLogoutRedirectUris",
+      "key": "webApp:validation.redirectUris.invalid",
+      "reason": "isArray",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "postLogoutRedirectUris": "https://blog.example.com/bye",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: postLogoutRedirectUrisTooMany 1`] = `
+{
+  "failures": [
+    {
+      "field": "postLogoutRedirectUris",
+      "key": "webApp:validation.redirectUris.maxItems",
+      "reason": "arrayMaxSize",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "postLogoutRedirectUris": [
+      "https://blog.example.com/cb0",
+      "https://blog.example.com/cb1",
+      "https://blog.example.com/cb2",
+      "https://blog.example.com/cb3",
+      "https://blog.example.com/cb4",
+      "https://blog.example.com/cb5",
+      "https://blog.example.com/cb6",
+      "https://blog.example.com/cb7",
+      "https://blog.example.com/cb8",
+      "https://blog.example.com/cb9",
+      "https://blog.example.com/cb10",
+      "https://blog.example.com/cb11",
+      "https://blog.example.com/cb12",
+      "https://blog.example.com/cb13",
+      "https://blog.example.com/cb14",
+      "https://blog.example.com/cb15",
+      "https://blog.example.com/cb16",
+      "https://blog.example.com/cb17",
+      "https://blog.example.com/cb18",
+      "https://blog.example.com/cb19",
+      "https://blog.example.com/cb20",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: postLogoutRedirectUrisValid 1`] = `
+{
+  "failures": [],
+  "value": UpdateAppBodyDto {
+    "postLogoutRedirectUris": [
+      "https://blog.example.com/bye",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: redirectUrisAtMax 1`] = `
+{
+  "failures": [],
+  "value": UpdateAppBodyDto {
+    "redirectUris": [
+      "https://blog.example.com/cb0",
+      "https://blog.example.com/cb1",
+      "https://blog.example.com/cb2",
+      "https://blog.example.com/cb3",
+      "https://blog.example.com/cb4",
+      "https://blog.example.com/cb5",
+      "https://blog.example.com/cb6",
+      "https://blog.example.com/cb7",
+      "https://blog.example.com/cb8",
+      "https://blog.example.com/cb9",
+      "https://blog.example.com/cb10",
+      "https://blog.example.com/cb11",
+      "https://blog.example.com/cb12",
+      "https://blog.example.com/cb13",
+      "https://blog.example.com/cb14",
+      "https://blog.example.com/cb15",
+      "https://blog.example.com/cb16",
+      "https://blog.example.com/cb17",
+      "https://blog.example.com/cb18",
+      "https://blog.example.com/cb19",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: redirectUrisBadItems 1`] = `
+{
+  "failures": [
+    {
+      "field": "redirectUris.0",
+      "key": "webApp:validation.redirectUris.invalid",
+      "reason": "isRedirectUri",
+    },
+    {
+      "field": "redirectUris.1",
+      "key": "webApp:validation.redirectUris.invalid",
+      "reason": "isRedirectUri",
+    },
+    {
+      "field": "redirectUris.2",
+      "key": "webApp:validation.redirectUris.invalid",
+      "reason": "isRedirectUri",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "redirectUris": [
+      5,
+      "",
+      "https://blog.example.com/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: redirectUrisEmptyList 1`] = `
+{
+  "failures": [
+    {
+      "field": "redirectUris",
+      "key": "webApp:validation.redirectUris.required",
+      "reason": "arrayMinSize",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "redirectUris": [],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: redirectUrisFragment 1`] = `
+{
+  "failures": [
+    {
+      "field": "redirectUris.0",
+      "key": "webApp:validation.redirectUris.invalid",
+      "reason": "isRedirectUri",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "redirectUris": [
+      "https://blog.example.com/cb#x",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: redirectUrisHttp 1`] = `
+{
+  "failures": [
+    {
+      "field": "redirectUris.0",
+      "key": "webApp:validation.redirectUris.invalid",
+      "reason": "isRedirectUri",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "redirectUris": [
+      "http://blog.example.com/cb",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: redirectUrisLocalhostHttp 1`] = `
+{
+  "failures": [],
+  "value": UpdateAppBodyDto {
+    "redirectUris": [
+      "http://localhost:3000/cb",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: redirectUrisNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "redirectUris",
+      "key": "webApp:validation.redirectUris.invalid",
+      "reason": "isArray",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "redirectUris": null,
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: redirectUrisOneBadEntry 1`] = `
+{
+  "failures": [
+    {
+      "field": "redirectUris.1",
+      "key": "webApp:validation.redirectUris.invalid",
+      "reason": "isRedirectUri",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "redirectUris": [
+      "https://blog.example.com/cb",
+      "http://evil.com/cb",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: redirectUrisPaddedItem 1`] = `
+{
+  "failures": [],
+  "value": UpdateAppBodyDto {
+    "redirectUris": [
+      "https://blog.example.com/cb",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: redirectUrisString 1`] = `
+{
+  "failures": [
+    {
+      "field": "redirectUris",
+      "key": "webApp:validation.redirectUris.invalid",
+      "reason": "isArray",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "redirectUris": "https://blog.example.com/cb",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: redirectUrisTooMany 1`] = `
+{
+  "failures": [
+    {
+      "field": "redirectUris",
+      "key": "webApp:validation.redirectUris.maxItems",
+      "reason": "arrayMaxSize",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "redirectUris": [
+      "https://blog.example.com/cb0",
+      "https://blog.example.com/cb1",
+      "https://blog.example.com/cb2",
+      "https://blog.example.com/cb3",
+      "https://blog.example.com/cb4",
+      "https://blog.example.com/cb5",
+      "https://blog.example.com/cb6",
+      "https://blog.example.com/cb7",
+      "https://blog.example.com/cb8",
+      "https://blog.example.com/cb9",
+      "https://blog.example.com/cb10",
+      "https://blog.example.com/cb11",
+      "https://blog.example.com/cb12",
+      "https://blog.example.com/cb13",
+      "https://blog.example.com/cb14",
+      "https://blog.example.com/cb15",
+      "https://blog.example.com/cb16",
+      "https://blog.example.com/cb17",
+      "https://blog.example.com/cb18",
+      "https://blog.example.com/cb19",
+      "https://blog.example.com/cb20",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: redirectUrisWildcard 1`] = `
+{
+  "failures": [
+    {
+      "field": "redirectUris.0",
+      "key": "webApp:validation.redirectUris.invalid",
+      "reason": "isRedirectUri",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "redirectUris": [
+      "https://*.example.com/cb",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: requiredRolesBadItems 1`] = `
+{
+  "failures": [
+    {
+      "field": "requiredRoles.1",
+      "key": "webApp:validation.requiredRoles.invalid",
+      "reason": "isIn",
+    },
+    {
+      "field": "requiredRoles.2",
+      "key": "webApp:validation.requiredRoles.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "requiredRoles": [
+      "user",
+      5,
+      "",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: requiredRolesBoth 1`] = `
+{
+  "failures": [],
+  "value": UpdateAppBodyDto {
+    "requiredRoles": [
+      "user",
+      "admin",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: requiredRolesEmptyList 1`] = `
+{
+  "failures": [
+    {
+      "field": "requiredRoles",
+      "key": "webApp:validation.requiredRoles.required",
+      "reason": "arrayMinSize",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "requiredRoles": [],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: requiredRolesNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "requiredRoles",
+      "key": "webApp:validation.requiredRoles.invalid",
+      "reason": "isArray",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "requiredRoles": null,
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: requiredRolesString 1`] = `
+{
+  "failures": [
+    {
+      "field": "requiredRoles",
+      "key": "webApp:validation.requiredRoles.invalid",
+      "reason": "isArray",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "requiredRoles": "user",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: requiredRolesUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "requiredRoles.0",
+      "key": "webApp:validation.requiredRoles.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "requiredRoles": [
+      "root",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: statusArray 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "webApp:validation.status.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "status": [
+      "active",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: statusEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "webApp:validation.status.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "status": "",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: statusInactive 1`] = `
+{
+  "failures": [],
+  "value": UpdateAppBodyDto {
+    "status": "inactive",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: statusNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "webApp:validation.status.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "status": null,
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: statusWrongCase 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "webApp:validation.status.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "status": "ACTIVE",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: statusWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "webApp:validation.status.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "status": 1,
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: tokenEndpointAuthMethodEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "tokenEndpointAuthMethod",
+      "key": "webApp:validation.tokenEndpointAuthMethod.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "tokenEndpointAuthMethod": "",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: tokenEndpointAuthMethodNone 1`] = `
+{
+  "failures": [],
+  "value": UpdateAppBodyDto {
+    "tokenEndpointAuthMethod": "none",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: tokenEndpointAuthMethodNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "tokenEndpointAuthMethod",
+      "key": "webApp:validation.tokenEndpointAuthMethod.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "tokenEndpointAuthMethod": null,
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: tokenEndpointAuthMethodUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "tokenEndpointAuthMethod",
+      "key": "webApp:validation.tokenEndpointAuthMethod.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "tokenEndpointAuthMethod": "private_key_jwt",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: tokenEndpointAuthMethodWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "tokenEndpointAuthMethod",
+      "key": "webApp:validation.tokenEndpointAuthMethod.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": UpdateAppBodyDto {
+    "tokenEndpointAuthMethod": 1,
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: undefinedBody 1`] = `
+{
+  "failures": [
+    {
+      "field": "",
+      "key": "webApp:validation.body.empty",
+      "reason": "isNotEmptyBody",
+    },
+  ],
+  "value": UpdateAppBodyDto {},
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UpdateAppBodyDto ≡ adminUpdateAppBodySchema: unknownOnly 1`] = `
+{
+  "failures": [
+    {
+      "field": "",
+      "key": "webApp:validation.body.empty",
+      "reason": "isNotEmptyBody",
+    },
+  ],
+  "value": UpdateAppBodyDto {},
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UserAppsQueryDto ≡ listAppsQuerySchema: allFields 1`] = `
+{
+  "failures": [],
+  "value": UserAppsQueryDto {
+    "categoryId": "64b2f0c2f1a2b3c4d5e6f7a1",
+    "limit": 20,
+    "page": 2,
+    "search": "blog",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UserAppsQueryDto ≡ listAppsQuerySchema: categoryIdArray 1`] = `
+{
+  "failures": [
+    {
+      "field": "categoryId",
+      "key": "validation:categoryId.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": UserAppsQueryDto {
+    "categoryId": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UserAppsQueryDto ≡ listAppsQuerySchema: categoryIdEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "categoryId",
+      "key": "validation:categoryId.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": UserAppsQueryDto {
+    "categoryId": "",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UserAppsQueryDto ≡ listAppsQuerySchema: categoryIdNotHex 1`] = `
+{
+  "failures": [
+    {
+      "field": "categoryId",
+      "key": "validation:categoryId.invalid",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": UserAppsQueryDto {
+    "categoryId": "garbage",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UserAppsQueryDto ≡ listAppsQuerySchema: categoryIdValid 1`] = `
+{
+  "failures": [],
+  "value": UserAppsQueryDto {
+    "categoryId": "64b2f0c2f1a2b3c4d5e6f7a1",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UserAppsQueryDto ≡ listAppsQuerySchema: empty 1`] = `
+{
+  "failures": [],
+  "value": UserAppsQueryDto {},
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UserAppsQueryDto ≡ listAppsQuerySchema: limitTooLarge 1`] = `
+{
+  "failures": [
+    {
+      "field": "limit",
+      "key": "validation:limit.invalid",
+      "reason": "max",
+    },
+  ],
+  "value": UserAppsQueryDto {
+    "limit": 101,
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UserAppsQueryDto ≡ listAppsQuerySchema: limitZero 1`] = `
+{
+  "failures": [
+    {
+      "field": "limit",
+      "key": "validation:limit.invalid",
+      "reason": "min",
+    },
+  ],
+  "value": UserAppsQueryDto {
+    "limit": 0,
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UserAppsQueryDto ≡ listAppsQuerySchema: pageEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "isInt",
+    },
+  ],
+  "value": UserAppsQueryDto {
+    "page": "",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UserAppsQueryDto ≡ listAppsQuerySchema: pageFraction 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "isInt",
+    },
+  ],
+  "value": UserAppsQueryDto {
+    "page": 1.5,
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UserAppsQueryDto ≡ listAppsQuerySchema: pageNotNumber 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "isInt",
+    },
+  ],
+  "value": UserAppsQueryDto {
+    "page": "abc",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UserAppsQueryDto ≡ listAppsQuerySchema: pageZero 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "min",
+    },
+  ],
+  "value": UserAppsQueryDto {
+    "page": 0,
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UserAppsQueryDto ≡ listAppsQuerySchema: searchAtMaxPadded 1`] = `
+{
+  "failures": [],
+  "value": UserAppsQueryDto {
+    "search": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UserAppsQueryDto ≡ listAppsQuerySchema: searchEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": UserAppsQueryDto {
+    "search": "",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UserAppsQueryDto ≡ listAppsQuerySchema: searchPadded 1`] = `
+{
+  "failures": [],
+  "value": UserAppsQueryDto {
+    "search": "blog",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UserAppsQueryDto ≡ listAppsQuerySchema: searchTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "maxLength",
+    },
+  ],
+  "value": UserAppsQueryDto {
+    "search": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UserAppsQueryDto ≡ listAppsQuerySchema: searchWhitespaceOnly 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": UserAppsQueryDto {
+    "search": "",
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UserAppsQueryDto ≡ listAppsQuerySchema: searchWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": UserAppsQueryDto {
+    "search": [
+      "a",
+    ],
+  },
+}
+`;
+
+exports[`web-app request DTOs match the Joi schemas UserAppsQueryDto ≡ listAppsQuerySchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": UserAppsQueryDto {},
+}
+`;

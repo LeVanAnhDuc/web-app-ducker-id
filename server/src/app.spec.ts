@@ -22,7 +22,7 @@ describe("app query parsing", () => {
 
   it("parses bracket syntax into objects, as Express 4 did", async () => {
     // Express 5 defaults to the "simple" parser, which keeps `status[$ne]` as a
-    // flat key; the Joi schemas would strip it silently instead of refusing the
+    // flat key; the DTO whitelist would strip it silently instead of refusing the
     // query operator with 400 (REQ-ADMINLOGINHISTORY / REQ-LOGINHISTORY).
     const res = await fetch(`${url}/__query-probe?status[$ne]=success&q=a,b`);
 

@@ -8,6 +8,13 @@ import type {
   TOKEN_ENDPOINT_AUTH_METHODS,
   WEB_APP_STATUS_PUBLIC
 } from "@/modules/web-app/constants";
+import type {
+  AdminAppsQueryDto,
+  AppIdParamsDto,
+  CreateAppBodyDto,
+  UpdateAppBodyDto,
+  UserAppsQueryDto
+} from "../dtos/requests";
 
 export type WebAppStatus =
   (typeof WEB_APP_STATUSES)[keyof typeof WEB_APP_STATUSES];
@@ -43,37 +50,14 @@ export interface WebAppDocument {
 export type WebAppStatusPublic =
   (typeof WEB_APP_STATUS_PUBLIC)[keyof typeof WEB_APP_STATUS_PUBLIC];
 
-export interface AdminAppsQuery {
-  search?: string;
-  status?: WebAppStatusPublic;
-  categoryId?: string;
-}
-
+// The index signature keeps the handlers assignable to Express's own, whose
+// query and params are string dictionaries.
 export interface AdminAppsQueryRequest extends Omit<Request, "query"> {
-  query: AdminAppsQuery;
-}
-
-export interface AdminAppCreateBody {
-  name: string;
-  displayName: string;
-  description?: string;
-  iconUrl?: string;
-  homeUrl: string;
-  categoryIds: string[];
-  status: WebAppStatusPublic;
-  requiredRoles: AuthenticationRole[];
-  redirectUris: string[];
-  /**
-   * "none" = public client (SPA tĩnh, mobile) — KHÔNG sinh client_secret, vì
-   * không có chỗ nào trong trình duyệt giữ được bí mật. PKCE thay vai trò đó.
-   */
-  tokenEndpointAuthMethod?: TokenEndpointAuthMethod;
-  postLogoutRedirectUris?: string[];
-  scopes?: string[];
+  query: AdminAppsQueryDto & Request["query"];
 }
 
 export interface AdminCreateAppRequest extends Omit<Request, "body"> {
-  body: AdminAppCreateBody;
+  body: CreateAppBodyDto;
 }
 
 export interface WebAppCreateInput {
@@ -93,31 +77,12 @@ export interface WebAppCreateInput {
   scopes: string[];
 }
 
-export interface AdminAppUpdateBody {
-  name?: string;
-  displayName?: string;
-  description?: string;
-  iconUrl?: string;
-  homeUrl?: string;
-  categoryIds?: string[];
-  status?: WebAppStatusPublic;
-  requiredRoles?: AuthenticationRole[];
-  redirectUris?: string[];
-  postLogoutRedirectUris?: string[];
-  tokenEndpointAuthMethod?: TokenEndpointAuthMethod;
-  scopes?: string[];
-}
-
-export interface AdminAppIdParams {
-  id: string;
-}
-
 export interface AdminUpdateAppRequest extends Omit<
   Request,
   "body" | "params"
 > {
-  body: AdminAppUpdateBody;
-  params: { id: string };
+  body: UpdateAppBodyDto;
+  params: AppIdParamsDto & Record<string, string>;
 }
 
 export interface WebAppUpdateInput {
@@ -135,18 +100,8 @@ export interface WebAppUpdateInput {
   scopes?: string[];
 }
 
-export interface PaginationParams {
-  page: number;
-  limit: number;
-}
-
-export interface UserAppsQuery extends Partial<PaginationParams> {
-  search?: string;
-  categoryId?: string;
-}
-
 export interface UserAppsQueryRequest extends Omit<Request, "query"> {
-  query: UserAppsQuery;
+  query: UserAppsQueryDto & Request["query"];
 }
 
 export interface WebAppWithCategories extends WebAppDocument {

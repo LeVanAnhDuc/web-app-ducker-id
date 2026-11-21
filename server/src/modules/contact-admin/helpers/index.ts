@@ -1,11 +1,12 @@
 // types
 import type { FilterQuery } from "mongoose";
-import type { AdminContactsQuery, ContactDocument } from "../types";
+import type { ContactDocument } from "../types";
+import type { AdminContactsQueryDto } from "../dtos/requests";
 // others
 import { escapeRegex } from "@/utils/string/escape-regex";
 
 export const buildContactFilter = (
-  query: AdminContactsQuery
+  query: AdminContactsQueryDto
 ): FilterQuery<ContactDocument> => {
   const filter: FilterQuery<ContactDocument> = {};
 

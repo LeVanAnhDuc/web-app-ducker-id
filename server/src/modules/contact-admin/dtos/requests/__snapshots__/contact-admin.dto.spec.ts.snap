@@ -1,0 +1,1444 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: allFields 1`] = `
+{
+  "failures": [],
+  "value": AdminContactsQueryDto {
+    "email": "user@example.com",
+    "fromDate": "2026-01-01T00:00:00.000Z",
+    "limit": 10,
+    "page": 1,
+    "priority": "high",
+    "search": "login",
+    "sortBy": "createdAt",
+    "sortOrder": "asc",
+    "status": "new",
+    "toDate": "2026-02-01T03:00:00.000Z",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: emailEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "email": "",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: emailPadded 1`] = `
+{
+  "failures": [],
+  "value": AdminContactsQueryDto {
+    "email": "someone",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: emailWhitespaceOnly 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "email": "",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: emailWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "email": [
+      "a@b.com",
+    ],
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: empty 1`] = `
+{
+  "failures": [],
+  "value": AdminContactsQueryDto {},
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: fromDateEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "fromDate",
+      "key": "validation:fromDate.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "fromDate": "",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: fromDateIso 1`] = `
+{
+  "failures": [],
+  "value": AdminContactsQueryDto {
+    "fromDate": "2026-01-01T00:00:00.000Z",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: fromDateNotIso 1`] = `
+{
+  "failures": [
+    {
+      "field": "fromDate",
+      "key": "validation:fromDate.invalid",
+      "reason": "isIsoDateString",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "fromDate": "01/02/2026",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: fromDateWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "fromDate",
+      "key": "validation:fromDate.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "fromDate": [
+      "2026-01-01",
+    ],
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: limitTooLarge 1`] = `
+{
+  "failures": [
+    {
+      "field": "limit",
+      "key": "validation:limit.invalid",
+      "reason": "max",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "limit": 101,
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: pageConverted 1`] = `
+{
+  "failures": [],
+  "value": AdminContactsQueryDto {
+    "limit": 50,
+    "page": 3,
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: pageNotNumber 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "isInt",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "page": "abc",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: pageZero 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "min",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "page": 0,
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: priorityArray 1`] = `
+{
+  "failures": [
+    {
+      "field": "priority",
+      "key": "validation:priority.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "priority": [
+      "high",
+    ],
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: priorityEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "priority",
+      "key": "validation:priority.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "priority": "",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: priorityUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "priority",
+      "key": "validation:priority.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "priority": "urgent",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: rangeFromInvalid 1`] = `
+{
+  "failures": [
+    {
+      "field": "fromDate",
+      "key": "validation:fromDate.invalid",
+      "reason": "isIsoDateString",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "fromDate": "bad",
+    "toDate": "2026-01-01T00:00:00.000Z",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: rangeFromNotIsoButParsable 1`] = `
+{
+  "failures": [
+    {
+      "field": "fromDate",
+      "key": "validation:fromDate.invalid",
+      "reason": "isIsoDateString",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "fromDate": "01/02/2026",
+    "toDate": "2025-01-01T00:00:00.000Z",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: rangeInverted 1`] = `
+{
+  "failures": [
+    {
+      "field": "",
+      "key": "validation:dateRange.invalid",
+      "reason": "isOnOrAfter",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "fromDate": "2026-02-01T00:00:00.000Z",
+    "toDate": "2026-01-01T00:00:00.000Z",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: rangeInvertedByOffset 1`] = `
+{
+  "failures": [
+    {
+      "field": "",
+      "key": "validation:dateRange.invalid",
+      "reason": "isOnOrAfter",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "fromDate": "2026-01-01T00:00:00.000Z",
+    "toDate": "2025-12-31T22:00:00.000Z",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: rangeInvertedWithBadPage 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "min",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "fromDate": "2026-02-01T00:00:00.000Z",
+    "page": 0,
+    "toDate": "2026-01-01T00:00:00.000Z",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: rangeSameDay 1`] = `
+{
+  "failures": [],
+  "value": AdminContactsQueryDto {
+    "fromDate": "2026-01-01T00:00:00.000Z",
+    "toDate": "2026-01-01T00:00:00.000Z",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: rangeToInvalid 1`] = `
+{
+  "failures": [
+    {
+      "field": "toDate",
+      "key": "validation:toDate.invalid",
+      "reason": "isIsoDateString",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "fromDate": "2026-02-01T00:00:00.000Z",
+    "toDate": "bad",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: searchAtMaxPadded 1`] = `
+{
+  "failures": [],
+  "value": AdminContactsQueryDto {
+    "search": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: searchEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "search": "",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: searchPadded 1`] = `
+{
+  "failures": [],
+  "value": AdminContactsQueryDto {
+    "search": "login",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: searchTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "maxLength",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "search": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: searchWhitespaceOnly 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "search": "",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: searchWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "search": [
+      "a",
+    ],
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: sortByEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "sortBy",
+      "key": "validation:sortBy.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "sortBy": "",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: sortByUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "sortBy",
+      "key": "validation:sortBy.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "sortBy": "email",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: sortByValid 1`] = `
+{
+  "failures": [],
+  "value": AdminContactsQueryDto {
+    "sortBy": "createdAt",
+    "sortOrder": "desc",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: sortOrderUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "sortOrder",
+      "key": "validation:sortOrder.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "sortOrder": "up",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: statusArray 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "validation:status.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "status": [
+      "resolved",
+    ],
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: statusEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "validation:status.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "status": "",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: statusNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "validation:status.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "status": null,
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: statusUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "validation:status.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "status": "deleted",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: statusValid 1`] = `
+{
+  "failures": [],
+  "value": AdminContactsQueryDto {
+    "status": "resolved",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: toDateEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "toDate",
+      "key": "validation:toDate.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "toDate": "",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: toDateNotIso 1`] = `
+{
+  "failures": [
+    {
+      "field": "toDate",
+      "key": "validation:toDate.invalid",
+      "reason": "isIsoDateString",
+    },
+  ],
+  "value": AdminContactsQueryDto {
+    "toDate": "yesterday",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas AdminContactsQueryDto ≡ adminListContactsQuerySchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": AdminContactsQueryDto {},
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas ContactIdParamsDto ≡ contactIdParamSchema: empty 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "contactAdmin:errors.invalidId",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": ContactIdParamsDto {
+    "id": "",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas ContactIdParamsDto ≡ contactIdParamSchema: missing 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "contactAdmin:errors.invalidId",
+      "reason": "isDefined",
+    },
+  ],
+  "value": ContactIdParamsDto {},
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas ContactIdParamsDto ≡ contactIdParamSchema: notHex 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "contactAdmin:errors.invalidId",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": ContactIdParamsDto {
+    "id": "507f1f77bcf86cd79943901z",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas ContactIdParamsDto ≡ contactIdParamSchema: null 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "contactAdmin:errors.invalidId",
+      "reason": "isDefined",
+    },
+  ],
+  "value": ContactIdParamsDto {
+    "id": null,
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas ContactIdParamsDto ≡ contactIdParamSchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": ContactIdParamsDto {
+    "id": "507f1f77bcf86cd799439011",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas ContactIdParamsDto ≡ contactIdParamSchema: valid 1`] = `
+{
+  "failures": [],
+  "value": ContactIdParamsDto {
+    "id": "507f1f77bcf86cd799439011",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas ContactIdParamsDto ≡ contactIdParamSchema: wrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "contactAdmin:errors.invalidId",
+      "reason": "isString",
+    },
+  ],
+  "value": ContactIdParamsDto {
+    "id": 123,
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas MyContactsQueryDto ≡ myContactsQuerySchema: allFields 1`] = `
+{
+  "failures": [],
+  "value": MyContactsQueryDto {
+    "limit": 5,
+    "page": 2,
+    "search": "app",
+    "sortBy": "createdAt",
+    "sortOrder": "desc",
+    "status": "processing",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas MyContactsQueryDto ≡ myContactsQuerySchema: empty 1`] = `
+{
+  "failures": [],
+  "value": MyContactsQueryDto {},
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas MyContactsQueryDto ≡ myContactsQuerySchema: limitTooLarge 1`] = `
+{
+  "failures": [
+    {
+      "field": "limit",
+      "key": "validation:limit.invalid",
+      "reason": "max",
+    },
+  ],
+  "value": MyContactsQueryDto {
+    "limit": 101,
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas MyContactsQueryDto ≡ myContactsQuerySchema: pageConverted 1`] = `
+{
+  "failures": [],
+  "value": MyContactsQueryDto {
+    "limit": 50,
+    "page": 3,
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas MyContactsQueryDto ≡ myContactsQuerySchema: pageNotNumber 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "isInt",
+    },
+  ],
+  "value": MyContactsQueryDto {
+    "page": "abc",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas MyContactsQueryDto ≡ myContactsQuerySchema: pageZero 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "min",
+    },
+  ],
+  "value": MyContactsQueryDto {
+    "page": 0,
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas MyContactsQueryDto ≡ myContactsQuerySchema: searchAtMaxPadded 1`] = `
+{
+  "failures": [],
+  "value": MyContactsQueryDto {
+    "search": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas MyContactsQueryDto ≡ myContactsQuerySchema: searchEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": MyContactsQueryDto {
+    "search": "",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas MyContactsQueryDto ≡ myContactsQuerySchema: searchPadded 1`] = `
+{
+  "failures": [],
+  "value": MyContactsQueryDto {
+    "search": "login",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas MyContactsQueryDto ≡ myContactsQuerySchema: searchTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "maxLength",
+    },
+  ],
+  "value": MyContactsQueryDto {
+    "search": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas MyContactsQueryDto ≡ myContactsQuerySchema: searchWhitespaceOnly 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": MyContactsQueryDto {
+    "search": "",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas MyContactsQueryDto ≡ myContactsQuerySchema: searchWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": MyContactsQueryDto {
+    "search": [
+      "a",
+    ],
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas MyContactsQueryDto ≡ myContactsQuerySchema: sortByEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "sortBy",
+      "key": "validation:sortBy.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": MyContactsQueryDto {
+    "sortBy": "",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas MyContactsQueryDto ≡ myContactsQuerySchema: sortByUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "sortBy",
+      "key": "validation:sortBy.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": MyContactsQueryDto {
+    "sortBy": "email",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas MyContactsQueryDto ≡ myContactsQuerySchema: sortByValid 1`] = `
+{
+  "failures": [],
+  "value": MyContactsQueryDto {
+    "sortBy": "createdAt",
+    "sortOrder": "desc",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas MyContactsQueryDto ≡ myContactsQuerySchema: sortOrderUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "sortOrder",
+      "key": "validation:sortOrder.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": MyContactsQueryDto {
+    "sortOrder": "up",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas MyContactsQueryDto ≡ myContactsQuerySchema: statusArray 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "validation:status.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": MyContactsQueryDto {
+    "status": [
+      "resolved",
+    ],
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas MyContactsQueryDto ≡ myContactsQuerySchema: statusEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "validation:status.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": MyContactsQueryDto {
+    "status": "",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas MyContactsQueryDto ≡ myContactsQuerySchema: statusNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "validation:status.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": MyContactsQueryDto {
+    "status": null,
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas MyContactsQueryDto ≡ myContactsQuerySchema: statusUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "validation:status.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": MyContactsQueryDto {
+    "status": "deleted",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas MyContactsQueryDto ≡ myContactsQuerySchema: statusValid 1`] = `
+{
+  "failures": [],
+  "value": MyContactsQueryDto {
+    "status": "resolved",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas MyContactsQueryDto ≡ myContactsQuerySchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": MyContactsQueryDto {},
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: emailEmpty 1`] = `
+{
+  "failures": [],
+  "value": SubmitContactBodyDto {
+    "email": "",
+    "message": "I keep getting an error when signing in.",
+    "subject": "Cannot sign in",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: emailInvalid 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.invalid",
+      "reason": "isEmail",
+    },
+  ],
+  "value": SubmitContactBodyDto {
+    "email": "user",
+    "message": "I keep getting an error when signing in.",
+    "subject": "Cannot sign in",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: emailMissing 1`] = `
+{
+  "failures": [],
+  "value": SubmitContactBodyDto {
+    "message": "I keep getting an error when signing in.",
+    "subject": "Cannot sign in",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: emailNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": SubmitContactBodyDto {
+    "email": null,
+    "message": "I keep getting an error when signing in.",
+    "subject": "Cannot sign in",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: emailPaddedUpperCase 1`] = `
+{
+  "failures": [],
+  "value": SubmitContactBodyDto {
+    "email": "user@example.com",
+    "message": "I keep getting an error when signing in.",
+    "subject": "Cannot sign in",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: emailUnknownTld 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.invalid",
+      "reason": "isEmail",
+    },
+  ],
+  "value": SubmitContactBodyDto {
+    "email": "user@test.local",
+    "message": "I keep getting an error when signing in.",
+    "subject": "Cannot sign in",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: emailWhitespaceOnly 1`] = `
+{
+  "failures": [],
+  "value": SubmitContactBodyDto {
+    "email": "",
+    "message": "I keep getting an error when signing in.",
+    "subject": "Cannot sign in",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: emailWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": SubmitContactBodyDto {
+    "email": 123,
+    "message": "I keep getting an error when signing in.",
+    "subject": "Cannot sign in",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: emptyBody 1`] = `
+{
+  "failures": [
+    {
+      "field": "subject",
+      "key": "contactAdmin:errors.subjectRequired",
+      "reason": "isDefined",
+    },
+    {
+      "field": "message",
+      "key": "contactAdmin:errors.messageRequired",
+      "reason": "isDefined",
+    },
+  ],
+  "value": SubmitContactBodyDto {},
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: messageEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "message",
+      "key": "contactAdmin:errors.messageRequired",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": SubmitContactBodyDto {
+    "email": "user@example.com",
+    "message": "",
+    "subject": "Cannot sign in",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: messageMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "message",
+      "key": "contactAdmin:errors.messageRequired",
+      "reason": "isDefined",
+    },
+  ],
+  "value": SubmitContactBodyDto {
+    "email": "user@example.com",
+    "subject": "Cannot sign in",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: messageNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "message",
+      "key": "contactAdmin:errors.messageRequired",
+      "reason": "isDefined",
+    },
+  ],
+  "value": SubmitContactBodyDto {
+    "email": "user@example.com",
+    "message": null,
+    "subject": "Cannot sign in",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: messageTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "message",
+      "key": "contactAdmin:errors.messageTooLong",
+      "reason": "maxLength",
+    },
+  ],
+  "value": SubmitContactBodyDto {
+    "email": "user@example.com",
+    "message": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "subject": "Cannot sign in",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: messageTooShort 1`] = `
+{
+  "failures": [
+    {
+      "field": "message",
+      "key": "contactAdmin:errors.messageTooShort",
+      "reason": "minLength",
+    },
+  ],
+  "value": SubmitContactBodyDto {
+    "email": "user@example.com",
+    "message": "Too short",
+    "subject": "Cannot sign in",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: messageWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "message",
+      "key": "contactAdmin:errors.messageRequired",
+      "reason": "isString",
+    },
+  ],
+  "value": SubmitContactBodyDto {
+    "email": "user@example.com",
+    "message": [
+      "x",
+    ],
+    "subject": "Cannot sign in",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: subjectEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "subject",
+      "key": "contactAdmin:errors.subjectRequired",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": SubmitContactBodyDto {
+    "email": "user@example.com",
+    "message": "I keep getting an error when signing in.",
+    "subject": "",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: subjectMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "subject",
+      "key": "contactAdmin:errors.subjectRequired",
+      "reason": "isDefined",
+    },
+  ],
+  "value": SubmitContactBodyDto {
+    "email": "user@example.com",
+    "message": "I keep getting an error when signing in.",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: subjectNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "subject",
+      "key": "contactAdmin:errors.subjectRequired",
+      "reason": "isDefined",
+    },
+  ],
+  "value": SubmitContactBodyDto {
+    "email": "user@example.com",
+    "message": "I keep getting an error when signing in.",
+    "subject": null,
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: subjectTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "subject",
+      "key": "contactAdmin:errors.subjectTooLong",
+      "reason": "maxLength",
+    },
+  ],
+  "value": SubmitContactBodyDto {
+    "email": "user@example.com",
+    "message": "I keep getting an error when signing in.",
+    "subject": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: subjectTooShort 1`] = `
+{
+  "failures": [
+    {
+      "field": "subject",
+      "key": "contactAdmin:errors.subjectTooShort",
+      "reason": "minLength",
+    },
+  ],
+  "value": SubmitContactBodyDto {
+    "email": "user@example.com",
+    "message": "I keep getting an error when signing in.",
+    "subject": "Hey",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: subjectWhitespaceKept 1`] = `
+{
+  "failures": [],
+  "value": SubmitContactBodyDto {
+    "email": "user@example.com",
+    "message": "I keep getting an error when signing in.",
+    "subject": "      ",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: subjectWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "subject",
+      "key": "contactAdmin:errors.subjectRequired",
+      "reason": "isString",
+    },
+  ],
+  "value": SubmitContactBodyDto {
+    "email": "user@example.com",
+    "message": "I keep getting an error when signing in.",
+    "subject": 12345,
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": SubmitContactBodyDto {
+    "email": "user@example.com",
+    "message": "I keep getting an error when signing in.",
+    "subject": "Cannot sign in",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: valid 1`] = `
+{
+  "failures": [],
+  "value": SubmitContactBodyDto {
+    "email": "user@example.com",
+    "message": "I keep getting an error when signing in.",
+    "subject": "Cannot sign in",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas UpdateContactStatusBodyDto ≡ updateContactStatusSchema: array 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "contactAdmin:errors.statusInvalid",
+      "reason": "isString",
+    },
+  ],
+  "value": UpdateContactStatusBodyDto {
+    "status": [
+      "resolved",
+    ],
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas UpdateContactStatusBodyDto ≡ updateContactStatusSchema: empty 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "contactAdmin:errors.statusInvalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": UpdateContactStatusBodyDto {
+    "status": "",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas UpdateContactStatusBodyDto ≡ updateContactStatusSchema: missing 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "contactAdmin:errors.statusRequired",
+      "reason": "isDefined",
+    },
+  ],
+  "value": UpdateContactStatusBodyDto {},
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas UpdateContactStatusBodyDto ≡ updateContactStatusSchema: null 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "contactAdmin:errors.statusInvalid",
+      "reason": "isDefined",
+    },
+  ],
+  "value": UpdateContactStatusBodyDto {
+    "status": null,
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas UpdateContactStatusBodyDto ≡ updateContactStatusSchema: unknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "contactAdmin:errors.statusInvalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": UpdateContactStatusBodyDto {
+    "status": "deleted",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas UpdateContactStatusBodyDto ≡ updateContactStatusSchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": UpdateContactStatusBodyDto {
+    "status": "new",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas UpdateContactStatusBodyDto ≡ updateContactStatusSchema: valid 1`] = `
+{
+  "failures": [],
+  "value": UpdateContactStatusBodyDto {
+    "status": "resolved",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas UpdateContactStatusBodyDto ≡ updateContactStatusSchema: wrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "contactAdmin:errors.statusInvalid",
+      "reason": "isString",
+    },
+  ],
+  "value": UpdateContactStatusBodyDto {
+    "status": 1,
+  },
+}
+`;

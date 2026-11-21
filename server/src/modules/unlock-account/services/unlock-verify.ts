@@ -1,6 +1,6 @@
 // types
 import type { Request } from "express";
-import type { UnlockVerifyBody } from "../types";
+import type { UnlockVerifyBodyDto } from "../dtos/requests";
 import type { UnlockVerifyDto } from "../dtos";
 import type { UnlockAccountServiceDeps } from "./deps";
 // modules
@@ -14,7 +14,7 @@ import { withRetry } from "@/utils/resilience/retry";
 
 export const unlockVerify = async (
   deps: UnlockAccountServiceDeps,
-  body: UnlockVerifyBody,
+  body: UnlockVerifyBodyDto,
   req: Request
 ): Promise<UnlockVerifyDto> => {
   const { email, tempPassword } = body;

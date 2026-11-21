@@ -1,6 +1,6 @@
 // types
 import type { Request } from "express";
-import type { MagicLinkVerifyBody } from "../../types";
+import type { MagicLinkVerifyBodyDto } from "../../dtos/requests";
 import type { LoginResponseDto } from "../../dtos";
 import type { MagicLinkLoginStrategyDeps } from "./deps";
 // common
@@ -14,7 +14,7 @@ import { withRetry } from "@/utils/resilience/retry";
 
 export const verifyLink = async (
   deps: MagicLinkLoginStrategyDeps,
-  body: MagicLinkVerifyBody,
+  body: MagicLinkVerifyBodyDto,
   req: Request
 ): Promise<LoginResponseDto> => {
   const { email, token } = body;

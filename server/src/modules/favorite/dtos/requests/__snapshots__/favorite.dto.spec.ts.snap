@@ -1,0 +1,334 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`favorite request DTOs match the Joi schemas FavoriteAppIdParamsDto ≡ favoriteAppIdParamSchema: empty 1`] = `
+{
+  "failures": [
+    {
+      "field": "appId",
+      "key": "favorite:validation.appId.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": FavoriteAppIdParamsDto {
+    "appId": "",
+  },
+}
+`;
+
+exports[`favorite request DTOs match the Joi schemas FavoriteAppIdParamsDto ≡ favoriteAppIdParamSchema: missing 1`] = `
+{
+  "failures": [
+    {
+      "field": "appId",
+      "key": "favorite:validation.appId.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": FavoriteAppIdParamsDto {},
+}
+`;
+
+exports[`favorite request DTOs match the Joi schemas FavoriteAppIdParamsDto ≡ favoriteAppIdParamSchema: notHex 1`] = `
+{
+  "failures": [
+    {
+      "field": "appId",
+      "key": "favorite:validation.appId.invalid",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": FavoriteAppIdParamsDto {
+    "appId": "507f1f77bcf86cd79943901z",
+  },
+}
+`;
+
+exports[`favorite request DTOs match the Joi schemas FavoriteAppIdParamsDto ≡ favoriteAppIdParamSchema: null 1`] = `
+{
+  "failures": [
+    {
+      "field": "appId",
+      "key": "favorite:validation.appId.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": FavoriteAppIdParamsDto {
+    "appId": null,
+  },
+}
+`;
+
+exports[`favorite request DTOs match the Joi schemas FavoriteAppIdParamsDto ≡ favoriteAppIdParamSchema: tooShort 1`] = `
+{
+  "failures": [
+    {
+      "field": "appId",
+      "key": "favorite:validation.appId.invalid",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": FavoriteAppIdParamsDto {
+    "appId": "507f1f77bcf86cd79943901",
+  },
+}
+`;
+
+exports[`favorite request DTOs match the Joi schemas FavoriteAppIdParamsDto ≡ favoriteAppIdParamSchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": FavoriteAppIdParamsDto {
+    "appId": "507f1f77bcf86cd799439011",
+  },
+}
+`;
+
+exports[`favorite request DTOs match the Joi schemas FavoriteAppIdParamsDto ≡ favoriteAppIdParamSchema: valid 1`] = `
+{
+  "failures": [],
+  "value": FavoriteAppIdParamsDto {
+    "appId": "507f1f77bcf86cd799439011",
+  },
+}
+`;
+
+exports[`favorite request DTOs match the Joi schemas FavoriteAppIdParamsDto ≡ favoriteAppIdParamSchema: wrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "appId",
+      "key": "favorite:validation.appId.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": FavoriteAppIdParamsDto {
+    "appId": 123,
+  },
+}
+`;
+
+exports[`favorite request DTOs match the Joi schemas ListFavoritesQueryDto ≡ listFavoritesQuerySchema: allFields 1`] = `
+{
+  "failures": [],
+  "value": ListFavoritesQueryDto {
+    "categoryId": "507f1f77bcf86cd799439011",
+    "search": "mail",
+    "sort": "name",
+  },
+}
+`;
+
+exports[`favorite request DTOs match the Joi schemas ListFavoritesQueryDto ≡ listFavoritesQuerySchema: categoryIdEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "categoryId",
+      "key": "validation:categoryId.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": ListFavoritesQueryDto {
+    "categoryId": "",
+  },
+}
+`;
+
+exports[`favorite request DTOs match the Joi schemas ListFavoritesQueryDto ≡ listFavoritesQuerySchema: categoryIdNotHex 1`] = `
+{
+  "failures": [
+    {
+      "field": "categoryId",
+      "key": "validation:categoryId.invalid",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": ListFavoritesQueryDto {
+    "categoryId": "nope",
+  },
+}
+`;
+
+exports[`favorite request DTOs match the Joi schemas ListFavoritesQueryDto ≡ listFavoritesQuerySchema: categoryIdValid 1`] = `
+{
+  "failures": [],
+  "value": ListFavoritesQueryDto {
+    "categoryId": "507f1f77bcf86cd799439011",
+  },
+}
+`;
+
+exports[`favorite request DTOs match the Joi schemas ListFavoritesQueryDto ≡ listFavoritesQuerySchema: categoryIdWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "categoryId",
+      "key": "validation:categoryId.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": ListFavoritesQueryDto {
+    "categoryId": [
+      "507f1f77bcf86cd799439011",
+    ],
+  },
+}
+`;
+
+exports[`favorite request DTOs match the Joi schemas ListFavoritesQueryDto ≡ listFavoritesQuerySchema: empty 1`] = `
+{
+  "failures": [],
+  "value": ListFavoritesQueryDto {},
+}
+`;
+
+exports[`favorite request DTOs match the Joi schemas ListFavoritesQueryDto ≡ listFavoritesQuerySchema: searchAtMaxPadded 1`] = `
+{
+  "failures": [],
+  "value": ListFavoritesQueryDto {
+    "search": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`favorite request DTOs match the Joi schemas ListFavoritesQueryDto ≡ listFavoritesQuerySchema: searchEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": ListFavoritesQueryDto {
+    "search": "",
+  },
+}
+`;
+
+exports[`favorite request DTOs match the Joi schemas ListFavoritesQueryDto ≡ listFavoritesQuerySchema: searchPadded 1`] = `
+{
+  "failures": [],
+  "value": ListFavoritesQueryDto {
+    "search": "mail",
+  },
+}
+`;
+
+exports[`favorite request DTOs match the Joi schemas ListFavoritesQueryDto ≡ listFavoritesQuerySchema: searchTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "maxLength",
+    },
+  ],
+  "value": ListFavoritesQueryDto {
+    "search": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`favorite request DTOs match the Joi schemas ListFavoritesQueryDto ≡ listFavoritesQuerySchema: searchWhitespaceOnly 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": ListFavoritesQueryDto {
+    "search": "",
+  },
+}
+`;
+
+exports[`favorite request DTOs match the Joi schemas ListFavoritesQueryDto ≡ listFavoritesQuerySchema: searchWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": ListFavoritesQueryDto {
+    "search": [
+      "a",
+      "b",
+    ],
+  },
+}
+`;
+
+exports[`favorite request DTOs match the Joi schemas ListFavoritesQueryDto ≡ listFavoritesQuerySchema: sortEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "sort",
+      "key": "favorite:validation.sort.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": ListFavoritesQueryDto {
+    "sort": "",
+  },
+}
+`;
+
+exports[`favorite request DTOs match the Joi schemas ListFavoritesQueryDto ≡ listFavoritesQuerySchema: sortName 1`] = `
+{
+  "failures": [],
+  "value": ListFavoritesQueryDto {
+    "sort": "name",
+  },
+}
+`;
+
+exports[`favorite request DTOs match the Joi schemas ListFavoritesQueryDto ≡ listFavoritesQuerySchema: sortRecent 1`] = `
+{
+  "failures": [],
+  "value": ListFavoritesQueryDto {
+    "sort": "recent",
+  },
+}
+`;
+
+exports[`favorite request DTOs match the Joi schemas ListFavoritesQueryDto ≡ listFavoritesQuerySchema: sortUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "sort",
+      "key": "favorite:validation.sort.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": ListFavoritesQueryDto {
+    "sort": "popular",
+  },
+}
+`;
+
+exports[`favorite request DTOs match the Joi schemas ListFavoritesQueryDto ≡ listFavoritesQuerySchema: sortWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "sort",
+      "key": "favorite:validation.sort.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": ListFavoritesQueryDto {
+    "sort": [
+      "name",
+    ],
+  },
+}
+`;
+
+exports[`favorite request DTOs match the Joi schemas ListFavoritesQueryDto ≡ listFavoritesQuerySchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": ListFavoritesQueryDto {},
+}
+`;

@@ -219,7 +219,7 @@ test(
     expect((await errorOf(short)).errors).toContainEqual(
       expect.objectContaining({
         field: "tempPassword",
-        reason: "string.min",
+        reason: "minLength",
         message: serverMessage.unlockAccount.validation.tempPasswordTooShort
       })
     );

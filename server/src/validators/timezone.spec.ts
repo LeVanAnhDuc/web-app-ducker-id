@@ -1,5 +1,8 @@
+// modules
+import { LoginHistoryStatsQueryDto } from "@/modules/login-history/dtos/requests";
+// validators
 import { isSupportedTimeZone } from "./utils";
-import { loginHistoryStatsQuerySchema } from "./schemas/login-history";
+import { validateDto } from "./validate-dto";
 
 describe("isSupportedTimeZone", () => {
   it("accepts a zone under either spelling, canonical or link", () => {
@@ -33,31 +36,35 @@ describe("isSupportedTimeZone", () => {
   });
 });
 
-describe("loginHistoryStatsQuerySchema", () => {
-  it("passes a browser-reported zone through untouched", () => {
-    const { error, value } = loginHistoryStatsQuerySchema.validate({
+describe("LoginHistoryStatsQueryDto", () => {
+  const keysOf = async (query: Record<string, unknown>) =>
+    (await validateDto(LoginHistoryStatsQueryDto, query)).failures.map(
+      (failure) => failure.key
+    );
+
+  it("passes a browser-reported zone through untouched", async () => {
+    const { failures, value } = await validateDto(LoginHistoryStatsQueryDto, {
       range: "30d",
       tz: "Asia/Saigon"
     });
 
-    expect(error).toBeUndefined();
-    expect(value).toEqual({ range: "30d", tz: "Asia/Saigon" });
+    expect(failures).toEqual([]);
+    expect({ ...value }).toEqual({ range: "30d", tz: "Asia/Saigon" });
   });
 
-  it("refuses a range outside the three on offer", () => {
-    const { error } = loginHistoryStatsQuerySchema.validate({ range: "365d" });
-    expect(error?.message).toBe("validation:range.invalid");
+  it("refuses a range outside the three on offer", async () => {
+    expect(await keysOf({ range: "365d" })).toEqual([
+      "validation:range.invalid"
+    ]);
   });
 
-  it("refuses a timezone the runtime cannot resolve", () => {
-    const { error } = loginHistoryStatsQuerySchema.validate({
-      tz: "Mars/Olympus"
-    });
-    expect(error?.message).toBe("validation:timezone.invalid");
+  it("refuses a timezone the runtime cannot resolve", async () => {
+    expect(await keysOf({ tz: "Mars/Olympus" })).toEqual([
+      "validation:timezone.invalid"
+    ]);
   });
 
-  it("allows both to be absent", () => {
-    const { error } = loginHistoryStatsQuerySchema.validate({});
-    expect(error).toBeUndefined();
+  it("allows both to be absent", async () => {
+    expect(await keysOf({})).toEqual([]);
   });
 });

@@ -1,0 +1,259 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`unlock-account request DTOs match the Joi schemas UnlockRequestBodyDto ≡ unlockRequestSchema: empty 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": UnlockRequestBodyDto {
+    "email": "",
+  },
+}
+`;
+
+exports[`unlock-account request DTOs match the Joi schemas UnlockRequestBodyDto ≡ unlockRequestSchema: missing 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": UnlockRequestBodyDto {},
+}
+`;
+
+exports[`unlock-account request DTOs match the Joi schemas UnlockRequestBodyDto ≡ unlockRequestSchema: notAnEmail 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.invalid",
+      "reason": "isEmail",
+    },
+  ],
+  "value": UnlockRequestBodyDto {
+    "email": "user",
+  },
+}
+`;
+
+exports[`unlock-account request DTOs match the Joi schemas UnlockRequestBodyDto ≡ unlockRequestSchema: null 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": UnlockRequestBodyDto {
+    "email": null,
+  },
+}
+`;
+
+exports[`unlock-account request DTOs match the Joi schemas UnlockRequestBodyDto ≡ unlockRequestSchema: paddedUpperCase 1`] = `
+{
+  "failures": [],
+  "value": UnlockRequestBodyDto {
+    "email": "user@example.com",
+  },
+}
+`;
+
+exports[`unlock-account request DTOs match the Joi schemas UnlockRequestBodyDto ≡ unlockRequestSchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": UnlockRequestBodyDto {
+    "email": "user@example.com",
+  },
+}
+`;
+
+exports[`unlock-account request DTOs match the Joi schemas UnlockRequestBodyDto ≡ unlockRequestSchema: valid 1`] = `
+{
+  "failures": [],
+  "value": UnlockRequestBodyDto {
+    "email": "user@example.com",
+  },
+}
+`;
+
+exports[`unlock-account request DTOs match the Joi schemas UnlockRequestBodyDto ≡ unlockRequestSchema: wrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": UnlockRequestBodyDto {
+    "email": 123,
+  },
+}
+`;
+
+exports[`unlock-account request DTOs match the Joi schemas UnlockVerifyBodyDto ≡ unlockVerifySchema: emailInvalid 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.invalid",
+      "reason": "isEmail",
+    },
+  ],
+  "value": UnlockVerifyBodyDto {
+    "email": "user",
+    "tempPassword": "aaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`unlock-account request DTOs match the Joi schemas UnlockVerifyBodyDto ≡ unlockVerifySchema: emailMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": UnlockVerifyBodyDto {
+    "tempPassword": "aaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`unlock-account request DTOs match the Joi schemas UnlockVerifyBodyDto ≡ unlockVerifySchema: empty 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isDefined",
+    },
+    {
+      "field": "tempPassword",
+      "key": "unlockAccount:validation.tempPasswordRequired",
+      "reason": "isDefined",
+    },
+  ],
+  "value": UnlockVerifyBodyDto {},
+}
+`;
+
+exports[`unlock-account request DTOs match the Joi schemas UnlockVerifyBodyDto ≡ unlockVerifySchema: paddedTempPasswordKept 1`] = `
+{
+  "failures": [],
+  "value": UnlockVerifyBodyDto {
+    "email": "user@example.com",
+    "tempPassword": " aaaaaaaaaaaa ",
+  },
+}
+`;
+
+exports[`unlock-account request DTOs match the Joi schemas UnlockVerifyBodyDto ≡ unlockVerifySchema: tempPasswordEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "tempPassword",
+      "key": "unlockAccount:validation.tempPasswordRequired",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": UnlockVerifyBodyDto {
+    "email": "user@example.com",
+    "tempPassword": "",
+  },
+}
+`;
+
+exports[`unlock-account request DTOs match the Joi schemas UnlockVerifyBodyDto ≡ unlockVerifySchema: tempPasswordMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "tempPassword",
+      "key": "unlockAccount:validation.tempPasswordRequired",
+      "reason": "isDefined",
+    },
+  ],
+  "value": UnlockVerifyBodyDto {
+    "email": "user@example.com",
+  },
+}
+`;
+
+exports[`unlock-account request DTOs match the Joi schemas UnlockVerifyBodyDto ≡ unlockVerifySchema: tempPasswordNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "tempPassword",
+      "key": "unlockAccount:validation.tempPasswordRequired",
+      "reason": "isDefined",
+    },
+  ],
+  "value": UnlockVerifyBodyDto {
+    "email": "user@example.com",
+    "tempPassword": null,
+  },
+}
+`;
+
+exports[`unlock-account request DTOs match the Joi schemas UnlockVerifyBodyDto ≡ unlockVerifySchema: tempPasswordTooShort 1`] = `
+{
+  "failures": [
+    {
+      "field": "tempPassword",
+      "key": "unlockAccount:validation.tempPasswordTooShort",
+      "reason": "minLength",
+    },
+  ],
+  "value": UnlockVerifyBodyDto {
+    "email": "user@example.com",
+    "tempPassword": "aaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`unlock-account request DTOs match the Joi schemas UnlockVerifyBodyDto ≡ unlockVerifySchema: tempPasswordWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "tempPassword",
+      "key": "unlockAccount:validation.tempPasswordRequired",
+      "reason": "isString",
+    },
+  ],
+  "value": UnlockVerifyBodyDto {
+    "email": "user@example.com",
+    "tempPassword": 123456789012,
+  },
+}
+`;
+
+exports[`unlock-account request DTOs match the Joi schemas UnlockVerifyBodyDto ≡ unlockVerifySchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": UnlockVerifyBodyDto {
+    "email": "user@example.com",
+    "tempPassword": "aaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`unlock-account request DTOs match the Joi schemas UnlockVerifyBodyDto ≡ unlockVerifySchema: valid 1`] = `
+{
+  "failures": [],
+  "value": UnlockVerifyBodyDto {
+    "email": "user@example.com",
+    "tempPassword": "aaaaaaaaaaaa",
+  },
+}
+`;

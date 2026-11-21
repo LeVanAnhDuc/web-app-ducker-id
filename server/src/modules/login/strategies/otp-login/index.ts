@@ -1,6 +1,6 @@
 // types
 import type { Request } from "express";
-import type { OtpSendBody, OtpVerifyBody } from "../../types";
+import type { OtpSendBodyDto, OtpVerifyBodyDto } from "../../dtos/requests";
 import type { LoginResponseDto, OtpSendDto } from "../../dtos";
 import type { OtpLoginStrategyDeps } from "./deps";
 // others
@@ -12,12 +12,12 @@ export class OtpLoginStrategy {
   constructor(private readonly deps: OtpLoginStrategyDeps) {}
 
   @LogMethod({ name: "Login OTP send" })
-  sendCode(body: OtpSendBody, req: Request): Promise<OtpSendDto> {
+  sendCode(body: OtpSendBodyDto, req: Request): Promise<OtpSendDto> {
     return sendCode(this.deps, body, req);
   }
 
   @LogMethod({ name: "Login OTP verification" })
-  verifyCode(body: OtpVerifyBody, req: Request): Promise<LoginResponseDto> {
+  verifyCode(body: OtpVerifyBodyDto, req: Request): Promise<LoginResponseDto> {
     return verifyCode(this.deps, body, req);
   }
 }

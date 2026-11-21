@@ -5,13 +5,13 @@ import type { RateLimiterMiddleware } from "@/middlewares";
 import type { UserController } from "./user.controller";
 // common
 import { handle } from "@/common/responses";
-// validators
+// modules
 import {
-  updateProfileSchema,
-  getPublicProfileSchema,
-  adminUsersQuerySchema,
-  adminUserIdParamsSchema
-} from "@/validators/schemas/user";
+  AdminUserIdParamsDto,
+  AdminUsersQueryDto,
+  PublicProfileParamsDto,
+  UpdateProfileBodyDto
+} from "@/modules/user/dtos/requests";
 // others
 import {
   adminGuard,
@@ -38,7 +38,7 @@ export const createUserRoutes = (
     "/me",
     rl.updateProfileByIp,
     authGuard,
-    bodyPipe(updateProfileSchema),
+    bodyPipe(UpdateProfileBodyDto),
     handle(controller.updateMyProfile, {
       message: "user:success.updateProfile"
     })
@@ -46,7 +46,7 @@ export const createUserRoutes = (
 
   users.get(
     "/:id",
-    paramsPipe(getPublicProfileSchema),
+    paramsPipe(PublicProfileParamsDto),
     handle(controller.getPublicProfile, {
       message: "user:success.getPublicProfile"
     })
@@ -67,26 +67,26 @@ export const createUserAdminRoutes = (
 
   adminUsers.get(
     "/",
-    queryPipe(adminUsersQuerySchema),
+    queryPipe(AdminUsersQueryDto),
     handle(controller.getAdminUsers, { message: "user:success.getAdminUsers" })
   );
 
   adminUsers.patch(
     "/:id/lock",
     rl.adminUserMutationByIpAndUser,
-    paramsPipe(adminUserIdParamsSchema),
+    paramsPipe(AdminUserIdParamsDto),
     handle(controller.lockUser, { message: "user:success.lockUser" })
   );
   adminUsers.patch(
     "/:id/unlock",
     rl.adminUserMutationByIpAndUser,
-    paramsPipe(adminUserIdParamsSchema),
+    paramsPipe(AdminUserIdParamsDto),
     handle(controller.unlockUser, { message: "user:success.unlockUser" })
   );
   adminUsers.post(
     "/:id/reset-password",
     rl.adminUserMutationByIpAndUser,
-    paramsPipe(adminUserIdParamsSchema),
+    paramsPipe(AdminUserIdParamsDto),
     handle(controller.resetUserPassword, {
       message: "user:success.resetPassword"
     })

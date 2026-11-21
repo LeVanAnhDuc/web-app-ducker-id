@@ -10,10 +10,10 @@ import type {
   LoginAnomalyAssessment,
   LoginAnomalyReason,
   LoginEventPayload,
-  LoginHistoryAdminQuery,
   LoginHistoryFilter,
   SignInTraits
 } from "@/modules/login-history/types";
+import type { LoginHistoryAdminQueryDto } from "@/modules/login-history/dtos/requests";
 // modules
 import {
   CLIENT_TYPES,
@@ -214,7 +214,7 @@ const endOfDayIfDateOnly = (value: string): Date =>
     : new Date(value);
 
 export const buildLoginHistoryFilter = (
-  query: LoginHistoryAdminQuery,
+  query: LoginHistoryAdminQueryDto,
   userId?: string
 ): LoginHistoryFilter => {
   const filter: LoginHistoryFilter = {};

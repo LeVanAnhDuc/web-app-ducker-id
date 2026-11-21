@@ -1,11 +1,28 @@
-// libs
-import j2s from "joi-to-swagger";
 // types
 import type { OpenAPIV3 } from "openapi-types";
 // validators
-import { changePasswordSchema } from "@/validators/schemas/change-password";
+import {
+  PASSWORD_STRENGTH_PATTERN,
+  PASSWORD_VALIDATION
+} from "@/validators/constants";
 
-const { swagger: ChangePasswordRequestSchema } = j2s(changePasswordSchema);
+const ChangePasswordRequestSchema: OpenAPIV3.SchemaObject = {
+  type: "object",
+  required: ["currentPassword", "newPassword", "confirmPassword"],
+  properties: {
+    currentPassword: { type: "string", minLength: 1 },
+    newPassword: {
+      type: "string",
+      minLength: PASSWORD_VALIDATION.MIN_LENGTH,
+      maxLength: PASSWORD_VALIDATION.MAX_LENGTH,
+      pattern: PASSWORD_STRENGTH_PATTERN.source
+    },
+    confirmPassword: {
+      type: "string",
+      description: "Must equal `newPassword`"
+    }
+  }
+};
 
 const ChangePasswordResponseSchema: OpenAPIV3.SchemaObject = {
   type: "object",
@@ -24,6 +41,6 @@ export const changePasswordSwaggerSchemas: Record<
   string,
   OpenAPIV3.SchemaObject
 > = {
-  ChangePasswordRequest: ChangePasswordRequestSchema as OpenAPIV3.SchemaObject,
+  ChangePasswordRequest: ChangePasswordRequestSchema,
   ChangePasswordResponse: ChangePasswordResponseSchema
 };

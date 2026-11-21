@@ -1,3 +1,5 @@
+import "reflect-metadata";
+
 jest.mock("@/libs/logger", () => ({
   __esModule: true,
   // No-op decorator factory: keeps @LogMethod-decorated classes loadable in

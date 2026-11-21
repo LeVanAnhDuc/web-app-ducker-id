@@ -1,6 +1,6 @@
 // types
 import type { Request } from "express";
-import type { SendOtpBody } from "../types";
+import type { SendOtpBodyDto } from "../dtos/requests";
 import type { SendOtpDto } from "../dtos";
 import type { SignupServiceDeps } from "./deps";
 // dtos
@@ -16,7 +16,7 @@ import {
 
 export const sendOtp = async (
   deps: SignupServiceDeps,
-  body: SendOtpBody,
+  body: SendOtpBodyDto,
   req: Request
 ): Promise<SendOtpDto> => {
   const { email } = body;

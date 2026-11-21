@@ -30,10 +30,10 @@ test(
 
     // Token boundaries: 127 / 129 chars, upper-case hex, empty.
     const malformed: [string, string][] = [
-      [KNOWN_MAGIC_TOKEN.slice(1), "string.length"],
-      [KNOWN_MAGIC_TOKEN + "a", "string.length"],
-      [KNOWN_MAGIC_TOKEN.toUpperCase(), "string.pattern.base"],
-      ["", "string.empty"]
+      [KNOWN_MAGIC_TOKEN.slice(1), "isLength"],
+      [KNOWN_MAGIC_TOKEN + "a", "isLength"],
+      [KNOWN_MAGIC_TOKEN.toUpperCase(), "matches"],
+      ["", "isNotEmpty"]
     ];
     for (const [token, reason] of malformed) {
       const res = await api.auth.verifyMagicLink(email, token);

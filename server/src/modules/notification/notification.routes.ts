@@ -4,12 +4,11 @@ import { Router } from "express";
 import type { NotificationController } from "./notification.controller";
 // common
 import { handle } from "@/common/responses";
-// validators
-import {
-  notificationListQuerySchema,
-  notificationIdParamSchema
-} from "@/validators/schemas/notification";
 // others
+import {
+  NotificationIdParamsDto,
+  NotificationListQueryDto
+} from "./dtos/requests";
 import { authGuard, queryPipe, paramsPipe } from "@/middlewares";
 
 export const createNotificationUserRoutes = (
@@ -34,12 +33,12 @@ export const createNotificationUserRoutes = (
   );
   notifications.get(
     "/",
-    queryPipe(notificationListQuerySchema),
+    queryPipe(NotificationListQueryDto),
     handle(controller.list, { message: "notification:success.list" })
   );
   notifications.patch(
     "/:id/read",
-    paramsPipe(notificationIdParamSchema),
+    paramsPipe(NotificationIdParamsDto),
     handle(controller.markRead, { message: "notification:success.markRead" })
   );
 

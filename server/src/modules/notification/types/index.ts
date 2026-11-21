@@ -5,9 +5,10 @@ import type {
   NOTIFICATION_TYPES,
   NOTIFICATION_CATEGORIES
 } from "@/modules/notification/constants";
-
-// common
-import type { SortOrder } from "@/common/sort";
+import type {
+  NotificationIdParamsDto,
+  NotificationListQueryDto
+} from "../dtos/requests";
 
 export type NotificationType =
   (typeof NOTIFICATION_TYPES)[keyof typeof NOTIFICATION_TYPES];
@@ -43,24 +44,18 @@ export interface CreateNotificationData {
   dedupeKey?: string | null;
 }
 
-export interface NotificationListQuery {
-  page?: number;
-  limit?: number;
-  isRead?: boolean;
-  category?: NotificationCategory;
-  sortOrder?: SortOrder;
-}
-
 export interface NotificationFilter {
   userId: string;
   isRead?: boolean;
   category?: NotificationCategory;
 }
 
+// The index signature keeps the handlers assignable to Express's own, whose
+// query and params are string dictionaries.
 export interface NotificationListRequest extends Omit<Request, "query"> {
-  query: NotificationListQuery;
+  query: NotificationListQueryDto & Request["query"];
 }
 
 export interface NotificationIdRequest extends Omit<Request, "params"> {
-  params: { id: string };
+  params: NotificationIdParamsDto & Record<string, string>;
 }

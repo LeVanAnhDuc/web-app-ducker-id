@@ -5,12 +5,8 @@ import { StatusCodes } from "http-status-codes";
 import type { FavoriteController } from "./favorite.controller";
 // common
 import { handle } from "@/common/responses";
-// validators
-import {
-  favoriteAppIdParamSchema,
-  listFavoritesQuerySchema
-} from "@/validators/schemas/favorite";
 // others
+import { FavoriteAppIdParamsDto, ListFavoritesQueryDto } from "./dtos/requests";
 import { authGuard, paramsPipe, queryPipe } from "@/middlewares";
 
 export const createFavoriteUserRoutes = (
@@ -23,12 +19,12 @@ export const createFavoriteUserRoutes = (
 
   favorites.get(
     "/",
-    queryPipe(listFavoritesQuerySchema),
+    queryPipe(ListFavoritesQueryDto),
     handle(controller.list, { message: "favorite:success.list" })
   );
   favorites.post(
     "/:appId",
-    paramsPipe(favoriteAppIdParamSchema),
+    paramsPipe(FavoriteAppIdParamsDto),
     handle(controller.add, {
       status: StatusCodes.CREATED,
       message: "favorite:success.add"
@@ -36,7 +32,7 @@ export const createFavoriteUserRoutes = (
   );
   favorites.delete(
     "/:appId",
-    paramsPipe(favoriteAppIdParamSchema),
+    paramsPipe(FavoriteAppIdParamsDto),
     handle(controller.remove, { status: StatusCodes.NO_CONTENT })
   );
 

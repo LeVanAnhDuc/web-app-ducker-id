@@ -1,6 +1,6 @@
 // types
 import type { Request } from "express";
-import type { UnlockRequestBody } from "../types";
+import type { UnlockRequestBodyDto } from "../dtos/requests";
 import type { UnlockRequestDto } from "../dtos";
 import type { UnlockAccountServiceDeps } from "./deps";
 // common
@@ -16,7 +16,7 @@ import { Logger } from "@/libs/logger";
 
 export const unlockRequest = async (
   deps: UnlockAccountServiceDeps,
-  body: UnlockRequestBody,
+  body: UnlockRequestBodyDto,
   req: Request
 ): Promise<UnlockRequestDto> => {
   const { email } = body;

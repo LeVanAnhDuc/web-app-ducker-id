@@ -1,0 +1,5236 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`category request DTOs match the Joi schemas CategoryIdParamsDto ≡ categoryIdParamSchema: empty 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "category:validation.id.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": CategoryIdParamsDto {
+    "id": "",
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CategoryIdParamsDto ≡ categoryIdParamSchema: missing 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "category:validation.id.invalid",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CategoryIdParamsDto {},
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CategoryIdParamsDto ≡ categoryIdParamSchema: notHex 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "category:validation.id.invalid",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": CategoryIdParamsDto {
+    "id": "4b2f0c2f1a2b3c4d5e6f7a1z",
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CategoryIdParamsDto ≡ categoryIdParamSchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": CategoryIdParamsDto {
+    "id": "64b2f0c2f1a2b3c4d5e6f7a1",
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CategoryIdParamsDto ≡ categoryIdParamSchema: valid 1`] = `
+{
+  "failures": [],
+  "value": CategoryIdParamsDto {
+    "id": "64b2f0c2f1a2b3c4d5e6f7a1",
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CategoryIdParamsDto ≡ categoryIdParamSchema: validUpperCase 1`] = `
+{
+  "failures": [],
+  "value": CategoryIdParamsDto {
+    "id": "64B2F0C2F1A2B3C4D5E6F7A1",
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CategoryIdParamsDto ≡ categoryIdParamSchema: wrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "category:validation.id.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": CategoryIdParamsDto {
+    "id": 123,
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CreateCategoryBodyDto ≡ createCategoryBodySchema: bothEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "name.en",
+      "key": "category:validation.nameEn.required",
+      "reason": "isNotEmpty",
+    },
+    {
+      "field": "name.vi",
+      "key": "category:validation.nameVi.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": CreateCategoryBodyDto {
+    "name": CreateCategoryNameDto {
+      "en": "",
+      "vi": "",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CreateCategoryBodyDto ≡ createCategoryBodySchema: emptyBody 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "category:validation.nameEn.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CreateCategoryBodyDto {},
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CreateCategoryBodyDto ≡ createCategoryBodySchema: enAtMax 1`] = `
+{
+  "failures": [],
+  "value": CreateCategoryBodyDto {
+    "name": CreateCategoryNameDto {
+      "en": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "vi": "Nội dung",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CreateCategoryBodyDto ≡ createCategoryBodySchema: enEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "name.en",
+      "key": "category:validation.nameEn.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": CreateCategoryBodyDto {
+    "name": CreateCategoryNameDto {
+      "en": "",
+      "vi": "Nội dung",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CreateCategoryBodyDto ≡ createCategoryBodySchema: enFoldedToMax 1`] = `
+{
+  "failures": [],
+  "value": CreateCategoryBodyDto {
+    "name": CreateCategoryNameDto {
+      "en": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "vi": "Nội dung",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CreateCategoryBodyDto ≡ createCategoryBodySchema: enInvisibleOnly 1`] = `
+{
+  "failures": [
+    {
+      "field": "name.en",
+      "key": "category:validation.nameEn.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": CreateCategoryBodyDto {
+    "name": CreateCategoryNameDto {
+      "en": "",
+      "vi": "Nội dung",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CreateCategoryBodyDto ≡ createCategoryBodySchema: enMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "name.en",
+      "key": "category:validation.nameEn.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CreateCategoryBodyDto {
+    "name": CreateCategoryNameDto {
+      "vi": "x",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CreateCategoryBodyDto ≡ createCategoryBodySchema: enNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "name.en",
+      "key": "category:validation.nameEn.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CreateCategoryBodyDto {
+    "name": CreateCategoryNameDto {
+      "en": null,
+      "vi": "Nội dung",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CreateCategoryBodyDto ≡ createCategoryBodySchema: enOnlyEmoji 1`] = `
+{
+  "failures": [
+    {
+      "field": "name.en",
+      "key": "category:validation.nameEn.noSlug",
+      "reason": "hasCategorySlug",
+    },
+  ],
+  "value": CreateCategoryBodyDto {
+    "name": CreateCategoryNameDto {
+      "en": "🚀",
+      "vi": "Nội dung",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CreateCategoryBodyDto ≡ createCategoryBodySchema: enOnlyPunctuation 1`] = `
+{
+  "failures": [
+    {
+      "field": "name.en",
+      "key": "category:validation.nameEn.noSlug",
+      "reason": "hasCategorySlug",
+    },
+  ],
+  "value": CreateCategoryBodyDto {
+    "name": CreateCategoryNameDto {
+      "en": "!!!",
+      "vi": "Nội dung",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CreateCategoryBodyDto ≡ createCategoryBodySchema: enPaddedAtMax 1`] = `
+{
+  "failures": [],
+  "value": CreateCategoryBodyDto {
+    "name": CreateCategoryNameDto {
+      "en": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "vi": "Nội dung",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CreateCategoryBodyDto ≡ createCategoryBodySchema: enTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "name.en",
+      "key": "category:validation.nameEn.maxLength",
+      "reason": "maxLength",
+    },
+  ],
+  "value": CreateCategoryBodyDto {
+    "name": CreateCategoryNameDto {
+      "en": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "vi": "Nội dung",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CreateCategoryBodyDto ≡ createCategoryBodySchema: enWhitespaceOnly 1`] = `
+{
+  "failures": [
+    {
+      "field": "name.en",
+      "key": "category:validation.nameEn.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": CreateCategoryBodyDto {
+    "name": CreateCategoryNameDto {
+      "en": "",
+      "vi": "Nội dung",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CreateCategoryBodyDto ≡ createCategoryBodySchema: enWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "name.en",
+      "key": "category:validation.nameEn.required",
+      "reason": "isString",
+    },
+  ],
+  "value": CreateCategoryBodyDto {
+    "name": CreateCategoryNameDto {
+      "en": 123,
+      "vi": "Nội dung",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CreateCategoryBodyDto ≡ createCategoryBodySchema: nameArray 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "category:validation.nameEn.required",
+      "reason": "isObject",
+    },
+  ],
+  "value": CreateCategoryBodyDto {
+    "name": [],
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CreateCategoryBodyDto ≡ createCategoryBodySchema: nameEmptyObject 1`] = `
+{
+  "failures": [
+    {
+      "field": "name.en",
+      "key": "category:validation.nameEn.required",
+      "reason": "isDefined",
+    },
+    {
+      "field": "name.vi",
+      "key": "category:validation.nameVi.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CreateCategoryBodyDto {
+    "name": CreateCategoryNameDto {},
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CreateCategoryBodyDto ≡ createCategoryBodySchema: nameNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "category:validation.nameEn.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CreateCategoryBodyDto {
+    "name": null,
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CreateCategoryBodyDto ≡ createCategoryBodySchema: nameString 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "category:validation.nameEn.required",
+      "reason": "isObject",
+    },
+  ],
+  "value": CreateCategoryBodyDto {
+    "name": "Content",
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CreateCategoryBodyDto ≡ createCategoryBodySchema: normalised 1`] = `
+{
+  "failures": [],
+  "value": CreateCategoryBodyDto {
+    "name": CreateCategoryNameDto {
+      "en": "Content",
+      "vi": "Nội dung",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CreateCategoryBodyDto ≡ createCategoryBodySchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": CreateCategoryBodyDto {
+    "name": CreateCategoryNameDto {
+      "en": "A",
+      "vi": "B",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CreateCategoryBodyDto ≡ createCategoryBodySchema: valid 1`] = `
+{
+  "failures": [],
+  "value": CreateCategoryBodyDto {
+    "name": CreateCategoryNameDto {
+      "en": "Content",
+      "vi": "Nội dung",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CreateCategoryBodyDto ≡ createCategoryBodySchema: viEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "name.vi",
+      "key": "category:validation.nameVi.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": CreateCategoryBodyDto {
+    "name": CreateCategoryNameDto {
+      "en": "Tools",
+      "vi": "",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CreateCategoryBodyDto ≡ createCategoryBodySchema: viMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "name.vi",
+      "key": "category:validation.nameVi.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CreateCategoryBodyDto {
+    "name": CreateCategoryNameDto {
+      "en": "Tools",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CreateCategoryBodyDto ≡ createCategoryBodySchema: viNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "name.vi",
+      "key": "category:validation.nameVi.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CreateCategoryBodyDto {
+    "name": CreateCategoryNameDto {
+      "en": "Tools",
+      "vi": null,
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CreateCategoryBodyDto ≡ createCategoryBodySchema: viOnlyEmoji 1`] = `
+{
+  "failures": [],
+  "value": CreateCategoryBodyDto {
+    "name": CreateCategoryNameDto {
+      "en": "Tools",
+      "vi": "🚀",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CreateCategoryBodyDto ≡ createCategoryBodySchema: viTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "name.vi",
+      "key": "category:validation.nameVi.maxLength",
+      "reason": "maxLength",
+    },
+  ],
+  "value": CreateCategoryBodyDto {
+    "name": CreateCategoryNameDto {
+      "en": "Tools",
+      "vi": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas CreateCategoryBodyDto ≡ createCategoryBodySchema: viWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "name.vi",
+      "key": "category:validation.nameVi.required",
+      "reason": "isString",
+    },
+  ],
+  "value": CreateCategoryBodyDto {
+    "name": CreateCategoryNameDto {
+      "en": "Tools",
+      "vi": 5,
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas DeleteCategoryBodyDto ≡ deleteCategoryBodySchema: atMax 1`] = `
+{
+  "failures": [],
+  "value": DeleteCategoryBodyDto {
+    "reassignments": [
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000000",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000001",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000002",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000003",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000004",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000005",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000006",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000007",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000008",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000009",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000000a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000000b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000000c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000000d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000000e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000000f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000010",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000011",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000012",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000013",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000014",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000015",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000016",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000017",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000018",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000019",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000001a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000001b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000001c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000001d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000001e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000001f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000020",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000021",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000022",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000023",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000024",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000025",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000026",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000027",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000028",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000029",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000002a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000002b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000002c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000002d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000002e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000002f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000030",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000031",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000032",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000033",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000034",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000035",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000036",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000037",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000038",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000039",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000003a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000003b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000003c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000003d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000003e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000003f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000040",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000041",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000042",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000043",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000044",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000045",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000046",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000047",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000048",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000049",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000004a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000004b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000004c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000004d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000004e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000004f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000050",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000051",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000052",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000053",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000054",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000055",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000056",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000057",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000058",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000059",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000005a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000005b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000005c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000005d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000005e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000005f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000060",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000061",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000062",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000063",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000064",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000065",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000066",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000067",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000068",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000069",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000006a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000006b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000006c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000006d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000006e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000006f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000070",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000071",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000072",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000073",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000074",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000075",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000076",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000077",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000078",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000079",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000007a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000007b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000007c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000007d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000007e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000007f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000080",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000081",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000082",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000083",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000084",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000085",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000086",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000087",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000088",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000089",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000008a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000008b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000008c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000008d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000008e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000008f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000090",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000091",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000092",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000093",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000094",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000095",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000096",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000097",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000098",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000099",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000009a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000009b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000009c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000009d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000009e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000009f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000a0",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000a1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000a2",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000a3",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000a4",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000a5",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000a6",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000a7",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000a8",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000a9",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000aa",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000ab",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000ac",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000ad",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000ae",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000af",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000b0",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000b1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000b2",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000b3",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000b4",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000b5",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000b6",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000b7",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000b8",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000b9",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000ba",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000bb",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000bc",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000bd",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000be",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000bf",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000c0",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000c1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000c2",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000c3",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000c4",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000c5",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000c6",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000c7",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000c8",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000c9",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000ca",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000cb",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000cc",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000cd",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000ce",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000cf",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000d0",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000d1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000d2",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000d3",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000d4",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000d5",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000d6",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000d7",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000d8",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000d9",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000da",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000db",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000dc",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000dd",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000de",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000df",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000e0",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000e1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000e2",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000e3",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000e4",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000e5",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000e6",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000e7",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000e8",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000e9",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000ea",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000eb",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000ec",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000ed",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000ee",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000ef",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000f0",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000f1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000f2",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000f3",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000f4",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000f5",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000f6",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000f7",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000f8",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000f9",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000fa",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000fb",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000fc",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000fd",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000fe",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000ff",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000100",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000101",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000102",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000103",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000104",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000105",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000106",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000107",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000108",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000109",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000010a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000010b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000010c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000010d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000010e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000010f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000110",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000111",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000112",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000113",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000114",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000115",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000116",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000117",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000118",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000119",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000011a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000011b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000011c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000011d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000011e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000011f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000120",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000121",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000122",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000123",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000124",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000125",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000126",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000127",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000128",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000129",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000012a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000012b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000012c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000012d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000012e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000012f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000130",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000131",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000132",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000133",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000134",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000135",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000136",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000137",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000138",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000139",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000013a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000013b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000013c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000013d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000013e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000013f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000140",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000141",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000142",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000143",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000144",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000145",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000146",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000147",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000148",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000149",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000014a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000014b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000014c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000014d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000014e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000014f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000150",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000151",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000152",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000153",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000154",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000155",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000156",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000157",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000158",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000159",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000015a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000015b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000015c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000015d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000015e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000015f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000160",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000161",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000162",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000163",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000164",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000165",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000166",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000167",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000168",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000169",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000016a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000016b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000016c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000016d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000016e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000016f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000170",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000171",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000172",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000173",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000174",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000175",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000176",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000177",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000178",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000179",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000017a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000017b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000017c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000017d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000017e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000017f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000180",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000181",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000182",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000183",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000184",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000185",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000186",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000187",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000188",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000189",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000018a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000018b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000018c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000018d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000018e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000018f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000190",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000191",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000192",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000193",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000194",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000195",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000196",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000197",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000198",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000199",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000019a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000019b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000019c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000019d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000019e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000019f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001a0",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001a1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001a2",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001a3",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001a4",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001a5",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001a6",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001a7",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001a8",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001a9",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001aa",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001ab",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001ac",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001ad",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001ae",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001af",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001b0",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001b1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001b2",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001b3",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001b4",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001b5",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001b6",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001b7",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001b8",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001b9",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001ba",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001bb",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001bc",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001bd",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001be",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001bf",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001c0",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001c1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001c2",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001c3",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001c4",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001c5",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001c6",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001c7",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001c8",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001c9",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001ca",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001cb",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001cc",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001cd",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001ce",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001cf",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001d0",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001d1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001d2",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001d3",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001d4",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001d5",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001d6",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001d7",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001d8",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001d9",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001da",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001db",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001dc",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001dd",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001de",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001df",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001e0",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001e1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001e2",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001e3",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001e4",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001e5",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001e6",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001e7",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001e8",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001e9",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001ea",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001eb",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001ec",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001ed",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001ee",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001ef",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001f0",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001f1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001f2",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001f3",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+    ],
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas DeleteCategoryBodyDto ≡ deleteCategoryBodySchema: badApp 1`] = `
+{
+  "failures": [
+    {
+      "field": "reassignments.0.appId",
+      "key": "category:validation.appId.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": DeleteCategoryBodyDto {
+    "reassignments": [
+      CategoryReassignmentDto {
+        "appId": 5,
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+    ],
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas DeleteCategoryBodyDto ≡ deleteCategoryBodySchema: badTarget 1`] = `
+{
+  "failures": [
+    {
+      "field": "reassignments.0.categoryId",
+      "key": "category:validation.targetId.invalid",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": DeleteCategoryBodyDto {
+    "reassignments": [
+      CategoryReassignmentDto {
+        "appId": "64b2f0c2f1a2b3c4d5e6f7a1",
+        "categoryId": "garbage",
+      },
+    ],
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas DeleteCategoryBodyDto ≡ deleteCategoryBodySchema: emptyBody 1`] = `
+{
+  "failures": [],
+  "value": DeleteCategoryBodyDto {
+    "reassignments": [],
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas DeleteCategoryBodyDto ≡ deleteCategoryBodySchema: emptyIds 1`] = `
+{
+  "failures": [
+    {
+      "field": "reassignments.0.appId",
+      "key": "category:validation.appId.invalid",
+      "reason": "isNotEmpty",
+    },
+    {
+      "field": "reassignments.0.categoryId",
+      "key": "category:validation.targetId.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": DeleteCategoryBodyDto {
+    "reassignments": [
+      CategoryReassignmentDto {
+        "appId": "",
+        "categoryId": "",
+      },
+    ],
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas DeleteCategoryBodyDto ≡ deleteCategoryBodySchema: emptyList 1`] = `
+{
+  "failures": [],
+  "value": DeleteCategoryBodyDto {
+    "reassignments": [],
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas DeleteCategoryBodyDto ≡ deleteCategoryBodySchema: listNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "reassignments",
+      "key": "category:validation.reassignments.invalid",
+      "reason": "isArray",
+    },
+  ],
+  "value": DeleteCategoryBodyDto {
+    "reassignments": null,
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas DeleteCategoryBodyDto ≡ deleteCategoryBodySchema: listObject 1`] = `
+{
+  "failures": [
+    {
+      "field": "reassignments",
+      "key": "category:validation.reassignments.invalid",
+      "reason": "isArray",
+    },
+  ],
+  "value": DeleteCategoryBodyDto {
+    "reassignments": CategoryReassignmentDto {
+      "appId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas DeleteCategoryBodyDto ≡ deleteCategoryBodySchema: listString 1`] = `
+{
+  "failures": [
+    {
+      "field": "reassignments",
+      "key": "category:validation.reassignments.invalid",
+      "reason": "isArray",
+    },
+  ],
+  "value": DeleteCategoryBodyDto {
+    "reassignments": "x",
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas DeleteCategoryBodyDto ≡ deleteCategoryBodySchema: missingIds 1`] = `
+{
+  "failures": [
+    {
+      "field": "reassignments.0.appId",
+      "key": "category:validation.appId.invalid",
+      "reason": "isDefined",
+    },
+    {
+      "field": "reassignments.0.categoryId",
+      "key": "category:validation.targetId.invalid",
+      "reason": "isDefined",
+    },
+  ],
+  "value": DeleteCategoryBodyDto {
+    "reassignments": [
+      CategoryReassignmentDto {},
+    ],
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas DeleteCategoryBodyDto ≡ deleteCategoryBodySchema: nonObjectItems 1`] = `
+{
+  "failures": [
+    {
+      "field": "reassignments.0",
+      "key": "category:validation.reassignments.invalid",
+      "reason": "nestedValidation",
+    },
+    {
+      "field": "reassignments.1",
+      "key": "category:validation.reassignments.invalid",
+      "reason": "nestedValidation",
+    },
+    {
+      "field": "reassignments.2",
+      "key": "category:validation.reassignments.invalid",
+      "reason": "nestedValidation",
+    },
+  ],
+  "value": DeleteCategoryBodyDto {
+    "reassignments": [
+      5,
+      null,
+      "x",
+    ],
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas DeleteCategoryBodyDto ≡ deleteCategoryBodySchema: nullIds 1`] = `
+{
+  "failures": [
+    {
+      "field": "reassignments.0.appId",
+      "key": "category:validation.appId.invalid",
+      "reason": "isDefined",
+    },
+    {
+      "field": "reassignments.0.categoryId",
+      "key": "category:validation.targetId.invalid",
+      "reason": "isDefined",
+    },
+  ],
+  "value": DeleteCategoryBodyDto {
+    "reassignments": [
+      CategoryReassignmentDto {
+        "appId": null,
+        "categoryId": null,
+      },
+    ],
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas DeleteCategoryBodyDto ≡ deleteCategoryBodySchema: sameAppTwice 1`] = `
+{
+  "failures": [],
+  "value": DeleteCategoryBodyDto {
+    "reassignments": [
+      CategoryReassignmentDto {
+        "appId": "64b2f0c2f1a2b3c4d5e6f7a1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "64b2f0c2f1a2b3c4d5e6f7a1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+    ],
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas DeleteCategoryBodyDto ≡ deleteCategoryBodySchema: secondItemBad 1`] = `
+{
+  "failures": [
+    {
+      "field": "reassignments.1.categoryId",
+      "key": "category:validation.targetId.invalid",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": DeleteCategoryBodyDto {
+    "reassignments": [
+      CategoryReassignmentDto {
+        "appId": "64b2f0c2f1a2b3c4d5e6f7a1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "64b2f0c2f1a2b3c4d5e6f7a2",
+        "categoryId": "garbage",
+      },
+    ],
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas DeleteCategoryBodyDto ≡ deleteCategoryBodySchema: tooMany 1`] = `
+{
+  "failures": [
+    {
+      "field": "reassignments",
+      "key": "category:validation.reassignments.tooMany",
+      "reason": "arrayMaxSize",
+    },
+  ],
+  "value": DeleteCategoryBodyDto {
+    "reassignments": [
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000000",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000001",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000002",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000003",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000004",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000005",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000006",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000007",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000008",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000009",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000000a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000000b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000000c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000000d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000000e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000000f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000010",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000011",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000012",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000013",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000014",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000015",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000016",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000017",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000018",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000019",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000001a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000001b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000001c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000001d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000001e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000001f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000020",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000021",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000022",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000023",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000024",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000025",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000026",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000027",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000028",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000029",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000002a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000002b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000002c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000002d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000002e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000002f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000030",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000031",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000032",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000033",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000034",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000035",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000036",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000037",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000038",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000039",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000003a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000003b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000003c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000003d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000003e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000003f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000040",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000041",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000042",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000043",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000044",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000045",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000046",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000047",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000048",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000049",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000004a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000004b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000004c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000004d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000004e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000004f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000050",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000051",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000052",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000053",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000054",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000055",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000056",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000057",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000058",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000059",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000005a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000005b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000005c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000005d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000005e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000005f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000060",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000061",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000062",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000063",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000064",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000065",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000066",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000067",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000068",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000069",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000006a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000006b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000006c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000006d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000006e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000006f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000070",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000071",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000072",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000073",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000074",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000075",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000076",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000077",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000078",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000079",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000007a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000007b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000007c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000007d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000007e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000007f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000080",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000081",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000082",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000083",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000084",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000085",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000086",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000087",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000088",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000089",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000008a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000008b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000008c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000008d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000008e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000008f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000090",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000091",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000092",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000093",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000094",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000095",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000096",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000097",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000098",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000099",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000009a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000009b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000009c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000009d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000009e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000009f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000a0",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000a1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000a2",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000a3",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000a4",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000a5",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000a6",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000a7",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000a8",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000a9",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000aa",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000ab",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000ac",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000ad",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000ae",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000af",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000b0",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000b1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000b2",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000b3",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000b4",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000b5",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000b6",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000b7",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000b8",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000b9",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000ba",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000bb",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000bc",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000bd",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000be",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000bf",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000c0",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000c1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000c2",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000c3",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000c4",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000c5",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000c6",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000c7",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000c8",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000c9",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000ca",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000cb",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000cc",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000cd",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000ce",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000cf",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000d0",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000d1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000d2",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000d3",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000d4",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000d5",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000d6",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000d7",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000d8",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000d9",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000da",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000db",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000dc",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000dd",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000de",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000df",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000e0",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000e1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000e2",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000e3",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000e4",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000e5",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000e6",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000e7",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000e8",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000e9",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000ea",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000eb",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000ec",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000ed",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000ee",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000ef",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000f0",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000f1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000f2",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000f3",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000f4",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000f5",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000f6",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000f7",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000f8",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000f9",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000fa",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000fb",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000fc",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000fd",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000fe",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000000ff",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000100",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000101",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000102",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000103",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000104",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000105",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000106",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000107",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000108",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000109",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000010a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000010b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000010c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000010d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000010e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000010f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000110",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000111",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000112",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000113",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000114",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000115",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000116",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000117",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000118",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000119",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000011a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000011b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000011c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000011d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000011e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000011f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000120",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000121",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000122",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000123",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000124",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000125",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000126",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000127",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000128",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000129",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000012a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000012b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000012c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000012d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000012e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000012f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000130",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000131",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000132",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000133",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000134",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000135",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000136",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000137",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000138",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000139",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000013a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000013b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000013c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000013d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000013e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000013f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000140",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000141",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000142",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000143",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000144",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000145",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000146",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000147",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000148",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000149",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000014a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000014b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000014c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000014d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000014e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000014f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000150",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000151",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000152",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000153",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000154",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000155",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000156",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000157",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000158",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000159",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000015a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000015b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000015c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000015d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000015e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000015f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000160",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000161",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000162",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000163",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000164",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000165",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000166",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000167",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000168",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000169",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000016a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000016b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000016c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000016d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000016e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000016f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000170",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000171",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000172",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000173",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000174",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000175",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000176",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000177",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000178",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000179",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000017a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000017b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000017c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000017d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000017e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000017f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000180",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000181",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000182",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000183",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000184",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000185",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000186",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000187",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000188",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000189",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000018a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000018b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000018c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000018d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000018e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000018f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000190",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000191",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000192",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000193",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000194",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000195",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000196",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000197",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000198",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "000000000000000000000199",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000019a",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000019b",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000019c",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000019d",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000019e",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "00000000000000000000019f",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001a0",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001a1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001a2",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001a3",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001a4",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001a5",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001a6",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001a7",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001a8",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001a9",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001aa",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001ab",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001ac",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001ad",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001ae",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001af",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001b0",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001b1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001b2",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001b3",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001b4",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001b5",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001b6",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001b7",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001b8",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001b9",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001ba",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001bb",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001bc",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001bd",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001be",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001bf",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001c0",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001c1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001c2",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001c3",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001c4",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001c5",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001c6",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001c7",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001c8",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001c9",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001ca",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001cb",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001cc",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001cd",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001ce",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001cf",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001d0",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001d1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001d2",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001d3",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001d4",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001d5",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001d6",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001d7",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001d8",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001d9",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001da",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001db",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001dc",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001dd",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001de",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001df",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001e0",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001e1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001e2",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001e3",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001e4",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001e5",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001e6",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001e7",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001e8",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001e9",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001ea",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001eb",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001ec",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001ed",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001ee",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001ef",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001f0",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001f1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001f2",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001f3",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      CategoryReassignmentDto {
+        "appId": "0000000000000000000001f4",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+    ],
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas DeleteCategoryBodyDto ≡ deleteCategoryBodySchema: undefinedBody 1`] = `
+{
+  "failures": [],
+  "value": DeleteCategoryBodyDto {
+    "reassignments": [],
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas DeleteCategoryBodyDto ≡ deleteCategoryBodySchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": DeleteCategoryBodyDto {
+    "reassignments": [
+      CategoryReassignmentDto {
+        "appId": "64b2f0c2f1a2b3c4d5e6f7a1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+    ],
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas DeleteCategoryBodyDto ≡ deleteCategoryBodySchema: valid 1`] = `
+{
+  "failures": [],
+  "value": DeleteCategoryBodyDto {
+    "reassignments": [
+      CategoryReassignmentDto {
+        "appId": "64b2f0c2f1a2b3c4d5e6f7a1",
+        "categoryId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+    ],
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas MoveCategoryBodyDto ≡ moveCategoryBodySchema: array 1`] = `
+{
+  "failures": [
+    {
+      "field": "direction",
+      "key": "category:validation.direction.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": MoveCategoryBodyDto {
+    "direction": [
+      "up",
+    ],
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas MoveCategoryBodyDto ≡ moveCategoryBodySchema: down 1`] = `
+{
+  "failures": [],
+  "value": MoveCategoryBodyDto {
+    "direction": "down",
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas MoveCategoryBodyDto ≡ moveCategoryBodySchema: empty 1`] = `
+{
+  "failures": [
+    {
+      "field": "direction",
+      "key": "category:validation.direction.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": MoveCategoryBodyDto {
+    "direction": "",
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas MoveCategoryBodyDto ≡ moveCategoryBodySchema: missing 1`] = `
+{
+  "failures": [
+    {
+      "field": "direction",
+      "key": "category:validation.direction.invalid",
+      "reason": "isDefined",
+    },
+  ],
+  "value": MoveCategoryBodyDto {},
+}
+`;
+
+exports[`category request DTOs match the Joi schemas MoveCategoryBodyDto ≡ moveCategoryBodySchema: null 1`] = `
+{
+  "failures": [
+    {
+      "field": "direction",
+      "key": "category:validation.direction.invalid",
+      "reason": "isDefined",
+    },
+  ],
+  "value": MoveCategoryBodyDto {
+    "direction": null,
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas MoveCategoryBodyDto ≡ moveCategoryBodySchema: unknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "direction",
+      "key": "category:validation.direction.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": MoveCategoryBodyDto {
+    "direction": "sideways",
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas MoveCategoryBodyDto ≡ moveCategoryBodySchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": MoveCategoryBodyDto {
+    "direction": "up",
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas MoveCategoryBodyDto ≡ moveCategoryBodySchema: up 1`] = `
+{
+  "failures": [],
+  "value": MoveCategoryBodyDto {
+    "direction": "up",
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas MoveCategoryBodyDto ≡ moveCategoryBodySchema: wrongCase 1`] = `
+{
+  "failures": [
+    {
+      "field": "direction",
+      "key": "category:validation.direction.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": MoveCategoryBodyDto {
+    "direction": "UP",
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas MoveCategoryBodyDto ≡ moveCategoryBodySchema: wrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "direction",
+      "key": "category:validation.direction.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": MoveCategoryBodyDto {
+    "direction": 1,
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas UpdateCategoryBodyDto ≡ updateCategoryBodySchema: both 1`] = `
+{
+  "failures": [],
+  "value": UpdateCategoryBodyDto {
+    "name": UpdateCategoryNameDto {
+      "en": "Tools",
+      "vi": "Công cụ",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas UpdateCategoryBodyDto ≡ updateCategoryBodySchema: emptyBody 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "category:validation.body.empty",
+      "reason": "isDefined",
+    },
+  ],
+  "value": UpdateCategoryBodyDto {},
+}
+`;
+
+exports[`category request DTOs match the Joi schemas UpdateCategoryBodyDto ≡ updateCategoryBodySchema: enEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "name.en",
+      "key": "category:validation.nameEn.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": UpdateCategoryBodyDto {
+    "name": UpdateCategoryNameDto {
+      "en": "",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas UpdateCategoryBodyDto ≡ updateCategoryBodySchema: enNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "name.en",
+      "key": "category:validation.nameEn.required",
+      "reason": "isString",
+    },
+  ],
+  "value": UpdateCategoryBodyDto {
+    "name": UpdateCategoryNameDto {
+      "en": null,
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas UpdateCategoryBodyDto ≡ updateCategoryBodySchema: enOnly 1`] = `
+{
+  "failures": [],
+  "value": UpdateCategoryBodyDto {
+    "name": UpdateCategoryNameDto {
+      "en": "Tools",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas UpdateCategoryBodyDto ≡ updateCategoryBodySchema: enOnlyPunctuation 1`] = `
+{
+  "failures": [
+    {
+      "field": "name.en",
+      "key": "category:validation.nameEn.noSlug",
+      "reason": "hasCategorySlug",
+    },
+  ],
+  "value": UpdateCategoryBodyDto {
+    "name": UpdateCategoryNameDto {
+      "en": "!!!",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas UpdateCategoryBodyDto ≡ updateCategoryBodySchema: enPaddedAtMax 1`] = `
+{
+  "failures": [],
+  "value": UpdateCategoryBodyDto {
+    "name": UpdateCategoryNameDto {
+      "en": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas UpdateCategoryBodyDto ≡ updateCategoryBodySchema: enTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "name.en",
+      "key": "category:validation.nameEn.maxLength",
+      "reason": "maxLength",
+    },
+  ],
+  "value": UpdateCategoryBodyDto {
+    "name": UpdateCategoryNameDto {
+      "en": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas UpdateCategoryBodyDto ≡ updateCategoryBodySchema: nameArray 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "category:validation.body.empty",
+      "reason": "isObject",
+    },
+  ],
+  "value": UpdateCategoryBodyDto {
+    "name": [
+      "Tools",
+    ],
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas UpdateCategoryBodyDto ≡ updateCategoryBodySchema: nameEmptyObject 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "category:validation.body.empty",
+      "reason": "hasCategoryName",
+    },
+  ],
+  "value": UpdateCategoryBodyDto {
+    "name": UpdateCategoryNameDto {},
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas UpdateCategoryBodyDto ≡ updateCategoryBodySchema: nameNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "category:validation.body.empty",
+      "reason": "isDefined",
+    },
+  ],
+  "value": UpdateCategoryBodyDto {
+    "name": null,
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas UpdateCategoryBodyDto ≡ updateCategoryBodySchema: nameOnlyUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "category:validation.body.empty",
+      "reason": "hasCategoryName",
+    },
+  ],
+  "value": UpdateCategoryBodyDto {
+    "name": UpdateCategoryNameDto {
+      "fr": "Outils",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas UpdateCategoryBodyDto ≡ updateCategoryBodySchema: nameString 1`] = `
+{
+  "failures": [
+    {
+      "field": "name",
+      "key": "category:validation.body.empty",
+      "reason": "isObject",
+    },
+  ],
+  "value": UpdateCategoryBodyDto {
+    "name": "Tools",
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas UpdateCategoryBodyDto ≡ updateCategoryBodySchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": UpdateCategoryBodyDto {
+    "name": UpdateCategoryNameDto {
+      "en": "Tools",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas UpdateCategoryBodyDto ≡ updateCategoryBodySchema: viOnly 1`] = `
+{
+  "failures": [],
+  "value": UpdateCategoryBodyDto {
+    "name": UpdateCategoryNameDto {
+      "vi": "Công cụ",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas UpdateCategoryBodyDto ≡ updateCategoryBodySchema: viTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "name.vi",
+      "key": "category:validation.nameVi.maxLength",
+      "reason": "maxLength",
+    },
+  ],
+  "value": UpdateCategoryBodyDto {
+    "name": UpdateCategoryNameDto {
+      "vi": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas UpdateCategoryBodyDto ≡ updateCategoryBodySchema: viWhitespaceOnly 1`] = `
+{
+  "failures": [
+    {
+      "field": "name.vi",
+      "key": "category:validation.nameVi.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": UpdateCategoryBodyDto {
+    "name": UpdateCategoryNameDto {
+      "vi": "",
+    },
+  },
+}
+`;
+
+exports[`category request DTOs match the Joi schemas UpdateCategoryBodyDto ≡ updateCategoryBodySchema: viWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "name.vi",
+      "key": "category:validation.nameVi.required",
+      "reason": "isString",
+    },
+  ],
+  "value": UpdateCategoryBodyDto {
+    "name": UpdateCategoryNameDto {
+      "vi": 5,
+    },
+  },
+}
+`;
