@@ -139,6 +139,42 @@ export class FavoriteController {
 
 Module code may import from `routing-controllers-openapi` only `OpenAPI`, and from `@/common/openapi` `ApiErrors`, `ApiProperty` and `Paginated`. It may not import `ResponseSchema`: `@Respond({ type })` owns responses, so there is one source. `class-validator-jsonschema` is imported only inside `@/common/openapi`. The source-scan spec is extended to enforce both.
 
+## Step 0 result — PASS (2026-11-21)
+
+The evidence is in `.superpowers/spike-openapi-notes.md`. The spike code is `server/src/libs/swagger/spike/spike.spec.ts`; it is uncommitted and gets deleted.
+
+| Q | Finding | Evidence |
+| --- | --- | --- |
+| 1 deps | The two new libraries add no peer warnings; the only warning is the existing `class-validator` one from routing-controllers. `reflect-metadata` installs twice (0.1.14 via rco, 0.2.2 ours), but both polyfill the global `Reflect` and are only called through it, so there is **one registry in either load order**. The app loads 0.2 first (`server.ts`, `test/setup.ts`). Round trips in both directions work. | notes §Q1 |
+| 2 raw spec | All 63 actions are emitted at the right verb, and `:id` becomes `{id}`. Our custom param decorators are **ignored cleanly**: no phantom params and no requestBody. But: the 19 `"/"` actions get a **trailing slash**; path params carry a leaked `pattern: "[^\/#\?]+?"`; status is always 200 (`@HttpCode` exists only after mount); and summary and tags default to the method and class names, which would hide a missing `@OpenAPI({summary})`. | notes §Q2 |
+| 3 bridge | **One function**, registered by the builder on each controller class with `OpenAPI(bridge)(Ctor)`, reads `readRouteMeta()` and sets params (from the `@ValidParams` / `@ValidQuery` DTO schemas), requestBody, security, the `@Respond` status (204 without content) and 400/401/403/429. Proven on `FavoriteController` and `UserController`; a method then needs only `@OpenAPI({summary})`. It is cleaner than having each decorator call `OpenAPI`: one place and one source, the same store `mountControllers` reads. | notes §Q3 |
+| 3 schemas | `validationMetadatasToSchemas` **throws as is**: `EachItem("isIn", …)` has no constraints. `additionalConverters` are required (`isIn`, `isObjectId`, `isIsoDateString`), and `isDefined` and `min`/`max` are recommended. `@IsAppEmail` gives `format: email` plus lengths and pattern. `ToBoolean` gives `boolean`. `ToInt` gives `number` instead of `integer` until `min`/`max` is fixed. Four same-named DTOs in `login` and `forgot-password` are **merged silently**. | notes §Q3 |
+| 4 response DTOs | `@JSONSchema` alone and `@Expose` alone produce nothing. `@Allow()` gives an untyped `{}`. A **no-op named class-validator constraint** makes the property appear with its type reflected from `design:type`, and all such properties are required. Reflection drops `| null`, turns `Dto[]` into `$ref Array` and turns type-only imports into `$ref Object`. `JSONSchema(() => schema)` overrides each of these. | notes §Q4 |
+
+**Verdict: PASS.** No controller method restates params, body, security or errors; it needs only `@OpenAPI({summary})` (plus our `@Respond({type})` and `@ApiErrors`). No library patch is needed. Exactly one post-processing function is needed: `normalizePathKeys(spec)`, which strips the trailing `/` from path keys and fails on a collision. The converters are options passed to the library, not post-processing. An alternative that needs no post-processing is writing `@Get()` instead of `@Get("/")` in 19 places; it is untested at runtime and is a convention the drift spec would have to enforce.
+
+**Mechanism for the plan** (all in `src/common/openapi/`):
+- `bridge.ts` exports `routeOperation(op, route)`. It:
+  - reads `readRouteMeta`;
+  - **deletes rco's default `summary` and `tags` first**, so that drift checks 2 and 4 see what the controller declared;
+  - rebuilds path params from the params DTO;
+  - replaces `responses` completely.
+- The builder (`libs/swagger/openapi.ts`) runs in this order:
+  1. a duplicate-class-name check over `getMetadataStorage().validationMetadatas`;
+  2. `validationMetadatasToSchemas({ refPointerPrefix, additionalConverters, classTransformerMetadataStorage })`;
+  3. `OpenAPI(routeOperation)(Ctor)` for every mounted controller class (once, guarded by a WeakSet);
+  4. `routingControllersToSpec(...)`;
+  5. `normalizePathKeys`.
+- `converters.ts` holds `isIn` (delegates to the default when constraints exist, wraps EachItem rules as an array), `isObjectId`, `isIsoDateString`, `isDefined: {}`, and `min`/`max` without `type`.
+- `ApiProperty(schema?)` registers a no-op constraint named `apiProperty` plus `JSONSchema`. On response DTOs it uses the function form when a type is given. `ExposeOrNull`, `ExposeDate` and `ExposeId` should register it themselves with `nullable: true`.
+- `RespondOptions` gains `type`, which is stored in the existing metadata store.
+
+**Open risks:**
+- Request-side nullability: `@IsOptional` passes `null`, but no schema says `nullable`. `IsOptional` and `ValidateIf` share one validation type, so a converter needs to inspect the constraint.
+- Renaming the four duplicate DTO classes in `login` / `forgot-password`.
+- The response-DTO spec must reject `$ref` to `Array` / `Object`.
+- `pnpm.overrides` for `reflect-metadata` is optional and untried.
+
 ## Migration order — one branch, one PR, several commits
 
 0. **Spike.** On the real routing setup, find out:
