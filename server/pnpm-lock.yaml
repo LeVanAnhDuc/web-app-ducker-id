@@ -50,12 +50,6 @@ importers:
       i18next:
         specifier: ^25.6.1
         version: 25.6.1(typescript@5.9.3)
-      i18next-fs-backend:
-        specifier: ^2.6.0
-        version: 2.6.0
-      i18next-http-middleware:
-        specifier: ^3.8.2
-        version: 3.8.2
       joi:
         specifier: ^17.13.3
         version: 17.13.3
@@ -2027,12 +2021,6 @@ packages:
     resolution: {integrity: sha512-5gs5ytaNjBrh5Ow3zrvdUUY+0VxIuWVL4i9irt6friV+BqdCfmV11CQTWMiBYWHbXhco+J1kHfTOUkePhCDvMA==}
     engines: {node: '>=18'}
     hasBin: true
-
-  i18next-fs-backend@2.6.0:
-    resolution: {integrity: sha512-3ZlhNoF9yxnM8pa8bWp5120/Ob6t4lVl1l/tbLmkml/ei3ud8IWySCHt2lrY5xWRlSU5D9IV2sm5bEbGuTqwTw==}
-
-  i18next-http-middleware@3.8.2:
-    resolution: {integrity: sha512-Z0i85W9dlX4dbceQD3EX2vj/PChebMjDCSLxE7ZJZ5Fgm8LPQmBmB9iJeE7oX3LH7Zzdu/a/28LCHOVHqaeW0Q==}
 
   i18next@25.6.1:
     resolution: {integrity: sha512-yUWvdXtalZztmKrKw3yz/AvSP3yKyqIkVPx/wyvoYy9lkLmwzItLxp0iHZLG5hfVQ539Jor4XLO+U+NHIXg7pw==}
@@ -5481,10 +5469,6 @@ snapshots:
   human-signals@2.1.0: {}
 
   husky@9.1.7: {}
-
-  i18next-fs-backend@2.6.0: {}
-
-  i18next-http-middleware@3.8.2: {}
 
   i18next@25.6.1(typescript@5.9.3):
     dependencies:

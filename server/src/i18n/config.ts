@@ -1,65 +1,28 @@
 // libs
 import i18next from "i18next";
-import Backend from "i18next-fs-backend";
-import { join } from "path";
 // others
+import * as en from "./locales/en";
+import * as vi from "./locales/vi";
 import { SUPPORTED_LOCALES, DEFAULT_LOCALE } from "./locales.config";
 
-const DEFAULT_NAMESPACE = "common" as const;
+// Catalogues are imported, not read from disk: tsc bundles the JSON into dist,
+// the namespace list follows the en exports, and init finishes synchronously.
+i18next.init({
+  resources: { en, vi },
+  ns: Object.keys(en),
+  defaultNS: "common",
 
-// Avoids path resolution errors in both dev (src) and prod (dist)
-const isCompiledCode = __dirname.includes("dist");
-const PROJECT_ROOT = process.cwd();
-const I18N_BASE_PATH = join(
-  PROJECT_ROOT,
-  isCompiledCode ? "dist" : "src",
-  "i18n/locales"
-);
-
-// i18next init is async but we don't await here
-// Backend will load files synchronously on first access
-i18next.use(Backend).init({
   lng: DEFAULT_LOCALE,
   fallbackLng: DEFAULT_LOCALE,
   supportedLngs: SUPPORTED_LOCALES,
 
-  defaultNS: DEFAULT_NAMESPACE,
-  ns: [
-    "common",
-    "validation",
-    "signup",
-    "login",
-    "logout",
-    "unlockAccount",
-    "sendEmail",
-    "forgotPassword",
-    "changePassword",
-    "contactAdmin",
-    "loginHistory",
-    "user",
-    "webApp",
-    "favorite",
-    "notification",
-    "recentApp",
-    "category",
-    "entitlement"
-  ],
-
-  preload: SUPPORTED_LOCALES,
-
-  backend: {
-    loadPath: join(I18N_BASE_PATH, "{{lng}}", "{{ns}}.json")
-  },
+  initAsync: false,
 
   interpolation: {
-    // Disabling HTML escaping because server-side doesn't need XSS protection
-    // React/frontend handles sanitization for client-side rendering
+    // Messages go out as JSON, never into HTML — the client escapes on render
     escapeValue: false
   },
 
-  debug: false,
-
-  saveMissing: false,
   returnEmptyString: false,
   returnNull: false
 });

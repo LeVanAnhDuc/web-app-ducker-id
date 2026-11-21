@@ -48,8 +48,6 @@
     "geoip-lite": "^1.4.10",
     "helmet": "^7.1.0",
     "i18next": "^25.6.1",
-    "i18next-fs-backend": "^2.6.0",
-    "i18next-http-middleware": "^3.8.2",
     "joi": "^17.13.3",
     "joi-to-swagger": "^6.2.0",
     "jsonwebtoken": "^9.0.2",
