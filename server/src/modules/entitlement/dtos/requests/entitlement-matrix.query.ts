@@ -6,6 +6,8 @@ import {
   IsArray,
   IsDefined
 } from "class-validator";
+// common
+import { ApiProperty } from "@/common/openapi";
 // modules
 import { ENTITLEMENT_LIMITS } from "@/modules/entitlement/constants";
 // validators
@@ -27,6 +29,11 @@ const SplitCommaList = (): PropertyDecorator =>
   );
 
 export class EntitlementMatrixQueryDto {
+  @ApiProperty({
+    example: ["507f1f77bcf86cd799439011", "507f1f77bcf86cd799439012"],
+    description:
+      "1-50 user ids, no duplicates: comma-separated (?userIds=a,b) or repeated (?userIds=a&userIds=b)"
+  })
   @ArrayUniqueItems({ message: "entitlement:validation.userIds.duplicate" })
   @ArrayMaxSize(ENTITLEMENT_LIMITS.MAX_USERS_PER_QUERY, {
     message: "entitlement:validation.userIds.tooMany"

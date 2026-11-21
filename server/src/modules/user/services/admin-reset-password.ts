@@ -1,5 +1,5 @@
 // types
-import type { AdminResetPasswordResult } from "@/modules/user/types";
+import type { AdminResetPasswordResultDto } from "../dtos";
 import type { AuthenticationService } from "@/modules/authentication/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
@@ -31,7 +31,7 @@ export const adminResetPassword = async (
     notificationDispatcher: NotificationDispatcher;
   },
   id: string
-): Promise<AdminResetPasswordResult> => {
+): Promise<AdminResetPasswordResultDto> => {
   validateObjectId(id, "id");
 
   const target = await deps.userRepo.findAuthIdById(id);

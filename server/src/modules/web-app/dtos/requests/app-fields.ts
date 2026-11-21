@@ -11,6 +11,8 @@ import {
   MinLength,
   ValidateIf
 } from "class-validator";
+// types
+import type { ApiPropertyOptions } from "@/common/openapi";
 // modules
 import {
   TOKEN_ENDPOINT_AUTH_METHODS,
@@ -183,3 +185,59 @@ export const TokenEndpointAuthMethodRules = (): PropertyDecorator =>
     IsString({ message: "webApp:validation.tokenEndpointAuthMethod.invalid" }),
     UnlessMissing()
   );
+
+/**
+ * `@ApiProperty` text of each field, shared by create and update. Only
+ * `example` and `description` are allowed on a request DTO; the rules above
+ * give the type, length and pattern.
+ */
+export const APP_FIELD_DOCS = {
+  name: {
+    example: "satellite-monitor",
+    description:
+      "Internal unique app name: lowercase letters, numbers and hyphens only (2-64)"
+  },
+  displayName: {
+    example: "Satellite Monitor",
+    description: "Human-readable name displayed in the portal (2-80)"
+  },
+  description: {
+    example: "Real-time constellation monitoring dashboard",
+    description: "Optional description (max 500 characters); blank clears it"
+  },
+  iconUrl: {
+    example: "https://cdn.example.com/icons/satellite-monitor.png",
+    description: "Optional icon URL (must start with http:// or https://)"
+  },
+  homeUrl: {
+    example: "https://monitor.example.com",
+    description: "App home URL (must start with http:// or https://)"
+  },
+  categoryIds: {
+    example: ["507f1f77bcf86cd799439012"],
+    description:
+      "1-5 distinct existing category ids, in display order (first = primary)"
+  },
+  status: {
+    example: "active",
+    description: "Whether the app is shown to users (inactive pauses it)"
+  },
+  requiredRoles: {
+    example: ["user"],
+    description: "Roles required to access this app"
+  },
+  redirectUris: {
+    example: ["https://monitor.example.com/callback"],
+    description:
+      "OAuth redirect URIs (max 20): https only, http for localhost, no fragment or wildcard"
+  },
+  postLogoutRedirectUris: {
+    example: ["https://monitor.example.com/signed-out"],
+    description: "Optional OAuth post-logout redirect URIs (max 20)"
+  },
+  tokenEndpointAuthMethod: {
+    example: "client_secret_basic",
+    description:
+      '"none" makes a public client (static SPA, mobile): no client secret is issued and PKCE takes its place'
+  }
+} satisfies Record<string, ApiPropertyOptions>;

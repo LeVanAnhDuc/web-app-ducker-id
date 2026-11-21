@@ -7,6 +7,8 @@ import {
   MinLength,
   ValidateIf
 } from "class-validator";
+// common
+import { ApiProperty } from "@/common/openapi";
 // validators
 import { CONTACT_CONFIG } from "@/validators/constants";
 import { AppEmailRules, Lowercase, Trim } from "@/validators/decorators";
@@ -16,12 +18,18 @@ import { AppEmailRules, Lowercase, Trim } from "@/validators/decorators";
 export class SubmitContactBodyDto {
   // Optional, and a blank email (after trimming) is kept as "" — a guest may
   // leave it out; a signed-in sender's email comes from the session.
+  @ApiProperty({
+    example: "user@example.com",
+    description:
+      "Optional contact email; a signed-in sender's email comes from the session"
+  })
   @AppEmailRules()
   @ValidateIf((_object, value) => value !== undefined && value !== "")
   @Lowercase()
   @Trim()
   email?: string;
 
+  @ApiProperty({ example: "Cannot access my account" })
   @MaxLength(CONTACT_CONFIG.SUBJECT_MAX_LENGTH, {
     message: "contactAdmin:errors.subjectTooLong"
   })
@@ -33,6 +41,9 @@ export class SubmitContactBodyDto {
   @IsDefined({ message: "contactAdmin:errors.subjectRequired" })
   subject!: string;
 
+  @ApiProperty({
+    example: "I have been unable to log in to my account for the past 2 days."
+  })
   @MaxLength(CONTACT_CONFIG.MESSAGE_MAX_LENGTH, {
     message: "contactAdmin:errors.messageTooLong"
   })

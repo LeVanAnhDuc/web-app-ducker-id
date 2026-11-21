@@ -1,5 +1,5 @@
 // types
-import type { SetUserActiveResult } from "@/modules/user/types";
+import type { SetUserActiveResultDto } from "../dtos";
 import type { AuthenticationService } from "@/modules/authentication/services";
 import type { UserRepository } from "../repository/user.repository";
 // common
@@ -16,7 +16,7 @@ export const setUserActive = async (
   deps: { userRepo: UserRepository; authService: AuthenticationService },
   id: string,
   isActive: boolean
-): Promise<SetUserActiveResult> => {
+): Promise<SetUserActiveResultDto> => {
   validateObjectId(id, "id");
 
   const target = await deps.userRepo.findAuthIdById(id);

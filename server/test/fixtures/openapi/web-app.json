@@ -1,0 +1,1806 @@
+{
+  "/admin/apps": {
+    "post": {
+      "summary": "Register a new app (admin)",
+      "description": "Register a satellite app with Ducker ID. Generates an OAuth `clientId` and `clientSecret` — the secret is returned **once** in the response and will not be retrievable again.\n\n**Authentication:**\n- Requires valid Bearer token (admin role)\n\n**Business rules:**\n- `name` must be unique across all apps (lowercase, alphanumeric + hyphens)\n- `categoryIds` must be 1-5 distinct existing categories\n- `clientSecret` is bcrypt-hashed before storage; the plaintext is returned only in this response",
+      "tags": [
+        "Web App Admin"
+      ],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "name",
+                "displayName",
+                "homeUrl",
+                "categoryIds",
+                "status",
+                "requiredRoles",
+                "redirectUris"
+              ],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "satellite-monitor",
+                  "description": "Internal unique app name — lowercase letters, numbers, and hyphens only (min 2, max 64)"
+                },
+                "displayName": {
+                  "type": "string",
+                  "example": "Satellite Monitor",
+                  "description": "Human-readable name displayed in the portal (min 2, max 80)"
+                },
+                "description": {
+                  "type": "string",
+                  "example": "Real-time constellation monitoring dashboard",
+                  "description": "Optional description (max 500 characters)"
+                },
+                "iconUrl": {
+                  "type": "string",
+                  "example": "https://cdn.example.com/icons/satellite-monitor.png",
+                  "description": "Optional icon URL (must start with http:// or https://)"
+                },
+                "homeUrl": {
+                  "type": "string",
+                  "example": "https://monitor.example.com",
+                  "description": "App home URL (must start with http:// or https://)"
+                },
+                "categoryIds": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 5,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[a-fA-F0-9]{24}$",
+                    "example": "507f1f77bcf86cd799439012"
+                  },
+                  "description": "1-5 distinct existing category ids, in display order (first = primary)"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "active",
+                    "inactive"
+                  ],
+                  "example": "active"
+                },
+                "requiredRoles": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "user",
+                      "admin"
+                    ]
+                  },
+                  "minItems": 1,
+                  "example": [
+                    "user"
+                  ],
+                  "description": "Roles required to access this app"
+                },
+                "redirectUris": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 1,
+                  "maxItems": 20,
+                  "example": [
+                    "https://monitor.example.com/callback"
+                  ],
+                  "description": "OAuth redirect URIs (max 20)"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "App registered successfully — includes one-time clientSecret",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-15T10:30:00.000Z"
+                      },
+                      "path": {
+                        "type": "string",
+                        "example": "/api/v1/auth/login"
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Operation successful"
+                      },
+                      "data": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "allOf": [
+                          {
+                            "type": "object",
+                            "required": [
+                              "_id",
+                              "name",
+                              "displayName",
+                              "description",
+                              "iconUrl",
+                              "homeUrl",
+                              "categoryIds",
+                              "status",
+                              "requiredRoles",
+                              "redirectUris",
+                              "clientId",
+                              "createdAt",
+                              "updatedAt"
+                            ],
+                            "properties": {
+                              "_id": {
+                                "type": "string",
+                                "example": "507f1f77bcf86cd799439011",
+                                "description": "MongoDB _id of the app"
+                              },
+                              "name": {
+                                "type": "string",
+                                "example": "satellite-monitor",
+                                "description": "Internal unique app name"
+                              },
+                              "displayName": {
+                                "type": "string",
+                                "example": "Satellite Monitor"
+                              },
+                              "description": {
+                                "type": "string",
+                                "nullable": true,
+                                "example": "Real-time constellation monitoring dashboard"
+                              },
+                              "iconUrl": {
+                                "type": "string",
+                                "nullable": true,
+                                "example": "https://cdn.example.com/icons/satellite-monitor.png"
+                              },
+                              "homeUrl": {
+                                "type": "string",
+                                "example": "https://monitor.example.com"
+                              },
+                              "categoryIds": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "example": "507f1f77bcf86cd799439012"
+                                },
+                                "description": "MongoDB _ids of the app's categories, in display order (first = primary)"
+                              },
+                              "status": {
+                                "type": "string",
+                                "enum": [
+                                  "active",
+                                  "inactive"
+                                ],
+                                "example": "active"
+                              },
+                              "requiredRoles": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string",
+                                  "enum": [
+                                    "user",
+                                    "admin"
+                                  ]
+                                },
+                                "example": [
+                                  "user"
+                                ]
+                              },
+                              "redirectUris": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                },
+                                "example": [
+                                  "https://monitor.example.com/callback"
+                                ]
+                              },
+                              "clientId": {
+                                "type": "string",
+                                "example": "client_abc123",
+                                "description": "OAuth client identifier"
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2025-01-15T10:30:00.000Z"
+                              },
+                              "updatedAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2025-01-15T10:30:00.000Z"
+                              }
+                            }
+                          },
+                          {
+                            "type": "object",
+                            "required": [
+                              "clientSecret"
+                            ],
+                            "properties": {
+                              "clientSecret": {
+                                "type": "string",
+                                "example": "a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4e5f6a1b2",
+                                "description": "Plaintext OAuth client secret — returned ONCE at creation. Store it securely."
+                              }
+                            }
+                          }
+                        ]
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad request - Business rule violation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized - Invalid credentials",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Forbidden - Access denied",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not found - Resource does not exist",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Conflict — an app with this name already exists",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation failed - Invalid input data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "VALIDATION_ERROR"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Validation failed"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "get": {
+      "summary": "List apps (admin)",
+      "description": "List registered apps for the admin console.\n\n**Authentication:**\n- Requires valid Bearer token (admin role)\n\n**Filtering:**\n- `search` — case-insensitive match on app name / display name\n- `status` — filter by app status (`active` | `inactive`)\n- `categoryId` — apps having this category among their categories (MongoDB ObjectId)",
+      "tags": [
+        "Web App Admin"
+      ],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "search",
+          "in": "query",
+          "required": false,
+          "description": "Case-insensitive keyword to match app name / display name",
+          "schema": {
+            "type": "string",
+            "example": "monitor"
+          }
+        },
+        {
+          "name": "status",
+          "in": "query",
+          "required": false,
+          "description": "Filter by app status",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "active",
+              "inactive"
+            ],
+            "example": "active"
+          }
+        },
+        {
+          "name": "categoryId",
+          "in": "query",
+          "required": false,
+          "description": "MongoDB ObjectId of the category to filter by",
+          "schema": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{24}$",
+            "example": "507f1f77bcf86cd799439012"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Apps retrieved successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-15T10:30:00.000Z"
+                      },
+                      "path": {
+                        "type": "string",
+                        "example": "/api/v1/auth/login"
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Operation successful"
+                      },
+                      "data": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "required": [
+                          "items"
+                        ],
+                        "properties": {
+                          "items": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "_id",
+                                "name",
+                                "displayName",
+                                "description",
+                                "iconUrl",
+                                "homeUrl",
+                                "categoryIds",
+                                "status",
+                                "requiredRoles",
+                                "redirectUris",
+                                "clientId",
+                                "createdAt",
+                                "updatedAt"
+                              ],
+                              "properties": {
+                                "_id": {
+                                  "type": "string",
+                                  "example": "507f1f77bcf86cd799439011",
+                                  "description": "MongoDB _id of the app"
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "example": "satellite-monitor",
+                                  "description": "Internal unique app name"
+                                },
+                                "displayName": {
+                                  "type": "string",
+                                  "example": "Satellite Monitor"
+                                },
+                                "description": {
+                                  "type": "string",
+                                  "nullable": true,
+                                  "example": "Real-time constellation monitoring dashboard"
+                                },
+                                "iconUrl": {
+                                  "type": "string",
+                                  "nullable": true,
+                                  "example": "https://cdn.example.com/icons/satellite-monitor.png"
+                                },
+                                "homeUrl": {
+                                  "type": "string",
+                                  "example": "https://monitor.example.com"
+                                },
+                                "categoryIds": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string",
+                                    "example": "507f1f77bcf86cd799439012"
+                                  },
+                                  "description": "MongoDB _ids of the app's categories, in display order (first = primary)"
+                                },
+                                "status": {
+                                  "type": "string",
+                                  "enum": [
+                                    "active",
+                                    "inactive"
+                                  ],
+                                  "example": "active"
+                                },
+                                "requiredRoles": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string",
+                                    "enum": [
+                                      "user",
+                                      "admin"
+                                    ]
+                                  },
+                                  "example": [
+                                    "user"
+                                  ]
+                                },
+                                "redirectUris": {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "string"
+                                  },
+                                  "example": [
+                                    "https://monitor.example.com/callback"
+                                  ]
+                                },
+                                "clientId": {
+                                  "type": "string",
+                                  "example": "client_abc123",
+                                  "description": "OAuth client identifier"
+                                },
+                                "createdAt": {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "example": "2025-01-15T10:30:00.000Z"
+                                },
+                                "updatedAt": {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "example": "2025-01-15T10:30:00.000Z"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized - Invalid credentials",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Forbidden - Access denied",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation failed - Invalid input data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "VALIDATION_ERROR"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Validation failed"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/admin/apps/{id}": {
+    "patch": {
+      "summary": "Update an app (admin)",
+      "description": "Update one or more fields of a registered app. At least one field must be provided.\n\n**Authentication:**\n- Requires valid Bearer token (admin role)\n\n**Business rules:**\n- `name` must remain unique across all apps (conflict returns 409)\n- `categoryIds` must be 1-5 distinct existing categories (otherwise 400 WEB_APP_CATEGORY_NOT_FOUND)\n- Setting `status` to `inactive` pauses the app — it stays in the registry but is hidden from users' dashboards",
+      "tags": [
+        "Web App Admin"
+      ],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "MongoDB ObjectId of the app to update",
+          "schema": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{24}$",
+            "example": "507f1f77bcf86cd799439011"
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "minProperties": 1,
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "example": "satellite-monitor",
+                  "description": "Internal unique app name — lowercase letters, numbers, and hyphens only (min 2, max 64)"
+                },
+                "displayName": {
+                  "type": "string",
+                  "example": "Satellite Monitor",
+                  "description": "Human-readable name displayed in the portal (min 2, max 80)"
+                },
+                "description": {
+                  "type": "string",
+                  "example": "Real-time constellation monitoring dashboard",
+                  "description": "Optional description (max 500 characters)"
+                },
+                "iconUrl": {
+                  "type": "string",
+                  "example": "https://cdn.example.com/icons/satellite-monitor.png",
+                  "description": "Optional icon URL (must start with http:// or https://)"
+                },
+                "homeUrl": {
+                  "type": "string",
+                  "example": "https://monitor.example.com",
+                  "description": "App home URL (must start with http:// or https://)"
+                },
+                "categoryIds": {
+                  "type": "array",
+                  "minItems": 1,
+                  "maxItems": 5,
+                  "uniqueItems": true,
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[a-fA-F0-9]{24}$",
+                    "example": "507f1f77bcf86cd799439012"
+                  },
+                  "description": "1-5 distinct existing category ids, in display order (first = primary)"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "active",
+                    "inactive"
+                  ],
+                  "example": "active"
+                },
+                "requiredRoles": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "user",
+                      "admin"
+                    ]
+                  },
+                  "minItems": 1,
+                  "example": [
+                    "user"
+                  ],
+                  "description": "Roles required to access this app"
+                },
+                "redirectUris": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  },
+                  "minItems": 1,
+                  "maxItems": 20,
+                  "example": [
+                    "https://monitor.example.com/callback"
+                  ],
+                  "description": "OAuth redirect URIs (max 20)"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "App updated successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-15T10:30:00.000Z"
+                      },
+                      "path": {
+                        "type": "string",
+                        "example": "/api/v1/auth/login"
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Operation successful"
+                      },
+                      "data": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "required": [
+                          "_id",
+                          "name",
+                          "displayName",
+                          "description",
+                          "iconUrl",
+                          "homeUrl",
+                          "categoryIds",
+                          "status",
+                          "requiredRoles",
+                          "redirectUris",
+                          "clientId",
+                          "createdAt",
+                          "updatedAt"
+                        ],
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "507f1f77bcf86cd799439011",
+                            "description": "MongoDB _id of the app"
+                          },
+                          "name": {
+                            "type": "string",
+                            "example": "satellite-monitor",
+                            "description": "Internal unique app name"
+                          },
+                          "displayName": {
+                            "type": "string",
+                            "example": "Satellite Monitor"
+                          },
+                          "description": {
+                            "type": "string",
+                            "nullable": true,
+                            "example": "Real-time constellation monitoring dashboard"
+                          },
+                          "iconUrl": {
+                            "type": "string",
+                            "nullable": true,
+                            "example": "https://cdn.example.com/icons/satellite-monitor.png"
+                          },
+                          "homeUrl": {
+                            "type": "string",
+                            "example": "https://monitor.example.com"
+                          },
+                          "categoryIds": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "example": "507f1f77bcf86cd799439012"
+                            },
+                            "description": "MongoDB _ids of the app's categories, in display order (first = primary)"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "active",
+                              "inactive"
+                            ],
+                            "example": "active"
+                          },
+                          "requiredRoles": {
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "enum": [
+                                "user",
+                                "admin"
+                              ]
+                            },
+                            "example": [
+                              "user"
+                            ]
+                          },
+                          "redirectUris": {
+                            "type": "array",
+                            "items": {
+                              "type": "string"
+                            },
+                            "example": [
+                              "https://monitor.example.com/callback"
+                            ]
+                          },
+                          "clientId": {
+                            "type": "string",
+                            "example": "client_abc123",
+                            "description": "OAuth client identifier"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2025-01-15T10:30:00.000Z"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2025-01-15T10:30:00.000Z"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad request - Business rule violation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized - Invalid credentials",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Forbidden - Access denied",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not found — app id does not exist (WEB_APP_NOT_FOUND) ",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Conflict — an app with this name already exists (WEB_APP_NAME_EXISTS)",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation failed - Invalid input data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "VALIDATION_ERROR"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Validation failed"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/apps": {
+    "get": {
+      "summary": "List apps (user)",
+      "description": "List the active-app catalog for the launcher. Returns apps with `status=active`; OAuth internals and secrets are never exposed.\n\n**Role-scoped visibility:**\n- Admins receive the full active catalog.\n- Non-admin users receive only apps whose `requiredRoles` include the `user` role (admin-only apps are hidden).\n\n**Authentication:**\n- Requires valid Bearer token (any authenticated user)\n\n**Query params:**\n- `page` — 1-based page number (default 1)\n- `limit` — page size (default 12, max 100)\n- `search` — case-insensitive match on name / display name / description\n- `categoryId` — apps having this category among their categories (MongoDB ObjectId)",
+      "tags": [
+        "Web App"
+      ],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "page",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "example": 1
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "example": 12
+          }
+        },
+        {
+          "name": "search",
+          "in": "query",
+          "required": false,
+          "schema": {
+            "type": "string",
+            "example": "blog"
+          }
+        },
+        {
+          "name": "categoryId",
+          "in": "query",
+          "required": false,
+          "description": "MongoDB ObjectId of the category to filter by",
+          "schema": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{24}$",
+            "example": "507f1f77bcf86cd799439012"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Paginated active-app catalog",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-15T10:30:00.000Z"
+                      },
+                      "path": {
+                        "type": "string",
+                        "example": "/api/v1/auth/login"
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Operation successful"
+                      },
+                      "data": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "required": [
+                          "items",
+                          "meta"
+                        ],
+                        "properties": {
+                          "items": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "_id",
+                                "displayName",
+                                "description",
+                                "iconUrl",
+                                "homeUrl",
+                                "categories"
+                              ],
+                              "properties": {
+                                "_id": {
+                                  "type": "string",
+                                  "example": "507f1f77bcf86cd799439011"
+                                },
+                                "displayName": {
+                                  "type": "string",
+                                  "example": "Satellite Monitor"
+                                },
+                                "description": {
+                                  "type": "string",
+                                  "nullable": true,
+                                  "example": "Real-time constellation monitoring dashboard"
+                                },
+                                "iconUrl": {
+                                  "type": "string",
+                                  "nullable": true,
+                                  "example": "https://cdn.example.com/icons/monitor.png"
+                                },
+                                "homeUrl": {
+                                  "type": "string",
+                                  "example": "https://monitor.example.com"
+                                },
+                                "categories": {
+                                  "type": "array",
+                                  "description": "In the order the admin chose; the first is the primary",
+                                  "items": {
+                                    "type": "object",
+                                    "required": [
+                                      "_id",
+                                      "slug",
+                                      "name"
+                                    ],
+                                    "properties": {
+                                      "_id": {
+                                        "type": "string",
+                                        "pattern": "^[a-fA-F0-9]{24}$",
+                                        "example": "507f1f77bcf86cd799439012",
+                                        "description": "MongoDB _id of the category"
+                                      },
+                                      "slug": {
+                                        "type": "string",
+                                        "example": "internal-tools",
+                                        "description": "Derived from name.en; changes when name.en changes"
+                                      },
+                                      "name": {
+                                        "type": "object",
+                                        "required": [
+                                          "en",
+                                          "vi"
+                                        ],
+                                        "properties": {
+                                          "en": {
+                                            "type": "string",
+                                            "maxLength": 100,
+                                            "example": "Internal Tools"
+                                          },
+                                          "vi": {
+                                            "type": "string",
+                                            "maxLength": 100,
+                                            "example": "Công cụ nội bộ"
+                                          }
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              }
+                            }
+                          },
+                          "meta": {
+                            "type": "object",
+                            "required": [
+                              "total",
+                              "page",
+                              "limit",
+                              "totalPages"
+                            ],
+                            "properties": {
+                              "total": {
+                                "type": "integer",
+                                "example": 25
+                              },
+                              "page": {
+                                "type": "integer",
+                                "example": 1
+                              },
+                              "limit": {
+                                "type": "integer",
+                                "example": 12
+                              },
+                              "totalPages": {
+                                "type": "integer",
+                                "example": 3
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad request - Business rule violation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized - Invalid credentials",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation failed - Invalid input data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "VALIDATION_ERROR"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Validation failed"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

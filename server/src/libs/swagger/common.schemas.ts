@@ -191,6 +191,16 @@ export const commonResponses: Record<
       }
     }
   },
+  InternalError: {
+    description: "Internal server error - Unexpected failure",
+    content: {
+      "application/json": {
+        schema: {
+          $ref: "#/components/schemas/ErrorResponse"
+        }
+      }
+    }
+  },
   TooManyRequests: {
     description: "Too many requests - Rate limit exceeded",
     content: {

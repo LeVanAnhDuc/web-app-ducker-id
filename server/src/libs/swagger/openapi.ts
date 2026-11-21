@@ -11,6 +11,7 @@ import {
   generatePaths,
   isDocumented,
   jsonSchemaOptions,
+  normalizeRefSiblings,
   SCHEMA_REF_PREFIX
 } from "@/common/openapi";
 // modules
@@ -26,20 +27,6 @@ import {
   changePasswordSwaggerSchemas,
   changePasswordPaths
 } from "@/modules/change-password/swagger";
-import {
-  contactAdminSwaggerSchemas,
-  contactAdminPaths
-} from "@/modules/contact-admin/swagger";
-import { userSwaggerSchemas, userPaths } from "@/modules/user/swagger";
-import { webAppSwaggerSchemas, webAppPaths } from "@/modules/web-app/swagger";
-import {
-  categorySwaggerSchemas,
-  categoryPaths
-} from "@/modules/category/swagger";
-import {
-  entitlementSwaggerSchemas,
-  entitlementPaths
-} from "@/modules/entitlement/swagger";
 import {
   unlockAccountSwaggerSchemas,
   unlockAccountPaths
@@ -58,11 +45,6 @@ const allSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   ...tokenSwaggerSchemas,
   ...forgotPasswordSwaggerSchemas,
   ...changePasswordSwaggerSchemas,
-  ...contactAdminSwaggerSchemas,
-  ...userSwaggerSchemas,
-  ...webAppSwaggerSchemas,
-  ...categorySwaggerSchemas,
-  ...entitlementSwaggerSchemas,
   ...unlockAccountSwaggerSchemas
 };
 
@@ -73,11 +55,6 @@ const allPaths: OpenAPIV3.PathsObject = {
   ...tokenPaths,
   ...forgotPasswordPaths,
   ...changePasswordPaths,
-  ...contactAdminPaths,
-  ...userPaths,
-  ...webAppPaths,
-  ...categoryPaths,
-  ...entitlementPaths,
   ...unlockAccountPaths
 };
 
@@ -257,8 +234,8 @@ const reachableSchemas = (
 export const buildOpenApiSpec = (controllers: object[]): OpenAPIV3.Document => {
   assertApiPropertyUsage();
   const duplicates = duplicateClassNames();
-  const schemas = validationMetadatasToSchemas(
-    jsonSchemaOptions
+  const schemas = normalizeRefSiblings(
+    validationMetadatasToSchemas(jsonSchemaOptions)
   ) as unknown as Record<string, OpenAPIV3.SchemaObject>;
 
   const documented = controllers

@@ -5,6 +5,8 @@ import type {
   AdminContactsSortBy,
   ContactStatus
 } from "@/modules/contact-admin/types";
+// common
+import { ApiProperty } from "@/common/openapi";
 // modules
 import {
   ADMIN_CONTACTS_SORT_BY,
@@ -18,6 +20,10 @@ const STATUS_VALUES = Object.values(CONTACT_STATUSES);
 
 /** The filters a sender has on their own contacts; the admin list extends it. */
 export class MyContactsQueryDto extends PaginationQueryDto {
+  @ApiProperty({
+    example: "new",
+    description: "Only requests with this status"
+  })
   // A blank, null or repeated `status` is a 400 (TC-ADMINCONTACT-023), so
   // only a missing one is skipped — `@IsOptional()` would let `null` through.
   @IsIn(STATUS_VALUES, { message: "validation:status.invalid" })
@@ -25,9 +31,17 @@ export class MyContactsQueryDto extends PaginationQueryDto {
   @UnlessMissing()
   status?: ContactStatus;
 
+  @ApiProperty({
+    example: "account",
+    description: "Case-insensitive match on subject"
+  })
   @SearchFilter()
   search?: string;
 
+  @ApiProperty({
+    example: "createdAt",
+    description: "Field to sort by (default createdAt)"
+  })
   @OneOf(ADMIN_CONTACTS_SORT_BY, "validation:sortBy.invalid")
   sortBy?: AdminContactsSortBy;
 }

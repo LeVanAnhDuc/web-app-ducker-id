@@ -127,11 +127,20 @@ const compareOperation = (
 
   const handBody = bodySchema(hand);
   const genBody = bodySchema(generated);
+  const requiredOf = (op: Operation): boolean =>
+    Boolean(
+      (op.requestBody as OpenAPIV3.RequestBodyObject | undefined)?.required
+    );
   if (Boolean(handBody) !== Boolean(genBody)) {
     diffs.push(
       `${key}: request body only in ${handBody ? "hand-written" : "generated"}`
     );
   } else if (handBody && genBody) {
+    if (requiredOf(hand) !== requiredOf(generated)) {
+      diffs.push(
+        `${key}: request body required is ${requiredOf(hand)} in hand-written, ${requiredOf(generated)} in generated`
+      );
+    }
     diffs.push(
       ...onlyIn(
         "request property",
@@ -178,7 +187,7 @@ const compareOperation = (
  * What differs between two sets of operations, one sentence each: which
  * method and path exist; per parameter its name, `in`, `required` and the
  * schema's `enum`, `pattern`, `format` and `default`; the request body's
- * property names, each property's `type`, and the required set; the response
+ * `required` flag, property names, each property's `type`, and the required set; the response
  * status set; and `security`. It does NOT compare response bodies (their
  * shapes are asserted by the DTO specs and the response-schema check), nor
  * descriptions, examples, min/max or tags. Both sides must have their `$ref`s

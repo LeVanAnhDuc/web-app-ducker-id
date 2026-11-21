@@ -1,7 +1,9 @@
 // libs
 import { IsDefined, IsOptional, IsString } from "class-validator";
+import { commonResponses } from "@/libs/swagger/common.schemas";
+import { IsNotEmptyBody } from "@/validators/decorators";
 import { StatusCodes } from "http-status-codes";
-import { Delete, Get, JsonController, Post } from "routing-controllers";
+import { Delete, Get, JsonController, Patch, Post } from "routing-controllers";
 import { OpenAPI } from "routing-controllers-openapi";
 // types
 import type { OpenAPIV3 } from "openapi-types";
@@ -31,6 +33,19 @@ class BridgeBodyDto {
   @IsString()
   @IsDefined()
   name!: string;
+}
+
+class OptionalBodyDto {
+  @IsString()
+  @IsOptional()
+  note?: string;
+}
+
+@IsNotEmptyBody({ message: "validation:body.empty" })
+class NonEmptyBodyDto {
+  @IsString()
+  @IsOptional()
+  note?: string;
 }
 
 class BridgeQueryDto {
@@ -78,6 +93,20 @@ class BridgeFixtureController {
   }
 }
 
+@JsonController("/bridge-bodies")
+class BodyFixtureController {
+  @Patch("/optional")
+  @ApiErrors(500)
+  optional(@ValidBody(OptionalBodyDto) _body: OptionalBodyDto) {
+    return undefined;
+  }
+
+  @Patch("/non-empty")
+  nonEmpty(@ValidBody(NonEmptyBodyDto) _body: NonEmptyBodyDto) {
+    return undefined;
+  }
+}
+
 @JsonController("/bridge-documented")
 @OpenAPI({ tags: ["Documented"] })
 class DocumentedFixtureController {
@@ -90,10 +119,11 @@ class DocumentedFixtureController {
 }
 
 const paths = generatePaths([
+  BodyFixtureController,
   BridgeFixtureController,
   DocumentedFixtureController
 ]);
-const op = (path: string, method: "get" | "post" | "delete") =>
+const op = (path: string, method: "get" | "post" | "delete" | "patch") =>
   (paths[path] as OpenAPIV3.PathItemObject)[
     method
   ] as OpenAPIV3.OperationObject;
@@ -131,6 +161,24 @@ describe("routeOperation", () => {
     });
     expect(create.summary).toBeUndefined();
     expect(create.tags).toBeUndefined();
+  });
+
+  it("marks a body required only when a field is required or IsNotEmptyBody applies", () => {
+    const body = (path: string) =>
+      (op(path, "patch").requestBody as OpenAPIV3.RequestBodyObject).required;
+
+    expect(op("/bridge-fixtures/{id}", "post").requestBody).toMatchObject({
+      required: true
+    });
+    expect(body("/bridge-bodies/optional")).toBe(false);
+    expect(body("/bridge-bodies/non-empty")).toBe(true);
+  });
+
+  it("resolves @ApiErrors(500) to the shared InternalError response", () => {
+    expect(op("/bridge-bodies/optional", "patch").responses["500"]).toEqual(
+      ref("InternalError")
+    );
+    expect(commonResponses.InternalError).toBeDefined();
   });
 
   it("documents a 204 route with no content", () => {

@@ -1,4 +1,5 @@
 // libs
+import { getMetadataStorage } from "class-validator";
 import { targetConstructorToSchema } from "class-validator-jsonschema";
 import { StatusCodes } from "http-status-codes";
 import { getMetadataArgsStorage } from "routing-controllers";
@@ -17,6 +18,7 @@ import { readRouteMeta } from "@/common/routing/metadata";
 import { API_ERROR_RESPONSES } from "./api-errors";
 import { jsonSchemaOptions, SCHEMA_REF_PREFIX } from "./converters";
 import { normalizePathKeys } from "./normalize-path-keys";
+import { normalizeRefSiblings } from "./normalize-ref-siblings";
 
 type Operation = OpenAPIV3.OperationObject;
 type Parameter = OpenAPIV3.ParameterObject;
@@ -29,7 +31,20 @@ const responseRef = (name: string): OpenAPIV3.ReferenceObject => ({
 const ENVELOPE = { $ref: `${SCHEMA_REF_PREFIX}SuccessResponse` };
 
 const dtoSchema = (Dto: Function): Schema =>
-  targetConstructorToSchema(Dto, jsonSchemaOptions) as Schema;
+  normalizeRefSiblings(
+    targetConstructorToSchema(Dto, jsonSchemaOptions) as Schema
+  );
+
+/**
+ * A body is required when the DTO has a required field or `IsNotEmptyBody`
+ * (an empty `{}` fails). Otherwise an absent or empty body validates, as the
+ * pipe validates a missing body as `{}`.
+ */
+const isBodyRequired = (Dto: Function): boolean =>
+  (dtoSchema(Dto).required?.length ?? 0) > 0 ||
+  getMetadataStorage()
+    .getTargetValidationMetadatas(Dto, "", true, false)
+    .some((meta) => meta.name === "isNotEmptyBody");
 
 const dataSchema = (type: RespondType): OpenAPIV3.ReferenceObject | Schema =>
   Array.isArray(type)
@@ -74,7 +89,8 @@ const queryParameters = (Dto: Function): Parameter[] => {
  * store `mountControllers` builds the chain from — so a controller method
  * restates none of it:
  * - path parameters from the `@ValidParams` DTO, query parameters from the
- *   `@ValidQuery` DTO, the request body from the `@ValidBody` DTO;
+ *   `@ValidQuery` DTO, the request body from the `@ValidBody` DTO (required
+ *   only when the DTO has a required field or `IsNotEmptyBody`);
  * - `security` from the guards (`@OptionalAuth` makes it optional);
  * - `responses`, replaced entirely: the `@Respond` status (204 without
  *   content), 400 for any pipe, 401 for a required guard, 403 for `@Auth` or `@Admin`,
@@ -112,7 +128,7 @@ export const routeOperation = (
 
   if (meta.pipes.body) {
     out.requestBody = {
-      required: true,
+      required: isBodyRequired(meta.pipes.body),
       content: {
         "application/json": {
           schema: { $ref: SCHEMA_REF_PREFIX + meta.pipes.body.name }

@@ -1,16 +1,20 @@
 // types
 import type { PageMeta } from "@/common/pagination";
 import type {
-  AdminResetPasswordResult,
   CreateUserData,
-  SetUserActiveResult,
   UpdateProfileData,
   UserDocument,
   UserRecord,
   UserWithAuth
 } from "@/modules/user/types";
 import type { ClientSession } from "mongoose";
-import type { AdminUserDto, MyProfileDto, PublicProfileDto } from "../dtos";
+import type {
+  AdminResetPasswordResultDto,
+  AdminUserDto,
+  MyProfileDto,
+  PublicProfileDto,
+  SetUserActiveResultDto
+} from "../dtos";
 import type { AdminUsersQueryDto } from "../dtos/requests";
 import type { AuthenticationService } from "@/modules/authentication/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
@@ -78,7 +82,10 @@ export class UserService {
     return getAdminUsers(this.userRepo, query);
   }
 
-  setUserActive(id: string, isActive: boolean): Promise<SetUserActiveResult> {
+  setUserActive(
+    id: string,
+    isActive: boolean
+  ): Promise<SetUserActiveResultDto> {
     return setUserActive(
       { userRepo: this.userRepo, authService: this.authService },
       id,
@@ -86,7 +93,7 @@ export class UserService {
     );
   }
 
-  adminResetPassword(id: string): Promise<AdminResetPasswordResult> {
+  adminResetPassword(id: string): Promise<AdminResetPasswordResultDto> {
     return adminResetPassword(
       {
         userRepo: this.userRepo,

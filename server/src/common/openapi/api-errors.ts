@@ -12,7 +12,8 @@ export const API_ERROR_RESPONSES: Readonly<Record<number, string>> = {
   403: "Forbidden",
   404: "NotFound",
   409: "Conflict",
-  429: "TooManyRequests"
+  429: "TooManyRequests",
+  500: "InternalError"
 };
 
 /**

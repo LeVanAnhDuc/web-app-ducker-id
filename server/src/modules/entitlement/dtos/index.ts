@@ -1,5 +1,5 @@
-export type {
+export {
   EntitlementMatrixDto,
-  UserAccessDto
+  UserAccessDto,
+  toEntitlementMatrixDto
 } from "./entitlement-matrix.dto";
-export { toEntitlementMatrixDto } from "./entitlement-matrix.dto";

@@ -38,7 +38,12 @@ export const GENERATED_MODULES: string[] = [
   "favorite",
   "recent-app",
   "notification",
-  "login-history"
+  "login-history",
+  "category",
+  "entitlement",
+  "web-app",
+  "user",
+  "contact-admin"
 ];
 
 /**
@@ -98,6 +103,68 @@ const ACCEPTED_DIFFS: Record<string, string[]> = {
     "GET /admin/login-history: parameter query limit default is 20 in hand-written, none in generated", // [default]
     'GET /admin/login-history: parameter query fromDate format is "date" in hand-written, none in generated', // [date]
     'GET /admin/login-history: parameter query toDate format is "date" in hand-written, none in generated' // [date]
+  ],
+  category: [
+    // [optional] The route takes an optional Bearer token (`@OptionalAuth`); the hand-written docs described it in prose but declared no security.
+    // [nested] The hand-written update `name` was an inline object; the generated one is an `allOf` $ref to UpdateCategoryNameDto (so a description can sit beside it), whose type is on the referenced schema.
+    // [400] A malformed `:id` is a validation failure answered with 400 (`@ValidParams`); the hand-written docs left it off this GET.
+    'GET /apps/categories: security undefined in hand-written, [{},{"bearerAuth":[]}] in generated', // [optional]
+    "PATCH /admin/categories/{id}: request property name type is object in hand-written, none in generated", // [nested]
+    "GET /admin/categories/{id}/delete-impact: response status 400 only in generated" // [400]
+  ],
+  "web-app": [
+    // [422] Nothing in the code can answer 422 (grep of src for 422 and UnprocessableEntity finds only hand-written docs); validation failures are 400, so the hand-written 422 was wrong and is dropped.
+    // [400] A query failing validation (`@ValidQuery`) is answered with 400; the hand-written docs listed 422 instead.
+    // [fields] `postLogoutRedirectUris` and `tokenEndpointAuthMethod` are accepted by CreateAppBodyDto and UpdateAppBodyDto; the hand-written bodies left them out.
+    // [404] createApp cannot throw NotFoundError: a missing category is `BadRequestError` WEB_APP_CATEGORY_NOT_FOUND (400), so the hand-written 404 on POST is dropped.
+    // [403] authGuard can answer 403 AUTH_PASSWORD_CHANGE_REQUIRED (a temporary-password session); the hand-written docs never listed it on the user route (the admin routes already did).
+    "GET /admin/apps: response status 422 only in hand-written", // [422]
+    "GET /admin/apps: response status 400 only in generated", // [400]
+    "POST /admin/apps: request property postLogoutRedirectUris only in generated", // [fields]
+    "POST /admin/apps: request property tokenEndpointAuthMethod only in generated", // [fields]
+    "POST /admin/apps: response status 404 only in hand-written", // [404]
+    "POST /admin/apps: response status 422 only in hand-written", // [422]
+    "PATCH /admin/apps/{id}: request property postLogoutRedirectUris only in generated", // [fields]
+    "PATCH /admin/apps/{id}: request property tokenEndpointAuthMethod only in generated", // [fields]
+    "PATCH /admin/apps/{id}: response status 422 only in hand-written", // [422]
+    "GET /apps: response status 422 only in hand-written", // [422]
+    "GET /apps: response status 403 only in generated" // [403]
+  ],
+  user: [
+    // [500] No user service throws InternalServerError (grep of modules/user finds none), so the route-specific list has no 500; an unexpected failure still goes through the error filter, which is not documented per route.
+    // [403] authGuard can answer 403 AUTH_PASSWORD_CHANGE_REQUIRED (a temporary-password session); the hand-written docs never listed it on the profile routes (the admin routes already did).
+    // [404] getMyProfile and updateMyProfile throw NotFoundError USER_NOT_FOUND when the record is gone; the hand-written docs did not list it.
+    // [422] Nothing in the code can answer 422 (grep of src for 422 and UnprocessableEntity finds only hand-written docs); a body failing validation is 400.
+    // [400] A body or query failing validation is answered with 400 (`@ValidBody`, `@ValidQuery`); the hand-written docs listed 422 or nothing.
+    // [body] UpdateProfileBodyDto has no required field and no IsNotEmptyBody, so an empty body is accepted and no field is required; the hand-written body was `required: true`.
+    // [default] page, limit, sortBy and sortOrder are defaulted in the service (`resolvePaging`: page 1, limit 20, sort createdAt, order desc), not on the DTO, so no schema default is generated; the descriptions say them.
+    "GET /users/me: response status 500 only in hand-written", // [500]
+    "GET /users/me: response status 403 only in generated", // [403]
+    "GET /users/me: response status 404 only in generated", // [404]
+    "PATCH /users/me: request body required is true in hand-written, false in generated", // [body]
+    "PATCH /users/me: response status 422 only in hand-written", // [422]
+    "PATCH /users/me: response status 500 only in hand-written", // [500]
+    "PATCH /users/me: response status 400 only in generated", // [400]
+    "PATCH /users/me: response status 403 only in generated", // [403]
+    "PATCH /users/me: response status 404 only in generated", // [404]
+    "GET /admin/users: parameter query page default is 1 in hand-written, none in generated", // [default]
+    "GET /admin/users: parameter query limit default is 20 in hand-written, none in generated", // [default]
+    'GET /admin/users: parameter query sortBy default is "createdAt" in hand-written, none in generated', // [default]
+    'GET /admin/users: parameter query sortOrder default is "desc" in hand-written, none in generated', // [default]
+    "GET /admin/users: response status 400 only in generated", // [400]
+    "GET /users/{id}: response status 500 only in hand-written" // [500]
+  ],
+  "contact-admin": [
+    // [optional] The route takes an optional Bearer token (`@OptionalAuth`); the hand-written docs described it in prose but declared no security.
+    // [403] authGuard can answer 403 AUTH_PASSWORD_CHANGE_REQUIRED (a temporary-password session); the hand-written docs never listed it on the owner routes (the admin routes already did).
+    // [pattern] The validator accepts only a 24-hex ObjectId (`IsRequiredObjectId`); the hand-written owner route declared a bare string.
+    // [date] The validator accepts any ISO 8601 string and keeps it as sent, so the schema is a plain string; the hand-written `format: date` was narrower than the validator.
+    'POST /contact/submit: security undefined in hand-written, [{},{"bearerAuth":[]}] in generated', // [optional]
+    "GET /contacts: response status 403 only in generated", // [403]
+    'GET /contacts/{id}: parameter path id pattern is none in hand-written, "^[a-fA-F0-9]{24}$" in generated', // [pattern]
+    "GET /contacts/{id}: response status 403 only in generated", // [403]
+    'GET /admin/contacts: parameter query fromDate format is "date" in hand-written, none in generated', // [date]
+    'GET /admin/contacts: parameter query toDate format is "date" in hand-written, none in generated' // [date]
   ]
 };
 
@@ -395,17 +462,20 @@ describe("buildOpenApiSpec", () => {
             "utf8"
           )
         ) as OpenAPIV3.PathsObject;
-        const prefixes = Object.keys(frozen);
-        // A fixture that froze nothing, or paths nothing generates, would
-        // make an empty diff mean nothing.
+        // A fixture that froze nothing, or operations nothing generates,
+        // would make an empty diff mean nothing.
         expect(
           operationsOf({ paths: frozen } as OpenAPIV3.Document).length
         ).toBeGreaterThan(0);
-        const generatedPaths = Object.fromEntries(
-          Object.entries(document.paths).filter(([path]) =>
-            prefixes.some((p) => path === p || path.startsWith(`${p}/`))
-          )
-        );
+        // The module's own operations, by controller: a path prefix would also
+        // catch another module's routes under it (`/users/me/favorites`).
+        const owners = controllersOfModule(module).map((c) => `${c.name}.`);
+        const generatedPaths: OpenAPIV3.PathsObject = {};
+        for (const { path, verb, op } of operationsOf(document)) {
+          if (owners.some((owner) => op.operationId?.startsWith(owner))) {
+            generatedPaths[path] = { ...generatedPaths[path], [verb]: op };
+          }
+        }
         expect(Object.keys(generatedPaths).length).toBeGreaterThan(0);
         expect(
           diffOperations(frozen, resolveRefs(generatedPaths, document))
