@@ -1,5 +1,5 @@
 // types
-import type { FPOtpSendRequest, FPOtpVerifyRequest } from "../../types";
+import type { OtpSendBodyDto, OtpVerifyBodyDto } from "../../dtos/requests";
 import type { SendOtpResponseDto, VerifyOtpResponseDto } from "../../dtos";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { OtpForgotPasswordRepository } from "../../repositories/otp-forgot-password.repository";
@@ -29,7 +29,7 @@ export class OtpForgotPasswordStrategy {
   ) {}
 
   @LogMethod({ name: "Forgot password OTP send" })
-  sendCode(req: FPOtpSendRequest): Promise<SendOtpResponseDto> {
+  sendCode(body: OtpSendBodyDto): Promise<SendOtpResponseDto> {
     return sendCode(
       {
         otpRepo: this.otpRepo,
@@ -38,12 +38,12 @@ export class OtpForgotPasswordStrategy {
         resendLimitGuard: this.resendLimitGuard,
         authExistsGuard: this.authExistsGuard
       },
-      req
+      body
     );
   }
 
   @LogMethod({ name: "Forgot password OTP verification" })
-  verifyCode(req: FPOtpVerifyRequest): Promise<VerifyOtpResponseDto> {
+  verifyCode(body: OtpVerifyBodyDto): Promise<VerifyOtpResponseDto> {
     return verifyCode(
       {
         otpRepo: this.otpRepo,
@@ -52,7 +52,7 @@ export class OtpForgotPasswordStrategy {
         authExistsGuard: this.authExistsGuard,
         audit: this.audit
       },
-      req
+      body
     );
   }
 }

@@ -1,7 +1,6 @@
 jest.mock("@/utils/crypto/bcrypt");
 jest.mock("@/utils/resilience/retry");
 // types
-import type { Request } from "express";
 import type { FailedAttemptsRepository } from "../../../repositories/failed-attempts.repository";
 import type {
   AccountExistsGuard,
@@ -16,7 +15,6 @@ import { TooManyRequestsError, UnauthorizedError } from "@/exceptions";
 // modules
 import { LOGIN_METHODS } from "@/modules/login-history/constants";
 // others
-import { makeMockRequest } from "@test/helpers/request.helper";
 import { createFailedAttemptsRepoMock } from "@test/mocks/failed-attempts-repo.mock";
 import {
   createAccountExistsGuardMock,
@@ -43,7 +41,6 @@ const EMAIL = "user@example.com";
 const PASSWORD = "correct-password";
 
 describe("PasswordLoginStrategy", () => {
-  let req: Request;
   let accountExists: jest.Mocked<AccountExistsGuard>;
   let accountActive: jest.Mocked<AccountActiveGuard>;
   let emailVerified: jest.Mocked<EmailVerifiedGuard>;
@@ -55,7 +52,6 @@ describe("PasswordLoginStrategy", () => {
   let strategy: PasswordLoginStrategy;
 
   beforeEach(() => {
-    req = makeMockRequest({ language: "en" });
     accountExists = createAccountExistsGuardMock();
     accountActive = createAccountActiveGuardMock();
     emailVerified = createEmailVerifiedGuardMock();
@@ -90,34 +86,28 @@ describe("PasswordLoginStrategy", () => {
       expiresIn: 3600
     });
 
-    const result = await strategy.authenticate(
-      { email: EMAIL, password: PASSWORD },
-      req
-    );
+    const result = await strategy.authenticate({
+      email: EMAIL,
+      password: PASSWORD
+    });
 
     expect(lockout.assert).toHaveBeenCalledWith(EMAIL);
-    expect(accountExists.assertWithCredentialAudit).toHaveBeenCalledWith(
-      EMAIL,
-      req
-    );
+    expect(accountExists.assertWithCredentialAudit).toHaveBeenCalledWith(EMAIL);
     expect(accountActive.assertWithAudit).toHaveBeenCalledWith(
       fixture.auth,
       EMAIL,
-      LOGIN_METHODS.PASSWORD,
-      req
+      LOGIN_METHODS.PASSWORD
     );
     expect(emailVerified.assertWithAudit).toHaveBeenCalledWith(
       fixture.auth,
       EMAIL,
-      LOGIN_METHODS.PASSWORD,
-      req
+      LOGIN_METHODS.PASSWORD
     );
     expect(failedAttemptsRepo.trackAttempt).not.toHaveBeenCalled();
     expect(completion.complete).toHaveBeenCalledWith({
       auth: fixture.auth,
       user: fixture.user,
-      method: LOGIN_METHODS.PASSWORD,
-      req
+      method: LOGIN_METHODS.PASSWORD
     });
     expect(result).toEqual({
       accessToken: "a",
@@ -136,10 +126,7 @@ describe("PasswordLoginStrategy", () => {
       lockoutSeconds: 0
     });
 
-    const promise = strategy.authenticate(
-      { email: EMAIL, password: "wrong" },
-      req
-    );
+    const promise = strategy.authenticate({ email: EMAIL, password: "wrong" });
 
     await expect(promise).rejects.toBeInstanceOf(UnauthorizedError);
     await expect(promise).rejects.toMatchObject({
@@ -149,8 +136,7 @@ describe("PasswordLoginStrategy", () => {
     expect(audit.recordInvalidPassword).toHaveBeenCalledWith({
       auth: fixture.auth,
       email: EMAIL,
-      attemptCount: 3,
-      req
+      attemptCount: 3
     });
     expect(completion.complete).not.toHaveBeenCalled();
     expect(notifications.notify).not.toHaveBeenCalled();
@@ -165,10 +151,7 @@ describe("PasswordLoginStrategy", () => {
       lockoutSeconds: LOGIN_LOCKOUT.LOCKOUT_SECONDS
     });
 
-    const promise = strategy.authenticate(
-      { email: EMAIL, password: "wrong" },
-      req
-    );
+    const promise = strategy.authenticate({ email: EMAIL, password: "wrong" });
 
     await expect(promise).rejects.toBeInstanceOf(TooManyRequestsError);
     await expect(promise).rejects.toMatchObject({
@@ -191,7 +174,7 @@ describe("PasswordLoginStrategy", () => {
     );
 
     await expect(
-      strategy.authenticate({ email: EMAIL, password: PASSWORD }, req)
+      strategy.authenticate({ email: EMAIL, password: PASSWORD })
     ).rejects.toMatchObject({ code: ERROR_CODES.LOGIN_ACCOUNT_LOCKED });
     expect(accountExists.assertWithCredentialAudit).not.toHaveBeenCalled();
   });
@@ -207,7 +190,7 @@ describe("PasswordLoginStrategy", () => {
     });
 
     await expect(
-      strategy.authenticate({ email: EMAIL, password: PASSWORD }, req)
+      strategy.authenticate({ email: EMAIL, password: PASSWORD })
     ).rejects.toMatchObject({ code: ERROR_CODES.LOGIN_ACCOUNT_INACTIVE });
 
     expect(emailVerified.assertWithAudit).not.toHaveBeenCalled();
@@ -226,7 +209,7 @@ describe("PasswordLoginStrategy", () => {
     });
 
     await expect(
-      strategy.authenticate({ email: EMAIL, password: PASSWORD }, req)
+      strategy.authenticate({ email: EMAIL, password: PASSWORD })
     ).rejects.toMatchObject({ code: ERROR_CODES.LOGIN_EMAIL_NOT_VERIFIED });
 
     expect(failedAttemptsRepo.trackAttempt).not.toHaveBeenCalled();
@@ -244,7 +227,7 @@ describe("PasswordLoginStrategy", () => {
       expiresIn: 3600
     });
 
-    await strategy.authenticate({ email: EMAIL, password: PASSWORD }, req);
+    await strategy.authenticate({ email: EMAIL, password: PASSWORD });
 
     expect(mockedWithRetry).toHaveBeenCalledWith(
       expect.any(Function),

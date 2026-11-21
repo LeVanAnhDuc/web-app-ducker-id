@@ -1,5 +1,4 @@
 // types
-import type { Request } from "express";
 import type {
   LoginBodyDto,
   OtpSendBodyDto,
@@ -29,30 +28,24 @@ export class LoginService {
     private readonly failedAttemptsRepo: FailedAttemptsRepository
   ) {}
 
-  passwordLogin(body: LoginBodyDto, req: Request): Promise<LoginResponseDto> {
-    return this.passwordStrategy.authenticate(body, req);
+  passwordLogin(body: LoginBodyDto): Promise<LoginResponseDto> {
+    return this.passwordStrategy.authenticate(body);
   }
 
-  sendOtp(body: OtpSendBodyDto, req: Request): Promise<OtpSendDto> {
-    return this.otpStrategy.sendCode(body, req);
+  sendOtp(body: OtpSendBodyDto): Promise<OtpSendDto> {
+    return this.otpStrategy.sendCode(body);
   }
 
-  verifyOtp(body: OtpVerifyBodyDto, req: Request): Promise<LoginResponseDto> {
-    return this.otpStrategy.verifyCode(body, req);
+  verifyOtp(body: OtpVerifyBodyDto): Promise<LoginResponseDto> {
+    return this.otpStrategy.verifyCode(body);
   }
 
-  sendMagicLink(
-    body: MagicLinkSendBodyDto,
-    req: Request
-  ): Promise<MagicLinkSendDto> {
-    return this.magicLinkStrategy.sendLink(body, req);
+  sendMagicLink(body: MagicLinkSendBodyDto): Promise<MagicLinkSendDto> {
+    return this.magicLinkStrategy.sendLink(body);
   }
 
-  verifyMagicLink(
-    body: MagicLinkVerifyBodyDto,
-    req: Request
-  ): Promise<LoginResponseDto> {
-    return this.magicLinkStrategy.verifyLink(body, req);
+  verifyMagicLink(body: MagicLinkVerifyBodyDto): Promise<LoginResponseDto> {
+    return this.magicLinkStrategy.verifyLink(body);
   }
 
   async isEmailLocked(email: string): Promise<boolean> {

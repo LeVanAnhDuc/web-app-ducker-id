@@ -21,12 +21,14 @@ import { bodyPipe } from "@/middlewares/pipes/validation.pipe";
 import { i18nMiddleware } from "@/i18n";
 import { Logger } from "@/libs/logger";
 import { RequestContext } from "@/utils/request-context";
+import { IsAppEmail, IsRequiredObjectId } from "@/validators/decorators";
 import {
   Auth,
+  PathVariable,
   RateLimit,
+  RequestParam,
   Respond,
-  ValidBody,
-  ValidParams
+  ValidBody
 } from "../decorators";
 import { findDisallowedRoutingImports, mountControllers } from "../mount";
 
@@ -35,11 +37,6 @@ class FixtureBodyDto {
   @IsString({ message: "validation:fixture.invalid" })
   @IsDefined({ message: "validation:fixture.required" })
   name!: string;
-}
-
-class FixtureIdParamsDto {
-  @IsString()
-  id!: string;
 }
 
 const trace: string[] = [];
@@ -77,8 +74,33 @@ class FixtureController {
 
   @Delete("/:id")
   @Respond({ status: StatusCodes.NO_CONTENT })
-  remove(@ValidParams(FixtureIdParamsDto) _params: FixtureIdParamsDto) {
+  remove(@PathVariable("id", IsString()) _id: string) {
     return undefined;
+  }
+
+  @Get("/items/:id")
+  @Respond()
+  item(
+    @PathVariable("id", IsRequiredObjectId("validation:id.invalid")) id: string
+  ) {
+    return { id };
+  }
+
+  @Get("/pairs/:left/:right")
+  @Respond()
+  pair(
+    @PathVariable("left", IsRequiredObjectId("validation:id.invalid"))
+    left: string,
+    @PathVariable("right", IsRequiredObjectId("validation:id.invalid"))
+    right: string
+  ) {
+    return { left, right };
+  }
+
+  @Get("/lookup")
+  @Respond()
+  lookup(@RequestParam("email", IsAppEmail()) email: string) {
+    return { email };
   }
 
   @Post("/validated")
@@ -285,6 +307,71 @@ describe("mountControllers", () => {
       errors: [{ field: "name", reason: "maxLength" }]
     });
     expect(withoutVolatile(body)).toEqual(withoutVolatile(await json(plain)));
+  });
+
+  describe("single named values", () => {
+    const ID = "64b2f0c2f1a2b3c4d5e6f7a1";
+    const ID2 = "64b2f0c2f1a2b3c4d5e6f7a2";
+
+    it("hands a valid path variable over as a plain string", async () => {
+      const res = await call(`/api/v1/fixtures/items/${ID}`);
+
+      expect(res.status).toBe(StatusCodes.OK);
+      expect((await json(res)).data).toEqual({ id: ID });
+    });
+
+    it("answers a bad path variable as a DTO field would be answered", async () => {
+      const res = await call("/api/v1/fixtures/items/not-an-id");
+
+      expect(res.status).toBe(StatusCodes.BAD_REQUEST);
+      expect(await json(res)).toMatchObject({
+        code: "VALIDATION_ERROR",
+        errors: [
+          { field: "id", reason: "isObjectId", message: "Invalid identifier" }
+        ]
+      });
+    });
+
+    it("validates every path variable of one action together", async () => {
+      const ok = await call(`/api/v1/fixtures/pairs/${ID}/${ID2}`);
+      expect((await json(ok)).data).toEqual({ left: ID, right: ID2 });
+
+      const bad = await call(`/api/v1/fixtures/pairs/${ID}/nope`);
+      expect(bad.status).toBe(StatusCodes.BAD_REQUEST);
+      expect((await json(bad)).errors).toEqual([
+        expect.objectContaining({ field: "right", reason: "isObjectId" })
+      ]);
+    });
+
+    it("takes one query value by name and drops the rest", async () => {
+      const res = await call(
+        "/api/v1/fixtures/lookup?email=user%40test.com&extra=x"
+      );
+
+      expect(res.status).toBe(StatusCodes.OK);
+      expect((await json(res)).data).toEqual({ email: "user@test.com" });
+    });
+
+    it("answers a bad or missing query value with 400 on that field", async () => {
+      const bad = await call("/api/v1/fixtures/lookup?email=nope");
+      const missing = await call("/api/v1/fixtures/lookup");
+
+      for (const res of [bad, missing]) {
+        expect(res.status).toBe(StatusCodes.BAD_REQUEST);
+        expect((await json(res)).errors).toEqual([
+          expect.objectContaining({ field: "email" })
+        ]);
+      }
+    });
+
+    it("refuses a named value declared without a rule", () => {
+      expect(() => {
+        class NoRule {
+          act(@PathVariable("id") _id: string) {}
+        }
+        return NoRule;
+      }).toThrow('NoRule.act: params "id" needs at least one rule');
+    });
   });
 
   it("runs the computed chain and hands a guard's 401 to the error filter", async () => {

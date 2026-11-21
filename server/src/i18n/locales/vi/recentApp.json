@@ -9,7 +9,6 @@
   },
   "validation": {
     "appId": {
-      "required": "Thiếu mã ứng dụng.",
       "invalid": "Mã ứng dụng không hợp lệ."
     }
   }

@@ -1,5 +1,4 @@
 // types
-import type { Request } from "express";
 import type { MagicLinkSendBodyDto } from "../../dtos/requests";
 import type { MagicLinkSendDto } from "../../dtos";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
@@ -8,6 +7,7 @@ import type { AccountExistsGuard, MagicLinkCooldownGuard } from "../../guards";
 // dtos
 import { toMagicLinkSendDto } from "../../dtos";
 // others
+import { RequestContext } from "@/utils/request-context";
 import ENV from "@/constants/env";
 import { EmailType } from "@/types/services/email";
 import { Logger } from "@/libs/logger";
@@ -21,11 +21,10 @@ export const sendLink = async (
     magicLinkLoginRepo: MagicLinkLoginRepository;
     emailDispatcher: EmailDispatcher;
   },
-  body: MagicLinkSendBodyDto,
-  req: Request
+  body: MagicLinkSendBodyDto
 ): Promise<MagicLinkSendDto> => {
   const { email } = body;
-  const { language } = req;
+  const { language } = RequestContext.getClient();
 
   await deps.magicLinkCooldownGuard.assert(email);
 

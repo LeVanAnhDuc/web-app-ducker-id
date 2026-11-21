@@ -1,11 +1,11 @@
 // types
 import type {
-  FPOtpSendRequest,
-  FPOtpVerifyRequest,
-  FPMagicLinkSendRequest,
-  FPMagicLinkVerifyRequest,
-  FPResetPasswordRequest
-} from "../../types";
+  MagicLinkSendBodyDto,
+  MagicLinkVerifyBodyDto,
+  OtpSendBodyDto,
+  OtpVerifyBodyDto,
+  ResetPasswordBodyDto
+} from "../../dtos/requests";
 import type {
   SendOtpResponseDto,
   VerifyOtpResponseDto,
@@ -39,30 +39,26 @@ export class ForgotPasswordService {
     private readonly audit: ForgotPasswordAuditService
   ) {}
 
-  sendOtp(req: FPOtpSendRequest): Promise<SendOtpResponseDto> {
-    return this.otpStrategy.sendCode(req);
+  sendOtp(body: OtpSendBodyDto): Promise<SendOtpResponseDto> {
+    return this.otpStrategy.sendCode(body);
   }
 
-  verifyOtp(req: FPOtpVerifyRequest): Promise<VerifyOtpResponseDto> {
-    return this.otpStrategy.verifyCode(req);
+  verifyOtp(body: OtpVerifyBodyDto): Promise<VerifyOtpResponseDto> {
+    return this.otpStrategy.verifyCode(body);
   }
 
-  sendMagicLink(
-    req: FPMagicLinkSendRequest
-  ): Promise<SendMagicLinkResponseDto> {
-    return this.magicLinkStrategy.sendLink(req);
+  sendMagicLink(body: MagicLinkSendBodyDto): Promise<SendMagicLinkResponseDto> {
+    return this.magicLinkStrategy.sendLink(body);
   }
 
   verifyMagicLink(
-    req: FPMagicLinkVerifyRequest
+    body: MagicLinkVerifyBodyDto
   ): Promise<VerifyMagicLinkResponseDto> {
-    return this.magicLinkStrategy.verifyLink(req);
+    return this.magicLinkStrategy.verifyLink(body);
   }
 
   @LogMethod({ name: "Forgot password reset" })
-  resetPassword(
-    req: FPResetPasswordRequest
-  ): Promise<ResetPasswordResponseDto> {
+  resetPassword(body: ResetPasswordBodyDto): Promise<ResetPasswordResponseDto> {
     return resetPassword(
       {
         authService: this.authService,
@@ -71,7 +67,7 @@ export class ForgotPasswordService {
         resetTokenValidGuard: this.resetTokenValidGuard,
         audit: this.audit
       },
-      req
+      body
     );
   }
 }

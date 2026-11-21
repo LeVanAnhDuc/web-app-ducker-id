@@ -1,7 +1,6 @@
 // modules
 import {
   AdminAppsQueryDto,
-  AppIdParamsDto,
   CreateAppBodyDto,
   UpdateAppBodyDto,
   UserAppsQueryDto
@@ -149,17 +148,6 @@ const createFieldCases = Object.fromEntries(
   Object.entries(fieldCases).map(([name, overrides]) => [name, app(overrides)])
 );
 
-const idCases = {
-  valid: { id: ID },
-  validUpperCase: { id: ID.toUpperCase() },
-  missing: {},
-  empty: { id: "" },
-  wrongType: { id: 123 },
-  tooShort: { id: ID.slice(1) },
-  notHex: { id: `${ID.slice(1)}z` },
-  unknownStripped: { id: ID, extra: "x" }
-};
-
 // Search and category filter are declared the same on both list queries.
 const sharedQueryCases = {
   empty: {},
@@ -217,10 +205,6 @@ describe("web-app request DTOs match the Joi schemas", () => {
       },
       ...fieldCases
     });
-  });
-
-  it("AppIdParamsDto ≡ adminAppIdParamSchema", async () => {
-    await expectDto(AppIdParamsDto, idCases);
   });
 
   it("AdminAppsQueryDto ≡ adminListAppsQuerySchema", async () => {

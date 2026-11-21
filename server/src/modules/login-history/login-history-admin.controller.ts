@@ -6,15 +6,14 @@ import type { LoginHistoryService } from "./services";
 import {
   Admin,
   Auth,
-  Respond,
-  ValidParams,
-  ValidQuery
+  PathVariable,
+  RequestParam,
+  Respond
 } from "@/common/routing";
+// validators
+import { IsRequiredObjectId } from "@/validators/decorators";
 // others
-import {
-  LoginHistoryAdminQueryDto,
-  LoginHistoryIdParamsDto
-} from "./dtos/requests";
+import { LoginHistoryAdminQueryDto } from "./dtos/requests";
 
 @JsonController("/admin/login-history")
 @Auth()
@@ -25,7 +24,7 @@ export class LoginHistoryAdminController {
   @Get("/")
   @Respond({ message: "loginHistory:success.getAllHistory" })
   getAllHistory(
-    @ValidQuery(LoginHistoryAdminQueryDto) query: LoginHistoryAdminQueryDto
+    @RequestParam(LoginHistoryAdminQueryDto) query: LoginHistoryAdminQueryDto
   ) {
     return this.service.getAllLoginHistory(query);
   }
@@ -33,8 +32,9 @@ export class LoginHistoryAdminController {
   @Get("/:id")
   @Respond({ message: "loginHistory:success.getHistoryDetail" })
   getHistoryDetail(
-    @ValidParams(LoginHistoryIdParamsDto) params: LoginHistoryIdParamsDto
+    @PathVariable("id", IsRequiredObjectId("loginHistory:errors.invalidId"))
+    id: string
   ) {
-    return this.service.getLoginHistoryDetail(params.id);
+    return this.service.getLoginHistoryDetail(id);
   }
 }

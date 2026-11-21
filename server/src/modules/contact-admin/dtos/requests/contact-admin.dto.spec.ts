@@ -1,7 +1,6 @@
 // modules
 import {
   AdminContactsQueryDto,
-  ContactIdParamsDto,
   MyContactsQueryDto,
   SubmitContactBodyDto,
   UpdateContactStatusBodyDto
@@ -87,18 +86,6 @@ describe("contact-admin request DTOs match the Joi schemas", () => {
       messageWrongType: submit({ message: ["x"] }),
       messageTooShort: submit({ message: "Too short" }),
       messageTooLong: submit({ message: "a".repeat(5001) })
-    });
-  });
-
-  it("ContactIdParamsDto ≡ contactIdParamSchema", async () => {
-    await expectDto(ContactIdParamsDto, {
-      valid: { id: "507f1f77bcf86cd799439011" },
-      missing: {},
-      null: { id: null },
-      empty: { id: "" },
-      wrongType: { id: 123 },
-      notHex: { id: "507f1f77bcf86cd79943901z" },
-      unknownStripped: { id: "507f1f77bcf86cd799439011", extra: "x" }
     });
   });
 

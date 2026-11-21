@@ -1,8 +1,8 @@
 // types
 import type {
-  FPMagicLinkSendRequest,
-  FPMagicLinkVerifyRequest
-} from "../../types";
+  MagicLinkSendBodyDto,
+  MagicLinkVerifyBodyDto
+} from "../../dtos/requests";
 import type {
   SendMagicLinkResponseDto,
   VerifyMagicLinkResponseDto
@@ -33,7 +33,7 @@ export class MagicLinkForgotPasswordStrategy {
   ) {}
 
   @LogMethod({ name: "Forgot password magic link send" })
-  sendLink(req: FPMagicLinkSendRequest): Promise<SendMagicLinkResponseDto> {
+  sendLink(body: MagicLinkSendBodyDto): Promise<SendMagicLinkResponseDto> {
     return sendLink(
       {
         magicLinkRepo: this.magicLinkRepo,
@@ -42,13 +42,13 @@ export class MagicLinkForgotPasswordStrategy {
         resendLimitGuard: this.resendLimitGuard,
         authExistsGuard: this.authExistsGuard
       },
-      req
+      body
     );
   }
 
   @LogMethod({ name: "Forgot password magic link verification" })
   verifyLink(
-    req: FPMagicLinkVerifyRequest
+    body: MagicLinkVerifyBodyDto
   ): Promise<VerifyMagicLinkResponseDto> {
     return verifyLink(
       {
@@ -57,7 +57,7 @@ export class MagicLinkForgotPasswordStrategy {
         authExistsGuard: this.authExistsGuard,
         audit: this.audit
       },
-      req
+      body
     );
   }
 }

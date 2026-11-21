@@ -1,8 +1,12 @@
 // types
-import type { Request, Response } from "express";
+import type { Response } from "express";
 import type { LoginService } from "./services/login";
 import type { SessionService } from "@/modules/session/services";
 // modules
+import {
+  SESSION_COOKIE,
+  SESSION_COOKIE_OPTIONS
+} from "@/modules/session/constants";
 import {
   REFRESH_TOKEN,
   REFRESH_TOKEN_COOKIE_OPTIONS
@@ -15,7 +19,8 @@ import {
   OtpVerifyBodyDto
 } from "./dtos/requests";
 // others
-import { makeMockRequest } from "@test/helpers/request.helper";
+import { RequestContext } from "@/utils/request-context";
+import { inRequest } from "@test/helpers/request-context.helper";
 import { LoginController } from "./login.controller";
 
 const EMAIL = "user@example.com";
@@ -65,15 +70,12 @@ const TOKENS_NO_REFRESH = {
 };
 
 describe("LoginController", () => {
-  let req: Request;
   let res: ResponseMock;
   let service: jest.Mocked<LoginService>;
   let sessionService: jest.Mocked<SessionService>;
   let controller: LoginController;
 
   beforeEach(() => {
-    req = makeMockRequest();
-    (req as unknown as { originalUrl: string }).originalUrl = "/api/login";
     res = createResponseMock();
     service = createServiceMock();
     // RequestContext rỗng ngoài AsyncLocalStorage nên startSession sẽ no-op —
@@ -92,13 +94,9 @@ describe("LoginController", () => {
         password: "pw"
       });
 
-      const data = await controller.login(
-        body,
-        req,
-        res as unknown as Response
-      );
+      const data = await controller.login(body, res as unknown as Response);
 
-      expect(service.passwordLogin).toHaveBeenCalledWith(body, req);
+      expect(service.passwordLogin).toHaveBeenCalledWith(body);
       expect(res.cookie).toHaveBeenCalledWith(
         REFRESH_TOKEN,
         "refresh-x",
@@ -116,11 +114,7 @@ describe("LoginController", () => {
     it("does not set cookie when refreshToken absent", async () => {
       service.passwordLogin.mockResolvedValue(TOKENS_NO_REFRESH);
 
-      await controller.login(
-        new LoginBodyDto(),
-        req,
-        res as unknown as Response
-      );
+      await controller.login(new LoginBodyDto(), res as unknown as Response);
 
       expect(res.cookie).not.toHaveBeenCalled();
     });
@@ -132,9 +126,9 @@ describe("LoginController", () => {
       service.sendOtp.mockResolvedValue(dto);
       const body = Object.assign(new OtpSendBodyDto(), { email: EMAIL });
 
-      const data = await controller.sendOtp(body, req);
+      const data = await controller.sendOtp(body);
 
-      expect(service.sendOtp).toHaveBeenCalledWith(body, req);
+      expect(service.sendOtp).toHaveBeenCalledWith(body);
       expect(res.cookie).not.toHaveBeenCalled();
 
       expect(data).toBe(dto);
@@ -149,13 +143,9 @@ describe("LoginController", () => {
         otp: "123456"
       });
 
-      const data = await controller.verifyOtp(
-        body,
-        req,
-        res as unknown as Response
-      );
+      const data = await controller.verifyOtp(body, res as unknown as Response);
 
-      expect(service.verifyOtp).toHaveBeenCalledWith(body, req);
+      expect(service.verifyOtp).toHaveBeenCalledWith(body);
       expect(res.cookie).toHaveBeenCalledWith(
         REFRESH_TOKEN,
         "refresh-x",
@@ -170,7 +160,6 @@ describe("LoginController", () => {
 
       await controller.verifyOtp(
         new OtpVerifyBodyDto(),
-        req,
         res as unknown as Response
       );
 
@@ -184,9 +173,9 @@ describe("LoginController", () => {
       service.sendMagicLink.mockResolvedValue(dto);
       const body = Object.assign(new MagicLinkSendBodyDto(), { email: EMAIL });
 
-      const data = await controller.sendMagicLink(body, req);
+      const data = await controller.sendMagicLink(body);
 
-      expect(service.sendMagicLink).toHaveBeenCalledWith(body, req);
+      expect(service.sendMagicLink).toHaveBeenCalledWith(body);
       expect(res.cookie).not.toHaveBeenCalled();
 
       expect(data).toBe(dto);
@@ -203,11 +192,10 @@ describe("LoginController", () => {
 
       const data = await controller.verifyMagicLink(
         body,
-        req,
         res as unknown as Response
       );
 
-      expect(service.verifyMagicLink).toHaveBeenCalledWith(body, req);
+      expect(service.verifyMagicLink).toHaveBeenCalledWith(body);
       expect(res.cookie).toHaveBeenCalledWith(
         REFRESH_TOKEN,
         "refresh-x",
@@ -222,11 +210,38 @@ describe("LoginController", () => {
 
       await controller.verifyMagicLink(
         new MagicLinkVerifyBodyDto(),
-        req,
         res as unknown as Response
       );
 
       expect(res.cookie).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("IdP session", () => {
+    it("starts a session for the signed-in identity and sets the sid cookie", async () => {
+      service.passwordLogin.mockResolvedValue(TOKENS_WITH_REFRESH);
+      sessionService.start.mockResolvedValue({ sid: "sid-1" } as never);
+      const body = Object.assign(new LoginBodyDto(), {
+        email: EMAIL,
+        password: "pw"
+      });
+
+      await inRequest({}, async () => {
+        // LoginCompletionService sets this during a real login.
+        RequestContext.setUser({ sub: "u-1", authId: "a-1", roles: "user" });
+        await controller.login(body, res as unknown as Response);
+      });
+
+      expect(sessionService.start).toHaveBeenCalledWith({
+        authId: "a-1",
+        userId: "u-1",
+        roles: "user"
+      });
+      expect(res.cookie).toHaveBeenCalledWith(
+        SESSION_COOKIE,
+        "sid-1",
+        SESSION_COOKIE_OPTIONS
+      );
     });
   });
 });

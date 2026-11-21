@@ -1,5 +1,5 @@
 // types
-import type { ChangePasswordRequest } from "../types";
+import type { ChangePasswordBodyDto } from "../dtos/requests";
 import type { AuthenticationService } from "@/modules/authentication/services";
 import type { UserService } from "@/modules/user/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
@@ -33,10 +33,11 @@ export class ChangePasswordService {
   ) {}
 
   async changePassword(
-    req: ChangePasswordRequest
+    body: ChangePasswordBodyDto
   ): Promise<AuthTokensResponse> {
     const authId = RequestContext.requireAuthId();
-    const { currentPassword, newPassword } = req.body;
+    const { currentPassword, newPassword } = body;
+    const client = RequestContext.getClient();
 
     const auth = await this.authService.findById(authId);
     if (!auth) {
@@ -82,7 +83,7 @@ export class ChangePasswordService {
       email: user.email,
       data: {
         changedAt: new Date().toISOString(),
-        ipAddress: req.ip ?? "unknown"
+        ipAddress: client.ip || "unknown"
       }
     });
 
@@ -96,8 +97,8 @@ export class ChangePasswordService {
     Logger.info("Password changed", {
       authId,
       userId: user._id.toString(),
-      ip: req.ip ?? "unknown",
-      userAgent: req.headers["user-agent"] ?? "unknown"
+      ip: client.ip || "unknown",
+      userAgent: client.userAgent || "unknown"
     });
 
     return tokens;

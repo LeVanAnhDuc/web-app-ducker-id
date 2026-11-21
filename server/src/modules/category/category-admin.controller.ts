@@ -7,14 +7,15 @@ import type { CategoryService } from "./services";
 import {
   Admin,
   Auth,
+  PathVariable,
   RateLimit,
   Respond,
-  ValidBody,
-  ValidParams
+  ValidBody
 } from "@/common/routing";
+// validators
+import { IsRequiredObjectId } from "@/validators/decorators";
 // others
 import {
-  CategoryIdParamsDto,
   CreateCategoryBodyDto,
   DeleteCategoryBodyDto,
   MoveCategoryBodyDto,
@@ -47,35 +48,41 @@ export class CategoryAdminController {
   @RateLimit("categoryMutationByIpAndUser")
   @Respond({ message: "category:success.update" })
   update(
-    @ValidParams(CategoryIdParamsDto) params: CategoryIdParamsDto,
+    @PathVariable("id", IsRequiredObjectId("category:validation.id.invalid"))
+    id: string,
     @ValidBody(UpdateCategoryBodyDto) body: UpdateCategoryBodyDto
   ) {
-    return this.service.update(params.id, body);
+    return this.service.update(id, body);
   }
 
   @Post("/:id/move")
   @RateLimit("categoryMutationByIpAndUser")
   @Respond({ message: "category:success.move" })
   move(
-    @ValidParams(CategoryIdParamsDto) params: CategoryIdParamsDto,
+    @PathVariable("id", IsRequiredObjectId("category:validation.id.invalid"))
+    id: string,
     @ValidBody(MoveCategoryBodyDto) body: MoveCategoryBodyDto
   ) {
-    return this.service.move(params.id, body.direction);
+    return this.service.move(id, body.direction);
   }
 
   @Get("/:id/delete-impact")
   @Respond({ message: "category:success.deleteImpact" })
-  deleteImpact(@ValidParams(CategoryIdParamsDto) params: CategoryIdParamsDto) {
-    return this.service.deleteImpact(params.id);
+  deleteImpact(
+    @PathVariable("id", IsRequiredObjectId("category:validation.id.invalid"))
+    id: string
+  ) {
+    return this.service.deleteImpact(id);
   }
 
   @Delete("/:id")
   @RateLimit("categoryMutationByIpAndUser")
   @Respond({ status: StatusCodes.NO_CONTENT })
   async remove(
-    @ValidParams(CategoryIdParamsDto) params: CategoryIdParamsDto,
+    @PathVariable("id", IsRequiredObjectId("category:validation.id.invalid"))
+    id: string,
     @ValidBody(DeleteCategoryBodyDto) body: DeleteCategoryBodyDto
   ) {
-    await this.service.remove(params.id, body.reassignments);
+    await this.service.remove(id, body.reassignments);
   }
 }

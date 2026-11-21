@@ -3,7 +3,7 @@ import { Get, JsonController } from "routing-controllers";
 // types
 import type { WebAppService } from "./services";
 // common
-import { Auth, Respond, ValidQuery } from "@/common/routing";
+import { Auth, RequestParam, Respond } from "@/common/routing";
 // others
 import { RequestContext } from "@/utils/request-context";
 import { UserAppsQueryDto } from "./dtos/requests";
@@ -15,7 +15,7 @@ export class WebAppController {
 
   @Get("/")
   @Respond({ message: "webApp:success.listApps" })
-  listUserApps(@ValidQuery(UserAppsQueryDto) query: UserAppsQueryDto) {
+  listUserApps(@RequestParam(UserAppsQueryDto) query: UserAppsQueryDto) {
     const role = RequestContext.getUser()?.roles;
     return this.service.listUserApps(query, role);
   }

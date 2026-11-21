@@ -1,5 +1,4 @@
 // types
-import type { Request } from "express";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { LoginHistoryService } from "@/modules/login-history/services";
 // modules
@@ -15,17 +14,15 @@ export const recordInvalidMagicLink = (
   params: {
     auth: AuthenticationDocument;
     email: string;
-    req: Request;
   }
 ): void => {
-  const { auth, email, req } = params;
+  const { auth, email } = params;
 
   historyService.recordFailedLogin({
     userId: auth._id,
     usernameAttempted: email,
     loginMethod: LOGIN_METHODS.MAGIC_LINK,
-    failReason: LOGIN_FAIL_REASONS.INVALID_MAGIC_LINK,
-    req
+    failReason: LOGIN_FAIL_REASONS.INVALID_MAGIC_LINK
   });
 
   Logger.warn("Magic link verification failed - invalid token", { email });

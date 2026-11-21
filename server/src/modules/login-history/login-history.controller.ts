@@ -3,7 +3,7 @@ import { Get, JsonController } from "routing-controllers";
 // types
 import type { LoginHistoryService } from "./services";
 // common
-import { Auth, Respond, ValidQuery } from "@/common/routing";
+import { Auth, RequestParam, Respond } from "@/common/routing";
 // others
 import {
   LoginHistoryQueryDto,
@@ -18,14 +18,16 @@ export class LoginHistoryController {
   @Get("/stats")
   @Respond({ message: "loginHistory:success.getMyStats" })
   getMyStats(
-    @ValidQuery(LoginHistoryStatsQueryDto) query: LoginHistoryStatsQueryDto
+    @RequestParam(LoginHistoryStatsQueryDto) query: LoginHistoryStatsQueryDto
   ) {
     return this.service.getMyLoginStats(query);
   }
 
   @Get("/")
   @Respond({ message: "loginHistory:success.getMyHistory" })
-  getMyHistory(@ValidQuery(LoginHistoryQueryDto) query: LoginHistoryQueryDto) {
+  getMyHistory(
+    @RequestParam(LoginHistoryQueryDto) query: LoginHistoryQueryDto
+  ) {
     return this.service.getMyLoginHistory(query);
   }
 }

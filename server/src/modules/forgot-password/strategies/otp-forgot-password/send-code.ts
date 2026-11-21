@@ -1,5 +1,5 @@
 // types
-import type { FPOtpSendRequest } from "../../types";
+import type { OtpSendBodyDto } from "../../dtos/requests";
 import type { SendOtpResponseDto } from "../../dtos";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { OtpForgotPasswordRepository } from "../../repositories/otp-forgot-password.repository";
@@ -11,6 +11,7 @@ import type {
 // dtos
 import { toSendOtpResponseDto } from "../../dtos";
 // others
+import { RequestContext } from "@/utils/request-context";
 import { EmailType } from "@/types/services/email";
 import { Logger } from "@/libs/logger";
 import { withRetry } from "@/utils/resilience/retry";
@@ -24,10 +25,10 @@ export const sendCode = async (
     resendLimitGuard: OtpResendLimitGuard;
     authExistsGuard: AuthExistsGuard;
   },
-  req: FPOtpSendRequest
+  body: OtpSendBodyDto
 ): Promise<SendOtpResponseDto> => {
-  const { email } = req.body;
-  const { language } = req;
+  const { email } = body;
+  const { language } = RequestContext.getClient();
 
   await deps.cooldownGuard.assert(email);
   await deps.resendLimitGuard.assert(email);

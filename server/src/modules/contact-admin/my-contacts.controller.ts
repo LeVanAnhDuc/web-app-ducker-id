@@ -3,10 +3,12 @@ import { Get, JsonController } from "routing-controllers";
 // types
 import type { ContactAdminService } from "./services";
 // common
-import { Auth, Respond, ValidParams, ValidQuery } from "@/common/routing";
+import { Auth, PathVariable, RequestParam, Respond } from "@/common/routing";
+// validators
+import { IsRequiredObjectId } from "@/validators/decorators";
 // others
 import { RequestContext } from "@/utils/request-context";
-import { ContactIdParamsDto, MyContactsQueryDto } from "./dtos/requests";
+import { MyContactsQueryDto } from "./dtos/requests";
 
 @JsonController("/contacts")
 @Auth()
@@ -15,18 +17,16 @@ export class MyContactsController {
 
   @Get("/")
   @Respond({ message: "contactAdmin:success.getMyContacts" })
-  getMyContacts(@ValidQuery(MyContactsQueryDto) query: MyContactsQueryDto) {
+  getMyContacts(@RequestParam(MyContactsQueryDto) query: MyContactsQueryDto) {
     return this.service.getMyContacts(RequestContext.requireUserId(), query);
   }
 
   @Get("/:id")
   @Respond({ message: "contactAdmin:success.getMyContactDetail" })
   getMyContactDetail(
-    @ValidParams(ContactIdParamsDto) params: ContactIdParamsDto
+    @PathVariable("id", IsRequiredObjectId("contactAdmin:errors.invalidId"))
+    id: string
   ) {
-    return this.service.getMyContactDetail(
-      params.id,
-      RequestContext.requireUserId()
-    );
+    return this.service.getMyContactDetail(id, RequestContext.requireUserId());
   }
 }

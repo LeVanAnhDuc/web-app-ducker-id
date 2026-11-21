@@ -5,9 +5,9 @@ export {
   PasswordChangeAuth,
   RateLimit,
   Respond,
-  ValidBody,
-  ValidParams,
-  ValidQuery
+  PathVariable,
+  RequestParam,
+  ValidBody
 } from "./decorators";
 export { EnvelopeInterceptor } from "./envelope.interceptor";
 export type { GuardName, RespondOptions, RouteMeta } from "./metadata";

@@ -1,6 +1,5 @@
 // modules
 import {
-  CategoryIdParamsDto,
   CreateCategoryBodyDto,
   DeleteCategoryBodyDto,
   MoveCategoryBodyDto,
@@ -147,18 +146,6 @@ describe("category request DTOs match the Joi schemas", () => {
         ]
       },
       nonObjectItems: { reassignments: [5, null, "x"] }
-    });
-  });
-
-  it("CategoryIdParamsDto ≡ categoryIdParamSchema", async () => {
-    await expectDto(CategoryIdParamsDto, {
-      valid: { id: ID },
-      validUpperCase: { id: ID.toUpperCase() },
-      missing: {},
-      empty: { id: "" },
-      wrongType: { id: 123 },
-      notHex: { id: `${ID.slice(1)}z` },
-      unknownStripped: { id: ID, extra: "x" }
     });
   });
 });

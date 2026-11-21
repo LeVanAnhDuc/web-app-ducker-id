@@ -5,13 +5,15 @@ import type { UserService } from "./services";
 // common
 import {
   Auth,
+  PathVariable,
   RateLimit,
   Respond,
-  ValidBody,
-  ValidParams
+  ValidBody
 } from "@/common/routing";
+// validators
+import { IsRequiredObjectId } from "@/validators/decorators";
 // others
-import { PublicProfileParamsDto, UpdateProfileBodyDto } from "./dtos/requests";
+import { UpdateProfileBodyDto } from "./dtos/requests";
 
 @JsonController("/users")
 export class UserController {
@@ -36,8 +38,8 @@ export class UserController {
   @Get("/:id")
   @Respond({ message: "user:success.getPublicProfile" })
   getPublicProfile(
-    @ValidParams(PublicProfileParamsDto) params: PublicProfileParamsDto
+    @PathVariable("id", IsRequiredObjectId("user:errors.invalidId")) id: string
   ) {
-    return this.service.getPublicProfile(params.id);
+    return this.service.getPublicProfile(id);
   }
 }

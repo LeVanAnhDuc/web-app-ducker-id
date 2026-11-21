@@ -1,7 +1,6 @@
 // types
 import type { UserService } from "@/modules/user/services";
 import type { UserWithAuth } from "@/modules/user/types";
-import type { Request } from "express";
 import type { LoginAuditService } from "../services/login-audit";
 // common
 import { UnauthorizedError } from "@/exceptions";
@@ -37,15 +36,12 @@ export class AccountExistsGuard {
     });
   }
 
-  async assertWithCredentialAudit(
-    email: string,
-    req: Request
-  ): Promise<UserWithAuth> {
+  async assertWithCredentialAudit(email: string): Promise<UserWithAuth> {
     const result = await this.userService.findByEmailWithAuth(email);
 
     if (result) return result;
 
-    this.audit.recordInvalidCredentials({ email, req });
+    this.audit.recordInvalidCredentials({ email });
     throw new UnauthorizedError({
       key: "login:errors.invalidCredentials",
       code: ERROR_CODES.LOGIN_INVALID_CREDENTIALS

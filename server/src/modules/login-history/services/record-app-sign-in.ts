@@ -1,6 +1,5 @@
 // types
 import type { Schema } from "mongoose";
-import type { Request } from "express";
 import type { LoginEventApp } from "../types";
 import type { LoginHistoryRepository } from "../repository/login-history.repository";
 // modules
@@ -9,6 +8,7 @@ import {
   LOGIN_METHODS
 } from "@/modules/login-history/constants";
 // others
+import { RequestContext } from "@/utils/request-context";
 import { logLoginAttempt } from "./shared/log-login-attempt";
 
 /**
@@ -21,13 +21,11 @@ export const recordAppSignIn = (
   {
     userId,
     usernameAttempted,
-    app,
-    req
+    app
   }: {
     userId: Schema.Types.ObjectId | string;
     usernameAttempted: string;
     app: LoginEventApp;
-    req: Request;
   }
 ): void => {
   void logLoginAttempt(loginHistoryRepo, {
@@ -36,6 +34,6 @@ export const recordAppSignIn = (
     status: LOGIN_STATUSES.SUCCESS,
     loginMethod: LOGIN_METHODS.SSO,
     app,
-    req
+    client: RequestContext.getClient()
   });
 };

@@ -55,7 +55,6 @@
       "invalid": "Phương thức xác thực token endpoint phải là client_secret_basic hoặc none."
     },
     "id": {
-      "required": "Thiếu id ứng dụng.",
       "invalid": "id ứng dụng không hợp lệ."
     },
     "body": {

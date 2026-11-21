@@ -1,5 +1,4 @@
 // types
-import type { Request } from "express";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { UserDocument } from "@/modules/user/types";
 import type { LoginMethod } from "@/modules/login-history/types";
@@ -20,12 +19,11 @@ export class LoginAuditService {
     auth: AuthenticationDocument;
     user: UserDocument;
     method: LoginMethod;
-    req: Request;
   }): void {
     recordSuccess(this.historyService, params);
   }
 
-  recordInvalidCredentials(params: { email: string; req: Request }): void {
+  recordInvalidCredentials(params: { email: string }): void {
     recordInvalidCredentials(this.historyService, params);
   }
 
@@ -33,7 +31,6 @@ export class LoginAuditService {
     auth: AuthenticationDocument;
     email: string;
     attemptCount: number;
-    req: Request;
   }): void {
     recordInvalidPassword(this.historyService, params);
   }
@@ -42,7 +39,6 @@ export class LoginAuditService {
     auth: AuthenticationDocument;
     email: string;
     method: LoginMethod;
-    req: Request;
   }): void {
     recordInactiveAccount(this.historyService, params);
   }
@@ -51,7 +47,6 @@ export class LoginAuditService {
     auth: AuthenticationDocument;
     email: string;
     method: LoginMethod;
-    req: Request;
   }): void {
     recordEmailNotVerified(this.historyService, params);
   }
@@ -60,7 +55,6 @@ export class LoginAuditService {
     auth: AuthenticationDocument;
     email: string;
     attempts: number;
-    req: Request;
   }): void {
     recordInvalidOtp(this.historyService, params);
   }
@@ -68,7 +62,6 @@ export class LoginAuditService {
   recordInvalidMagicLink(params: {
     auth: AuthenticationDocument;
     email: string;
-    req: Request;
   }): void {
     recordInvalidMagicLink(this.historyService, params);
   }

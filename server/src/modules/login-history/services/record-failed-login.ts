@@ -1,11 +1,11 @@
 // types
 import type { Schema } from "mongoose";
-import type { Request } from "express";
 import type { LoginFailReason, LoginMethod } from "../types";
 import type { LoginHistoryRepository } from "../repository/login-history.repository";
 // modules
 import { LOGIN_STATUSES } from "@/modules/login-history/constants";
 // others
+import { RequestContext } from "@/utils/request-context";
 import { logLoginAttempt } from "./shared/log-login-attempt";
 
 export const recordFailedLogin = (
@@ -14,14 +14,12 @@ export const recordFailedLogin = (
     userId,
     usernameAttempted,
     loginMethod,
-    failReason,
-    req
+    failReason
   }: {
     userId?: Schema.Types.ObjectId | string | null;
     usernameAttempted: string;
     loginMethod: LoginMethod;
     failReason: LoginFailReason;
-    req: Request;
   }
 ): void => {
   void logLoginAttempt(loginHistoryRepo, {
@@ -30,6 +28,6 @@ export const recordFailedLogin = (
     status: LOGIN_STATUSES.FAILED,
     failReason,
     loginMethod,
-    req
+    client: RequestContext.getClient()
   });
 };

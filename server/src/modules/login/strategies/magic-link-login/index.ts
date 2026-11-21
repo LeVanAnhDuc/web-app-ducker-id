@@ -1,5 +1,4 @@
 // types
-import type { Request } from "express";
 import type {
   MagicLinkSendBodyDto,
   MagicLinkVerifyBodyDto
@@ -35,10 +34,7 @@ export class MagicLinkLoginStrategy {
   ) {}
 
   @LogMethod({ name: "Magic link send" })
-  sendLink(
-    body: MagicLinkSendBodyDto,
-    req: Request
-  ): Promise<MagicLinkSendDto> {
+  sendLink(body: MagicLinkSendBodyDto): Promise<MagicLinkSendDto> {
     return sendLink(
       {
         accountExistsGuard: this.accountExistsGuard,
@@ -46,16 +42,12 @@ export class MagicLinkLoginStrategy {
         magicLinkLoginRepo: this.magicLinkLoginRepo,
         emailDispatcher: this.emailDispatcher
       },
-      body,
-      req
+      body
     );
   }
 
   @LogMethod({ name: "Magic link verification" })
-  verifyLink(
-    body: MagicLinkVerifyBodyDto,
-    req: Request
-  ): Promise<LoginResponseDto> {
+  verifyLink(body: MagicLinkVerifyBodyDto): Promise<LoginResponseDto> {
     return verifyLink(
       {
         accountExistsGuard: this.accountExistsGuard,
@@ -66,8 +58,7 @@ export class MagicLinkLoginStrategy {
         audit: this.audit,
         completion: this.completion
       },
-      body,
-      req
+      body
     );
   }
 }

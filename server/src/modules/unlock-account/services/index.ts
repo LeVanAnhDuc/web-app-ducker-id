@@ -1,5 +1,4 @@
 // types
-import type { Request } from "express";
 import type {
   UnlockRequestBodyDto,
   UnlockVerifyBodyDto
@@ -33,10 +32,7 @@ export class UnlockAccountService {
     private readonly tempPasswordValidGuard: TempPasswordValidGuard
   ) {}
 
-  unlockRequest(
-    body: UnlockRequestBodyDto,
-    req: Request
-  ): Promise<UnlockRequestDto> {
+  unlockRequest(body: UnlockRequestBodyDto): Promise<UnlockRequestDto> {
     return unlockRequest(
       {
         loginService: this.loginService,
@@ -46,15 +42,11 @@ export class UnlockAccountService {
         rateLimitGuard: this.rateLimitGuard,
         authExistsGuard: this.authExistsGuard
       },
-      body,
-      req
+      body
     );
   }
 
-  unlockVerify(
-    body: UnlockVerifyBodyDto,
-    req: Request
-  ): Promise<UnlockVerifyDto> {
+  unlockVerify(body: UnlockVerifyBodyDto): Promise<UnlockVerifyDto> {
     return unlockVerify(
       {
         authService: this.authService,
@@ -63,8 +55,7 @@ export class UnlockAccountService {
         authExistsGuard: this.authExistsGuard,
         tempPasswordValidGuard: this.tempPasswordValidGuard
       },
-      body,
-      req
+      body
     );
   }
 }

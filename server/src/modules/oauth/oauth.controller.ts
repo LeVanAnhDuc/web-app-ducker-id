@@ -2,7 +2,7 @@
 import { StatusCodes } from "http-status-codes";
 // types
 import type { Request, Response } from "express";
-import type { TokenRequest } from "./types";
+import type { OAuthQuery, TokenRequest } from "./types";
 import type { OAuthService } from "./services";
 // common
 import { OAuthError } from "@/exceptions";
@@ -17,6 +17,11 @@ import {
   OAUTH_SUPPORTED_SCOPES
 } from "./constants";
 import { verifyOAuthAccessToken } from "@/modules/token/helpers";
+import {
+  SESSION_CLEAR_COOKIE_OPTIONS,
+  SESSION_COOKIE
+} from "@/modules/session/constants";
+import { readSid } from "@/modules/session/helpers";
 
 /**
  * Controller này CỐ Ý không dùng `OkSuccess`/`ResponsePattern` như mọi module
@@ -53,7 +58,10 @@ export class OAuthController {
   constructor(private readonly service: OAuthService) {}
 
   authorize = async (req: Request, res: Response): Promise<void> => {
-    const outcome = await this.service.authorize(req);
+    const outcome = await this.service.authorize(
+      req.query as OAuthQuery,
+      readSid(req)
+    );
     res.redirect(outcome.url);
   };
 
@@ -96,7 +104,12 @@ export class OAuthController {
   };
 
   logout = async (req: Request, res: Response): Promise<void> => {
-    const target = await this.service.logout(req, res);
+    const target = await this.service.logout(
+      req.query as OAuthQuery,
+      readSid(req)
+    );
+    // Cleared even without a session, so a stale cookie cannot linger.
+    res.clearCookie(SESSION_COOKIE, SESSION_CLEAR_COOKIE_OPTIONS);
     res.redirect(target ?? ENV.app.clientUrl);
   };
 

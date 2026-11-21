@@ -1,5 +1,4 @@
 // types
-import type { Request } from "express";
 import type { UnlockVerifyBodyDto } from "../dtos/requests";
 import type { AuthenticationService } from "@/modules/authentication/services";
 import type { LoginHistoryService } from "@/modules/login-history/services";
@@ -24,8 +23,7 @@ export const unlockVerify = async (
     authExistsGuard: AuthExistsGuard;
     tempPasswordValidGuard: TempPasswordValidGuard;
   },
-  body: UnlockVerifyBodyDto,
-  req: Request
+  body: UnlockVerifyBodyDto
 ): Promise<UnlockVerifyDto> => {
   const { email, tempPassword } = body;
 
@@ -55,8 +53,7 @@ export const unlockVerify = async (
   deps.loginHistoryService.recordSuccessfulLogin({
     userId: auth._id,
     usernameAttempted: email,
-    loginMethod: LOGIN_METHODS.PASSWORD,
-    req
+    loginMethod: LOGIN_METHODS.PASSWORD
   });
 
   Logger.info("Unlock successful - tokens generated", {

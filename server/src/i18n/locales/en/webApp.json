@@ -55,7 +55,6 @@
       "invalid": "Token endpoint auth method must be client_secret_basic or none."
     },
     "id": {
-      "required": "App id is required.",
       "invalid": "Invalid app id."
     },
     "body": {

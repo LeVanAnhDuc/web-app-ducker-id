@@ -1,5 +1,3 @@
-// libs
-import type { Request } from "express";
 // module under test
 import {
   normalizeIp,
@@ -13,9 +11,6 @@ import {
 jest.mock("geoip-lite", () => ({ lookup: jest.fn() }));
 import geoip from "geoip-lite";
 
-const makeReq = (ip?: string, remoteAddress?: string): Request =>
-  ({ ip, socket: { remoteAddress } }) as unknown as Request;
-
 describe("normalizeIp", () => {
   it("strips IPv4-mapped IPv6 prefix", () => {
     expect(normalizeIp("::ffff:1.2.3.4")).toBe("1.2.3.4");
@@ -28,18 +23,16 @@ describe("normalizeIp", () => {
   });
 });
 
+// The req.ip -> socket.remoteAddress fallback lives in RequestContext now.
 describe("extractIp", () => {
-  it("prefers req.ip and normalizes it", () => {
-    expect(extractIp(makeReq("::ffff:8.8.8.8"))).toBe("8.8.8.8");
+  it("normalizes an IPv4-mapped address", () => {
+    expect(extractIp("::ffff:8.8.8.8")).toBe("8.8.8.8");
   });
-  it("maps ::1 from req.ip to 127.0.0.1", () => {
-    expect(extractIp(makeReq("::1"))).toBe("127.0.0.1");
+  it("maps ::1 to 127.0.0.1", () => {
+    expect(extractIp("::1")).toBe("127.0.0.1");
   });
-  it("falls back to socket.remoteAddress when req.ip is empty", () => {
-    expect(extractIp(makeReq(undefined, "10.0.0.5"))).toBe("10.0.0.5");
-  });
-  it("returns UNKNOWN when no source available", () => {
-    expect(extractIp(makeReq(undefined, undefined))).toBe("UNKNOWN");
+  it("returns UNKNOWN for an empty address", () => {
+    expect(extractIp("")).toBe("UNKNOWN");
   });
 });
 

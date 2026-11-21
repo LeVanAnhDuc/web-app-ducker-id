@@ -3,12 +3,11 @@ import { Get, JsonController, Patch } from "routing-controllers";
 // types
 import type { NotificationService } from "./services";
 // common
-import { Auth, Respond, ValidParams, ValidQuery } from "@/common/routing";
+import { Auth, PathVariable, RequestParam, Respond } from "@/common/routing";
+// validators
+import { IsRequiredObjectId } from "@/validators/decorators";
 // others
-import {
-  NotificationIdParamsDto,
-  NotificationListQueryDto
-} from "./dtos/requests";
+import { NotificationListQueryDto } from "./dtos/requests";
 
 @JsonController("/notifications")
 @Auth()
@@ -29,15 +28,17 @@ export class NotificationController {
 
   @Get("/")
   @Respond({ message: "notification:success.list" })
-  list(@ValidQuery(NotificationListQueryDto) query: NotificationListQueryDto) {
+  list(
+    @RequestParam(NotificationListQueryDto) query: NotificationListQueryDto
+  ) {
     return this.service.list(query);
   }
 
   @Patch("/:id/read")
   @Respond({ message: "notification:success.markRead" })
   markRead(
-    @ValidParams(NotificationIdParamsDto) params: NotificationIdParamsDto
+    @PathVariable("id", IsRequiredObjectId("validation:id.invalid")) id: string
   ) {
-    return this.service.markRead(params.id);
+    return this.service.markRead(id);
   }
 }
