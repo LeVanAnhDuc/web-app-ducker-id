@@ -1,28 +1,22 @@
+// libs
+import { Get, JsonController } from "routing-controllers";
 // types
 import type { WebAppService } from "./services";
-import type {
-  AdminAppsQueryRequest,
-  AdminCreateAppRequest,
-  AdminUpdateAppRequest,
-  UserAppsQueryRequest
-} from "./types";
+// common
+import { Auth, Respond, ValidQuery } from "@/common/routing";
 // others
 import { RequestContext } from "@/utils/request-context";
+import { UserAppsQueryDto } from "./dtos/requests";
 
+@JsonController("/apps")
+@Auth()
 export class WebAppController {
   constructor(private readonly service: WebAppService) {}
 
-  listApps = async (req: AdminAppsQueryRequest) =>
-    this.service.listApps(req.query);
-
-  listUserApps = async (req: UserAppsQueryRequest) => {
+  @Get("/")
+  @Respond({ message: "webApp:success.listApps" })
+  listUserApps(@ValidQuery(UserAppsQueryDto) query: UserAppsQueryDto) {
     const role = RequestContext.getUser()?.roles;
-    return this.service.listUserApps(req.query, role);
-  };
-
-  createApp = async (req: AdminCreateAppRequest) =>
-    this.service.createApp(req.body);
-
-  updateApp = async (req: AdminUpdateAppRequest) =>
-    this.service.updateApp(req.params.id, req.body);
+    return this.service.listUserApps(query, role);
+  }
 }

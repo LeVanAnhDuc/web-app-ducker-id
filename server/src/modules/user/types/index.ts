@@ -1,5 +1,4 @@
 // types
-import type { Request } from "express";
 import type { Schema } from "mongoose";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type {
@@ -8,12 +7,6 @@ import type {
   ADMIN_USERS_SORT_BY
 } from "@/modules/user/constants";
 import type { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
-import type {
-  AdminUserIdParamsDto,
-  AdminUsersQueryDto,
-  PublicProfileParamsDto,
-  UpdateProfileBodyDto
-} from "../dtos/requests";
 
 export type Gender = (typeof GENDERS)[keyof typeof GENDERS];
 
@@ -78,18 +71,6 @@ export interface UserAddressDocument {
   updatedAt: Date;
 }
 
-export type GetMyProfileRequest = Request;
-
-export interface UpdateProfileRequest extends Omit<Request, "body"> {
-  body: UpdateProfileBodyDto;
-}
-
-// The index signature keeps the handler assignable to Express's own, whose
-// params are a string dictionary.
-export interface GetPublicProfileRequest extends Omit<Request, "params"> {
-  params: PublicProfileParamsDto & Record<string, string>;
-}
-
 export type AdminUserRole =
   (typeof AUTHENTICATION_ROLES)[keyof typeof AUTHENTICATION_ROLES];
 
@@ -120,24 +101,12 @@ export interface AdminUserAggregateRow {
   lastLoginAt: Date | null;
 }
 
-export interface GetAdminUsersRequest extends Omit<Request, "query"> {
-  query: AdminUsersQueryDto;
-}
-
 export interface SetUserActiveResult {
   _id: string;
   isActive: boolean;
 }
 
-export interface LockUserRequest extends Omit<Request, "params"> {
-  params: AdminUserIdParamsDto & Record<string, string>;
-}
-
 export interface AdminResetPasswordResult {
   _id: string;
   email: string;
-}
-
-export interface ResetPasswordRequest extends Omit<Request, "params"> {
-  params: AdminUserIdParamsDto & Record<string, string>;
 }

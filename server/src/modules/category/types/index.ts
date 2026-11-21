@@ -1,14 +1,6 @@
 // types
-import type { Request } from "express";
 import type { Schema } from "mongoose";
 import type { CATEGORY_MOVE_DIRECTIONS } from "@/modules/category/constants";
-import type {
-  CategoryIdParamsDto,
-  CreateCategoryBodyDto,
-  DeleteCategoryBodyDto,
-  MoveCategoryBodyDto,
-  UpdateCategoryBodyDto
-} from "../dtos/requests";
 
 export interface CategoryName {
   en: string;
@@ -51,37 +43,4 @@ export interface CategoryReassignment {
 export interface OrphanApp {
   _id: string;
   displayName: string;
-}
-
-// The index signature keeps the handlers assignable to Express's own, whose
-// params are a string dictionary.
-type CategoryIdParams = CategoryIdParamsDto & Record<string, string>;
-
-export interface CreateCategoryRequest extends Omit<Request, "body"> {
-  body: CreateCategoryBodyDto;
-}
-
-export interface UpdateCategoryRequest extends Omit<
-  Request,
-  "body" | "params"
-> {
-  body: UpdateCategoryBodyDto;
-  params: CategoryIdParams;
-}
-
-export interface MoveCategoryRequest extends Omit<Request, "body" | "params"> {
-  body: MoveCategoryBodyDto;
-  params: CategoryIdParams;
-}
-
-export interface CategoryIdRequest extends Omit<Request, "params"> {
-  params: CategoryIdParams;
-}
-
-export interface DeleteCategoryRequest extends Omit<
-  Request,
-  "body" | "params"
-> {
-  body: DeleteCategoryBodyDto;
-  params: CategoryIdParams;
 }

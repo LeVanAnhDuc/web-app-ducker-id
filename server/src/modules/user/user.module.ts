@@ -1,32 +1,28 @@
 // types
-import type { RateLimiters } from "@/middlewares";
 import type { AuthenticationService } from "@/modules/authentication/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 // others
 import { MongoUserRepository } from "./repository/impl/mongo-user.repository";
 import { UserService } from "./services";
+import { UserAdminController } from "./user-admin.controller";
 import { UserController } from "./user.controller";
-import { createUserRoutes, createUserAdminRoutes } from "./user.routes";
 
 export const createUserModule = (
-  rateLimiter: RateLimiters,
   authService: AuthenticationService,
   emailDispatcher: EmailDispatcher,
   notificationDispatcher: NotificationDispatcher
 ) => {
-  const userRepo = new MongoUserRepository();
   const userService = new UserService({
-    userRepo,
+    userRepo: new MongoUserRepository(),
     authService,
     emailDispatcher,
     notificationDispatcher
   });
-  const userController = new UserController(userService);
 
   return {
-    userRouter: createUserRoutes(userController, rateLimiter),
-    userAdminRouter: createUserAdminRoutes(userController, rateLimiter),
-    userService
+    userService,
+    userController: new UserController(userService),
+    userAdminController: new UserAdminController(userService)
   };
 };

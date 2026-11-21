@@ -1,5 +1,4 @@
 // types
-import type { Request } from "express";
 import type { Schema } from "mongoose";
 import type { AuthenticationRole } from "@/modules/authentication/types";
 import type { WebAppCategoryDocument } from "@/modules/category/types";
@@ -8,13 +7,6 @@ import type {
   TOKEN_ENDPOINT_AUTH_METHODS,
   WEB_APP_STATUS_PUBLIC
 } from "@/modules/web-app/constants";
-import type {
-  AdminAppsQueryDto,
-  AppIdParamsDto,
-  CreateAppBodyDto,
-  UpdateAppBodyDto,
-  UserAppsQueryDto
-} from "../dtos/requests";
 
 export type WebAppStatus =
   (typeof WEB_APP_STATUSES)[keyof typeof WEB_APP_STATUSES];
@@ -50,16 +42,6 @@ export interface WebAppDocument {
 export type WebAppStatusPublic =
   (typeof WEB_APP_STATUS_PUBLIC)[keyof typeof WEB_APP_STATUS_PUBLIC];
 
-// The index signature keeps the handlers assignable to Express's own, whose
-// query and params are string dictionaries.
-export interface AdminAppsQueryRequest extends Omit<Request, "query"> {
-  query: AdminAppsQueryDto & Request["query"];
-}
-
-export interface AdminCreateAppRequest extends Omit<Request, "body"> {
-  body: CreateAppBodyDto;
-}
-
 export interface WebAppCreateInput {
   name: string;
   displayName: string;
@@ -77,14 +59,6 @@ export interface WebAppCreateInput {
   scopes: string[];
 }
 
-export interface AdminUpdateAppRequest extends Omit<
-  Request,
-  "body" | "params"
-> {
-  body: UpdateAppBodyDto;
-  params: AppIdParamsDto & Record<string, string>;
-}
-
 export interface WebAppUpdateInput {
   name?: string;
   displayName?: string;
@@ -98,10 +72,6 @@ export interface WebAppUpdateInput {
   postLogoutRedirectUris?: string[];
   tokenEndpointAuthMethod?: TokenEndpointAuthMethod;
   scopes?: string[];
-}
-
-export interface UserAppsQueryRequest extends Omit<Request, "query"> {
-  query: UserAppsQueryDto & Request["query"];
 }
 
 export interface WebAppWithCategories extends WebAppDocument {

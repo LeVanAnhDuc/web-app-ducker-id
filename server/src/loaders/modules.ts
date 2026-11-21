@@ -54,8 +54,7 @@ export const createModules = ({
   const rateLimiter = createRateLimiters(redisClient);
   const { sessionService } = createSessionModule(redisClient);
 
-  const { userRouter, userAdminRouter, userService } = createUserModule(
-    rateLimiter,
+  const { userController, userAdminController, userService } = createUserModule(
     authService,
     emailDispatcher,
     notificationDispatcher
@@ -119,18 +118,17 @@ export const createModules = ({
     rateLimiter
   );
 
-  const { contactAdminRouter, adminContactsRouter, myContactsRouter } =
-    createContactAdminModule(rateLimiter);
+  const { contactController, adminContactsController, myContactsController } =
+    createContactAdminModule();
 
-  const { categoryRepository, categoryAdminRouter, categoryUserRouter } =
-    createCategoryModule(rateLimiter);
+  const { categoryRepository, categoryAdminController, categoryController } =
+    createCategoryModule();
 
-  const { accessPolicy, entitlementAdminRouter } = createEntitlementModule(
-    rateLimiter,
+  const { accessPolicy, entitlementAdminController } = createEntitlementModule(
     notificationDispatcher
   );
 
-  const { webAppAdminRouter, webAppUserRouter } = createWebAppModule(
+  const { webAppAdminController, webAppController } = createWebAppModule(
     categoryRepository,
     accessPolicy,
     notificationDispatcher
@@ -166,21 +164,21 @@ export const createModules = ({
       tokenRouter,
       unlockAccountRouter,
       forgotPasswordRouter,
-      changePasswordRouter,
-      userRouter,
-      userAdminRouter,
-      contactAdminRouter,
-      adminContactsRouter,
-      myContactsRouter,
-      webAppAdminRouter,
-      webAppUserRouter,
-      categoryAdminRouter,
-      categoryUserRouter,
-      entitlementAdminRouter
+      changePasswordRouter
     ],
     controllers: [
+      userController,
+      userAdminController,
       loginHistoryController,
       loginHistoryAdminController,
+      contactController,
+      adminContactsController,
+      myContactsController,
+      webAppAdminController,
+      webAppController,
+      categoryAdminController,
+      categoryController,
+      entitlementAdminController,
       notificationController,
       recentAppController,
       favoriteController
