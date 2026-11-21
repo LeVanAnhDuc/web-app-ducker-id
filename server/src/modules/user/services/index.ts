@@ -2,7 +2,6 @@
 import type { PageMeta } from "@/common/pagination";
 import type {
   AdminResetPasswordResult,
-  AdminUsersQuery,
   CreateUserData,
   SetUserActiveResult,
   UpdateProfileData,
@@ -12,6 +11,7 @@ import type {
 } from "@/modules/user/types";
 import type { ClientSession } from "mongoose";
 import type { AdminUserDto, MyProfileDto, PublicProfileDto } from "../dtos";
+import type { AdminUsersQueryDto } from "../dtos/requests";
 import type { UserServiceDeps } from "./deps";
 // others
 import { adminResetPassword } from "./admin-reset-password";
@@ -65,7 +65,7 @@ export class UserService {
   }
 
   getAdminUsers(
-    query: AdminUsersQuery
+    query: AdminUsersQueryDto
   ): Promise<{ items: AdminUserDto[]; meta: PageMeta }> {
     return getAdminUsers(this.deps, query);
   }

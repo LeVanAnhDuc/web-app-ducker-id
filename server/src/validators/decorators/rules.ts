@@ -8,7 +8,7 @@ import { isValidRedirectUri } from "@/modules/oauth/helpers";
 // validators
 import { OBJECTID_PATTERN } from "@/validators/constants";
 import { getDateOfBirthBounds } from "@/validators/date-of-birth";
-import { isSupportedTimeZone } from "@/validators/utils";
+import { isSupportedTimeZone, toIsoDateString } from "@/validators/utils";
 
 type Check = (value: unknown, args: ValidationArguments) => boolean;
 
@@ -72,6 +72,15 @@ export const IsOnOrAfter = (
     },
     options,
     [property]
+  );
+
+export const IsIsoDateString = (
+  options?: ValidationOptions
+): PropertyDecorator =>
+  rule(
+    "isIsoDateString",
+    (value) => typeof value === "string" && toIsoDateString(value) !== null,
+    options
   );
 
 export const IsSupportedTimeZone = (

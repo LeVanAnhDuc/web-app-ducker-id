@@ -6,8 +6,13 @@ import type {
   CONTACT_STATUSES,
   ADMIN_CONTACTS_SORT_BY
 } from "../constants";
-// common
-import type { SortOrder } from "@/common/sort";
+import type {
+  AdminContactsQueryDto,
+  ContactIdParamsDto,
+  MyContactsQueryDto,
+  SubmitContactBodyDto,
+  UpdateContactStatusBodyDto
+} from "../dtos/requests";
 
 export type ContactPriority =
   (typeof CONTACT_PRIORITIES)[keyof typeof CONTACT_PRIORITIES];
@@ -28,54 +33,28 @@ export interface ContactDocument extends Document {
   updatedAt: Date;
 }
 
-export interface SubmitContactBody {
-  email?: string;
-  subject: string;
-  message: string;
-}
-
 export interface SubmitContactRequest extends Omit<Request, "user"> {
-  body: SubmitContactBody;
-}
-
-export interface AdminContactsQuery {
-  page?: number;
-  limit?: number;
-  status?: ContactStatus;
-  priority?: ContactPriority;
-  email?: string;
-  search?: string;
-  fromDate?: string;
-  toDate?: string;
-  sortBy?: AdminContactsSortBy;
-  sortOrder?: SortOrder;
+  body: SubmitContactBodyDto;
 }
 
 export interface AdminContactsQueryRequest extends Omit<Request, "query"> {
-  query: AdminContactsQuery;
+  query: AdminContactsQueryDto;
 }
 
+// The index signature keeps the handler assignable to Express's own, whose
+// params are a string dictionary.
 export interface ContactIdParamRequest extends Omit<Request, "params"> {
-  params: { id: string };
-}
-
-export interface MyContactsQuery {
-  page?: number;
-  limit?: number;
-  status?: ContactStatus;
-  search?: string;
-  sortBy?: AdminContactsSortBy;
-  sortOrder?: SortOrder;
+  params: ContactIdParamsDto & Record<string, string>;
 }
 
 export interface MyContactsQueryRequest extends Omit<Request, "query"> {
-  query: MyContactsQuery;
+  query: MyContactsQueryDto;
 }
 
 export interface UpdateContactStatusRequest extends Omit<
   Request,
   "params" | "body"
 > {
-  params: { id: string };
-  body: { status: ContactStatus };
+  params: ContactIdParamsDto & Record<string, string>;
+  body: UpdateContactStatusBodyDto;
 }

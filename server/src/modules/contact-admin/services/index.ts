@@ -1,11 +1,11 @@
 // types
 import type { PaginatedResult } from "@/common/pagination";
+import type { ContactStatus } from "../types";
 import type {
-  AdminContactsQuery,
-  ContactStatus,
-  MyContactsQuery,
-  SubmitContactBody
-} from "../types";
+  AdminContactsQueryDto,
+  MyContactsQueryDto,
+  SubmitContactBodyDto
+} from "../dtos/requests";
 import type {
   AdminContactDetailItemDto,
   ContactDetailItemDto,
@@ -26,14 +26,14 @@ export class ContactAdminService {
   constructor(private readonly contactRepo: ContactRepository) {}
 
   submitContact(
-    body: SubmitContactBody,
+    body: SubmitContactBodyDto,
     ipAddress: string | null
   ): Promise<SubmitContactResponseDto> {
     return submitContact(this.contactRepo, body, ipAddress);
   }
 
   getContactList(
-    query: AdminContactsQuery
+    query: AdminContactsQueryDto
   ): Promise<PaginatedResult<ContactListItemDto>> {
     return getContactList(this.contactRepo, query);
   }
@@ -51,7 +51,7 @@ export class ContactAdminService {
 
   getMyContacts(
     userId: string,
-    query: MyContactsQuery
+    query: MyContactsQueryDto
   ): Promise<PaginatedResult<ContactListItemDto>> {
     return getMyContacts(this.contactRepo, userId, query);
   }

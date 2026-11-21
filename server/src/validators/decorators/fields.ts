@@ -69,7 +69,12 @@ export const composeDecorators =
 // them. A wrong type had no key in Joi (it shipped English), so it takes the
 // field's `.invalid` key, else `.required`.
 
-export const IsAppEmail = (): PropertyDecorator =>
+/**
+ * The email rules without presence or normalisation, for a field that is
+ * optional or allows `""` (contact form): pair it with its own `@ValidateIf`
+ * plus `@Lowercase()` / `@Trim()`.
+ */
+export const AppEmailRules = (): PropertyDecorator =>
   composeDecorators(
     Matches(SAFE_EMAIL_PATTERN, { message: "validation:email.invalid" }),
     MaxLength(EMAIL_VALIDATION.MAX_LENGTH, {
@@ -80,7 +85,12 @@ export const IsAppEmail = (): PropertyDecorator =>
     }),
     IsIanaEmail({ message: "validation:email.invalid" }),
     IsNotEmpty({ message: "validation:email.required" }),
-    IsString({ message: "validation:email.invalid" }),
+    IsString({ message: "validation:email.invalid" })
+  );
+
+export const IsAppEmail = (): PropertyDecorator =>
+  composeDecorators(
+    AppEmailRules(),
     IsDefined({ message: "validation:email.required" }),
     Lowercase(),
     Trim()

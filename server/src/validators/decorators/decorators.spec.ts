@@ -13,6 +13,7 @@ import { validateDto } from "@/validators/validate-dto";
 import {
   IsDateOfBirthNotTooOld,
   IsDateOfBirthNotTooYoung,
+  IsIsoDateString,
   IsNotEmptyBody,
   IsObjectId,
   IsOnOrAfter,
@@ -21,8 +22,15 @@ import {
   ToBoolean,
   ToDate,
   ToInt,
+  ToIsoDateString,
   Trim
 } from "@/validators/decorators";
+
+class IsoDateDto {
+  @IsIsoDateString({ message: "validation:fromDate.invalid" })
+  @ToIsoDateString()
+  date!: string;
+}
 
 class BooleanDto {
   @IsBoolean({ message: "validation:interactive.invalid" })
@@ -187,6 +195,39 @@ describe("ToDate", () => {
           field: "date",
           reason: "isDate",
           key: "validation:dateOfBirth.invalid"
+        }
+      ]);
+    }
+  );
+});
+
+describe("ToIsoDateString / IsIsoDateString", () => {
+  it.each([
+    ["1995-05-15", "1995-05-15T00:00:00.000Z"],
+    ["1995", "1995-01-01T00:00:00.000Z"],
+    ["1995-05-15T10:30:00+07:00", "1995-05-15T03:30:00.000Z"],
+    ["1995-05-15T10:30+07", "1995-05-15T03:30:00.000Z"]
+  ])(
+    "normalises %p as Joi's string().isoDate() does",
+    async (date, expected) => {
+      const { value, failures } = await validateDto(IsoDateDto, { date });
+
+      expect(failures).toEqual([]);
+      expect(value.date).toBe(expected);
+    }
+  );
+
+  it.each(["", " 1995-05-15 ", "15/05/1995", "1995-02-30T25:00", 800000000000])(
+    "leaves %p as sent and rejects it",
+    async (date) => {
+      const { value, failures } = await validateDto(IsoDateDto, { date });
+
+      expect(value.date).toBe(date);
+      expect(failures).toEqual([
+        {
+          field: "date",
+          reason: "isIsoDateString",
+          key: "validation:fromDate.invalid"
         }
       ]);
     }

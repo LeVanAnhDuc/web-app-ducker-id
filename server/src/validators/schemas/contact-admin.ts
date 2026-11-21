@@ -1,10 +1,5 @@
 // libs
 import Joi from "joi";
-// types
-import type {
-  SubmitContactBody,
-  MyContactsQuery
-} from "@/modules/contact-admin/types";
 // modules
 import {
   CONTACT_PRIORITIES,
@@ -28,33 +23,32 @@ const STATUS_VALUES = Object.values(CONTACT_STATUSES);
 
 const ADMIN_SORT_BY_VALUES = ADMIN_CONTACTS_SORT_BY;
 
-export const submitContactSchema: Joi.ObjectSchema<SubmitContactBody> =
-  Joi.object({
-    email: emailSchema.optional().allow("").messages({
-      "string.email": "validation:email.invalid",
-      "string.pattern.base": "validation:email.invalid"
+export const submitContactSchema = Joi.object({
+  email: emailSchema.optional().allow("").messages({
+    "string.email": "validation:email.invalid",
+    "string.pattern.base": "validation:email.invalid"
+  }),
+  subject: Joi.string()
+    .min(CONTACT_CONFIG.SUBJECT_MIN_LENGTH)
+    .max(CONTACT_CONFIG.SUBJECT_MAX_LENGTH)
+    .required()
+    .messages({
+      "string.empty": "contactAdmin:errors.subjectRequired",
+      "string.min": "contactAdmin:errors.subjectTooShort",
+      "string.max": "contactAdmin:errors.subjectTooLong",
+      "any.required": "contactAdmin:errors.subjectRequired"
     }),
-    subject: Joi.string()
-      .min(CONTACT_CONFIG.SUBJECT_MIN_LENGTH)
-      .max(CONTACT_CONFIG.SUBJECT_MAX_LENGTH)
-      .required()
-      .messages({
-        "string.empty": "contactAdmin:errors.subjectRequired",
-        "string.min": "contactAdmin:errors.subjectTooShort",
-        "string.max": "contactAdmin:errors.subjectTooLong",
-        "any.required": "contactAdmin:errors.subjectRequired"
-      }),
-    message: Joi.string()
-      .min(CONTACT_CONFIG.MESSAGE_MIN_LENGTH)
-      .max(CONTACT_CONFIG.MESSAGE_MAX_LENGTH)
-      .required()
-      .messages({
-        "string.empty": "contactAdmin:errors.messageRequired",
-        "string.min": "contactAdmin:errors.messageTooShort",
-        "string.max": "contactAdmin:errors.messageTooLong",
-        "any.required": "contactAdmin:errors.messageRequired"
-      })
-  });
+  message: Joi.string()
+    .min(CONTACT_CONFIG.MESSAGE_MIN_LENGTH)
+    .max(CONTACT_CONFIG.MESSAGE_MAX_LENGTH)
+    .required()
+    .messages({
+      "string.empty": "contactAdmin:errors.messageRequired",
+      "string.min": "contactAdmin:errors.messageTooShort",
+      "string.max": "contactAdmin:errors.messageTooLong",
+      "any.required": "contactAdmin:errors.messageRequired"
+    })
+});
 
 export const contactIdParamSchema = Joi.object({
   id: Joi.string().pattern(OBJECTID_PATTERN).required().messages({
@@ -139,44 +133,43 @@ export const adminListContactsQuerySchema = Joi.object({
   })
   .messages({ "date.range": "validation:dateRange.invalid" });
 
-export const myContactsQuerySchema: Joi.ObjectSchema<MyContactsQuery> =
-  Joi.object({
-    page: Joi.number().integer().min(1).optional().messages({
-      "number.base": "validation:page.invalid",
-      "number.integer": "validation:page.invalid",
-      "number.min": "validation:page.invalid"
+export const myContactsQuerySchema = Joi.object({
+  page: Joi.number().integer().min(1).optional().messages({
+    "number.base": "validation:page.invalid",
+    "number.integer": "validation:page.invalid",
+    "number.min": "validation:page.invalid"
+  }),
+
+  limit: Joi.number()
+    .integer()
+    .min(1)
+    .max(PAGINATION.MAX_LIMIT)
+    .optional()
+    .messages({
+      "number.base": "validation:limit.invalid",
+      "number.integer": "validation:limit.invalid",
+      "number.min": "validation:limit.invalid",
+      "number.max": "validation:limit.invalid"
     }),
 
-    limit: Joi.number()
-      .integer()
-      .min(1)
-      .max(PAGINATION.MAX_LIMIT)
-      .optional()
-      .messages({
-        "number.base": "validation:limit.invalid",
-        "number.integer": "validation:limit.invalid",
-        "number.min": "validation:limit.invalid",
-        "number.max": "validation:limit.invalid"
-      }),
+  status: Joi.string()
+    .valid(...STATUS_VALUES)
+    .optional()
+    .messages({ "any.only": "validation:status.invalid" }),
 
-    status: Joi.string()
-      .valid(...STATUS_VALUES)
-      .optional()
-      .messages({ "any.only": "validation:status.invalid" }),
+  search: Joi.string()
+    .trim()
+    .max(SEARCH_MAX_LENGTH)
+    .optional()
+    .messages({ "string.max": "validation:search.invalid" }),
 
-    search: Joi.string()
-      .trim()
-      .max(SEARCH_MAX_LENGTH)
-      .optional()
-      .messages({ "string.max": "validation:search.invalid" }),
+  sortBy: Joi.string()
+    .valid(...ADMIN_SORT_BY_VALUES)
+    .optional()
+    .messages({ "any.only": "validation:sortBy.invalid" }),
 
-    sortBy: Joi.string()
-      .valid(...ADMIN_SORT_BY_VALUES)
-      .optional()
-      .messages({ "any.only": "validation:sortBy.invalid" }),
-
-    sortOrder: Joi.string()
-      .valid(...SORT_ORDER_VALUES)
-      .optional()
-      .messages({ "any.only": "validation:sortOrder.invalid" })
-  });
+  sortOrder: Joi.string()
+    .valid(...SORT_ORDER_VALUES)
+    .optional()
+    .messages({ "any.only": "validation:sortOrder.invalid" })
+});

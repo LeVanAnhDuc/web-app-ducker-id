@@ -1,5 +1,7 @@
 // libs
 import { Transform } from "class-transformer";
+// validators
+import { toIsoDateString } from "@/validators/utils";
 
 // Every transform leaves a value it cannot convert untouched, so the type
 // rule underneath still sees the original and reports it with its own key.
@@ -50,3 +52,10 @@ export const ToDate = (): PropertyDecorator =>
     const date = new Date(input);
     return Number.isNaN(date.getTime()) ? value : date;
   });
+
+// Joi's `string().isoDate()` rewrites an accepted value to `toISOString()`
+// form; a value it would refuse stays as sent for `@IsIsoDateString` to report.
+export const ToIsoDateString = (): PropertyDecorator =>
+  Transform(({ value }: { value: unknown }) =>
+    typeof value === "string" ? (toIsoDateString(value) ?? value) : value
+  );

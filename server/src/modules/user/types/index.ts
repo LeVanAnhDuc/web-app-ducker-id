@@ -8,8 +8,12 @@ import type {
   ADMIN_USERS_SORT_BY
 } from "@/modules/user/constants";
 import type { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
-// common
-import type { SortOrder } from "@/common/sort";
+import type {
+  AdminUserIdParamsDto,
+  AdminUsersQueryDto,
+  PublicProfileParamsDto,
+  UpdateProfileBodyDto
+} from "../dtos/requests";
 
 export type Gender = (typeof GENDERS)[keyof typeof GENDERS];
 
@@ -77,11 +81,13 @@ export interface UserAddressDocument {
 export type GetMyProfileRequest = Request;
 
 export interface UpdateProfileRequest extends Omit<Request, "body"> {
-  body: UpdateProfileData;
+  body: UpdateProfileBodyDto;
 }
 
+// The index signature keeps the handler assignable to Express's own, whose
+// params are a string dictionary.
 export interface GetPublicProfileRequest extends Omit<Request, "params"> {
-  params: { id: string };
+  params: PublicProfileParamsDto & Record<string, string>;
 }
 
 export type AdminUserRole =
@@ -91,16 +97,6 @@ export type AdminUserStatusFilter =
   (typeof ADMIN_USER_STATUS_FILTERS)[keyof typeof ADMIN_USER_STATUS_FILTERS];
 
 export type AdminUsersSortBy = (typeof ADMIN_USERS_SORT_BY)[number];
-
-export interface AdminUsersQuery {
-  page?: number;
-  limit?: number;
-  search?: string;
-  role?: AdminUserRole;
-  status?: AdminUserStatusFilter;
-  sortBy?: AdminUsersSortBy;
-  sortOrder?: SortOrder;
-}
 
 export interface UserRole {
   userId: string;
@@ -125,7 +121,7 @@ export interface AdminUserAggregateRow {
 }
 
 export interface GetAdminUsersRequest extends Omit<Request, "query"> {
-  query: AdminUsersQuery;
+  query: AdminUsersQueryDto;
 }
 
 export interface SetUserActiveResult {
@@ -134,7 +130,7 @@ export interface SetUserActiveResult {
 }
 
 export interface LockUserRequest extends Omit<Request, "params"> {
-  params: { id: string };
+  params: AdminUserIdParamsDto & Record<string, string>;
 }
 
 export interface AdminResetPasswordResult {
@@ -143,5 +139,5 @@ export interface AdminResetPasswordResult {
 }
 
 export interface ResetPasswordRequest extends Omit<Request, "params"> {
-  params: { id: string };
+  params: AdminUserIdParamsDto & Record<string, string>;
 }
