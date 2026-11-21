@@ -104,8 +104,12 @@ const misuse = ({
       : null;
   }
   const extra = keys.filter((key) => !RESPONSE_KEYS.has(key));
-  return extra.length
-    ? `${Ctor.name}.${property}: @ApiProperty does not take ${extra.join(", ")}`
+  if (extra.length) {
+    return `${Ctor.name}.${property}: @ApiProperty does not take ${extra.join(", ")}`;
+  }
+  // `enum` replaces the reflected schema, so it must say what its values are.
+  return options.enum && !options.type && !schema
+    ? `${Ctor.name}.${property}: @ApiProperty enum needs a type (e.g. type: "string")`
     : null;
 };
 

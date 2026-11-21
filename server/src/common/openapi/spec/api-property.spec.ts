@@ -123,14 +123,34 @@ describe("ApiProperty enum", () => {
   it("replaces a reflected $ref Object with a string enum", () => {
     type Mode = "a" | "b";
     class WithEnum {
-      @ApiProperty({ enum: ["a", "b"], nullable: true })
+      @ApiProperty({
+        type: "string",
+        enum: ["a", "b"],
+        nullable: true,
+        description: "Which mode",
+        example: "a"
+      })
       mode!: Mode | null;
     }
     expect(schemaOf(WithEnum).properties.mode).toEqual({
       type: "string",
       enum: ["a", "b"],
-      nullable: true
+      nullable: true,
+      description: "Which mode",
+      example: "a"
     });
+  });
+
+  it("refuses an enum without a type", () => {
+    expect(() => {
+      class EnumWithoutType {
+        @ApiProperty({ enum: ["a", "b"] })
+        mode!: string;
+      }
+      return EnumWithoutType;
+    }).toThrow(
+      'EnumWithoutType.mode: @ApiProperty enum needs a type (e.g. type: "string")'
+    );
   });
 });
 

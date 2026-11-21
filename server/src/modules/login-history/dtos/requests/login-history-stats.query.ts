@@ -21,7 +21,7 @@ export class LoginHistoryStatsQueryDto {
 
   @ApiProperty({
     example: "Asia/Ho_Chi_Minh",
-    description: "IANA time zone the days are bucketed in"
+    description: "IANA time zone the days are bucketed in (defaults to UTC)"
   })
   // One key for every failure, as Joi mapped each rule to it.
   @IsSupportedTimeZone({ message: "validation:timezone.invalid" })

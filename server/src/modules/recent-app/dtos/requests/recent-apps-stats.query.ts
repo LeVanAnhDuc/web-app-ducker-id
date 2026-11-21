@@ -9,7 +9,10 @@ import { ToInt } from "@/validators/decorators";
 
 // `limit` caps the top-apps list, not a page, so its ceiling is the stats one.
 export class RecentAppsStatsQueryDto {
-  @ApiProperty({ example: 5, description: "How many top apps to return" })
+  @ApiProperty({
+    example: 5,
+    description: `How many top apps to return (default ${RECENT_APP_STATS.TOP_APPS_DEFAULT_LIMIT}, max ${RECENT_APP_STATS.TOP_APPS_MAX_LIMIT})`
+  })
   @Max(RECENT_APP_STATS.TOP_APPS_MAX_LIMIT, {
     message: "validation:limit.invalid"
   })
