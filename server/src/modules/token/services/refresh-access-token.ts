@@ -1,5 +1,5 @@
 // types
-import type { RefreshTokenDto } from "../dtos";
+import type { AccessTokensDto } from "../dtos";
 import type { AuthenticationService } from "@/modules/authentication/services";
 import type { UserService } from "@/modules/user/services";
 import type {
@@ -13,7 +13,7 @@ import type {
 // modules
 import { generateAuthTokensResponse } from "@/modules/authentication/helpers";
 // dtos
-import { toRefreshTokenDto } from "../dtos";
+import { toAccessTokensDto } from "../dtos";
 // others
 import { Logger } from "@/libs/logger";
 
@@ -29,7 +29,7 @@ export const refreshAccessToken = async (
     userExistsGuard: UserExistsGuard;
   },
   refreshToken: string | undefined
-): Promise<RefreshTokenDto> => {
+): Promise<AccessTokensDto> => {
   deps.refreshTokenPresentGuard.assert(refreshToken);
   const payload = deps.refreshTokenValidGuard.assert(refreshToken);
   await deps.refreshTokenNotRevokedGuard.assert(refreshToken, payload.authId);
@@ -57,5 +57,5 @@ export const refreshAccessToken = async (
 
   Logger.info("Token refresh successful", { userId: user._id.toString() });
 
-  return toRefreshTokenDto(authTokensResponse);
+  return toAccessTokensDto(authTokensResponse);
 };

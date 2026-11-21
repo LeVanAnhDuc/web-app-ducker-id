@@ -1,9 +1,12 @@
 // libs
 import { IsDefined, IsNotEmpty, IsString } from "class-validator";
+// common
+import { ApiProperty } from "@/common/openapi";
 // validators
 import { IsAppEmail } from "@/validators/decorators";
 
 export class LoginBodyDto {
+  @ApiProperty({ example: "user@example.com" })
   @IsAppEmail()
   email!: string;
 

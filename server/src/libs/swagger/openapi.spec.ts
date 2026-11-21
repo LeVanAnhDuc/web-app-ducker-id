@@ -43,7 +43,14 @@ export const GENERATED_MODULES: string[] = [
   "entitlement",
   "web-app",
   "user",
-  "contact-admin"
+  "contact-admin",
+  "signup",
+  "login",
+  "forgot-password",
+  "change-password",
+  "unlock-account",
+  "logout",
+  "token"
 ];
 
 /**
@@ -165,6 +172,49 @@ const ACCEPTED_DIFFS: Record<string, string[]> = {
     "GET /contacts/{id}: response status 403 only in generated", // [403]
     'GET /admin/contacts: parameter query fromDate format is "date" in hand-written, none in generated', // [date]
     'GET /admin/contacts: parameter query toDate format is "date" in hand-written, none in generated' // [date]
+  ],
+  signup: [
+    // [date] `ToDate` + `IsDate` accept an ISO date or date-time (and a timestamp), so the schema is a `oneOf` of the two string formats with no single top-level type; the hand-written `type: string, format: date` was narrower than the validator.
+    // [201] `@Respond({ status: StatusCodes.CREATED })`: the route answers 201; the hand-written docs said 200.
+    // [500] createUserAccount throws InternalServerError when the sign-up transaction is aborted (services/complete-signup.ts).
+    // [pattern] `IsAppEmail` refuses control and invisible characters with a pattern; the hand-written path parameter declared only `format: email`.
+    "POST /auth/signup/complete: request property dateOfBirth type is string in hand-written, none in generated", // [date]
+    "POST /auth/signup/complete: response status 200 only in hand-written", // [201]
+    "POST /auth/signup/complete: response status 201 only in generated", // [201]
+    "POST /auth/signup/complete: response status 500 only in generated", // [500]
+    'GET /auth/signup/check-email/{email}: parameter path email pattern is none in hand-written, "^[^\\\\u0000-\\\\u001F\\\\u007F-\\\\u009F\\\\u200B-\\\\u200D\\\\u202A-\\\\u202E\\\\uFEFF]+$" in generated' // [pattern]
+  ],
+  login: [
+    // [422] Nothing in the code can answer 422 (no exception class carries it); a body failing validation is 400, which every route already documented or now derives from `@ValidBody`.
+    // [400] `@ValidBody(MagicLinkVerifyBodyDto)`: a body failing validation is answered with 400; the hand-written docs listed 422 instead.
+    // [429] `@RateLimit("loginByIp")` on the route, and PasswordLockoutGuard throws TooManyRequestsError (verify-link.ts); the hand-written docs left 429 off.
+    "POST /auth/login: response status 422 only in hand-written", // [422]
+    "POST /auth/login/otp/send: response status 422 only in hand-written", // [422]
+    "POST /auth/login/otp/verify: response status 422 only in hand-written", // [422]
+    "POST /auth/login/magic-link/send: response status 422 only in hand-written", // [422]
+    "POST /auth/login/magic-link/verify: response status 422 only in hand-written", // [422]
+    "POST /auth/login/magic-link/verify: response status 400 only in generated", // [400]
+    "POST /auth/login/magic-link/verify: response status 429 only in generated" // [429]
+  ],
+  "forgot-password": [
+    // [422] Nothing in the code can answer 422 (no exception class carries it); a body failing validation is 400.
+    // [400] `@ValidBody(...)`: a body failing validation is answered with 400; the hand-written docs listed 422 instead.
+    "POST /auth/forgot-password/otp/send: response status 422 only in hand-written", // [422]
+    "POST /auth/forgot-password/otp/verify: response status 422 only in hand-written", // [422]
+    "POST /auth/forgot-password/magic-link/send: response status 422 only in hand-written", // [422]
+    "POST /auth/forgot-password/magic-link/verify: response status 422 only in hand-written", // [422]
+    "POST /auth/forgot-password/magic-link/verify: response status 400 only in generated", // [400]
+    "POST /auth/forgot-password/reset: response status 422 only in hand-written", // [422]
+    "POST /auth/forgot-password/reset: response status 400 only in generated" // [400]
+  ],
+  "change-password": [
+    // [422] Nothing in the code can answer 422 (no exception class carries it); a body failing validation is 400, already documented.
+    "PATCH /auth/change-password: response status 422 only in hand-written" // [422]
+  ],
+  logout: [
+    // [204] `@Respond({ status: StatusCodes.NO_CONTENT })`: the route answers 204 with no body; the hand-written docs said 200 with `{ success }`.
+    "POST /auth/logout: response status 200 only in hand-written", // [204]
+    "POST /auth/logout: response status 204 only in generated" // [204]
   ]
 };
 
@@ -405,41 +455,43 @@ describe("buildOpenApiSpec", () => {
     expect(doc.paths["/auth/login"]).toEqual(document.paths["/auth/login"]);
   });
 
-  // Until every module is generated, a hand-written module's paths could
-  // vanish unnoticed (a dropped barrel import in openapi.ts). Every controller
-  // of a module not in GENERATED_MODULES must have a documented path under its
-  // route. Task 6 drops this check once the drift checks assert all 63
-  // operations.
-  const handWrittenRoutes = (
-    readdirSync(MODULES_DIR, { withFileTypes: true }) as Dirent[]
-  )
-    .filter((entry) => entry.isDirectory())
-    .map((entry) => entry.name)
-    .filter((module) => !GENERATED_MODULES.includes(module))
-    .flatMap((module) =>
-      controllersOfModule(module).map((Ctor) => [
-        module,
-        String(
-          getMetadataArgsStorage().controllers.find((c) => c.target === Ctor)
-            ?.route ?? ""
-        )
-      ])
-    );
-
-  it("finds the controllers of the hand-written modules", () => {
-    expect(handWrittenRoutes).toHaveLength(22 - controllersOfGenerated());
+  // Every module is generated now: no controller is left to the hand-written
+  // swagger/ folders. Task 6 replaces GENERATED_MODULES with every route.
+  it("leaves no controller to the hand-written docs", () => {
+    const handWritten = (
+      readdirSync(MODULES_DIR, { withFileTypes: true }) as Dirent[]
+    )
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => entry.name)
+      .filter((module) => !GENERATED_MODULES.includes(module))
+      .flatMap(controllersOfModule);
+    expect(handWritten.map((Ctor) => Ctor.name)).toEqual([]);
+    expect(controllersOfGenerated()).toBe(22);
   });
 
-  it.each(handWrittenRoutes)(
-    "documents %s routes under %s while the module is hand-written",
-    (_module, prefix) => {
-      expect(
-        Object.keys(document.paths).some(
-          (p) => p === prefix || p.startsWith(`${prefix}/`)
-        )
-      ).toBe(true);
-    }
-  );
+  // The refresh token lives only in its HttpOnly cookie (BUG-AUTH-07); a
+  // schema that names it would document a body that leaks it to page script.
+  it("has no refreshToken property in any schema", () => {
+    const named = (node: unknown, path: string, found: string[]): string[] => {
+      if (Array.isArray(node)) {
+        node.forEach((item, i) => named(item, `${path}[${i}]`, found));
+      } else if (node && typeof node === "object") {
+        for (const [key, value] of Object.entries(node)) {
+          if (
+            key === "properties" &&
+            value &&
+            typeof value === "object" &&
+            "refreshToken" in value
+          ) {
+            found.push(path);
+          }
+          named(value, `${path}.${key}`, found);
+        }
+      }
+      return found;
+    };
+    expect(named(document, "document", [])).toEqual([]);
+  });
 
   describe("drift checks over GENERATED_MODULES", () => {
     const generated = GENERATED_MODULES.flatMap(controllersOfModule);

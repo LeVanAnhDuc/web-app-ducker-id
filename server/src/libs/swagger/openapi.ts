@@ -14,49 +14,11 @@ import {
   normalizeRefSiblings,
   SCHEMA_REF_PREFIX
 } from "@/common/openapi";
-// modules
-import { loginSwaggerSchemas, loginPaths } from "@/modules/login/swagger";
-import { signupSwaggerSchemas, signupPaths } from "@/modules/signup/swagger";
-import { logoutSwaggerSchemas, logoutPaths } from "@/modules/logout/swagger";
-import { tokenSwaggerSchemas, tokenPaths } from "@/modules/token/swagger";
-import {
-  forgotPasswordSwaggerSchemas,
-  forgotPasswordPaths
-} from "@/modules/forgot-password/swagger";
-import {
-  changePasswordSwaggerSchemas,
-  changePasswordPaths
-} from "@/modules/change-password/swagger";
-import {
-  unlockAccountSwaggerSchemas,
-  unlockAccountPaths
-} from "@/modules/unlock-account/swagger";
 // others
 import ENV from "@/constants/env";
 import { commonSchemas, commonResponses } from "./common.schemas";
 
 const PORT = ENV.app.port;
-
-const allSchemas: Record<string, OpenAPIV3.SchemaObject> = {
-  ...commonSchemas,
-  ...loginSwaggerSchemas,
-  ...signupSwaggerSchemas,
-  ...logoutSwaggerSchemas,
-  ...tokenSwaggerSchemas,
-  ...forgotPasswordSwaggerSchemas,
-  ...changePasswordSwaggerSchemas,
-  ...unlockAccountSwaggerSchemas
-};
-
-const allPaths: OpenAPIV3.PathsObject = {
-  ...loginPaths,
-  ...signupPaths,
-  ...logoutPaths,
-  ...tokenPaths,
-  ...forgotPasswordPaths,
-  ...changePasswordPaths,
-  ...unlockAccountPaths
-};
 
 const handWritten = (): OpenAPIV3.Document => ({
   openapi: "3.0.3",
@@ -137,9 +99,9 @@ const handWritten = (): OpenAPIV3.Document => ({
         "Admin endpoints for granting or revoking a user's access to an app beyond the role default"
     }
   ],
-  paths: allPaths,
+  paths: {},
   components: {
-    schemas: allSchemas,
+    schemas: commonSchemas,
     responses: commonResponses,
     securitySchemes: {
       bearerAuth: {

@@ -1,5 +1,5 @@
 // types
-import type { RefreshTokenDto } from "../dtos";
+import type { AccessTokensDto } from "../dtos";
 import type { AuthenticationService } from "@/modules/authentication/services";
 import type { UserService } from "@/modules/user/services";
 import type { RevokedRefreshTokenRepository } from "../repository/revoked-refresh-token.repository";
@@ -30,7 +30,7 @@ export class TokenService {
 
   refreshAccessToken(
     refreshToken: string | undefined
-  ): Promise<RefreshTokenDto> {
+  ): Promise<AccessTokensDto> {
     return refreshAccessToken(
       {
         authService: this.authService,

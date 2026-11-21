@@ -10,6 +10,8 @@ import {
 } from "class-validator";
 // types
 import type { Gender } from "@/modules/user/types";
+// common
+import { ApiProperty } from "@/common/openapi";
 // modules
 import { SESSION_CONFIG } from "@/modules/signup/constants";
 // validators
@@ -29,12 +31,14 @@ import {
 // below are listed so the same one is reported first.
 
 export class CompleteSignupBodyDto {
+  @ApiProperty({ example: "user@example.com" })
   @IsAppEmail()
   email!: string;
 
   @IsAppPassword()
   password!: string;
 
+  @ApiProperty({ description: "Must equal `password`" })
   @IsString({ message: "signup:errors.passwordMismatch" })
   @MatchesProperty("password", { message: "signup:errors.passwordMismatch" })
   @IsDefined({
@@ -45,6 +49,7 @@ export class CompleteSignupBodyDto {
   })
   confirmPassword!: string;
 
+  @ApiProperty({ description: "Returned by /auth/signup/verify-otp" })
   @Length(SESSION_CONFIG.TOKEN_LENGTH * 2, SESSION_CONFIG.TOKEN_LENGTH * 2, {
     message: "signup:errors.sessionTokenInvalid"
   })
@@ -61,12 +66,17 @@ export class CompleteSignupBodyDto {
   @IsDefined({ message: "signup:errors.acceptTermsRequired" })
   acceptTerms!: true;
 
+  @ApiProperty({ example: "Nguyễn Văn A" })
   @IsFullName()
   fullName!: string;
 
   @IsGender()
   gender!: Gender;
 
+  @ApiProperty({
+    example: "1995-05-15",
+    description: "Age between 13 and 120"
+  })
   @IsDateOfBirthNotTooOld({ message: "validation:dateOfBirth.tooOld" })
   @IsDateOfBirthNotTooYoung({ message: "validation:dateOfBirth.tooYoung" })
   @IsDate({ message: "validation:dateOfBirth.invalid" })

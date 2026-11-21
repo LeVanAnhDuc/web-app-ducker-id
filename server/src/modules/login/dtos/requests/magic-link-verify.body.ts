@@ -6,6 +6,8 @@ import {
   Length,
   Matches
 } from "class-validator";
+// common
+import { ApiProperty } from "@/common/openapi";
 // modules
 import { MAGIC_LINK_CONFIG } from "@/modules/login/constants";
 // validators
@@ -14,6 +16,7 @@ import { IsAppEmail } from "@/validators/decorators";
 const TOKEN_LENGTH = MAGIC_LINK_CONFIG.TOKEN_LENGTH * 2;
 
 export class MagicLinkVerifyBodyDto {
+  @ApiProperty({ example: "user@example.com" })
   @IsAppEmail()
   email!: string;
 

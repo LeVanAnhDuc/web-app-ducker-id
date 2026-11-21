@@ -6,6 +6,8 @@ import {
   Length,
   Matches
 } from "class-validator";
+// common
+import { ApiProperty } from "@/common/openapi";
 // modules
 import { FORGOT_PASSWORD_RESET_TOKEN_CONFIG } from "@/modules/forgot-password/constants";
 // validators
@@ -14,6 +16,7 @@ import { IsAppEmail, IsAppPassword } from "@/validators/decorators";
 const TOKEN_LENGTH = FORGOT_PASSWORD_RESET_TOKEN_CONFIG.TOKEN_LENGTH * 2;
 
 export class ResetPasswordBodyDto {
+  @ApiProperty({ example: "user@example.com" })
   @IsAppEmail()
   email!: string;
 
