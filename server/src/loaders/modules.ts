@@ -24,7 +24,7 @@ import { createRecentAppModule } from "@/modules/recent-app/recent-app.module";
 import { createSessionModule } from "@/modules/session/session.module";
 import { createOAuthModule } from "@/modules/oauth/oauth.module";
 // others
-import { RateLimiterMiddleware } from "@/middlewares";
+import { createRateLimiters } from "@/middlewares";
 
 export interface ModuleDeps {
   redis: RedisClientType;
@@ -47,7 +47,7 @@ export const createModules = ({
   notificationDispatcher
 }: ModuleDeps): ModuleRouters => {
   const { authService } = createAuthenticationModule();
-  const rateLimiter = new RateLimiterMiddleware(redisClient);
+  const rateLimiter = createRateLimiters(redisClient);
   const { sessionService } = createSessionModule(redisClient);
 
   const { userRouter, userAdminRouter, userService } = createUserModule(

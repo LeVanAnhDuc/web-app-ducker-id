@@ -1,7 +1,7 @@
 // libs
 import { Router } from "express";
 // types
-import type { RateLimiterMiddleware } from "@/middlewares";
+import type { RateLimiters } from "@/middlewares";
 import type { UnlockAccountController } from "./unlock-account.controller";
 // common
 import { handle } from "@/common/responses";
@@ -15,7 +15,7 @@ import { bodyPipe } from "@/middlewares";
 
 export const createUnlockAccountRoutes = (
   controller: UnlockAccountController,
-  rl: RateLimiterMiddleware
+  rl: RateLimiters
 ): Router => {
   const router = Router();
   const unlock = Router();

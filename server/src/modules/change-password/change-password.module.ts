@@ -3,7 +3,7 @@ import type { AuthenticationService } from "@/modules/authentication/services";
 import type { UserService } from "@/modules/user/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
-import type { RateLimiterMiddleware } from "@/middlewares";
+import type { RateLimiters } from "@/middlewares";
 // guards
 import { WrongCurrentPasswordGuard, SamePasswordGuard } from "./guards";
 // others
@@ -16,7 +16,7 @@ export const createChangePasswordModule = (
   userService: UserService,
   emailDispatcher: EmailDispatcher,
   notificationDispatcher: NotificationDispatcher,
-  rateLimiter: RateLimiterMiddleware
+  rateLimiter: RateLimiters
 ) => {
   const wrongCurrentPasswordGuard = new WrongCurrentPasswordGuard();
   const samePasswordGuard = new SamePasswordGuard();

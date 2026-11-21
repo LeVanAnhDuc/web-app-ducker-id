@@ -2,7 +2,7 @@
 import { Router } from "express";
 import { StatusCodes } from "http-status-codes";
 // types
-import type { RateLimiterMiddleware } from "@/middlewares";
+import type { RateLimiters } from "@/middlewares";
 import type { RecentAppController } from "./recent-app.controller";
 // common
 import { handle } from "@/common/responses";
@@ -16,7 +16,7 @@ import { authGuard, paramsPipe, queryPipe } from "@/middlewares";
 
 export const createRecentAppUserRoutes = (
   controller: RecentAppController,
-  rl: RateLimiterMiddleware
+  rl: RateLimiters
 ): Router => {
   const router = Router();
   const recentApps = Router();

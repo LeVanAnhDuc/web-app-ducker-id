@@ -1,5 +1,5 @@
 // types
-import type { RateLimiterMiddleware } from "@/middlewares";
+import type { RateLimiters } from "@/middlewares";
 // modules
 import { MongoWebAppRepository } from "@/modules/web-app/repository/impl/mongo-web-app.repository";
 // others
@@ -11,7 +11,7 @@ import {
   createCategoryUserRoutes
 } from "./category.routes";
 
-export const createCategoryModule = (rateLimiter: RateLimiterMiddleware) => {
+export const createCategoryModule = (rateLimiter: RateLimiters) => {
   const categoryRepository = new MongoCategoryRepository();
   const service = new CategoryService({
     categoryRepo: categoryRepository,

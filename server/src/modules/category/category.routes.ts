@@ -2,7 +2,7 @@
 import { Router } from "express";
 import { StatusCodes } from "http-status-codes";
 // types
-import type { RateLimiterMiddleware } from "@/middlewares";
+import type { RateLimiters } from "@/middlewares";
 import type { CategoryController } from "./category.controller";
 // common
 import { handle } from "@/common/responses";
@@ -25,7 +25,7 @@ import {
 
 export const createCategoryAdminRoutes = (
   controller: CategoryController,
-  rl: RateLimiterMiddleware
+  rl: RateLimiters
 ): Router => {
   const router = Router();
   const categories = Router();
@@ -80,7 +80,7 @@ export const createCategoryAdminRoutes = (
 
 export const createCategoryUserRoutes = (
   controller: CategoryController,
-  rl: RateLimiterMiddleware
+  rl: RateLimiters
 ): Router => {
   const router = Router();
 
