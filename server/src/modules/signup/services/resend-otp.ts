@@ -4,7 +4,7 @@ import type { ResendOtpBody } from "../types";
 import type { ResendOtpDto } from "../dtos";
 import type { SignupServiceDeps } from "./deps";
 // common
-import { BadRequestError } from "@/common/exceptions";
+import { BadRequestError } from "@/exceptions";
 // dtos
 import { toResendOtpDto } from "../dtos";
 // others
@@ -40,7 +40,7 @@ export const resendOtp = async (
       maxResends: MAX_RESEND_COUNT
     });
     throw new BadRequestError({
-      i18nMessage: (t) => t("signup:errors.resendLimitExceeded"),
+      key: "signup:errors.resendLimitExceeded",
       code: ERROR_CODES.SIGNUP_RESEND_LIMIT
     });
   }

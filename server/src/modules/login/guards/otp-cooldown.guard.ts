@@ -1,7 +1,7 @@
 // types
 import type { OtpLoginRepository } from "../repositories/otp-login.repository";
 // common
-import { BadRequestError } from "@/common/exceptions";
+import { BadRequestError } from "@/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
@@ -16,7 +16,8 @@ export class OtpCooldownGuard {
 
     Logger.warn("Login OTP cooldown not expired", { email, remaining });
     throw new BadRequestError({
-      i18nMessage: (t) => t("login:errors.otpCooldown", { seconds: remaining }),
+      key: "login:errors.otpCooldown",
+      params: { seconds: remaining },
       code: ERROR_CODES.LOGIN_OTP_COOLDOWN
     });
   }

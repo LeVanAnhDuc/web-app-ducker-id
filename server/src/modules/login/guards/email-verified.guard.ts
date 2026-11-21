@@ -4,7 +4,7 @@ import type { LoginMethod } from "@/modules/login-history/types";
 import type { Request } from "express";
 import type { LoginAuditService } from "../services/login-audit";
 // common
-import { UnauthorizedError } from "@/common/exceptions";
+import { UnauthorizedError } from "@/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 
@@ -15,7 +15,7 @@ export class EmailVerifiedGuard {
     if (auth.verifiedEmail) return;
 
     throw new UnauthorizedError({
-      i18nMessage: (t) => t("login:errors.emailNotVerified"),
+      key: "login:errors.emailNotVerified",
       code: ERROR_CODES.LOGIN_EMAIL_NOT_VERIFIED
     });
   }
@@ -30,7 +30,7 @@ export class EmailVerifiedGuard {
 
     this.audit.recordEmailNotVerified({ auth, email, method, req });
     throw new UnauthorizedError({
-      i18nMessage: (t) => t("login:errors.emailNotVerified"),
+      key: "login:errors.emailNotVerified",
       code: ERROR_CODES.LOGIN_EMAIL_NOT_VERIFIED
     });
   }

@@ -18,7 +18,7 @@ import {
   CATEGORY_MOVE_DIRECTIONS
 } from "@/modules/category/constants";
 // validators
-import { OBJECTID_PATTERN } from "@/validators/constants";
+import { objectIdSchema } from "@/validators/utils";
 
 type NameField = "nameEn" | "nameVi";
 
@@ -46,16 +46,7 @@ const nameSchema = (field: NameField) =>
       "any.invalid": `category:validation.${field}.noSlug`
     });
 
-const objectId = (key: string) =>
-  Joi.string()
-    .pattern(OBJECTID_PATTERN)
-    .required()
-    .messages({
-      "string.base": `category:validation.${key}.invalid`,
-      "string.empty": `category:validation.${key}.invalid`,
-      "any.required": `category:validation.${key}.invalid`,
-      "string.pattern.base": `category:validation.${key}.invalid`
-    });
+const objectId = (key: string) => objectIdSchema("category", key);
 
 export const createCategoryBodySchema: Joi.ObjectSchema<CreateCategoryBody> =
   Joi.object({

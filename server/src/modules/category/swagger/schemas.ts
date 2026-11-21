@@ -1,12 +1,7 @@
 // types
 import type { OpenAPIV3 } from "openapi-types";
-
-const objectId = (description: string): OpenAPIV3.SchemaObject => ({
-  type: "string",
-  pattern: "^[a-fA-F0-9]{24}$",
-  example: "507f1f77bcf86cd799439012",
-  description
-});
+// others
+import { swaggerObjectId as objectId } from "@/libs/swagger/common.schemas";
 
 const categoryName: OpenAPIV3.SchemaObject = {
   type: "object",

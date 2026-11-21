@@ -15,7 +15,7 @@ import type {
 import type { LoginAuditService } from "../../services/login-audit";
 import type { LoginCompletionService } from "../../services/login-completion";
 // common
-import { TooManyRequestsError, UnauthorizedError } from "@/common/exceptions";
+import { TooManyRequestsError, UnauthorizedError } from "@/exceptions";
 // modules
 import { LOGIN_METHODS } from "@/modules/login-history/constants";
 import {
@@ -107,17 +107,17 @@ export class PasswordLoginStrategy {
       });
 
       throw new TooManyRequestsError({
-        i18nMessage: (t) =>
-          t("login:errors.accountLocked", {
-            attempts: attemptCount,
-            seconds: lockoutSeconds
-          }),
+        key: "login:errors.accountLocked",
+        params: {
+          attempts: attemptCount,
+          seconds: lockoutSeconds
+        },
         code: ERROR_CODES.LOGIN_ACCOUNT_LOCKED
       });
     }
 
     throw new UnauthorizedError({
-      i18nMessage: (t) => t("login:errors.invalidCredentials"),
+      key: "login:errors.invalidCredentials",
       code: ERROR_CODES.LOGIN_INVALID_CREDENTIALS
     });
   }

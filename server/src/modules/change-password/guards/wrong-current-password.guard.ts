@@ -1,5 +1,5 @@
 // common
-import { BadRequestError } from "@/common/exceptions";
+import { BadRequestError } from "@/exceptions";
 // others
 import { isValidHashedValue } from "@/utils/crypto/bcrypt";
 import { ERROR_CODES } from "@/constants/error-code";
@@ -9,7 +9,7 @@ export class WrongCurrentPasswordGuard {
     if (isValidHashedValue(currentPassword, storedHash)) return;
 
     throw new BadRequestError({
-      i18nMessage: (t) => t("changePassword:errors.wrongCurrentPassword"),
+      key: "changePassword:errors.wrongCurrentPassword",
       code: ERROR_CODES.CHANGE_PASSWORD_WRONG_CURRENT
     });
   }

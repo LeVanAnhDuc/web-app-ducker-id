@@ -3,7 +3,7 @@ import type { AdminAppCreateBody } from "../types";
 import type { AdminAppCreatedDto } from "../dtos";
 import type { WebAppServiceDeps } from "./deps";
 // common
-import { ConflictRequestError } from "@/common/exceptions";
+import { ConflictRequestError } from "@/exceptions";
 // dtos
 import { toAdminAppCreatedDto } from "../dtos";
 // others
@@ -28,7 +28,7 @@ export const createApp = async (
   const nameTaken = await deps.webAppRepo.existsByName(body.name);
   if (nameTaken) {
     throw new ConflictRequestError({
-      i18nMessage: (t) => t("webApp:errors.nameExists"),
+      key: "webApp:errors.nameExists",
       code: ERROR_CODES.WEB_APP_NAME_EXISTS
     });
   }

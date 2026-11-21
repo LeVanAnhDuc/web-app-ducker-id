@@ -17,7 +17,7 @@ import type { LoginAuditService } from "../../../services/login-audit";
 import type { LoginCompletionService } from "../../../services/login-completion";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 // common
-import { TooManyRequestsError, UnauthorizedError } from "@/common/exceptions";
+import { TooManyRequestsError, UnauthorizedError } from "@/exceptions";
 // modules
 import { LOGIN_METHODS } from "@/modules/login-history/constants";
 // others

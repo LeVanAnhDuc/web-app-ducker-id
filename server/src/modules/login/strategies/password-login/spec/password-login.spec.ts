@@ -12,7 +12,7 @@ import type {
 import type { LoginAuditService } from "../../../services/login-audit";
 import type { LoginCompletionService } from "../../../services/login-completion";
 // common
-import { TooManyRequestsError, UnauthorizedError } from "@/common/exceptions";
+import { TooManyRequestsError, UnauthorizedError } from "@/exceptions";
 // modules
 import { LOGIN_METHODS } from "@/modules/login-history/constants";
 // others

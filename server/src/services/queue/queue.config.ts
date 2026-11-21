@@ -17,8 +17,5 @@ const parseRedisUrl = (url: string): ConnectionOptions => {
   };
 };
 
-export const buildQueueConnection = (): ConnectionOptions | null => {
-  if (!config.redis.url) return null;
-
-  return parseRedisUrl(config.redis.url);
-};
+export const buildQueueConnection = (): ConnectionOptions =>
+  parseRedisUrl(config.redis.url);

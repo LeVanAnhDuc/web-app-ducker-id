@@ -1,5 +1,5 @@
 // libs
-import { NotFoundError } from "@/common/exceptions";
+import { NotFoundError } from "@/exceptions";
 // modules
 import { NotificationService } from "../";
 import { RequestContext } from "@/utils/request-context";

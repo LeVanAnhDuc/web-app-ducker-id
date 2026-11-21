@@ -14,7 +14,7 @@ import type {
   UnlockTempPasswordData
 } from "@/types/services/email";
 // common
-import { InternalServerError } from "@/common/exceptions";
+import { InternalServerError } from "@/exceptions";
 // others
 import { Logger } from "@/libs/logger";
 import { withRetry } from "@/utils/resilience/retry";

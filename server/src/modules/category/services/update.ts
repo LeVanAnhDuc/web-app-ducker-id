@@ -3,7 +3,7 @@ import type { CategoryName, UpdateCategoryBody } from "../types";
 import type { AdminCategoryDto } from "../dtos";
 import type { CategoryServiceDeps } from "./deps";
 // common
-import { ConflictRequestError, NotFoundError } from "@/common/exceptions";
+import { ConflictRequestError, NotFoundError } from "@/exceptions";
 // dtos
 import { toAdminCategoryDto } from "../dtos";
 // others
@@ -12,7 +12,7 @@ import { ERROR_CODES } from "@/constants/error-code";
 
 const notFound = () =>
   new NotFoundError({
-    i18nMessage: (t) => t("category:errors.notFound"),
+    key: "category:errors.notFound",
     code: ERROR_CODES.CATEGORY_NOT_FOUND
   });
 
@@ -33,7 +33,7 @@ export const update = async (
 
   if (enChanged && (await deps.categoryRepo.existsByNameEn(name.en, id))) {
     throw new ConflictRequestError({
-      i18nMessage: (t) => t("category:errors.nameTaken"),
+      key: "category:errors.nameTaken",
       code: ERROR_CODES.CATEGORY_NAME_TAKEN
     });
   }

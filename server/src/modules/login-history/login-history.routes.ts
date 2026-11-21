@@ -2,6 +2,8 @@
 import { Router } from "express";
 // types
 import type { LoginHistoryController } from "./login-history.controller";
+// common
+import { handle } from "@/common/responses";
 // validators
 import {
   loginHistoryQuerySchema,
@@ -11,7 +13,6 @@ import {
 } from "@/validators/schemas/login-history";
 // others
 import { adminGuard, authGuard, paramsPipe, queryPipe } from "@/middlewares";
-import { asyncHandler } from "@/utils/async-handler";
 
 export const createLoginHistoryUserRoutes = (
   controller: LoginHistoryController
@@ -24,13 +25,17 @@ export const createLoginHistoryUserRoutes = (
   loginHistory.get(
     "/stats",
     queryPipe(loginHistoryStatsQuerySchema),
-    asyncHandler(controller.getMyStats)
+    handle(controller.getMyStats, {
+      message: "loginHistory:success.getMyStats"
+    })
   );
 
   loginHistory.get(
     "/",
     queryPipe(loginHistoryQuerySchema),
-    asyncHandler(controller.getMyHistory)
+    handle(controller.getMyHistory, {
+      message: "loginHistory:success.getMyHistory"
+    })
   );
 
   router.use("/login-history", loginHistory);
@@ -48,13 +53,17 @@ export const createLoginHistoryAdminRoutes = (
   adminLoginHistory.get(
     "/",
     queryPipe(loginHistoryAdminQuerySchema),
-    asyncHandler(controller.getAllHistory)
+    handle(controller.getAllHistory, {
+      message: "loginHistory:success.getAllHistory"
+    })
   );
 
   adminLoginHistory.get(
     "/:id",
     paramsPipe(loginHistoryIdParamSchema),
-    asyncHandler(controller.getHistoryDetail)
+    handle(controller.getHistoryDetail, {
+      message: "loginHistory:success.getHistoryDetail"
+    })
   );
 
   router.use("/admin/login-history", adminLoginHistory);

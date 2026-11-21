@@ -78,12 +78,15 @@ describe("LoginController", () => {
   });
 
   describe("login (password)", () => {
-    it("dispatches to service.passwordLogin, sets refresh cookie, sends data without refreshToken", async () => {
+    it("dispatches to service.passwordLogin, sets refresh cookie, returns data without refreshToken", async () => {
       service.passwordLogin.mockResolvedValue(TOKENS_WITH_REFRESH);
       const body = { email: EMAIL, password: "pw" };
       (req as unknown as { body: unknown }).body = body;
 
-      await controller.login(req as never, res as unknown as Response);
+      const data = await controller.login(
+        req as never,
+        res as unknown as Response
+      );
 
       expect(service.passwordLogin).toHaveBeenCalledWith(body, req);
       expect(res.cookie).toHaveBeenCalledWith(
@@ -92,14 +95,12 @@ describe("LoginController", () => {
         REFRESH_TOKEN_COOKIE_OPTIONS
       );
 
-      const jsonArg = res.json.mock.calls[0][0];
-      expect(jsonArg.data).toEqual({
+      expect(data).toEqual({
         accessToken: "access-x",
         idToken: "id-x",
         expiresIn: 3600
       });
-      expect(jsonArg.data).not.toHaveProperty("refreshToken");
-      expect(jsonArg.message).toBe("login:success.loginSuccessful");
+      expect(data).not.toHaveProperty("refreshToken");
     });
 
     it("does not set cookie when refreshToken absent", async () => {
@@ -108,25 +109,22 @@ describe("LoginController", () => {
       await controller.login(req as never, res as unknown as Response);
 
       expect(res.cookie).not.toHaveBeenCalled();
-      expect(res.json).toHaveBeenCalled();
     });
   });
 
   describe("sendOtp", () => {
-    it("dispatches to service.sendOtp and responds with otpSent message", async () => {
+    it("dispatches to service.sendOtp and returns its result", async () => {
       const dto = { success: true, expiresIn: 300, cooldown: 60 };
       service.sendOtp.mockResolvedValue(dto);
       const body = { email: EMAIL };
       (req as unknown as { body: unknown }).body = body;
 
-      await controller.sendOtp(req as never, res as unknown as Response);
+      const data = await controller.sendOtp(req as never);
 
       expect(service.sendOtp).toHaveBeenCalledWith(body, req);
       expect(res.cookie).not.toHaveBeenCalled();
 
-      const jsonArg = res.json.mock.calls[0][0];
-      expect(jsonArg.data).toBe(dto);
-      expect(jsonArg.message).toBe("login:success.otpSent");
+      expect(data).toBe(dto);
     });
   });
 
@@ -136,7 +134,10 @@ describe("LoginController", () => {
       const body = { email: EMAIL, otp: "123456" };
       (req as unknown as { body: unknown }).body = body;
 
-      await controller.verifyOtp(req as never, res as unknown as Response);
+      const data = await controller.verifyOtp(
+        req as never,
+        res as unknown as Response
+      );
 
       expect(service.verifyOtp).toHaveBeenCalledWith(body, req);
       expect(res.cookie).toHaveBeenCalledWith(
@@ -145,9 +146,7 @@ describe("LoginController", () => {
         REFRESH_TOKEN_COOKIE_OPTIONS
       );
 
-      const jsonArg = res.json.mock.calls[0][0];
-      expect(jsonArg.data).not.toHaveProperty("refreshToken");
-      expect(jsonArg.message).toBe("login:success.loginSuccessful");
+      expect(data).not.toHaveProperty("refreshToken");
     });
 
     it("skips cookie when refreshToken missing", async () => {
@@ -160,20 +159,18 @@ describe("LoginController", () => {
   });
 
   describe("sendMagicLink", () => {
-    it("dispatches to service.sendMagicLink and responds with magicLinkSent message", async () => {
+    it("dispatches to service.sendMagicLink and returns its result", async () => {
       const dto = { success: true, expiresIn: 900, cooldown: 60 };
       service.sendMagicLink.mockResolvedValue(dto);
       const body = { email: EMAIL };
       (req as unknown as { body: unknown }).body = body;
 
-      await controller.sendMagicLink(req as never, res as unknown as Response);
+      const data = await controller.sendMagicLink(req as never);
 
       expect(service.sendMagicLink).toHaveBeenCalledWith(body, req);
       expect(res.cookie).not.toHaveBeenCalled();
 
-      const jsonArg = res.json.mock.calls[0][0];
-      expect(jsonArg.data).toBe(dto);
-      expect(jsonArg.message).toBe("login:success.magicLinkSent");
+      expect(data).toBe(dto);
     });
   });
 
@@ -183,7 +180,7 @@ describe("LoginController", () => {
       const body = { email: EMAIL, token: "tok" };
       (req as unknown as { body: unknown }).body = body;
 
-      await controller.verifyMagicLink(
+      const data = await controller.verifyMagicLink(
         req as never,
         res as unknown as Response
       );
@@ -195,9 +192,7 @@ describe("LoginController", () => {
         REFRESH_TOKEN_COOKIE_OPTIONS
       );
 
-      const jsonArg = res.json.mock.calls[0][0];
-      expect(jsonArg.data).not.toHaveProperty("refreshToken");
-      expect(jsonArg.message).toBe("login:success.loginSuccessful");
+      expect(data).not.toHaveProperty("refreshToken");
     });
 
     it("skips cookie when refreshToken missing", async () => {

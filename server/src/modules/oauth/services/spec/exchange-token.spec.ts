@@ -4,7 +4,7 @@ import type { OAuthRepository } from "../../repository/oauth.repository";
 import type { TokenRequestBody } from "../../types";
 import type { OAuthServiceDeps } from "../deps";
 // common
-import { OAuthError } from "@/common/exceptions";
+import { OAuthError } from "@/exceptions";
 // others
 import { exchangeToken } from "../exchange-token";
 

@@ -2,7 +2,7 @@
 import type { WebAppDocument } from "@/modules/web-app/types";
 import type { OAuthServiceDeps } from "../deps";
 // common
-import { OAuthError } from "@/common/exceptions";
+import { OAuthError } from "@/exceptions";
 import { STATUS_CODES } from "@/common/http";
 // modules
 import { WEB_APP_STATUSES } from "@/modules/web-app/constants";

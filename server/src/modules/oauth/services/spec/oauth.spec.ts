@@ -15,7 +15,7 @@ import type { EntitlementRepository } from "@/modules/entitlement/repository/ent
 import { OAuthService } from "../";
 import { AccessPolicy } from "@/modules/entitlement/services/access-policy";
 // common
-import { OAuthError } from "@/common/exceptions";
+import { OAuthError } from "@/exceptions";
 // mocks
 import { createLoginHistoryServiceMock } from "@test/mocks/login-history-service.mock";
 

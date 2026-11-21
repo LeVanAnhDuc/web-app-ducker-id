@@ -1,7 +1,7 @@
 // types
 import type { Request, Response, NextFunction } from "express";
 // common
-import { ForbiddenError } from "@/common/exceptions";
+import { ForbiddenError } from "@/exceptions";
 // modules
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 // others
@@ -14,7 +14,7 @@ const verifyAdminRole = (next: NextFunction): void => {
   if (!user || user.roles !== AUTHENTICATION_ROLES.ADMIN) {
     next(
       new ForbiddenError({
-        i18nMessage: (t) => t("common:errors.forbidden"),
+        key: "common:errors.forbidden",
         code: ERROR_CODES.AUTH_ADMIN_ONLY
       })
     );

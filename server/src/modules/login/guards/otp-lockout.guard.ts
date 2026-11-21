@@ -1,7 +1,7 @@
 // types
 import type { OtpLoginRepository } from "../repositories/otp-login.repository";
 // common
-import { TooManyRequestsError } from "@/common/exceptions";
+import { TooManyRequestsError } from "@/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
@@ -19,10 +19,10 @@ export class OtpLockoutGuard {
     Logger.warn("Login OTP verification locked", { email, attempts });
 
     throw new TooManyRequestsError({
-      i18nMessage: (t) =>
-        t("login:errors.otpLocked", {
-          minutes: LOGIN_OTP_CONFIG.LOCKOUT_DURATION_MINUTES
-        }),
+      key: "login:errors.otpLocked",
+      params: {
+        minutes: LOGIN_OTP_CONFIG.LOCKOUT_DURATION_MINUTES
+      },
       code: ERROR_CODES.LOGIN_OTP_LOCKED
     });
   }

@@ -3,7 +3,7 @@ import nodemailer from "nodemailer";
 // types
 import type { Transporter } from "nodemailer";
 // common
-import { ServiceUnavailableError } from "@/common/exceptions";
+import { ServiceUnavailableError } from "@/exceptions";
 // others
 import config from "@/constants/env";
 import { Logger } from "@/libs/logger";

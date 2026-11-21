@@ -4,7 +4,7 @@ import type { UserWithAuth } from "@/modules/user/types";
 import type { Request } from "express";
 import type { LoginAuditService } from "../services/login-audit";
 // common
-import { UnauthorizedError } from "@/common/exceptions";
+import { UnauthorizedError } from "@/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
@@ -32,7 +32,7 @@ export class AccountExistsGuard {
 
     Logger.warn("Authentication not found", { email });
     throw new UnauthorizedError({
-      i18nMessage: (t) => t("login:errors.invalidEmail"),
+      key: "login:errors.invalidEmail",
       code: ERROR_CODES.LOGIN_INVALID_EMAIL
     });
   }
@@ -47,7 +47,7 @@ export class AccountExistsGuard {
 
     this.audit.recordInvalidCredentials({ email, req });
     throw new UnauthorizedError({
-      i18nMessage: (t) => t("login:errors.invalidCredentials"),
+      key: "login:errors.invalidCredentials",
       code: ERROR_CODES.LOGIN_INVALID_CREDENTIALS
     });
   }

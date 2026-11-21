@@ -1,54 +1,19 @@
 // types
-import type { Response } from "express";
 import type {
   NotificationListRequest,
   NotificationIdRequest
 } from "@/modules/notification/types";
 import type { NotificationService } from "./services";
-// common
-import { OkSuccess } from "@/common/responses";
 
 export class NotificationController {
   constructor(private readonly service: NotificationService) {}
 
-  list = async (req: NotificationListRequest, res: Response): Promise<void> => {
-    const data = await this.service.list(req.query);
-    new OkSuccess({ data, message: "notification:success.list" }).send(
-      req,
-      res
-    );
-  };
+  list = async (req: NotificationListRequest) => this.service.list(req.query);
 
-  unreadCount = async (
-    req: NotificationListRequest,
-    res: Response
-  ): Promise<void> => {
-    const data = await this.service.unreadCount();
-    new OkSuccess({ data, message: "notification:success.unreadCount" }).send(
-      req,
-      res
-    );
-  };
+  unreadCount = async () => this.service.unreadCount();
 
-  markRead = async (
-    req: NotificationIdRequest,
-    res: Response
-  ): Promise<void> => {
-    const data = await this.service.markRead(req.params.id);
-    new OkSuccess({ data, message: "notification:success.markRead" }).send(
-      req,
-      res
-    );
-  };
+  markRead = async (req: NotificationIdRequest) =>
+    this.service.markRead(req.params.id);
 
-  markAllRead = async (
-    req: NotificationListRequest,
-    res: Response
-  ): Promise<void> => {
-    const data = await this.service.markAllRead();
-    new OkSuccess({ data, message: "notification:success.markAllRead" }).send(
-      req,
-      res
-    );
-  };
+  markAllRead = async () => this.service.markAllRead();
 }

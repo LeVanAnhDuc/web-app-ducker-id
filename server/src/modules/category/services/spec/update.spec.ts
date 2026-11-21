@@ -1,7 +1,7 @@
 // service
 import { CategoryService } from "../";
 // common
-import { ConflictRequestError, NotFoundError } from "@/common/exceptions";
+import { ConflictRequestError, NotFoundError } from "@/exceptions";
 // others
 import { CATEGORY_ID, categoryDoc, makeDeps } from "./make-deps";
 

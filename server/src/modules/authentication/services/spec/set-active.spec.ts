@@ -1,7 +1,7 @@
 // types
 import type { AuthenticationRepository } from "../../repository/authentication.repository";
 // common
-import { BadRequestError } from "@/common/exceptions";
+import { BadRequestError } from "@/exceptions";
 // others
 import { AuthenticationService } from "../";
 

@@ -2,7 +2,7 @@
 import type { HistoryDetailItemDto } from "../dtos";
 import type { LoginHistoryServiceDeps } from "./deps";
 // common
-import { NotFoundError } from "@/common/exceptions";
+import { NotFoundError } from "@/exceptions";
 // dtos
 import { toHistoryDetailItemDto } from "../dtos";
 // others
@@ -16,7 +16,7 @@ export const getLoginHistoryDetail = async (
 
   if (!doc) {
     throw new NotFoundError({
-      i18nMessage: (t) => t("loginHistory:errors.notFound"),
+      key: "loginHistory:errors.notFound",
       code: ERROR_CODES.LOGIN_HISTORY_NOT_FOUND
     });
   }

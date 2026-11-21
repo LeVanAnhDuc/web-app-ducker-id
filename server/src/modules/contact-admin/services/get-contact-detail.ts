@@ -2,7 +2,7 @@
 import type { AdminContactDetailItemDto } from "../dtos";
 import type { ContactRepository } from "../repository/contact-admin.repository";
 // common
-import { NotFoundError } from "@/common/exceptions";
+import { NotFoundError } from "@/exceptions";
 // dtos
 import { toAdminContactDetailItemDto } from "../dtos";
 // others
@@ -16,7 +16,7 @@ export const getContactDetail = async (
 
   if (!doc) {
     throw new NotFoundError({
-      i18nMessage: (t) => t("contactAdmin:errors.notFound"),
+      key: "contactAdmin:errors.notFound",
       code: ERROR_CODES.CONTACT_NOT_FOUND
     });
   }

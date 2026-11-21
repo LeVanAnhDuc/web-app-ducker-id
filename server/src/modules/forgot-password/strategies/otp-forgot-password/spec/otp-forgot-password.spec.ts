@@ -4,7 +4,7 @@ import type { OtpForgotPasswordRepository } from "../../../repositories/otp-forg
 import type { ResetTokenRepository } from "../../../repositories/reset-token.repository";
 import type { OtpForgotPasswordStrategyDeps } from "../deps";
 // common
-import { BadRequestError, UnauthorizedError } from "@/common/exceptions";
+import { BadRequestError, UnauthorizedError } from "@/exceptions";
 // others
 import { EmailType } from "@/types/services/email";
 import {

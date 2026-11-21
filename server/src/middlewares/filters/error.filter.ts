@@ -2,7 +2,7 @@
 import type { NextFunction, Request, Response } from "express";
 import type { ValidationErrorItem } from "@/types/common";
 // common
-import { ErrorResponse } from "@/common/exceptions";
+import { AppError } from "@/exceptions";
 import { STATUS_CODES } from "@/common/http";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
@@ -35,10 +35,10 @@ export const handleNotFound = (
   res: Response,
   next: NextFunction
 ) => {
-  const error = new ErrorResponse({
+  const error = new AppError({
     code: ERROR_CODES.NOT_FOUND,
     status: STATUS_CODES.NOT_FOUND,
-    i18nMessage: (t) => t("common:errors.notFound")
+    key: "common:errors.notFound"
   });
 
   next(error);
@@ -113,8 +113,8 @@ export const handleError = (
     return res.status(err.status).json(body);
   }
 
-  if (err instanceof ErrorResponse) {
-    const message = err.i18nMessage ? err.i18nMessage(req.t) : err.message;
+  if (err instanceof AppError) {
+    const message = err.key ? req.t(err.key, err.params) : err.message;
     const body: ErrorPattern = {
       code: err.code,
       message,

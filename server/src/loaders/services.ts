@@ -10,7 +10,7 @@ import { createQueueModule } from "@/services/queue/queue.module";
 export interface AppServices {
   emailDispatcher: EmailDispatcher;
   notificationDispatcher: NotificationDispatcher;
-  bullBoardRouter: Router | null;
+  bullBoardRouter: Router;
   close: () => Promise<void>;
 }
 
@@ -31,7 +31,7 @@ export const createServices = (): AppServices => {
       notificationDelivery,
       notificationQueue
     ),
-    bullBoardRouter: bullBoardAdapter?.getRouter() ?? null,
+    bullBoardRouter: bullBoardAdapter.getRouter(),
     close: closeQueues
   };
 };

@@ -13,7 +13,7 @@ import type { CategoryRepository } from "../category.repository";
 import WebAppCategoryModel from "@/models/web-app-category";
 import WebAppModel from "@/models/web-app";
 // common
-import { ConflictRequestError } from "@/common/exceptions";
+import { ConflictRequestError } from "@/exceptions";
 // modules
 import { CATEGORY_NAME_COLLATION } from "../../constants";
 // others
@@ -27,7 +27,7 @@ const DISPLAY_ORDER = { sortOrder: 1, _id: 1 } as const;
 const rethrowNameTaken = (err: unknown): never => {
   if (isDuplicateKeyError(err) && getDuplicatedField(err) === "name.en") {
     throw new ConflictRequestError({
-      i18nMessage: (t) => t("category:errors.nameTaken"),
+      key: "category:errors.nameTaken",
       code: ERROR_CODES.CATEGORY_NAME_TAKEN
     });
   }

@@ -1,7 +1,7 @@
 // types
 import type { UserService } from "@/modules/user/services";
 // common
-import { ConflictRequestError } from "@/common/exceptions";
+import { ConflictRequestError } from "@/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
@@ -15,7 +15,7 @@ export class EmailAvailableGuard {
     if (exists) {
       Logger.warn("Email already exists", { email });
       throw new ConflictRequestError({
-        i18nMessage: (t) => t("signup:errors.emailAlreadyExists"),
+        key: "signup:errors.emailAlreadyExists",
         code: ERROR_CODES.SIGNUP_EMAIL_EXISTS
       });
     }

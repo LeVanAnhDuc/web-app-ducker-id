@@ -1,7 +1,7 @@
 // types
 import type { ResetTokenRepository } from "../repositories/reset-token.repository";
 // common
-import { UnauthorizedError } from "@/common/exceptions";
+import { UnauthorizedError } from "@/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
@@ -17,7 +17,7 @@ export class ResetTokenValidGuard {
       email
     });
     throw new UnauthorizedError({
-      i18nMessage: (t) => t("forgotPassword:errors.invalidResetToken"),
+      key: "forgotPassword:errors.invalidResetToken",
       code: ERROR_CODES.FORGOT_PASSWORD_INVALID_RESET_TOKEN
     });
   }

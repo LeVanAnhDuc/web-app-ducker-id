@@ -2,7 +2,7 @@
 import type { NotificationItemDto } from "../dtos";
 import type { NotificationRepository } from "../repository/notification.repository";
 // common
-import { NotFoundError } from "@/common/exceptions";
+import { NotFoundError } from "@/exceptions";
 // dtos
 import { toNotificationItemDto } from "../dtos";
 // others
@@ -17,7 +17,7 @@ export const markRead = async (
   const doc = await repo.markRead(id, userId);
   if (!doc) {
     throw new NotFoundError({
-      i18nMessage: (t) => t("notification:errors.notFound"),
+      key: "notification:errors.notFound",
       code: ERROR_CODES.NOTIFICATION_NOT_FOUND
     });
   }

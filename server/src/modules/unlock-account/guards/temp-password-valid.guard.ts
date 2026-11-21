@@ -1,7 +1,7 @@
 // types
 import type { UnlockAccountRepository } from "../repository/unlock-account.repository";
 // common
-import { UnauthorizedError } from "@/common/exceptions";
+import { UnauthorizedError } from "@/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
@@ -27,7 +27,7 @@ export class TempPasswordValidGuard {
       email
     });
     throw new UnauthorizedError({
-      i18nMessage: (t) => t("unlockAccount:errors.invalidTempPassword"),
+      key: "unlockAccount:errors.invalidTempPassword",
       code: ERROR_CODES.UNLOCK_INVALID_TEMP_PASSWORD
     });
   }

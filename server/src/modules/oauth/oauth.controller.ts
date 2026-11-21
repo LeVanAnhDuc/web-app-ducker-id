@@ -3,7 +3,7 @@ import type { Request, Response } from "express";
 import type { TokenRequest } from "./types";
 import type { OAuthService } from "./services";
 // common
-import { OAuthError } from "@/common/exceptions";
+import { OAuthError } from "@/exceptions";
 import { STATUS_CODES } from "@/common/http";
 // others
 import ENV from "@/constants/env";

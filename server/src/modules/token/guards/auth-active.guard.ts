@@ -1,7 +1,7 @@
 // types
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 // common
-import { ForbiddenError } from "@/common/exceptions";
+import { ForbiddenError } from "@/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
@@ -16,7 +16,7 @@ export class AuthActiveGuard {
         authId
       });
       throw new ForbiddenError({
-        i18nMessage: (t) => t("login:errors.invalidRefreshToken"),
+        key: "login:errors.invalidRefreshToken",
         code: ERROR_CODES.REFRESH_TOKEN_INVALID
       });
     }

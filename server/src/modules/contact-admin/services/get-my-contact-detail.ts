@@ -2,7 +2,7 @@
 import type { ContactDetailItemDto } from "../dtos";
 import type { ContactRepository } from "../repository/contact-admin.repository";
 // common
-import { NotFoundError } from "@/common/exceptions";
+import { NotFoundError } from "@/exceptions";
 // dtos
 import { toContactDetailItemDto } from "../dtos";
 // others
@@ -19,7 +19,7 @@ export const getMyContactDetail = async (
     // Own vs. other-user's contact are indistinguishable to the caller —
     // both surface as 404 CONTACT_NOT_FOUND to avoid leaking existence.
     throw new NotFoundError({
-      i18nMessage: (t) => t("contactAdmin:errors.notFound"),
+      key: "contactAdmin:errors.notFound",
       code: ERROR_CODES.CONTACT_NOT_FOUND
     });
   }

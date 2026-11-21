@@ -4,7 +4,7 @@ import type { OtpSignupRepository } from "../../repositories/otp-signup.reposito
 import type { SessionSignupRepository } from "../../repositories/session-signup.repository";
 import type { SignupServiceDeps } from "../deps";
 // common
-import { BadRequestError, ConflictRequestError } from "@/common/exceptions";
+import { BadRequestError, ConflictRequestError } from "@/exceptions";
 // others
 import { EmailType } from "@/types/services/email";
 import { CooldownGuard, EmailAvailableGuard } from "../../guards";

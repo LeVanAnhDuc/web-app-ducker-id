@@ -5,7 +5,7 @@ import type { CategoryMoveDirection } from "../types";
 import type { AdminCategoryDto } from "../dtos";
 import type { CategoryServiceDeps } from "./deps";
 // common
-import { NotFoundError } from "@/common/exceptions";
+import { NotFoundError } from "@/exceptions";
 // modules
 import { CATEGORY_MOVE_DIRECTIONS } from "../constants";
 // others
@@ -33,7 +33,7 @@ export const move = async (
       const from = ordered.indexOf(id);
       if (from === -1) {
         throw new NotFoundError({
-          i18nMessage: (t) => t("category:errors.notFound"),
+          key: "category:errors.notFound",
           code: ERROR_CODES.CATEGORY_NOT_FOUND
         });
       }

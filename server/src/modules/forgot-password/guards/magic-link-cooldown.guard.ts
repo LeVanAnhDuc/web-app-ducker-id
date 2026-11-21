@@ -1,7 +1,7 @@
 // types
 import type { MagicLinkForgotPasswordRepository } from "../repositories/magic-link-forgot-password.repository";
 // common
-import { BadRequestError } from "@/common/exceptions";
+import { BadRequestError } from "@/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
@@ -21,8 +21,8 @@ export class MagicLinkCooldownGuard {
       remaining
     });
     throw new BadRequestError({
-      i18nMessage: (t) =>
-        t("forgotPassword:errors.magicLinkCooldown", { seconds: remaining }),
+      key: "forgotPassword:errors.magicLinkCooldown",
+      params: { seconds: remaining },
       code: ERROR_CODES.FORGOT_PASSWORD_MAGIC_LINK_COOLDOWN
     });
   }

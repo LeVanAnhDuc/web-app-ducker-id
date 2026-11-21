@@ -7,7 +7,7 @@ import type { UserService } from "@/modules/user/services";
 import type { RefreshTokenValidGuard } from "../../guards";
 import type { RevokedRefreshTokenRepository } from "../../repository/revoked-refresh-token.repository";
 // common
-import { ForbiddenError, UnauthorizedError } from "@/common/exceptions";
+import { ForbiddenError, UnauthorizedError } from "@/exceptions";
 // modules
 import { generateAuthTokensResponse } from "@/modules/authentication/helpers";
 // others

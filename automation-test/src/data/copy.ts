@@ -186,7 +186,7 @@ export const clientLiteral = {
  * request). Source in each comment.
  */
 export const serverLiteral = {
-  /** server/src/loaders/health.loader.ts — the success message of each probe. */
+  /** server/src/loaders/health.ts — the success message of each probe. */
   health: {
     all: "All services are healthy",
     mongodb: "MongoDB is healthy",

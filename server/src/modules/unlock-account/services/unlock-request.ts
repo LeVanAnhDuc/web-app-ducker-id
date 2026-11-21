@@ -4,7 +4,7 @@ import type { UnlockRequestBody } from "../types";
 import type { UnlockRequestDto } from "../dtos";
 import type { UnlockAccountServiceDeps } from "./deps";
 // common
-import { BadRequestError } from "@/common/exceptions";
+import { BadRequestError } from "@/exceptions";
 // dtos
 import { toUnlockRequestDto } from "../dtos";
 // others
@@ -43,7 +43,7 @@ export const unlockRequest = async (
       authId: auth._id
     });
     throw new BadRequestError({
-      i18nMessage: (t) => t("unlockAccount:errors.accountDisabled"),
+      key: "unlockAccount:errors.accountDisabled",
       code: ERROR_CODES.UNLOCK_ACCOUNT_DISABLED
     });
   }
@@ -55,7 +55,7 @@ export const unlockRequest = async (
       authId: auth._id
     });
     throw new BadRequestError({
-      i18nMessage: (t) => t("unlockAccount:errors.accountNotLocked"),
+      key: "unlockAccount:errors.accountNotLocked",
       code: ERROR_CODES.UNLOCK_ACCOUNT_NOT_LOCKED
     });
   }

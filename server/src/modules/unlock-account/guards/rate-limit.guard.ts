@@ -1,7 +1,7 @@
 // types
 import type { UnlockAccountRepository } from "../repository/unlock-account.repository";
 // common
-import { TooManyRequestsError } from "@/common/exceptions";
+import { TooManyRequestsError } from "@/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
@@ -18,7 +18,7 @@ export class RateLimitGuard {
         requestCount
       });
       throw new TooManyRequestsError({
-        i18nMessage: (t) => t("unlockAccount:errors.unlockRateLimit"),
+        key: "unlockAccount:errors.unlockRateLimit",
         code: ERROR_CODES.UNLOCK_RATE_LIMIT
       });
     }

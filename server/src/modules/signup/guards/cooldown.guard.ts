@@ -1,7 +1,7 @@
 // types
 import type { OtpSignupRepository } from "../repositories/otp-signup.repository";
 // common
-import { BadRequestError } from "@/common/exceptions";
+import { BadRequestError } from "@/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
@@ -16,8 +16,8 @@ export class CooldownGuard {
 
     Logger.warn("OTP cooldown not expired", { email, remaining });
     throw new BadRequestError({
-      i18nMessage: (t) =>
-        t("signup:errors.resendCoolDown", { seconds: remaining }),
+      key: "signup:errors.resendCoolDown",
+      params: { seconds: remaining },
       code: ERROR_CODES.SIGNUP_OTP_COOLDOWN
     });
   }

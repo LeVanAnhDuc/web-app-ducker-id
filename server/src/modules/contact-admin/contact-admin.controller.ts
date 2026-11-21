@@ -1,5 +1,4 @@
 // types
-import type { Response } from "express";
 import type { ContactAdminService } from "./services";
 import type {
   SubmitContactRequest,
@@ -8,79 +7,31 @@ import type {
   UpdateContactStatusRequest,
   MyContactsQueryRequest
 } from "./types";
-// common
-import { OkSuccess, CreatedSuccess } from "@/common/responses";
 // others
 import { RequestContext } from "@/utils/request-context";
 
 export class ContactAdminController {
   constructor(private readonly service: ContactAdminService) {}
 
-  submit = async (req: SubmitContactRequest, res: Response): Promise<void> => {
-    const data = await this.service.submitContact(req.body, req.ip ?? null);
-    new CreatedSuccess({
-      data,
-      message: "contactAdmin:success.submitted"
-    }).send(req, res);
-  };
+  submit = async (req: SubmitContactRequest) =>
+    this.service.submitContact(req.body, req.ip ?? null);
 
-  getContactList = async (
-    req: AdminContactsQueryRequest,
-    res: Response
-  ): Promise<void> => {
-    const data = await this.service.getContactList(req.query);
-    new OkSuccess({
-      data,
-      message: "contactAdmin:success.getContactList"
-    }).send(req, res);
-  };
+  getContactList = async (req: AdminContactsQueryRequest) =>
+    this.service.getContactList(req.query);
 
-  getContactDetail = async (
-    req: ContactIdParamRequest,
-    res: Response
-  ): Promise<void> => {
-    const data = await this.service.getContactDetail(req.params.id);
-    new OkSuccess({
-      data,
-      message: "contactAdmin:success.getContactDetail"
-    }).send(req, res);
-  };
+  getContactDetail = async (req: ContactIdParamRequest) =>
+    this.service.getContactDetail(req.params.id);
 
-  updateContactStatus = async (
-    req: UpdateContactStatusRequest,
-    res: Response
-  ): Promise<void> => {
-    const data = await this.service.updateContactStatus(
-      req.params.id,
-      req.body.status
-    );
-    new OkSuccess({
-      data,
-      message: "contactAdmin:success.updateContactStatus"
-    }).send(req, res);
-  };
+  updateContactStatus = async (req: UpdateContactStatusRequest) =>
+    this.service.updateContactStatus(req.params.id, req.body.status);
 
-  getMyContacts = async (
-    req: MyContactsQueryRequest,
-    res: Response
-  ): Promise<void> => {
+  getMyContacts = async (req: MyContactsQueryRequest) => {
     const userId = RequestContext.requireUserId();
-    const data = await this.service.getMyContacts(userId, req.query);
-    new OkSuccess({
-      data,
-      message: "contactAdmin:success.getMyContacts"
-    }).send(req, res);
+    return this.service.getMyContacts(userId, req.query);
   };
 
-  getMyContactDetail = async (
-    req: ContactIdParamRequest,
-    res: Response
-  ): Promise<void> => {
+  getMyContactDetail = async (req: ContactIdParamRequest) => {
     const userId = RequestContext.requireUserId();
-    const data = await this.service.getMyContactDetail(req.params.id, userId);
-    new OkSuccess({
-      data,
-      message: "contactAdmin:success.getMyContactDetail"
-    }).send(req, res);
+    return this.service.getMyContactDetail(req.params.id, userId);
   };
 }

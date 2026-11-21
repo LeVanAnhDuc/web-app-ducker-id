@@ -3,6 +3,9 @@ import { Router } from "express";
 // types
 import type { RateLimiterMiddleware } from "@/middlewares";
 import type { RecentAppController } from "./recent-app.controller";
+// common
+import { STATUS_CODES } from "@/common/http";
+import { handle } from "@/common/responses";
 // validators
 import {
   listRecentAppsQuerySchema,
@@ -11,7 +14,6 @@ import {
 } from "@/validators/schemas/recent-app";
 // others
 import { authGuard, paramsPipe, queryPipe } from "@/middlewares";
-import { asyncHandler } from "@/utils/async-handler";
 
 export const createRecentAppUserRoutes = (
   controller: RecentAppController,
@@ -25,30 +27,33 @@ export const createRecentAppUserRoutes = (
   recentApps.get(
     "/",
     queryPipe(listRecentAppsQuerySchema),
-    asyncHandler(controller.list)
+    handle(controller.list, { message: "recentApp:success.list" })
   );
   // Before "/:appId" so the literal segment is not read as an app id.
   recentApps.get(
     "/stats",
     queryPipe(recentAppsStatsQuerySchema),
-    asyncHandler(controller.stats)
+    handle(controller.stats, { message: "recentApp:success.stats" })
   );
-  recentApps.delete("/", asyncHandler(controller.clear));
+  recentApps.delete(
+    "/",
+    handle(controller.clear, { status: STATUS_CODES.NO_CONTENT })
+  );
   recentApps.post(
     "/:appId",
     rl.recordRecentAppByUser,
     paramsPipe(recentAppIdParamSchema),
-    asyncHandler(controller.record)
+    handle(controller.record, { status: STATUS_CODES.NO_CONTENT })
   );
   recentApps.delete(
     "/:appId",
     paramsPipe(recentAppIdParamSchema),
-    asyncHandler(controller.hide)
+    handle(controller.hide, { status: STATUS_CODES.NO_CONTENT })
   );
   recentApps.post(
     "/:appId/restore",
     paramsPipe(recentAppIdParamSchema),
-    asyncHandler(controller.restore)
+    handle(controller.restore, { status: STATUS_CODES.NO_CONTENT })
   );
 
   router.use("/users/me/recent-apps", recentApps);

@@ -3,6 +3,8 @@ import { Router } from "express";
 // types
 import type { RateLimiterMiddleware } from "@/middlewares";
 import type { UnlockAccountController } from "./unlock-account.controller";
+// common
+import { handle } from "@/common/responses";
 // validators
 import {
   unlockRequestSchema,
@@ -10,7 +12,6 @@ import {
 } from "@/validators/schemas/unlock-account";
 // others
 import { bodyPipe } from "@/middlewares";
-import { asyncHandler } from "@/utils/async-handler";
 
 export const createUnlockAccountRoutes = (
   controller: UnlockAccountController,
@@ -22,14 +23,18 @@ export const createUnlockAccountRoutes = (
   unlock.post(
     "/request",
     bodyPipe(unlockRequestSchema),
-    asyncHandler(controller.unlockRequest)
+    handle(controller.unlockRequest, {
+      message: "unlockAccount:success.unlockEmailSent"
+    })
   );
 
   unlock.post(
     "/verify",
     rl.loginByIp,
     bodyPipe(unlockVerifySchema),
-    asyncHandler(controller.unlockVerify)
+    handle(controller.unlockVerify, {
+      message: "unlockAccount:success.accountUnlocked"
+    })
   );
 
   router.use("/auth/unlock", unlock);

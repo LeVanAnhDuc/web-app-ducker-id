@@ -3,7 +3,7 @@ import { AsyncLocalStorage } from "async_hooks";
 // types
 import type { RequestHandler } from "express";
 // common
-import { UnauthorizedError } from "@/common/exceptions";
+import { UnauthorizedError } from "@/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 
@@ -43,7 +43,7 @@ export const RequestContext = {
     const user = storage.getStore()?.user;
     if (!user) {
       throw new UnauthorizedError({
-        i18nMessage: (t) => t("common:errors.unauthorized"),
+        key: "common:errors.unauthorized",
         code: ERROR_CODES.AUTH_MISSING_TOKEN
       });
     }
@@ -54,7 +54,7 @@ export const RequestContext = {
     const user = storage.getStore()?.user;
     if (!user) {
       throw new UnauthorizedError({
-        i18nMessage: (t) => t("common:errors.unauthorized"),
+        key: "common:errors.unauthorized",
         code: ERROR_CODES.AUTH_MISSING_TOKEN
       });
     }
@@ -65,7 +65,7 @@ export const RequestContext = {
     const user = storage.getStore()?.user;
     if (!user) {
       throw new UnauthorizedError({
-        i18nMessage: (t) => t("common:errors.unauthorized"),
+        key: "common:errors.unauthorized",
         code: ERROR_CODES.AUTH_MISSING_TOKEN
       });
     }

@@ -3,7 +3,7 @@ import type { ContactRepository } from "../../repository/contact-admin.repositor
 // modules
 import { ContactAdminService } from "../";
 import { CONTACT_STATUSES, CONTACT_PRIORITIES } from "../../constants";
-import { NotFoundError } from "@/common/exceptions";
+import { NotFoundError } from "@/exceptions";
 import { RequestContext } from "@/utils/request-context";
 
 const USER = "507f1f77bcf86cd799439011";

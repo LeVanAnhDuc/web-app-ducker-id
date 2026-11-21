@@ -1,7 +1,7 @@
 // service
 import { EntitlementAdminService } from "../";
 // common
-import { NotFoundError } from "@/common/exceptions";
+import { NotFoundError } from "@/exceptions";
 // others
 import {
   ADMIN_ID,

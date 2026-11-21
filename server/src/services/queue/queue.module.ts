@@ -23,9 +23,9 @@ const QUEUE_NAMES = {
 export const BULL_BOARD_PATH = "/admin/queues";
 
 interface QueueModuleResult {
-  emailQueue: QueueService<EmailJobData> | null;
-  notificationQueue: QueueService<NotificationJobData> | null;
-  bullBoardAdapter: ExpressAdapter | null;
+  emailQueue: QueueService<EmailJobData>;
+  notificationQueue: QueueService<NotificationJobData>;
+  bullBoardAdapter: ExpressAdapter;
   closeQueues: () => Promise<void>;
 }
 
@@ -34,18 +34,6 @@ export const createQueueModule = (
   notificationDelivery: NotificationDeliveryService
 ): QueueModuleResult => {
   const connection = buildQueueConnection();
-
-  if (!connection) {
-    Logger.warn(
-      "Queue system disabled: Redis configuration not found. Using direct execution fallback."
-    );
-    return {
-      emailQueue: null,
-      notificationQueue: null,
-      bullBoardAdapter: null,
-      closeQueues: async () => {}
-    };
-  }
 
   const emailQueue = new QueueService<EmailJobData>({
     name: QUEUE_NAMES.EMAIL,

@@ -1,7 +1,7 @@
 // service
 import { CategoryService } from "../";
 // common
-import { BadRequestError, ConflictRequestError } from "@/common/exceptions";
+import { BadRequestError, ConflictRequestError } from "@/exceptions";
 // others
 import {
   CATEGORY_ID,

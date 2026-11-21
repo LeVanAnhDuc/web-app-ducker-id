@@ -3,7 +3,7 @@ import type { CreateCategoryBody } from "../types";
 import type { AdminCategoryDto } from "../dtos";
 import type { CategoryServiceDeps } from "./deps";
 // common
-import { ConflictRequestError } from "@/common/exceptions";
+import { ConflictRequestError } from "@/exceptions";
 // dtos
 import { toAdminCategoryDto } from "../dtos";
 // others
@@ -18,7 +18,7 @@ export const create = async (
 
   if (await deps.categoryRepo.existsByNameEn(name.en)) {
     throw new ConflictRequestError({
-      i18nMessage: (t) => t("category:errors.nameTaken"),
+      key: "category:errors.nameTaken",
       code: ERROR_CODES.CATEGORY_NAME_TAKEN
     });
   }

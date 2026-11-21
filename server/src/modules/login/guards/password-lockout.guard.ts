@@ -1,7 +1,7 @@
 // types
 import type { FailedAttemptsRepository } from "../repositories/failed-attempts.repository";
 // common
-import { TooManyRequestsError } from "@/common/exceptions";
+import { TooManyRequestsError } from "@/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
@@ -24,11 +24,11 @@ export class PasswordLockoutGuard {
     });
 
     throw new TooManyRequestsError({
-      i18nMessage: (t) =>
-        t("login:errors.accountLocked", {
-          attempts: attemptCount,
-          seconds: remainingSeconds
-        }),
+      key: "login:errors.accountLocked",
+      params: {
+        attempts: attemptCount,
+        seconds: remainingSeconds
+      },
       code: ERROR_CODES.LOGIN_ACCOUNT_LOCKED
     });
   }

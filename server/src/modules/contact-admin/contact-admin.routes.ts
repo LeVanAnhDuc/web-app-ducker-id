@@ -3,6 +3,9 @@ import { Router } from "express";
 // types
 import type { RateLimiterMiddleware } from "@/middlewares";
 import type { ContactAdminController } from "./contact-admin.controller";
+// common
+import { STATUS_CODES } from "@/common/http";
+import { handle } from "@/common/responses";
 // validators
 import {
   submitContactSchema,
@@ -20,7 +23,6 @@ import {
   paramsPipe,
   queryPipe
 } from "@/middlewares";
-import { asyncHandler } from "@/utils/async-handler";
 
 export const createContactRoutes = (
   controller: ContactAdminController,
@@ -34,7 +36,10 @@ export const createContactRoutes = (
     rl.contactByIp,
     optionalAuthGuard,
     bodyPipe(submitContactSchema),
-    asyncHandler(controller.submit)
+    handle(controller.submit, {
+      status: STATUS_CODES.CREATED,
+      message: "contactAdmin:success.submitted"
+    })
   );
 
   router.use("/contact", contact);
@@ -52,20 +57,26 @@ export const createAdminContactsRoutes = (
   adminContacts.get(
     "/",
     queryPipe(adminListContactsQuerySchema),
-    asyncHandler(controller.getContactList)
+    handle(controller.getContactList, {
+      message: "contactAdmin:success.getContactList"
+    })
   );
 
   adminContacts.get(
     "/:id",
     paramsPipe(contactIdParamSchema),
-    asyncHandler(controller.getContactDetail)
+    handle(controller.getContactDetail, {
+      message: "contactAdmin:success.getContactDetail"
+    })
   );
 
   adminContacts.patch(
     "/:id/status",
     paramsPipe(contactIdParamSchema),
     bodyPipe(updateContactStatusSchema),
-    asyncHandler(controller.updateContactStatus)
+    handle(controller.updateContactStatus, {
+      message: "contactAdmin:success.updateContactStatus"
+    })
   );
 
   router.use("/admin/contacts", adminContacts);
@@ -83,13 +94,17 @@ export const createMyContactsRoutes = (
   myContacts.get(
     "/",
     queryPipe(myContactsQuerySchema),
-    asyncHandler(controller.getMyContacts)
+    handle(controller.getMyContacts, {
+      message: "contactAdmin:success.getMyContacts"
+    })
   );
 
   myContacts.get(
     "/:id",
     paramsPipe(contactIdParamSchema),
-    asyncHandler(controller.getMyContactDetail)
+    handle(controller.getMyContactDetail, {
+      message: "contactAdmin:success.getMyContactDetail"
+    })
   );
 
   router.use("/contacts", myContacts);

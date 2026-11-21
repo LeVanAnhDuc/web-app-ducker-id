@@ -2,7 +2,7 @@
 import type { DeleteImpactDto } from "../dtos";
 import type { CategoryServiceDeps } from "./deps";
 // common
-import { NotFoundError } from "@/common/exceptions";
+import { NotFoundError } from "@/exceptions";
 // dtos
 import { toDeleteImpactDto } from "../dtos";
 // others
@@ -15,7 +15,7 @@ export const deleteImpact = async (
   const category = await deps.categoryRepo.findById(id);
   if (!category) {
     throw new NotFoundError({
-      i18nMessage: (t) => t("category:errors.notFound"),
+      key: "category:errors.notFound",
       code: ERROR_CODES.CATEGORY_NOT_FOUND
     });
   }

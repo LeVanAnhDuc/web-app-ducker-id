@@ -42,6 +42,10 @@ axiosInstance.interceptors.request.use(
 
     if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
 
+    // The API translates messages by Accept-Language; the browser's own header
+    // follows its UI language, not the locale the user picked in the app.
+    config.headers["Accept-Language"] = getCurrentLocale();
+
     return config;
   },
   (error) => Promise.reject(error)

@@ -15,11 +15,8 @@ import {
 import { PAGINATION } from "@/common/pagination";
 import { SORT_ORDER_VALUES } from "@/common/sort";
 // validators
-import {
-  OBJECTID_PATTERN,
-  SEARCH_MAX_LENGTH,
-  isSupportedTimeZone
-} from "@/validators/constants";
+import { OBJECTID_PATTERN, SEARCH_MAX_LENGTH } from "@/validators/constants";
+import { isSupportedTimeZone } from "@/validators/utils";
 
 const STATUS_VALUES = Object.values(LOGIN_STATUSES);
 const METHOD_VALUES = Object.values(LOGIN_METHODS);

@@ -3,6 +3,8 @@ import { Router } from "express";
 // types
 import type { RateLimiterMiddleware } from "@/middlewares";
 import type { UserController } from "./user.controller";
+// common
+import { handle } from "@/common/responses";
 // validators
 import {
   updateProfileSchema,
@@ -18,7 +20,6 @@ import {
   paramsPipe,
   queryPipe
 } from "@/middlewares";
-import { asyncHandler } from "@/utils/async-handler";
 
 export const createUserRoutes = (
   controller: UserController,
@@ -27,20 +28,28 @@ export const createUserRoutes = (
   const router = Router();
   const users = Router();
 
-  users.get("/me", authGuard, asyncHandler(controller.getMyProfile));
+  users.get(
+    "/me",
+    authGuard,
+    handle(controller.getMyProfile, { message: "user:success.getProfile" })
+  );
 
   users.patch(
     "/me",
     rl.updateProfileByIp,
     authGuard,
     bodyPipe(updateProfileSchema),
-    asyncHandler(controller.updateMyProfile)
+    handle(controller.updateMyProfile, {
+      message: "user:success.updateProfile"
+    })
   );
 
   users.get(
     "/:id",
     paramsPipe(getPublicProfileSchema),
-    asyncHandler(controller.getPublicProfile)
+    handle(controller.getPublicProfile, {
+      message: "user:success.getPublicProfile"
+    })
   );
 
   router.use("/users", users);
@@ -59,26 +68,28 @@ export const createUserAdminRoutes = (
   adminUsers.get(
     "/",
     queryPipe(adminUsersQuerySchema),
-    asyncHandler(controller.getAdminUsers)
+    handle(controller.getAdminUsers, { message: "user:success.getAdminUsers" })
   );
 
   adminUsers.patch(
     "/:id/lock",
     rl.adminUserMutationByIpAndUser,
     paramsPipe(adminUserIdParamsSchema),
-    asyncHandler(controller.lockUser)
+    handle(controller.lockUser, { message: "user:success.lockUser" })
   );
   adminUsers.patch(
     "/:id/unlock",
     rl.adminUserMutationByIpAndUser,
     paramsPipe(adminUserIdParamsSchema),
-    asyncHandler(controller.unlockUser)
+    handle(controller.unlockUser, { message: "user:success.unlockUser" })
   );
   adminUsers.post(
     "/:id/reset-password",
     rl.adminUserMutationByIpAndUser,
     paramsPipe(adminUserIdParamsSchema),
-    asyncHandler(controller.resetUserPassword)
+    handle(controller.resetUserPassword, {
+      message: "user:success.resetPassword"
+    })
   );
 
   router.use("/admin/users", adminUsers);

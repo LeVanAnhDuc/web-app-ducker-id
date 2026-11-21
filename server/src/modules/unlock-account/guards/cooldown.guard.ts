@@ -1,7 +1,7 @@
 // types
 import type { UnlockAccountRepository } from "../repository/unlock-account.repository";
 // common
-import { BadRequestError } from "@/common/exceptions";
+import { BadRequestError } from "@/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { Logger } from "@/libs/logger";
@@ -19,8 +19,8 @@ export class CooldownGuard {
       remainingSeconds: remaining
     });
     throw new BadRequestError({
-      i18nMessage: (t) =>
-        t("unlockAccount:errors.unlockCooldown", { seconds: remaining }),
+      key: "unlockAccount:errors.unlockCooldown",
+      params: { seconds: remaining },
       code: ERROR_CODES.UNLOCK_COOLDOWN
     });
   }

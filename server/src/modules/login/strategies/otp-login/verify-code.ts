@@ -5,7 +5,7 @@ import type { OtpVerifyBody } from "../../types";
 import type { LoginResponseDto } from "../../dtos";
 import type { OtpLoginStrategyDeps } from "./deps";
 // common
-import { TooManyRequestsError, UnauthorizedError } from "@/common/exceptions";
+import { TooManyRequestsError, UnauthorizedError } from "@/exceptions";
 // modules
 import { LOGIN_METHODS } from "@/modules/login-history/constants";
 // others
@@ -28,17 +28,17 @@ const handleInvalidOtp = async (
 
   if (remaining <= 0) {
     throw new TooManyRequestsError({
-      i18nMessage: (t) =>
-        t("login:errors.otpLocked", {
-          minutes: LOGIN_OTP_CONFIG.LOCKOUT_DURATION_MINUTES
-        }),
+      key: "login:errors.otpLocked",
+      params: {
+        minutes: LOGIN_OTP_CONFIG.LOCKOUT_DURATION_MINUTES
+      },
       code: ERROR_CODES.LOGIN_OTP_LOCKED
     });
   }
 
   throw new UnauthorizedError({
-    i18nMessage: (t) =>
-      t("login:errors.invalidOtpWithRemaining", { remaining }),
+    key: "login:errors.invalidOtpWithRemaining",
+    params: { remaining },
     code: ERROR_CODES.LOGIN_OTP_INVALID
   });
 };

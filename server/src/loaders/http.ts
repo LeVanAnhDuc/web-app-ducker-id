@@ -12,15 +12,13 @@ import { createHealthRouter } from "./health";
 
 interface HttpParts {
   redis: RedisClientType;
-  bullBoardRouter: Router | null;
+  bullBoardRouter: Router;
   oauthRouter: Router;
   apiRouters: Router[];
 }
 
 export const mountHttp = (app: Express, parts: HttpParts): void => {
-  if (parts.bullBoardRouter) {
-    app.use(BULL_BOARD_PATH, adminGuard, parts.bullBoardRouter);
-  }
+  app.use(BULL_BOARD_PATH, adminGuard, parts.bullBoardRouter);
 
   // OIDC discovery must sit at the origin root and `/oauth/*` is a public
   // path every registered satellite app has hard-coded, so this router is

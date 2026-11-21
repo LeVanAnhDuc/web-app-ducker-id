@@ -2,7 +2,7 @@
 import type { UserRole } from "@/modules/user/types";
 import type { EntitlementAdminServiceDeps } from "../deps";
 // common
-import { NotFoundError } from "@/common/exceptions";
+import { NotFoundError } from "@/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 
@@ -18,7 +18,7 @@ export const resolveUsers = async (
     const row = byId.get(userId);
     if (!row) {
       throw new NotFoundError({
-        i18nMessage: (t) => t("entitlement:errors.userNotFound"),
+        key: "entitlement:errors.userNotFound",
         code: ERROR_CODES.ENTITLEMENT_USER_NOT_FOUND
       });
     }

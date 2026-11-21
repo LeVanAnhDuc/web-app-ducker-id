@@ -7,7 +7,7 @@ import type { Response } from "express";
 import type { SessionService } from "@/modules/session/services";
 import type { TokenService } from "@/modules/token/services";
 // common
-import { UnauthorizedError } from "@/common/exceptions";
+import { UnauthorizedError } from "@/exceptions";
 // others
 import { RequestContext } from "@/utils/request-context";
 import { makeMockRequest } from "@test/helpers/request.helper";

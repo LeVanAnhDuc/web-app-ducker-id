@@ -18,7 +18,7 @@ import type { WebAppRepository } from "../web-app.repository";
 // models
 import WebAppModel from "@/models/web-app";
 // common
-import { ConflictRequestError } from "@/common/exceptions";
+import { ConflictRequestError } from "@/exceptions";
 // modules
 import { buildWebAppFilter } from "../../helpers";
 import { buildAccessFilter } from "@/modules/entitlement/entitlement.helper";
@@ -139,7 +139,7 @@ export class MongoWebAppRepository implements WebAppRepository {
       } catch (err) {
         if (isDuplicateKeyError(err) && getDuplicatedField(err) === "name") {
           throw new ConflictRequestError({
-            i18nMessage: (t) => t("webApp:errors.nameExists"),
+            key: "webApp:errors.nameExists",
             code: ERROR_CODES.WEB_APP_NAME_EXISTS
           });
         }
@@ -173,7 +173,7 @@ export class MongoWebAppRepository implements WebAppRepository {
       } catch (err) {
         if (isDuplicateKeyError(err) && getDuplicatedField(err) === "name") {
           throw new ConflictRequestError({
-            i18nMessage: (t) => t("webApp:errors.nameExists"),
+            key: "webApp:errors.nameExists",
             code: ERROR_CODES.WEB_APP_NAME_EXISTS
           });
         }

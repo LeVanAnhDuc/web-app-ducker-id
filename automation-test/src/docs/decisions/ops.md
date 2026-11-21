@@ -4,7 +4,7 @@
 
 Đọc ngày 2026-10-10:
 
-- `server/src/loaders/health.loader.ts`
+- `server/src/loaders/health.ts`
 - `server/src/libs/swagger/{swagger.setup,openapi}.ts`
 - `server/src/middlewares/filters/error.filter.ts`
 - `server/src/i18n/` (`middleware.ts`, `locales.config.ts`, `locales/{en,vi}/*.json`)
@@ -29,7 +29,7 @@
 - **Q4** (tự quyết 2026-10-14, cần user duyệt): Spec gọi API origin bằng gì sau khi bỏ `helpers/ops.ts`? → client
   `api/ops.client.ts` với context riêng trên `API_URL` (không ghép API prefix), qua fixture `ops`; các case envelope
   vẫn đi client origin qua fixture `api`. Message health (`All services are healthy`…) hardcode trong
-  `health.loader.ts`, không qua i18next → lấy từ `serverLiteral.health` trong `data/copy.ts`. → REQ-OPS-01, REQ-OPS-02
+  `health.ts` (`sendSuccess`), không qua i18next → lấy từ `serverLiteral.health` trong `data/copy.ts`. → REQ-OPS-01, REQ-OPS-02
 - **Q5** (tự quyết 2026-10-14, cần user duyệt): Security header của Helmet có phải requirement không? → **Có**:
   `docs/project-goals.md` ghi "Helmet" ở mục Security; kỳ vọng là bộ mặc định của helmet 7 (`nosniff`, `SAMEORIGIN`,
   HSTS, CSP, không `X-Powered-By`), kiểm trên API origin (client Next có thể tự thêm header riêng). → REQ-OPS-04

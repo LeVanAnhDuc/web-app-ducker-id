@@ -25,7 +25,7 @@ export const TOKEN_ERRORS = {
   JSON_WEB_TOKEN_ERROR: "JsonWebTokenError"
 } as const;
 
-const allowCrossOrigin = ENV.app.allowCrossOriginCookies === "true";
+const allowCrossOrigin = ENV.app.allowCrossOriginCookies;
 
 export const REFRESH_TOKEN_COOKIE_OPTIONS: CookieOptions = {
   httpOnly: true,

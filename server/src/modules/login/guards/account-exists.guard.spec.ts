@@ -3,7 +3,7 @@ import type { UserService } from "@/modules/user/services";
 import type { Request } from "express";
 import type { LoginAuditService } from "../services/login-audit";
 // common
-import { UnauthorizedError } from "@/common/exceptions";
+import { UnauthorizedError } from "@/exceptions";
 // others
 import { makeMockRequest } from "@test/helpers/request.helper";
 import { createUserServiceMock } from "@test/mocks/user-service.mock";
