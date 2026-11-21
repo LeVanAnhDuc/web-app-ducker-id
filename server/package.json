@@ -81,7 +81,6 @@
     "@types/ms": "2.1.0",
     "@types/node": "^24.10.1",
     "@types/react": "^19.2.14",
-    "@types/swagger-jsdoc": "^6.0.4",
     "@types/swagger-ui-express": "^4.1.8",
     "@types/ua-parser-js": "^0.7.39",
     "@types/winston": "^2.4.4",
