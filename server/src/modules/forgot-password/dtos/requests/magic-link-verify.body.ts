@@ -13,7 +13,7 @@ import { IsAppEmail } from "@/validators/decorators";
 
 const TOKEN_LENGTH = FORGOT_PASSWORD_MAGIC_LINK_CONFIG.TOKEN_LENGTH * 2;
 
-export class MagicLinkVerifyBodyDto {
+export class ForgotPasswordMagicLinkVerifyBodyDto {
   @IsAppEmail()
   email!: string;
 

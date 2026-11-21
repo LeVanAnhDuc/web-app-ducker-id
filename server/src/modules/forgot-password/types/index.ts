@@ -1,35 +1,35 @@
 // types
 import type { Request } from "express";
 import type {
-  MagicLinkSendBodyDto,
-  MagicLinkVerifyBodyDto,
-  OtpSendBodyDto,
-  OtpVerifyBodyDto,
+  ForgotPasswordMagicLinkSendBodyDto,
+  ForgotPasswordMagicLinkVerifyBodyDto,
+  ForgotPasswordOtpSendBodyDto,
+  ForgotPasswordOtpVerifyBodyDto,
   ResetPasswordBodyDto
 } from "../dtos/requests";
 
 export type FPOtpSendRequest = Request<
   Record<string, never>,
   unknown,
-  OtpSendBodyDto
+  ForgotPasswordOtpSendBodyDto
 >;
 
 export type FPOtpVerifyRequest = Request<
   Record<string, never>,
   unknown,
-  OtpVerifyBodyDto
+  ForgotPasswordOtpVerifyBodyDto
 >;
 
 export type FPMagicLinkSendRequest = Request<
   Record<string, never>,
   unknown,
-  MagicLinkSendBodyDto
+  ForgotPasswordMagicLinkSendBodyDto
 >;
 
 export type FPMagicLinkVerifyRequest = Request<
   Record<string, never>,
   unknown,
-  MagicLinkVerifyBodyDto
+  ForgotPasswordMagicLinkVerifyBodyDto
 >;
 
 export interface FPVerifyResponse {

@@ -1,7 +1,7 @@
 // validators
 import { IsAppEmail, IsOtp } from "@/validators/decorators";
 
-export class OtpVerifyBodyDto {
+export class ForgotPasswordOtpVerifyBodyDto {
   @IsAppEmail()
   email!: string;
 

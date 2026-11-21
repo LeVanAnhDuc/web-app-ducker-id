@@ -1,5 +1,5 @@
-export { MagicLinkSendBodyDto } from "./magic-link-send.body";
-export { MagicLinkVerifyBodyDto } from "./magic-link-verify.body";
-export { OtpSendBodyDto } from "./otp-send.body";
-export { OtpVerifyBodyDto } from "./otp-verify.body";
+export { ForgotPasswordMagicLinkSendBodyDto } from "./magic-link-send.body";
+export { ForgotPasswordMagicLinkVerifyBodyDto } from "./magic-link-verify.body";
+export { ForgotPasswordOtpSendBodyDto } from "./otp-send.body";
+export { ForgotPasswordOtpVerifyBodyDto } from "./otp-verify.body";
 export { ResetPasswordBodyDto } from "./reset-password.body";

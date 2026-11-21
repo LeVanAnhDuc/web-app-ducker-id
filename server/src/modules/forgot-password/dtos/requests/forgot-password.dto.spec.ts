@@ -1,9 +1,9 @@
 // modules
 import {
-  MagicLinkSendBodyDto,
-  MagicLinkVerifyBodyDto,
-  OtpSendBodyDto,
-  OtpVerifyBodyDto,
+  ForgotPasswordMagicLinkSendBodyDto,
+  ForgotPasswordMagicLinkVerifyBodyDto,
+  ForgotPasswordOtpSendBodyDto,
+  ForgotPasswordOtpVerifyBodyDto,
   ResetPasswordBodyDto
 } from "@/modules/forgot-password/dtos/requests";
 // validators
@@ -26,12 +26,12 @@ const emailCases = {
 };
 
 describe("forgot-password request DTOs match the Joi schemas", () => {
-  it("OtpSendBodyDto ≡ fpOtpSendSchema", async () => {
-    await expectDto(OtpSendBodyDto, emailCases);
+  it("ForgotPasswordOtpSendBodyDto ≡ fpOtpSendSchema", async () => {
+    await expectDto(ForgotPasswordOtpSendBodyDto, emailCases);
   });
 
-  it("OtpVerifyBodyDto ≡ fpOtpVerifySchema", async () => {
-    await expectDto(OtpVerifyBodyDto, {
+  it("ForgotPasswordOtpVerifyBodyDto ≡ fpOtpVerifySchema", async () => {
+    await expectDto(ForgotPasswordOtpVerifyBodyDto, {
       valid: { email: EMAIL, otp: "123456" },
       emailMissing: { otp: "123456" },
       emailInvalid: { email: "user", otp: "123456" },
@@ -46,12 +46,12 @@ describe("forgot-password request DTOs match the Joi schemas", () => {
     });
   });
 
-  it("MagicLinkSendBodyDto ≡ fpMagicLinkSendSchema", async () => {
-    await expectDto(MagicLinkSendBodyDto, emailCases);
+  it("ForgotPasswordMagicLinkSendBodyDto ≡ fpMagicLinkSendSchema", async () => {
+    await expectDto(ForgotPasswordMagicLinkSendBodyDto, emailCases);
   });
 
-  it("MagicLinkVerifyBodyDto ≡ fpMagicLinkVerifySchema", async () => {
-    await expectDto(MagicLinkVerifyBodyDto, {
+  it("ForgotPasswordMagicLinkVerifyBodyDto ≡ fpMagicLinkVerifySchema", async () => {
+    await expectDto(ForgotPasswordMagicLinkVerifyBodyDto, {
       valid: { email: EMAIL, token: TOKEN },
       unknownStripped: { email: EMAIL, token: TOKEN, extra: 1 },
       emailMissing: { token: TOKEN },

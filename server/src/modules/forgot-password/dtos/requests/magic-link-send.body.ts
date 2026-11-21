@@ -1,7 +1,7 @@
 // validators
 import { IsAppEmail } from "@/validators/decorators";
 
-export class MagicLinkSendBodyDto {
+export class ForgotPasswordMagicLinkSendBodyDto {
   @IsAppEmail()
   email!: string;
 }

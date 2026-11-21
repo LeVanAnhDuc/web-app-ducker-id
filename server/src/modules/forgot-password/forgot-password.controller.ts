@@ -13,10 +13,10 @@ import type { ForgotPasswordService } from "./services/forgot-password";
 import { RateLimit, Respond, ValidBody } from "@/common/routing";
 // others
 import {
-  MagicLinkSendBodyDto,
-  MagicLinkVerifyBodyDto,
-  OtpSendBodyDto,
-  OtpVerifyBodyDto,
+  ForgotPasswordMagicLinkSendBodyDto,
+  ForgotPasswordMagicLinkVerifyBodyDto,
+  ForgotPasswordOtpSendBodyDto,
+  ForgotPasswordOtpVerifyBodyDto,
   ResetPasswordBodyDto
 } from "./dtos/requests";
 
@@ -33,7 +33,7 @@ export class ForgotPasswordController {
   @RateLimit("forgotPasswordOtpByIp", "forgotPasswordOtpByEmail")
   @Respond({ message: "forgotPassword:success.otpSent" })
   sendOtp(
-    @ValidBody(OtpSendBodyDto) _body: OtpSendBodyDto,
+    @ValidBody(ForgotPasswordOtpSendBodyDto) _body: ForgotPasswordOtpSendBodyDto,
     @Req() req: FPOtpSendRequest
   ) {
     return this.service.sendOtp(req);
@@ -43,7 +43,7 @@ export class ForgotPasswordController {
   @RateLimit("forgotPasswordOtpByIp")
   @Respond({ message: "forgotPassword:success.otpVerified" })
   verifyOtp(
-    @ValidBody(OtpVerifyBodyDto) _body: OtpVerifyBodyDto,
+    @ValidBody(ForgotPasswordOtpVerifyBodyDto) _body: ForgotPasswordOtpVerifyBodyDto,
     @Req() req: FPOtpVerifyRequest
   ) {
     return this.service.verifyOtp(req);
@@ -53,7 +53,7 @@ export class ForgotPasswordController {
   @RateLimit("forgotPasswordMagicLinkByIp", "forgotPasswordMagicLinkByEmail")
   @Respond({ message: "forgotPassword:success.magicLinkSent" })
   sendMagicLink(
-    @ValidBody(MagicLinkSendBodyDto) _body: MagicLinkSendBodyDto,
+    @ValidBody(ForgotPasswordMagicLinkSendBodyDto) _body: ForgotPasswordMagicLinkSendBodyDto,
     @Req() req: FPMagicLinkSendRequest
   ) {
     return this.service.sendMagicLink(req);
@@ -63,7 +63,7 @@ export class ForgotPasswordController {
   @RateLimit("forgotPasswordMagicLinkByIp")
   @Respond({ message: "forgotPassword:success.magicLinkVerified" })
   verifyMagicLink(
-    @ValidBody(MagicLinkVerifyBodyDto) _body: MagicLinkVerifyBodyDto,
+    @ValidBody(ForgotPasswordMagicLinkVerifyBodyDto) _body: ForgotPasswordMagicLinkVerifyBodyDto,
     @Req() req: FPMagicLinkVerifyRequest
   ) {
     return this.service.verifyMagicLink(req);
