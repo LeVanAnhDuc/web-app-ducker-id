@@ -12,6 +12,7 @@ import {
   Admin,
   Auth,
   OptionalAuth,
+  PasswordChangeAuth,
   RateLimit,
   Respond,
   ValidBody,
@@ -118,7 +119,26 @@ class DocumentedFixtureController {
   }
 }
 
+@JsonController("/bridge-guards")
+@OpenAPI({ tags: ["Guards"] })
+class GuardFixtureController {
+  @Patch("/password-change")
+  @PasswordChangeAuth()
+  @OpenAPI({ summary: "Change password" })
+  passwordChange() {
+    return undefined;
+  }
+
+  @Get("/optional")
+  @OptionalAuth()
+  @OpenAPI({ summary: "Optional" })
+  optional() {
+    return undefined;
+  }
+}
+
 const paths = generatePaths([
+  GuardFixtureController,
   BodyFixtureController,
   BridgeFixtureController,
   DocumentedFixtureController
@@ -179,6 +199,18 @@ describe("routeOperation", () => {
       ref("InternalError")
     );
     expect(commonResponses.InternalError).toBeDefined();
+  });
+
+  it("derives no 403 for @PasswordChangeAuth or @OptionalAuth routes", () => {
+    const passwordChange = op("/bridge-guards/password-change", "patch");
+    const optional = op("/bridge-guards/optional", "get");
+
+    // The temporary-password session is the one this route exists for, and an
+    // optional Bearer token never refuses a request.
+    expect(passwordChange.responses["401"]).toEqual(ref("Unauthorized"));
+    expect(passwordChange.responses["403"]).toBeUndefined();
+    expect(optional.responses["403"]).toBeUndefined();
+    expect(optional.responses["401"]).toBeUndefined();
   });
 
   it("documents a 204 route with no content", () => {

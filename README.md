@@ -173,7 +173,7 @@ pnpm test                  # or test:smoke, test:e2e, test:api, test:unit — se
 │   ├── src/
 │   │   ├── app.ts server.ts    # Express wiring; boot with graceful shutdown
 │   │   ├── loaders/            # Composition root: connect infrastructure → services/queues → modules → mount HTTP
-│   │   ├── modules/            # Feature modules (controller/service/repository/swagger; only oauth keeps a routes file)
+│   │   ├── modules/            # Feature modules (controller/service/repository; only oauth keeps a routes file)
 │   │   │                       #   auth: signup, login, logout, token, unlock-account,
 │   │   │                       #   forgot-password, change-password, authentication
 │   │   │                       #   product: user, web-app, favorite, login-history,

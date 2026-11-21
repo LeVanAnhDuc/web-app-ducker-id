@@ -20,12 +20,99 @@ import { commonSchemas, commonResponses } from "./common.schemas";
 
 const PORT = ENV.app.port;
 
-const handWritten = (): OpenAPIV3.Document => ({
+/** One description per tag a controller declares; the document lists exactly these. */
+export const TAG_DESCRIPTIONS: OpenAPIV3.TagObject[] = [
+  {
+    name: "Auth - Signup",
+    description: "User registration endpoints"
+  },
+  {
+    name: "Auth - Login",
+    description: "User authentication endpoints"
+  },
+  {
+    name: "Auth - Session",
+    description: "Session management endpoints (logout, token refresh)"
+  },
+  {
+    name: "Auth - Unlock",
+    description: "Self-service unlock of an account locked by failed sign-ins"
+  },
+  {
+    name: "Auth - Forgot Password",
+    description: "Password recovery via OTP or magic link"
+  },
+  {
+    name: "Auth - Change Password",
+    description:
+      "Change the signed-in user's password, including from a temporary-password session"
+  },
+  {
+    name: "Contact Admin",
+    description:
+      "Submit contact requests to the admin; authenticated users can list/view their own submitted contacts"
+  },
+  {
+    name: "User Profile",
+    description: "View and update user profile, upload avatar"
+  },
+  {
+    name: "Web App",
+    description:
+      "The launcher's app list, filtered to what the signed-in user may open"
+  },
+  {
+    name: "Recent Apps",
+    description: "The signed-in user's recently launched apps"
+  },
+  {
+    name: "User Admin",
+    description:
+      "Admin endpoints for listing users and locking, unlocking or resetting accounts"
+  },
+  {
+    name: "Web App Admin",
+    description: "Admin endpoints for managing apps"
+  },
+  {
+    name: "Categories",
+    description: "Public category list for the launcher filter"
+  },
+  {
+    name: "Notifications",
+    description:
+      "The signed-in user's inbox — written by domain events, rendered by the client in the reader's locale"
+  },
+  {
+    name: "Login History",
+    description: "The signed-in user's own sign-ins and statistics"
+  },
+  {
+    name: "Login History Admin",
+    description: "Every account's sign-ins, for admins"
+  },
+  {
+    name: "Favorites",
+    description: "The signed-in user's pinned apps"
+  },
+  {
+    name: "Categories Admin",
+    description:
+      "Admin endpoints for creating, renaming, ordering and deleting categories"
+  },
+  {
+    name: "Entitlements Admin",
+    description:
+      "Admin endpoints for granting or revoking a user's access to an app beyond the role default"
+  }
+];
+
+const baseDocument = (): OpenAPIV3.Document => ({
   openapi: "3.0.3",
   info: {
     title: "AppStore Web API",
     version: "1.0.0",
-    description: `RESTful API for AppStore Web Application.`.trim()
+    description: "RESTful API for AppStore Web Application."
   },
   servers: [
     {
@@ -33,72 +120,7 @@ const handWritten = (): OpenAPIV3.Document => ({
       description: "Development server"
     }
   ],
-  tags: [
-    {
-      name: "Auth - Signup",
-      description: "User registration endpoints"
-    },
-    {
-      name: "Auth - Login",
-      description: "User authentication endpoints"
-    },
-    {
-      name: "Auth - Session",
-      description: "Session management endpoints (logout, token refresh)"
-    },
-    {
-      name: "Auth - Unlock",
-      description: "Self-service unlock of an account locked by failed sign-ins"
-    },
-    {
-      name: "Auth - Forgot Password",
-      description: "Password recovery via OTP or magic link"
-    },
-    {
-      name: "Contact Admin",
-      description:
-        "Submit contact requests to the admin; authenticated users can list/view their own submitted contacts"
-    },
-    {
-      name: "User Profile",
-      description: "View and update user profile, upload avatar"
-    },
-    {
-      name: "Web App Admin",
-      description: "Admin endpoints for managing apps"
-    },
-    {
-      name: "Categories",
-      description: "Public category list for the launcher filter"
-    },
-    {
-      name: "Notifications",
-      description:
-        "The signed-in user's inbox — written by domain events, rendered by the client in the reader's locale"
-    },
-    {
-      name: "Login History",
-      description: "The signed-in user's own sign-ins and statistics"
-    },
-    {
-      name: "Login History Admin",
-      description: "Every account's sign-ins, for admins"
-    },
-    {
-      name: "Favorites",
-      description: "The signed-in user's pinned apps"
-    },
-    {
-      name: "Categories Admin",
-      description:
-        "Admin endpoints for creating, renaming, ordering and deleting categories"
-    },
-    {
-      name: "Entitlements Admin",
-      description:
-        "Admin endpoints for granting or revoking a user's access to an app beyond the role default"
-    }
-  ],
+  tags: TAG_DESCRIPTIONS,
   paths: {},
   components: {
     schemas: commonSchemas,
@@ -182,16 +204,14 @@ const reachableSchemas = (
 };
 
 /**
- * The `/api-docs` document. Operations of controllers that declare their own
- * `@OpenAPI` are generated from their annotations (see `@/common/openapi`);
- * the rest still come from the hand-written `swagger/` folders, and a
- * generated operation replaces a hand-written one at the same method and path.
+ * The `/api-docs` document, generated from the controllers' annotations (see
+ * `@/common/openapi`).
  *
  * Order (design §Step 0): duplicate class names → schemas → bridge on each
- * generated controller → library → normalizePathKeys (inside generatePaths).
- * Only the schemas the generated operations reach are added, and a duplicate
- * name fails only when such a schema is one of them: two classes with one name
- * would silently merge into one schema.
+ * controller → library → normalizePathKeys (inside generatePaths). Only the
+ * schemas the operations reach are added, and a duplicate name fails only when
+ * such a schema is one of them: two classes with one name would silently merge
+ * into one schema.
  */
 export const buildOpenApiSpec = (controllers: object[]): OpenAPIV3.Document => {
   assertApiPropertyUsage();
@@ -203,10 +223,10 @@ export const buildOpenApiSpec = (controllers: object[]): OpenAPIV3.Document => {
   const documented = controllers
     .map((instance) => instance.constructor)
     .filter(isDocumented);
-  const generatedPaths = generatePaths(documented);
-  const generatedSchemas = reachableSchemas(generatedPaths, schemas);
+  const paths = generatePaths(documented);
+  const reached = reachableSchemas(paths, schemas);
 
-  for (const name of Object.keys(generatedSchemas)) {
+  for (const name of Object.keys(reached)) {
     if (duplicates.has(name)) {
       throw new Error(
         `Two classes are named ${name}: ${declarationsOf(name).join(", ")}. Schema names are class names; rename one.`
@@ -214,18 +234,13 @@ export const buildOpenApiSpec = (controllers: object[]): OpenAPIV3.Document => {
     }
   }
 
-  const doc = handWritten();
-  for (const name of Object.keys(generatedSchemas)) {
+  const doc = baseDocument();
+  for (const name of Object.keys(reached)) {
     if (doc.components?.schemas?.[name]) {
       throw new Error(
-        `Schema ${name} is both generated and hand-written; rename the class.`
+        `Schema ${name} is a shared envelope schema and also a class name; rename the class.`
       );
     }
-  }
-
-  const paths: OpenAPIV3.PathsObject = { ...doc.paths };
-  for (const [path, item] of Object.entries(generatedPaths)) {
-    paths[path] = { ...paths[path], ...item };
   }
 
   return {
@@ -233,7 +248,7 @@ export const buildOpenApiSpec = (controllers: object[]): OpenAPIV3.Document => {
     paths,
     components: {
       ...doc.components,
-      schemas: { ...doc.components?.schemas, ...generatedSchemas }
+      schemas: { ...doc.components?.schemas, ...reached }
     }
   };
 };

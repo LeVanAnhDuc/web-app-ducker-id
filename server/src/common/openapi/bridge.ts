@@ -185,7 +185,7 @@ const bridged = new WeakSet<Function>();
 /**
  * Whether a controller class declares its own `@OpenAPI(...)` (its tags), the
  * mark of a controller documented from annotations rather than by a
- * hand-written `swagger/` folder.
+ * hand-written docs this replaced.
  */
 export const isDocumented = (Ctor: Function): boolean =>
   getOpenAPIMetadata(Ctor).some((entry) => entry !== bridge);

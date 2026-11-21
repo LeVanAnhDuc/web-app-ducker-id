@@ -29,29 +29,12 @@ import { mountHttp } from "@/loaders/http";
 import { buildOpenApiSpec } from "./openapi";
 import { diffOperations, resolveRefs } from "@test/helpers/openapi-diff";
 
-/**
- * Modules whose `/api/v1` routes are documented from their controllers. The
- * drift checks below cover exactly these; Task 6 of
- * docs/specs/openapi-annotations/plan.md drops the list and covers every route.
- */
-export const GENERATED_MODULES: string[] = [
-  "favorite",
-  "recent-app",
-  "notification",
-  "login-history",
-  "category",
-  "entitlement",
-  "web-app",
-  "user",
-  "contact-admin",
-  "signup",
-  "login",
-  "forgot-password",
-  "change-password",
-  "unlock-account",
-  "logout",
-  "token"
-];
+/** The modules with a frozen fixture: `test/fixtures/openapi/<module>.json`. */
+const FIXTURES_DIR = join(__dirname, "../../../test/fixtures/openapi");
+const FIXTURE_MODULES = readdirSync(FIXTURES_DIR)
+  .filter((file) => file.endsWith(".json"))
+  .map((file) => file.replace(/\.json$/, ""))
+  .sort();
 
 /**
  * Differences from the frozen hand-written operations
@@ -247,9 +230,6 @@ const controllersOfModule = (name: string): Function[] => {
     .filter((value): value is Function => known.has(value as Function));
 };
 
-const controllersOfGenerated = (): number =>
-  GENERATED_MODULES.flatMap(controllersOfModule).length;
-
 const collectRefs = (node: unknown, refs: Set<string>): Set<string> => {
   if (Array.isArray(node)) node.forEach((n) => collectRefs(n, refs));
   else if (node && typeof node === "object") {
@@ -420,7 +400,7 @@ describe("buildOpenApiSpec", () => {
     expect(unresolvedRefs(document)).toEqual([]);
   });
 
-  it("documents a generated controller's operations, and catches a missing summary", () => {
+  it("catches a controller operation without a summary", () => {
     class Body {
       @IsString()
       @IsDefined()
@@ -451,22 +431,39 @@ describe("buildOpenApiSpec", () => {
       "DriftFixtureController.create has no summary"
     ]);
     expect(unresolvedRefs(doc)).toEqual([]);
-    // The generated operation sits beside the hand-written ones.
     expect(doc.paths["/auth/login"]).toEqual(document.paths["/auth/login"]);
   });
 
-  // Every module is generated now: no controller is left to the hand-written
-  // swagger/ folders. Task 6 replaces GENERATED_MODULES with every route.
-  it("leaves no controller to the hand-written docs", () => {
-    const handWritten = (
+  it("documents every controller and has exactly 63 operations", () => {
+    const undocumented = controllers
+      .map((instance) => instance.constructor)
+      .filter((Ctor) => !isDocumented(Ctor));
+    expect(undocumented.map((Ctor) => Ctor.name)).toEqual([]);
+    expect(operationsOf(document)).toHaveLength(63);
+  });
+
+  it("lists every controller of every module in the document's controllers", () => {
+    const modules = (
       readdirSync(MODULES_DIR, { withFileTypes: true }) as Dirent[]
     )
       .filter((entry) => entry.isDirectory())
-      .map((entry) => entry.name)
-      .filter((module) => !GENERATED_MODULES.includes(module))
-      .flatMap(controllersOfModule);
-    expect(handWritten.map((Ctor) => Ctor.name)).toEqual([]);
-    expect(controllersOfGenerated()).toBe(22);
+      .map((entry) => entry.name);
+    const found = modules.flatMap(controllersOfModule).map((c) => c.name);
+    expect(found.sort()).toEqual(
+      controllers.map((instance) => instance.constructor.name).sort()
+    );
+  });
+
+  it("describes every tag a controller uses exactly once, and no other", () => {
+    const used = new Set(
+      operationsOf(document).flatMap(({ op }) => op.tags ?? [])
+    );
+    const described = (document.tags ?? []).map((tag) => tag.name);
+    expect(new Set(described).size).toBe(described.length);
+    expect([...used].sort()).toEqual([...described].sort());
+    for (const tag of document.tags ?? []) {
+      expect(tag.description).toBeTruthy();
+    }
   });
 
   // The refresh token lives only in its HttpOnly cookie (BUG-AUTH-07); a
@@ -493,19 +490,10 @@ describe("buildOpenApiSpec", () => {
     expect(named(document, "document", [])).toEqual([]);
   });
 
-  describe("drift checks over GENERATED_MODULES", () => {
-    const generated = GENERATED_MODULES.flatMap(controllersOfModule);
+  describe("drift checks over every mounted action", () => {
+    const all = controllers.map((instance) => instance.constructor);
 
-    it("documents from annotations exactly the controllers of GENERATED_MODULES", () => {
-      const documented = controllers
-        .map((instance) => instance.constructor)
-        .filter(isDocumented);
-      expect(documented.map((c) => c.name).sort()).toEqual(
-        generated.map((c) => c.name).sort()
-      );
-    });
-
-    it.each(GENERATED_MODULES)(
+    it.each(FIXTURE_MODULES)(
       "%s: generated operations match the hand-written ones",
       (module) => {
         const frozen = JSON.parse(
@@ -536,7 +524,7 @@ describe("buildOpenApiSpec", () => {
     );
 
     it("has one operation per action, each with a summary, status, security and derived errors (checks 1, 2, 4)", () => {
-      expect(driftProblems(document, generated)).toEqual([]);
+      expect(driftProblems(document, all)).toEqual([]);
     });
   });
 });
@@ -573,6 +561,15 @@ describe("/api-docs over HTTP", () => {
     const body = (await res.json()) as OpenAPIV3.Document;
     expect(body.openapi).toBe("3.0.3");
     expect(body).toEqual(JSON.parse(JSON.stringify(document)));
+  });
+
+  it("embeds the generated document in the Swagger UI assets", async () => {
+    const res = await fetch(`${origin}/api-docs/swagger-ui-init.js`);
+    expect(res.status).toBe(200);
+    const script = await res.text();
+    expect(script).toContain('"openapi": "3.0.3"');
+    expect(script).toContain("/auth/login/otp/send");
+    expect(script).toContain("/admin/categories/{id}/delete-impact");
   });
 
   it("serves the Swagger UI at /api-docs", async () => {

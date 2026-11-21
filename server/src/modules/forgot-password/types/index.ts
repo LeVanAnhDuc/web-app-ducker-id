@@ -32,17 +32,8 @@ export type FPMagicLinkVerifyRequest = Request<
   ForgotPasswordMagicLinkVerifyBodyDto
 >;
 
-export interface FPVerifyResponse {
-  success: boolean;
-  resetToken: string;
-}
-
 export type FPResetPasswordRequest = Request<
   Record<string, never>,
   unknown,
   ResetPasswordBodyDto
 >;
-
-export interface FPResetPasswordResponse {
-  success: boolean;
-}
