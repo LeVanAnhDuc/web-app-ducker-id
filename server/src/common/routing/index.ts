@@ -14,6 +14,8 @@ export type { GuardName, RespondOptions, RouteMeta } from "./metadata";
 export { readRouteMeta } from "./metadata";
 export {
   describeRoutes,
+  findDisallowedJsonSchemaImports,
+  findDisallowedOpenApiImports,
   findDisallowedRoutingImports,
   mountControllers,
   ROUTE_PREFIX

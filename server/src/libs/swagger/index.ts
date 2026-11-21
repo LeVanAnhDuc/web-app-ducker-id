@@ -1,2 +1,2 @@
 export { setupSwagger } from "./swagger.setup";
-export { openApiSpec } from "./openapi";
+export { buildOpenApiSpec } from "./openapi";

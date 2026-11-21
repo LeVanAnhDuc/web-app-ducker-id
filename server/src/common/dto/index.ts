@@ -2,6 +2,9 @@
 import { Expose, plainToInstance, Transform } from "class-transformer";
 // types
 import type { ClassConstructor } from "class-transformer";
+import type { ApiPropertyOptions } from "@/common/openapi/api-property";
+// common
+import { ApiProperty } from "@/common/openapi/api-property";
 
 export { Expose };
 
@@ -18,9 +21,14 @@ const isMongooseDocument = (value: unknown): value is MongooseLike =>
 
 // Each output decorator is `@Expose()` plus one conversion that runs only when
 // building the DTO (toClassOnly), so it never runs a second time on the way out.
+// `doc` also documents the property for /api-docs; metadata only.
 const exposeWith =
-  (convert: (src: Source, key: string) => unknown): PropertyDecorator =>
+  (
+    convert: (src: Source, key: string) => unknown,
+    doc?: ApiPropertyOptions
+  ): PropertyDecorator =>
   (target, propertyKey) => {
+    if (doc) ApiProperty(doc)(target, propertyKey);
     Expose()(target, propertyKey);
     Transform(({ obj, key }) => convert(obj as Source, key), {
       toClassOnly: true
@@ -38,18 +46,21 @@ const idToString = (value: unknown): string | null =>
  * `from` reads another key, e.g. `@ExposeId("_id") id`.
  */
 export const ExposeId = (from?: string): PropertyDecorator =>
-  exposeWith((src, key) => idToString(src[from ?? key]));
+  exposeWith((src, key) => idToString(src[from ?? key]), { type: "string" });
 
 /** A Date as an ISO 8601 string, `null` when absent. */
 export const ExposeDate = (from?: string): PropertyDecorator =>
-  exposeWith((src, key) => {
-    const value = src[from ?? key];
-    return value instanceof Date ? value.toISOString() : null;
-  });
+  exposeWith(
+    (src, key) => {
+      const value = src[from ?? key];
+      return value instanceof Date ? value.toISOString() : null;
+    },
+    { format: "date-time" }
+  );
 
 /** The value as stored, `null` instead of `undefined`. */
 export const ExposeOrNull = (from?: string): PropertyDecorator =>
-  exposeWith((src, key) => src[from ?? key] ?? null);
+  exposeWith((src, key) => src[from ?? key] ?? null, { nullable: true });
 
 /**
  * A value computed from the whole source record — a default, a lookup, a

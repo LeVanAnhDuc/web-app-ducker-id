@@ -252,12 +252,13 @@ const ALLOWED_ROUTING_IMPORTS = new Set([
   "Res"
 ]);
 
-const FROM_ROUTING =
-  /\b(import|export)\s+([^;'"]*?)\s*from\s*["']routing-controllers["']/g;
-const LOADS_ROUTING =
-  /\b(require|import)\s*\(\s*["']routing-controllers["']\s*\)/g;
+const escape = (text: string): string =>
+  text.replace(/[.*+?^${}()|[\]\\/]/g, "\\$&");
 
-const disallowedInClause = (clause: string): string[] => {
+const disallowedInClause = (
+  clause: string,
+  allowed: ReadonlySet<string>
+): string[] => {
   if (/^type\b/.test(clause)) return [];
 
   const braces = /\{([^}]*)\}/.exec(clause);
@@ -274,9 +275,52 @@ const disallowedInClause = (clause: string): string[] => {
     const trimmed = specifier.trim();
     if (!trimmed || /^type\s/.test(trimmed)) continue;
     const [name] = trimmed.split(/\s+as\s+/);
-    if (!ALLOWED_ROUTING_IMPORTS.has(name)) names.push(name);
+    if (!allowed.has(name)) names.push(name);
   }
   return names;
+};
+
+/**
+ * Every name a source file takes from `specifier` (with `subpaths: "also"`,
+ * also from any path below it; with `"only"`, only from those) that is not in `allowed`, in source order: `default` and
+ * `*` for default and namespace imports (or `export *`), `require(...)` /
+ * `import(...)` for loads by call, `import` for a side-effect import.
+ */
+const SUBPATH = { no: "", also: "(?:/[^\"']*)?", only: "/[^\"']+" };
+
+const findDisallowedImports = (
+  source: string,
+  specifier: string,
+  allowed: ReadonlySet<string>,
+  subpaths: "no" | "also" | "only" = "no"
+): string[] => {
+  const from = `["']${escape(specifier)}${SUBPATH[subpaths]}["']`;
+  const clauses = new RegExp(
+    String.raw`\b(import|export)\s+([^;'"]*?)\s*from\s*` + from,
+    "g"
+  );
+  const calls = new RegExp(
+    String.raw`\b(require|import)\s*\(\s*` + from + String.raw`\s*\)`,
+    "g"
+  );
+  const bare = new RegExp(String.raw`\bimport\s*` + from, "g");
+
+  return [
+    ...[...source.matchAll(clauses)].map((match): [number, string[]] => [
+      match.index,
+      disallowedInClause(match[2], allowed)
+    ]),
+    ...[...source.matchAll(calls)].map((match): [number, string[]] => [
+      match.index,
+      [`${match[1]}(...)`]
+    ]),
+    ...[...source.matchAll(bare)].map((match): [number, string[]] => [
+      match.index,
+      ["import"]
+    ])
+  ]
+    .sort(([a], [b]) => a - b)
+    .flatMap(([, names]) => names);
 };
 
 /**
@@ -285,15 +329,46 @@ const disallowedInClause = (clause: string): string[] => {
  * imports (or `export *`), `require(...)` / `import(...)` for loads by call.
  */
 export const findDisallowedRoutingImports = (source: string): string[] =>
-  [
-    ...[...source.matchAll(FROM_ROUTING)].map((match): [number, string[]] => [
-      match.index,
-      disallowedInClause(match[2])
-    ]),
-    ...[...source.matchAll(LOADS_ROUTING)].map((match): [number, string[]] => [
-      match.index,
-      [`${match[1]}(...)`]
-    ])
-  ]
-    .sort(([a], [b]) => a - b)
-    .flatMap(([, names]) => names);
+  findDisallowedImports(source, "routing-controllers", ALLOWED_ROUTING_IMPORTS);
+
+// A module documents its routes with `@OpenAPI({ tags | summary, description })`
+// and the three helpers of `@/common/openapi`; `@Respond({ type })` owns the
+// responses, so `ResponseSchema` (a second source) is refused. The rest of
+// `@/common/openapi` (the bridge, converters) belongs to the builder.
+const ALLOWED_OPENAPI_IMPORTS = new Set(["OpenAPI"]);
+const ALLOWED_COMMON_OPENAPI_IMPORTS = new Set([
+  "ApiErrors",
+  "ApiProperty",
+  "Paginated"
+]);
+const NONE = new Set<string>();
+
+/**
+ * What a module file may not take for its OpenAPI documentation: any name
+ * from routing-controllers-openapi but `OpenAPI`, from `@/common/openapi` but
+ * `ApiErrors` / `ApiProperty` / `Paginated` (or anything from a file below it),
+ * and anything at all from class-validator-jsonschema.
+ */
+export const findDisallowedOpenApiImports = (source: string): string[] => [
+  ...findDisallowedImports(
+    source,
+    "routing-controllers-openapi",
+    ALLOWED_OPENAPI_IMPORTS
+  ),
+  ...findDisallowedImports(
+    source,
+    "@/common/openapi",
+    ALLOWED_COMMON_OPENAPI_IMPORTS
+  ),
+  ...findDisallowedImports(source, "@/common/openapi", NONE, "only").map(
+    (name) => `@/common/openapi/…: ${name}`
+  ),
+  ...findDisallowedJsonSchemaImports(source)
+];
+
+/**
+ * class-validator-jsonschema may be loaded only by `@/common/openapi` and
+ * `@/libs/swagger`; anywhere else each name (or load) taken from it is listed.
+ */
+export const findDisallowedJsonSchemaImports = (source: string): string[] =>
+  findDisallowedImports(source, "class-validator-jsonschema", NONE, "also");

@@ -38,6 +38,9 @@ importers:
       class-validator:
         specifier: 0.15.1
         version: 0.15.1
+      class-validator-jsonschema:
+        specifier: 5.2.0
+        version: 5.2.0(class-transformer@0.5.1)(class-validator@0.15.1)
       cockatiel:
         specifier: ^3.2.1
         version: 3.2.1
@@ -98,6 +101,9 @@ importers:
       routing-controllers:
         specifier: 0.11.3
         version: 0.11.3(class-transformer@0.5.1)(class-validator@0.15.1)
+      routing-controllers-openapi:
+        specifier: 5.0.1
+        version: 5.0.1(routing-controllers@0.11.3(class-transformer@0.5.1)(class-validator@0.15.1))
       swagger-ui-express:
         specifier: ^5.0.1
         version: 5.0.1(express@5.2.1)
@@ -1439,6 +1445,12 @@ packages:
   class-transformer@0.5.1:
     resolution: {integrity: sha512-SQa1Ws6hUbfC98vKGxZH3KFY0Y1lm5Zm0SY8XX9zbK7FJCyVEac3ATW0RIpwzW+oOfmHE5PMPufDG9hCfoEOMw==}
 
+  class-validator-jsonschema@5.2.0:
+    resolution: {integrity: sha512-foKYpjeiMkBUHw2FdG9NFtbeu8fe/IhQryEuEs2PjAnKnvHkccDpJq43NQnz3alEzk8eR3jbGLmROaEH8LAs8A==}
+    peerDependencies:
+      class-transformer: ^0.4.0 || ^0.5.0
+      class-validator: ^0.14.0 || ^0.15.0
+
   class-validator@0.15.1:
     resolution: {integrity: sha512-LqoS80HBBSCVhz/3KloUly0ovokxpdOLR++Al3J3+dHXWt9sTKlKd4eYtoxhxyUjoe5+UcIM+5k9MIxyBWnRTw==}
 
@@ -2492,8 +2504,14 @@ packages:
     resolution: {integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==}
     engines: {node: '>=10'}
 
+  lodash.capitalize@4.2.1:
+    resolution: {integrity: sha512-kZzYOKspf8XVX5AvmQF94gQW0lejFVgb80G85bU4ZWzoJ6C03PQg3coYAUpSTpQWelrZELd3XWgHzw4Ck5kaIw==}
+
   lodash.defaults@4.2.0:
     resolution: {integrity: sha512-qjxPLHd3r5DnsdGacqOMU6pb/avJzdh9tFX2ymgoZE27BmjXrNy/y4LoaiTeAb+O3gL8AfpJGtqfX/ae2leYYQ==}
+
+  lodash.groupby@4.6.0:
+    resolution: {integrity: sha512-5dcWxm23+VAoz+awKmBaiBvzox8+RqMgFhi7UvX9DHZr2HdxHXM/Wrf8cfKpsW37RNrvtPn6hSwNqurSILbmJw==}
 
   lodash.includes@4.3.0:
     resolution: {integrity: sha512-W3Bx6mdkRTGtlJISOvVD/lbqjTlPPUDTMnlXZFnVwi9NKJ6tiAk6LVdlhZMm17VZisqhKcgzpO5Wz91PCt5b0w==}
@@ -2524,6 +2542,9 @@ packages:
 
   lodash.once@4.1.1:
     resolution: {integrity: sha512-Sb487aTOCr9drQVL8pIxOzVhafOjZN9UU54hiN8PU3uAiSV7lx1yYNpbNmex2PK6dSJoNTSJUUswT651yww3Mg==}
+
+  lodash.startcase@4.4.0:
+    resolution: {integrity: sha512-+WKqsK294HMSc2jEbNgpHpd0JfIBhp7rEV4aqXWqFr6AlXov+SlcgB1Fv01y2kGe3Gc8nMW7VA0SrGuSkRfIEg==}
 
   lodash@4.18.1:
     resolution: {integrity: sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==}
@@ -2850,6 +2871,9 @@ packages:
   openapi-types@12.1.3:
     resolution: {integrity: sha512-N4YtSYJqghVu4iek2ZUvcN/0aqH1kRDuNqzcycDxhOUpg7GdvLa2F3DgS6yBNhInhv2r/6I0Flkn7CqL8+nIcw==}
 
+  openapi3-ts@3.2.0:
+    resolution: {integrity: sha512-/ykNWRV5Qs0Nwq7Pc0nJ78fgILvOT/60OxEmB3v7yQ8a8Bwcm43D4diaYazG/KBn6czA+52XYy931WFLMCUeSg==}
+
   optionator@0.9.4:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
     engines: {node: '>= 0.8.0'}
@@ -3053,6 +3077,9 @@ packages:
   redis@4.7.1:
     resolution: {integrity: sha512-S1bJDnqLftzHXHP8JsT5II/CtHWQrASX5K96REjWjlmWKrviSOLWmM7QnRLstAWsu1VBBV1ffV6DzCvxNP0UJQ==}
 
+  reflect-metadata@0.1.14:
+    resolution: {integrity: sha512-ZhYeb6nRaXCfhnndflDK8qI6ZQ/YcWZCISRAWICW9XYqMUwjZM9Z0DveWX/ABN01oxSHwVxKQmxeYZSsm0jh5A==}
+
   reflect-metadata@0.2.2:
     resolution: {integrity: sha512-urBwgfrvVP/eAyXx4hluJivBKzuEbSQs9rKWCrCkbSxNv8mxPcUZKeuoF3Uy4mJl3Lwprp6yy5/39VWigZ4K6Q==}
 
@@ -3096,6 +3123,11 @@ packages:
   router@2.2.0:
     resolution: {integrity: sha512-nLTrUKm2UyiL7rlhapu/Zl45FwNgkZGaCpZbIHajDYgwlJCOzLSk+cIPAnsEqV955GjILJnKbdQC1nVPz+gAYQ==}
     engines: {node: '>= 18'}
+
+  routing-controllers-openapi@5.0.1:
+    resolution: {integrity: sha512-2cyEn5skVC+OrStKiap2np4hLGkm00AdM21Zaur9G19VlZ7BC3hlEk0kE+HoqWax+8dy382+0bMhByHnZ++9cQ==}
+    peerDependencies:
+      routing-controllers: ^0.11.0
 
   routing-controllers@0.11.3:
     resolution: {integrity: sha512-yBZ5kEoeVRlA09Xmnf7ildaSHOYAOFM2GU7sR56uXFwuFI3SyFwZ336g0pV51KFfGm95ZJUWfn2tWE4tV/YK4A==}
@@ -4999,6 +5031,16 @@ snapshots:
 
   class-transformer@0.5.1: {}
 
+  class-validator-jsonschema@5.2.0(class-transformer@0.5.1)(class-validator@0.15.1):
+    dependencies:
+      class-transformer: 0.5.1
+      class-validator: 0.15.1
+      lodash.groupby: 4.6.0
+      lodash.merge: 4.6.2
+      openapi3-ts: 3.2.0
+      reflect-metadata: 0.2.2
+      tslib: 2.8.1
+
   class-validator@0.15.1:
     dependencies:
       '@types/validator': 13.15.10
@@ -6326,7 +6368,11 @@ snapshots:
     dependencies:
       p-locate: 5.0.0
 
+  lodash.capitalize@4.2.1: {}
+
   lodash.defaults@4.2.0: {}
+
+  lodash.groupby@4.6.0: {}
 
   lodash.includes@4.3.0: {}
 
@@ -6347,6 +6393,8 @@ snapshots:
   lodash.merge@4.6.2: {}
 
   lodash.once@4.1.1: {}
+
+  lodash.startcase@4.4.0: {}
 
   lodash@4.18.1: {}
 
@@ -6636,6 +6684,10 @@ snapshots:
 
   openapi-types@12.1.3: {}
 
+  openapi3-ts@3.2.0:
+    dependencies:
+      yaml: 2.8.1
+
   optionator@0.9.4:
     dependencies:
       deep-is: 0.1.4
@@ -6702,8 +6754,7 @@ snapshots:
   path-to-regexp@0.1.13:
     optional: true
 
-  path-to-regexp@6.3.0:
-    optional: true
+  path-to-regexp@6.3.0: {}
 
   path-to-regexp@8.4.2: {}
 
@@ -6826,6 +6877,8 @@ snapshots:
       '@redis/search': 1.2.0(@redis/client@1.6.1)
       '@redis/time-series': 1.1.0(@redis/client@1.6.1)
 
+  reflect-metadata@0.1.14: {}
+
   reflect-metadata@0.2.2: {}
 
   require-directory@2.1.1: {}
@@ -6864,6 +6917,17 @@ snapshots:
       path-to-regexp: 8.4.2
     transitivePeerDependencies:
       - supports-color
+
+  routing-controllers-openapi@5.0.1(routing-controllers@0.11.3(class-transformer@0.5.1)(class-validator@0.15.1)):
+    dependencies:
+      lodash.capitalize: 4.2.1
+      lodash.merge: 4.6.2
+      lodash.startcase: 4.4.0
+      openapi3-ts: 3.2.0
+      path-to-regexp: 6.3.0
+      reflect-metadata: 0.1.14
+      routing-controllers: 0.11.3(class-transformer@0.5.1)(class-validator@0.15.1)
+      tslib: 2.8.1
 
   routing-controllers@0.11.3(class-transformer@0.5.1)(class-validator@0.15.1):
     dependencies:

@@ -124,9 +124,12 @@ export const StatusRules = (): PropertyDecorator =>
 
 export const RequiredRolesRules = (): PropertyDecorator =>
   composeDecorators(
-    EachItem("isIn", (item) => ROLE_VALUES.includes(item), {
-      message: "webApp:validation.requiredRoles.invalid"
-    }),
+    EachItem(
+      "isIn",
+      (item) => ROLE_VALUES.includes(item),
+      { message: "webApp:validation.requiredRoles.invalid" },
+      [ROLE_VALUES]
+    ),
     ArrayMinSize(1, { message: "webApp:validation.requiredRoles.required" }),
     IsArray({ message: "webApp:validation.requiredRoles.invalid" })
   );
