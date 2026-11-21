@@ -3,7 +3,7 @@ import type { RedisClientType } from "redis";
 import type { AuthenticationService } from "@/modules/authentication/services";
 import type { UserService } from "@/modules/user/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
-import type { RateLimiterMiddleware } from "@/middlewares";
+import type { RateLimiters } from "@/middlewares";
 // repositories
 import { RedisOtpSignupRepository } from "./repositories/impl/redis-otp-signup.repository";
 import { RedisSessionSignupRepository } from "./repositories/impl/redis-session-signup.repository";
@@ -19,7 +19,7 @@ export const createSignupModule = (
   authService: AuthenticationService,
   userService: UserService,
   emailDispatcher: EmailDispatcher,
-  rateLimiter: RateLimiterMiddleware
+  rateLimiter: RateLimiters
 ) => {
   const otpSignupRepo = new RedisOtpSignupRepository(redisClient);
   const sessionSignupRepo = new RedisSessionSignupRepository(redisClient);

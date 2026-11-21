@@ -1,7 +1,7 @@
 // libs
 import { Router } from "express";
 // types
-import type { RateLimiterMiddleware } from "@/middlewares";
+import type { RateLimiters } from "@/middlewares";
 import type { LoginController } from "./login.controller";
 // common
 import { handle } from "@/common/responses";
@@ -18,7 +18,7 @@ import { bodyPipe } from "@/middlewares";
 
 export const createLoginRoutes = (
   controller: LoginController,
-  rl: RateLimiterMiddleware
+  rl: RateLimiters
 ): Router => {
   const router = Router();
   const login = Router();

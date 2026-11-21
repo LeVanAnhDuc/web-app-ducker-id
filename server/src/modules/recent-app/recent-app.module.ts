@@ -1,5 +1,5 @@
 // types
-import type { RateLimiterMiddleware } from "@/middlewares";
+import type { RateLimiters } from "@/middlewares";
 import type { FavoriteRepository } from "@/modules/favorite/repository/favorite.repository";
 import type { AccessPolicy } from "@/modules/entitlement/services/access-policy";
 // modules
@@ -13,7 +13,7 @@ import { createRecentAppUserRoutes } from "./recent-app.routes";
 export const createRecentAppModule = (
   favoriteRepo: FavoriteRepository,
   accessPolicy: AccessPolicy,
-  rateLimiter: RateLimiterMiddleware
+  rateLimiter: RateLimiters
 ) => {
   const service = new RecentAppService({
     recentAppRepo: new MongoRecentAppRepository(),

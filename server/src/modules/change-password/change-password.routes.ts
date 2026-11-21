@@ -1,7 +1,7 @@
 // libs
 import { Router } from "express";
 // types
-import type { RateLimiterMiddleware } from "@/middlewares";
+import type { RateLimiters } from "@/middlewares";
 import type { ChangePasswordController } from "./change-password.controller";
 // common
 import { handle } from "@/common/responses";
@@ -13,7 +13,7 @@ import { passwordChangeAuthGuard, bodyPipe } from "@/middlewares";
 
 export const createChangePasswordRoutes = (
   controller: ChangePasswordController,
-  rl: RateLimiterMiddleware
+  rl: RateLimiters
 ): Router => {
   const router = Router();
 

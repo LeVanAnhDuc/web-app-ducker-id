@@ -1,7 +1,11 @@
 // types
 import type { Request } from "express";
 // others
-import { emailRateLimitKey } from "./rate-limiter.middleware";
+import {
+  createRateLimiters,
+  emailRateLimitKey,
+  RATE_LIMITS
+} from "./rate-limiter.middleware";
 
 const withBody = (body: unknown) => ({ body }) as Request;
 
@@ -26,5 +30,37 @@ describe("emailRateLimitKey", () => {
   it("falls back when there is no body at all", () => {
     expect(emailRateLimitKey(withBody(undefined))).toBe("unknown");
     expect(emailRateLimitKey(withBody({}))).toBe("unknown");
+  });
+});
+
+describe("RATE_LIMITS", () => {
+  const entries = Object.entries(RATE_LIMITS);
+
+  it("gives every limiter its own Redis prefix", () => {
+    // Two limiters on one prefix would share a counter
+    const prefixes = entries.map(([, [config]]) => config.KEY);
+
+    expect(new Set(prefixes).size).toBe(prefixes.length);
+  });
+
+  it("uses a positive window and ceiling everywhere", () => {
+    for (const [, [config]] of entries) {
+      expect(config.WINDOW_SECONDS).toBeGreaterThan(0);
+      expect(config.MAX_REQUESTS).toBeGreaterThan(0);
+    }
+  });
+});
+
+describe("createRateLimiters", () => {
+  it("builds one middleware per named limiter", () => {
+    const redis = { sendCommand: jest.fn().mockResolvedValue("sha") };
+    const limiters = createRateLimiters(redis as never);
+
+    expect(Object.keys(limiters).sort()).toEqual(
+      Object.keys(RATE_LIMITS).sort()
+    );
+    for (const limiter of Object.values(limiters)) {
+      expect(typeof limiter).toBe("function");
+    }
   });
 });

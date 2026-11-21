@@ -1,7 +1,7 @@
 // libs
 import { Router } from "express";
 // types
-import type { RateLimiterMiddleware } from "@/middlewares";
+import type { RateLimiters } from "@/middlewares";
 import type { UserController } from "./user.controller";
 // common
 import { handle } from "@/common/responses";
@@ -23,7 +23,7 @@ import {
 
 export const createUserRoutes = (
   controller: UserController,
-  rl: RateLimiterMiddleware
+  rl: RateLimiters
 ): Router => {
   const router = Router();
   const users = Router();
@@ -58,7 +58,7 @@ export const createUserRoutes = (
 
 export const createUserAdminRoutes = (
   controller: UserController,
-  rl: RateLimiterMiddleware
+  rl: RateLimiters
 ): Router => {
   const router = Router();
   const adminUsers = Router();

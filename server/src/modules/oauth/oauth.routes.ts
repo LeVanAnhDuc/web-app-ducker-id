@@ -1,7 +1,7 @@
 // libs
 import { Router } from "express";
 // types
-import type { RateLimiterMiddleware } from "@/middlewares";
+import type { RateLimiters } from "@/middlewares";
 import type { OAuthController } from "./oauth.controller";
 // middlewares
 import { handleOAuthError, handleOAuthUnexpectedError } from "@/middlewares";
@@ -14,7 +14,7 @@ import { handleOAuthError, handleOAuthUnexpectedError } from "@/middlewares";
  */
 export const createOAuthRoutes = (
   controller: OAuthController,
-  rl: RateLimiterMiddleware
+  rl: RateLimiters
 ): Router => {
   const router = Router();
 
