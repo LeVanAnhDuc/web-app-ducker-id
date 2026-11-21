@@ -1,7 +1,8 @@
+// libs
+import { StatusCodes } from "http-status-codes";
 // types
 import type { Request, Response } from "express";
 // common
-import { STATUS_CODES } from "@/common/http";
 import { NotFoundError } from "@/exceptions";
 // others
 import { handle, sendSuccess } from "./index";
@@ -26,7 +27,7 @@ describe("handle", () => {
     })(createReq(t), res, jest.fn());
 
     expect(t).toHaveBeenCalledWith("user:success.getAdminUsers");
-    expect(status).toHaveBeenCalledWith(STATUS_CODES.OK);
+    expect(status).toHaveBeenCalledWith(StatusCodes.OK);
     expect(json.mock.calls[0][0]).toMatchObject({
       path: "/api/v1/admin/users",
       message: "translated user:success.getAdminUsers",
@@ -38,7 +39,7 @@ describe("handle", () => {
     const { res, status, json } = createRes();
 
     await handle(async () => ({ id: "a" }), {
-      status: STATUS_CODES.CREATED,
+      status: StatusCodes.CREATED,
       message: "favorite:success.add"
     })(
       createReq((key) => `T:${key}`),
@@ -46,7 +47,7 @@ describe("handle", () => {
       jest.fn()
     );
 
-    expect(status).toHaveBeenCalledWith(STATUS_CODES.CREATED);
+    expect(status).toHaveBeenCalledWith(StatusCodes.CREATED);
     expect(json.mock.calls[0][0].message).toBe("T:favorite:success.add");
   });
 
@@ -54,10 +55,10 @@ describe("handle", () => {
     const { res, status, json, end } = createRes();
 
     await handle(async () => undefined, {
-      status: STATUS_CODES.NO_CONTENT
+      status: StatusCodes.NO_CONTENT
     })(createReq(), res, jest.fn());
 
-    expect(status).toHaveBeenCalledWith(STATUS_CODES.NO_CONTENT);
+    expect(status).toHaveBeenCalledWith(StatusCodes.NO_CONTENT);
     expect(end).toHaveBeenCalled();
     expect(json).not.toHaveBeenCalled();
   });
@@ -91,7 +92,7 @@ describe("sendSuccess", () => {
     const { res, json } = createRes();
 
     sendSuccess(createReq(), res, {
-      status: STATUS_CODES.OK,
+      status: StatusCodes.OK,
       message: "MongoDB is healthy"
     });
 

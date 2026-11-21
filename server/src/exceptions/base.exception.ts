@@ -1,7 +1,7 @@
+// libs
+import { StatusCodes } from "http-status-codes";
 // types
 import type { ValidationErrorItem } from "@/types/common";
-// common
-import { STATUS_CODES } from "@/common/http";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 
@@ -31,7 +31,7 @@ export class AppError extends Error {
   readonly params?: I18nParams;
 
   constructor({
-    status = STATUS_CODES.INTERNAL_SERVER_ERROR,
+    status = StatusCodes.INTERNAL_SERVER_ERROR,
     code = ERROR_CODES.INTERNAL_SERVER_ERROR,
     message = "An unexpected error occurred",
     errors = [],

@@ -1,11 +1,11 @@
 // libs
 import { Router } from "express";
+import { StatusCodes } from "http-status-codes";
 // types
 import type { Request, Response } from "express";
 import type { RedisClientType } from "redis";
 // common
 import { InternalServerError } from "@/exceptions";
-import { STATUS_CODES } from "@/common/http";
 import { sendSuccess } from "@/common/responses";
 // database
 import { isMongoHealthy } from "@/database/mongodb";
@@ -24,7 +24,7 @@ const checkMongoDB = asyncHandler(async (req: Request, res: Response) => {
   }
 
   sendSuccess(req, res, {
-    status: STATUS_CODES.OK,
+    status: StatusCodes.OK,
     message: "MongoDB is healthy",
     data: { mongodb: { status: "up" } }
   });
@@ -42,7 +42,7 @@ const checkRedis = (redis: RedisClientType) =>
     }
 
     sendSuccess(req, res, {
-      status: STATUS_CODES.OK,
+      status: StatusCodes.OK,
       message: "Redis is healthy",
       data: {
         redis: { status: "up", latency_ms: redisHealth.latency ?? null }
@@ -69,7 +69,7 @@ const checkAll = (redis: RedisClientType) =>
     }
 
     sendSuccess(req, res, {
-      status: STATUS_CODES.OK,
+      status: StatusCodes.OK,
       message: "All services are healthy",
       data: {
         mongodb: { status: "up" },

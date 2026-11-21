@@ -1,10 +1,11 @@
+// libs
+import { StatusCodes } from "http-status-codes";
 // types
 import type { Request, Response } from "express";
 import type { TokenRequest } from "./types";
 import type { OAuthService } from "./services";
 // common
 import { OAuthError } from "@/exceptions";
-import { STATUS_CODES } from "@/common/http";
 // others
 import ENV from "@/constants/env";
 import { getPublicJwk, SIGNING_ALGORITHM } from "@/libs/jwks";
@@ -44,7 +45,7 @@ const rejectBearer = (
   return new OAuthError({
     error: OAUTH_ERRORS.INVALID_TOKEN,
     description,
-    status: STATUS_CODES.UNAUTHORIZED
+    status: StatusCodes.UNAUTHORIZED
   });
 };
 

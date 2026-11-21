@@ -1,9 +1,9 @@
 // libs
 import { Router } from "express";
+import { StatusCodes } from "http-status-codes";
 // types
 import type { WebAppController } from "./web-app.controller";
 // common
-import { STATUS_CODES } from "@/common/http";
 import { handle } from "@/common/responses";
 // validators
 import {
@@ -40,7 +40,7 @@ export const createAdminWebAppRoutes = (
     "/",
     bodyPipe(adminCreateAppBodySchema),
     handle(controller.createApp, {
-      status: STATUS_CODES.CREATED,
+      status: StatusCodes.CREATED,
       message: "webApp:success.createApp"
     })
   );

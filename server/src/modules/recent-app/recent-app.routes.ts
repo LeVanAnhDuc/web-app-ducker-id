@@ -1,10 +1,10 @@
 // libs
 import { Router } from "express";
+import { StatusCodes } from "http-status-codes";
 // types
 import type { RateLimiterMiddleware } from "@/middlewares";
 import type { RecentAppController } from "./recent-app.controller";
 // common
-import { STATUS_CODES } from "@/common/http";
 import { handle } from "@/common/responses";
 // validators
 import {
@@ -37,23 +37,23 @@ export const createRecentAppUserRoutes = (
   );
   recentApps.delete(
     "/",
-    handle(controller.clear, { status: STATUS_CODES.NO_CONTENT })
+    handle(controller.clear, { status: StatusCodes.NO_CONTENT })
   );
   recentApps.post(
     "/:appId",
     rl.recordRecentAppByUser,
     paramsPipe(recentAppIdParamSchema),
-    handle(controller.record, { status: STATUS_CODES.NO_CONTENT })
+    handle(controller.record, { status: StatusCodes.NO_CONTENT })
   );
   recentApps.delete(
     "/:appId",
     paramsPipe(recentAppIdParamSchema),
-    handle(controller.hide, { status: STATUS_CODES.NO_CONTENT })
+    handle(controller.hide, { status: StatusCodes.NO_CONTENT })
   );
   recentApps.post(
     "/:appId/restore",
     paramsPipe(recentAppIdParamSchema),
-    handle(controller.restore, { status: STATUS_CODES.NO_CONTENT })
+    handle(controller.restore, { status: StatusCodes.NO_CONTENT })
   );
 
   router.use("/users/me/recent-apps", recentApps);

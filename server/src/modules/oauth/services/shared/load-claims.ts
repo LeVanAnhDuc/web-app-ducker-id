@@ -1,8 +1,9 @@
+// libs
+import { StatusCodes } from "http-status-codes";
 // types
 import type { OAuthServiceDeps } from "../deps";
 // common
 import { OAuthError } from "@/exceptions";
-import { STATUS_CODES } from "@/common/http";
 // others
 import { OAUTH_ERRORS } from "../../constants";
 
@@ -20,7 +21,7 @@ export const loadClaims = async (
     throw new OAuthError({
       error: OAUTH_ERRORS.INVALID_GRANT,
       description: "User no longer exists",
-      status: STATUS_CODES.UNAUTHORIZED
+      status: StatusCodes.UNAUTHORIZED
     });
   }
 

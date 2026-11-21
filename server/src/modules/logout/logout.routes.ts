@@ -1,9 +1,9 @@
 // libs
 import { Router } from "express";
+import { StatusCodes } from "http-status-codes";
 // types
 import type { LogoutController } from "./logout.controller";
 // common
-import { STATUS_CODES } from "@/common/http";
 import { handle } from "@/common/responses";
 // others
 import { passwordChangeAuthGuard } from "@/middlewares";
@@ -16,7 +16,7 @@ export const createLogoutRoutes = (controller: LogoutController): Router => {
   logout.post(
     "/",
     passwordChangeAuthGuard,
-    handle(controller.logout, { status: STATUS_CODES.NO_CONTENT })
+    handle(controller.logout, { status: StatusCodes.NO_CONTENT })
   );
 
   router.use("/auth/logout", logout);

@@ -1,5 +1,5 @@
-// common
-import { STATUS_CODES } from "@/common/http";
+// libs
+import { StatusCodes } from "http-status-codes";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 import { AppError } from "./base.exception";
@@ -30,7 +30,7 @@ export class OAuthError extends AppError {
 
   constructor(opts: OAuthErrorOptions) {
     super({
-      status: opts.status ?? STATUS_CODES.BAD_REQUEST,
+      status: opts.status ?? StatusCodes.BAD_REQUEST,
       code: ERROR_CODES.OAUTH_ERROR,
       message: opts.description ?? opts.error
     });

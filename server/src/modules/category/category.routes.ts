@@ -1,10 +1,10 @@
 // libs
 import { Router } from "express";
+import { StatusCodes } from "http-status-codes";
 // types
 import type { RateLimiterMiddleware } from "@/middlewares";
 import type { CategoryController } from "./category.controller";
 // common
-import { STATUS_CODES } from "@/common/http";
 import { handle } from "@/common/responses";
 // validators
 import {
@@ -41,7 +41,7 @@ export const createCategoryAdminRoutes = (
     rl.categoryMutationByIpAndUser,
     bodyPipe(createCategoryBodySchema),
     handle(controller.create, {
-      status: STATUS_CODES.CREATED,
+      status: StatusCodes.CREATED,
       message: "category:success.create"
     })
   );
@@ -71,7 +71,7 @@ export const createCategoryAdminRoutes = (
     rl.categoryMutationByIpAndUser,
     paramsPipe(categoryIdParamSchema),
     bodyPipe(deleteCategoryBodySchema),
-    handle(controller.remove, { status: STATUS_CODES.NO_CONTENT })
+    handle(controller.remove, { status: StatusCodes.NO_CONTENT })
   );
 
   router.use("/admin/categories", categories);
