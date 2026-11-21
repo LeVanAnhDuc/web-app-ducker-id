@@ -1,7 +1,7 @@
 // libs
-import { JsonController, Post, Req, Res } from "routing-controllers";
+import { JsonController, Post, Res } from "routing-controllers";
 // types
-import type { Request, Response } from "express";
+import type { Response } from "express";
 import type { UnlockAccountService } from "./services";
 // common
 import { RateLimit, Respond, ValidBody } from "@/common/routing";
@@ -19,11 +19,8 @@ export class UnlockAccountController {
 
   @Post("/request")
   @Respond({ message: "unlockAccount:success.unlockEmailSent" })
-  unlockRequest(
-    @ValidBody(UnlockRequestBodyDto) body: UnlockRequestBodyDto,
-    @Req() req: Request
-  ) {
-    return this.service.unlockRequest(body, req);
+  unlockRequest(@ValidBody(UnlockRequestBodyDto) body: UnlockRequestBodyDto) {
+    return this.service.unlockRequest(body);
   }
 
   @Post("/verify")
@@ -31,10 +28,9 @@ export class UnlockAccountController {
   @Respond({ message: "unlockAccount:success.accountUnlocked" })
   async unlockVerify(
     @ValidBody(UnlockVerifyBodyDto) body: UnlockVerifyBodyDto,
-    @Req() req: Request,
     @Res() res: Response
   ) {
-    const data = await this.service.unlockVerify(body, req);
+    const data = await this.service.unlockVerify(body);
     const { refreshToken, ...responseData } = data;
 
     if (refreshToken) {

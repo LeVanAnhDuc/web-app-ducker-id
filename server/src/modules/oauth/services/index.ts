@@ -1,7 +1,7 @@
 // types
-import type { Request, Response } from "express";
 import type {
   AuthorizeOutcome,
+  OAuthQuery,
   TokenRequestBody,
   TokenResponse,
   UserInfoResponse
@@ -32,7 +32,7 @@ export class OAuthService {
     private readonly accessPolicy: AccessPolicy
   ) {}
 
-  authorize(req: Request): Promise<AuthorizeOutcome> {
+  authorize(query: OAuthQuery, sid: string | null): Promise<AuthorizeOutcome> {
     return authorize(
       {
         oauthRepo: this.oauthRepo,
@@ -43,7 +43,8 @@ export class OAuthService {
         recentAppService: this.recentAppService,
         accessPolicy: this.accessPolicy
       },
-      req
+      query,
+      sid
     );
   }
 
@@ -79,14 +80,14 @@ export class OAuthService {
     );
   }
 
-  logout(req: Request, res: Response): Promise<string | null> {
+  logout(query: OAuthQuery, sid: string | null): Promise<string | null> {
     return logout(
       {
         webAppRepo: this.webAppRepo,
         sessionService: this.sessionService
       },
-      req,
-      res
+      query,
+      sid
     );
   }
 }

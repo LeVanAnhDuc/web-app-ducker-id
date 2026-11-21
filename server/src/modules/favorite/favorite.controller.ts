@@ -4,9 +4,11 @@ import { Delete, Get, JsonController, Post } from "routing-controllers";
 // types
 import type { FavoriteService } from "./services";
 // common
-import { Auth, Respond, ValidParams, ValidQuery } from "@/common/routing";
+import { Auth, PathVariable, RequestParam, Respond } from "@/common/routing";
+// validators
+import { IsRequiredObjectId } from "@/validators/decorators";
 // others
-import { FavoriteAppIdParamsDto, ListFavoritesQueryDto } from "./dtos/requests";
+import { ListFavoritesQueryDto } from "./dtos/requests";
 
 @JsonController("/users/me/favorites")
 @Auth()
@@ -15,7 +17,7 @@ export class FavoriteController {
 
   @Get("/")
   @Respond({ message: "favorite:success.list" })
-  list(@ValidQuery(ListFavoritesQueryDto) query: ListFavoritesQueryDto) {
+  list(@RequestParam(ListFavoritesQueryDto) query: ListFavoritesQueryDto) {
     return this.service.list(query);
   }
 
@@ -25,16 +27,24 @@ export class FavoriteController {
     message: "favorite:success.add"
   })
   async add(
-    @ValidParams(FavoriteAppIdParamsDto) params: FavoriteAppIdParamsDto
+    @PathVariable(
+      "appId",
+      IsRequiredObjectId("favorite:validation.appId.invalid")
+    )
+    appId: string
   ) {
-    await this.service.add(params.appId);
+    await this.service.add(appId);
   }
 
   @Delete("/:appId")
   @Respond({ status: StatusCodes.NO_CONTENT })
   async remove(
-    @ValidParams(FavoriteAppIdParamsDto) params: FavoriteAppIdParamsDto
+    @PathVariable(
+      "appId",
+      IsRequiredObjectId("favorite:validation.appId.invalid")
+    )
+    appId: string
   ) {
-    await this.service.remove(params.appId);
+    await this.service.remove(appId);
   }
 }

@@ -270,7 +270,7 @@ Step 3 (final) of signup flow. Completes registration with user profile data.
     }
   },
 
-  "/auth/signup/check-email/{email}": {
+  "/auth/signup/check-email": {
     get: {
       summary: "Check email availability",
       description: `
@@ -282,7 +282,7 @@ Useful for real-time validation in signup forms.
       tags: ["Auth - Signup"],
       parameters: [
         {
-          in: "path",
+          in: "query",
           name: "email",
           required: true,
           schema: {
@@ -314,7 +314,7 @@ Useful for real-time validation in signup forms.
                   summary: "Email available",
                   value: {
                     timestamp: "2025-01-15T10:30:00.000Z",
-                    path: "/api/v1/auth/signup/check-email/user@example.com",
+                    path: "/api/v1/auth/signup/check-email?email=user%40example.com",
                     data: {
                       available: true
                     }
@@ -324,7 +324,7 @@ Useful for real-time validation in signup forms.
                   summary: "Email taken",
                   value: {
                     timestamp: "2025-01-15T10:30:00.000Z",
-                    path: "/api/v1/auth/signup/check-email/existing@example.com",
+                    path: "/api/v1/auth/signup/check-email?email=existing%40example.com",
                     data: {
                       available: false
                     }

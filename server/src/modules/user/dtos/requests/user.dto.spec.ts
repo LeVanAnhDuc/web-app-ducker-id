@@ -1,8 +1,6 @@
 // modules
 import {
-  AdminUserIdParamsDto,
   AdminUsersQueryDto,
-  PublicProfileParamsDto,
   UpdateProfileBodyDto
 } from "@/modules/user/dtos/requests";
 // validators
@@ -12,18 +10,6 @@ import { expectDto } from "@test/helpers/dto-cases";
 // Fixed dates rather than "N years ago": the snapshots must not move with the
 // clock. The age-boundary cases sit years away from either bound.
 const ADULT = "1995-05-15";
-
-const idCases = {
-  valid: { id: "507f1f77bcf86cd799439011" },
-  validUpperCase: { id: "507F1F77BCF86CD799439011" },
-  missing: {},
-  null: { id: null },
-  empty: { id: "" },
-  wrongType: { id: 123 },
-  tooShort: { id: "507f1f77bcf86cd79943901" },
-  notHex: { id: "507f1f77bcf86cd79943901z" },
-  unknownStripped: { id: "507f1f77bcf86cd799439011", extra: "x" }
-};
 
 describe("user request DTOs match the Joi schemas", () => {
   it("UpdateProfileBodyDto ≡ updateProfileSchema", async () => {
@@ -79,14 +65,6 @@ describe("user request DTOs match the Joi schemas", () => {
       genderUnknown: { gender: "unknown" },
       genderArray: { gender: ["male"] }
     });
-  });
-
-  it("PublicProfileParamsDto ≡ getPublicProfileSchema", async () => {
-    await expectDto(PublicProfileParamsDto, idCases);
-  });
-
-  it("AdminUserIdParamsDto ≡ adminUserIdParamsSchema", async () => {
-    await expectDto(AdminUserIdParamsDto, idCases);
   });
 
   it("AdminUsersQueryDto ≡ adminUsersQuerySchema", async () => {

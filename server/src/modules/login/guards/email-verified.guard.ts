@@ -1,7 +1,6 @@
 // types
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { LoginMethod } from "@/modules/login-history/types";
-import type { Request } from "express";
 import type { LoginAuditService } from "../services/login-audit";
 // common
 import { UnauthorizedError } from "@/exceptions";
@@ -23,12 +22,11 @@ export class EmailVerifiedGuard {
   assertWithAudit(
     auth: AuthenticationDocument,
     email: string,
-    method: LoginMethod,
-    req: Request
+    method: LoginMethod
   ): void {
     if (auth.verifiedEmail) return;
 
-    this.audit.recordEmailNotVerified({ auth, email, method, req });
+    this.audit.recordEmailNotVerified({ auth, email, method });
     throw new UnauthorizedError({
       key: "login:errors.emailNotVerified",
       code: ERROR_CODES.LOGIN_EMAIL_NOT_VERIFIED

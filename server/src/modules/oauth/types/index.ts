@@ -61,12 +61,12 @@ export interface UserInfoResponse {
   email_verified?: boolean;
 }
 
-export type AuthorizeRequest = Request<
-  Record<string, never>,
-  unknown,
-  unknown,
-  Record<string, string | undefined>
->;
+/**
+ * Raw query of `/oauth/authorize` and `/oauth/logout`. Not a validated DTO on
+ * purpose: a bad parameter must become an RFC 6749 redirect or error body,
+ * which the services build themselves, not the pipe's 400 envelope.
+ */
+export type OAuthQuery = Record<string, string | undefined>;
 
 export type TokenRequest = Request<
   Record<string, never>,
@@ -78,7 +78,6 @@ export interface AppSignInAudit {
   client: WebAppDocument;
   session: SessionRecord;
   interactive: boolean;
-  req: Request;
   denied: boolean;
 }
 

@@ -1,15 +1,10 @@
 // common
 import { PAGINATION } from "@/common/pagination";
 // modules
-import {
-  NotificationIdParamsDto,
-  NotificationListQueryDto
-} from "@/modules/notification/dtos/requests";
+import { NotificationListQueryDto } from "@/modules/notification/dtos/requests";
 // validators
 // others
 import { expectDto } from "@test/helpers/dto-cases";
-
-const ID = "507f1f77bcf86cd799439011";
 
 describe("notification request DTOs match the Joi schemas", () => {
   it("NotificationListQueryDto ≡ notificationListQuerySchema", async () => {
@@ -46,18 +41,6 @@ describe("notification request DTOs match the Joi schemas", () => {
 
       sortOrderUnknown: { sortOrder: "up" },
       sortOrderEmpty: { sortOrder: "" }
-    });
-  });
-
-  it("NotificationIdParamsDto ≡ notificationIdParamSchema", async () => {
-    await expectDto(NotificationIdParamsDto, {
-      valid: { id: ID },
-      unknownStripped: { id: ID, extra: "x" },
-      missing: {},
-      null: { id: null },
-      empty: { id: "" },
-      wrongType: { id: 123 },
-      notHex: { id: "507f1f77bcf86cd79943901z" }
     });
   });
 });

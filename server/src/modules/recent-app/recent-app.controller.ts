@@ -6,15 +6,16 @@ import type { RecentAppService } from "./services";
 // common
 import {
   Auth,
+  PathVariable,
   RateLimit,
-  Respond,
-  ValidParams,
-  ValidQuery
+  RequestParam,
+  Respond
 } from "@/common/routing";
+// validators
+import { IsRequiredObjectId } from "@/validators/decorators";
 // others
 import {
   ListRecentAppsQueryDto,
-  RecentAppIdParamsDto,
   RecentAppsStatsQueryDto
 } from "./dtos/requests";
 
@@ -25,14 +26,14 @@ export class RecentAppController {
 
   @Get("/")
   @Respond({ message: "recentApp:success.list" })
-  list(@ValidQuery(ListRecentAppsQueryDto) query: ListRecentAppsQueryDto) {
+  list(@RequestParam(ListRecentAppsQueryDto) query: ListRecentAppsQueryDto) {
     return this.service.list(query);
   }
 
   // Before "/:appId" so the literal segment is not read as an app id.
   @Get("/stats")
   @Respond({ message: "recentApp:success.stats" })
-  stats(@ValidQuery(RecentAppsStatsQueryDto) query: RecentAppsStatsQueryDto) {
+  stats(@RequestParam(RecentAppsStatsQueryDto) query: RecentAppsStatsQueryDto) {
     return this.service.stats(query);
   }
 
@@ -46,22 +47,36 @@ export class RecentAppController {
   @RateLimit("recordRecentAppByUser")
   @Respond({ status: StatusCodes.NO_CONTENT })
   async record(
-    @ValidParams(RecentAppIdParamsDto) params: RecentAppIdParamsDto
+    @PathVariable(
+      "appId",
+      IsRequiredObjectId("recentApp:validation.appId.invalid")
+    )
+    appId: string
   ) {
-    await this.service.recordLaunch(params.appId);
+    await this.service.recordLaunch(appId);
   }
 
   @Delete("/:appId")
   @Respond({ status: StatusCodes.NO_CONTENT })
-  async hide(@ValidParams(RecentAppIdParamsDto) params: RecentAppIdParamsDto) {
-    await this.service.hide(params.appId);
+  async hide(
+    @PathVariable(
+      "appId",
+      IsRequiredObjectId("recentApp:validation.appId.invalid")
+    )
+    appId: string
+  ) {
+    await this.service.hide(appId);
   }
 
   @Post("/:appId/restore")
   @Respond({ status: StatusCodes.NO_CONTENT })
   async restore(
-    @ValidParams(RecentAppIdParamsDto) params: RecentAppIdParamsDto
+    @PathVariable(
+      "appId",
+      IsRequiredObjectId("recentApp:validation.appId.invalid")
+    )
+    appId: string
   ) {
-    await this.service.restore(params.appId);
+    await this.service.restore(appId);
   }
 }

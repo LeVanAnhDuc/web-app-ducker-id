@@ -1,5 +1,4 @@
 // types
-import type { Request } from "express";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { LoginHistoryService } from "@/modules/login-history/services";
 // modules
@@ -16,17 +15,15 @@ export const recordInvalidPassword = (
     auth: AuthenticationDocument;
     email: string;
     attemptCount: number;
-    req: Request;
   }
 ): void => {
-  const { auth, email, attemptCount, req } = params;
+  const { auth, email, attemptCount } = params;
 
   historyService.recordFailedLogin({
     userId: auth._id,
     usernameAttempted: email,
     loginMethod: LOGIN_METHODS.PASSWORD,
-    failReason: LOGIN_FAIL_REASONS.INVALID_PASSWORD,
-    req
+    failReason: LOGIN_FAIL_REASONS.INVALID_PASSWORD
   });
 
   Logger.warn("Login failed - invalid password", { email, attemptCount });

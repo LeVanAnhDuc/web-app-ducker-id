@@ -1,11 +1,15 @@
 jest.mock("@/modules/authentication/helpers");
 jest.mock("@/utils/crypto/bcrypt");
 jest.mock("@/utils/request-context", () => ({
-  RequestContext: { requireAuthId: jest.fn() }
+  RequestContext: {
+    requireAuthId: jest.fn(),
+    // A plain function, so `resetMocks` keeps it between tests.
+    getClient: () => ({ ip: "1.2.3.4", userAgent: "jest", language: "en" })
+  }
 }));
 
 // types
-import type { ChangePasswordRequest } from "../../types";
+import type { ChangePasswordBodyDto } from "../../dtos/requests";
 import type { AuthenticationService } from "@/modules/authentication/services";
 import type { UserService } from "@/modules/user/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
@@ -32,16 +36,11 @@ const mockedRequireAuthId = RequestContext.requireAuthId as jest.MockedFunction<
   typeof RequestContext.requireAuthId
 >;
 
-const buildReq = () =>
-  ({
-    body: {
-      currentPassword: "OldPass1!",
-      newPassword: "NewPass1!",
-      confirmPassword: "NewPass1!"
-    },
-    ip: "1.2.3.4",
-    headers: { "user-agent": "jest" }
-  }) as unknown as ChangePasswordRequest;
+const buildBody = (): ChangePasswordBodyDto => ({
+  currentPassword: "OldPass1!",
+  newPassword: "NewPass1!",
+  confirmPassword: "NewPass1!"
+});
 
 const AUTH = {
   _id: { toString: () => "auth1" },
@@ -103,7 +102,7 @@ describe("ChangePasswordService", () => {
     const { service, authService } = makeService();
     authService.findById.mockResolvedValue(null as never);
 
-    await expect(service.changePassword(buildReq())).rejects.toThrow(
+    await expect(service.changePassword(buildBody())).rejects.toThrow(
       UnauthorizedError
     );
     expect(authService.updatePassword).not.toHaveBeenCalled();
@@ -116,7 +115,7 @@ describe("ChangePasswordService", () => {
     authService.findById.mockResolvedValue(AUTH as never);
     userService.findByAuthId.mockResolvedValue(null as never);
 
-    await expect(service.changePassword(buildReq())).rejects.toThrow(
+    await expect(service.changePassword(buildBody())).rejects.toThrow(
       UnauthorizedError
     );
     expect(authService.updatePassword).toHaveBeenCalledWith("auth1", "newHash");
@@ -129,7 +128,7 @@ describe("ChangePasswordService", () => {
     mockedIsValid.mockReturnValue(false);
     authService.findById.mockResolvedValue(AUTH as never);
 
-    await expect(service.changePassword(buildReq())).rejects.toThrow(
+    await expect(service.changePassword(buildBody())).rejects.toThrow(
       BadRequestError
     );
     expect(notificationDispatcher.notify).not.toHaveBeenCalled();
@@ -140,7 +139,7 @@ describe("ChangePasswordService", () => {
     mockedIsValid.mockReturnValue(false);
     authService.findById.mockResolvedValue(AUTH as never);
 
-    await expect(service.changePassword(buildReq())).rejects.toThrow(
+    await expect(service.changePassword(buildBody())).rejects.toThrow(
       BadRequestError
     );
     expect(authService.updatePassword).not.toHaveBeenCalled();
@@ -158,7 +157,7 @@ describe("ChangePasswordService", () => {
     authService.findById.mockResolvedValue(AUTH as never);
     userService.findByAuthId.mockResolvedValue(USER as never);
 
-    const result = await service.changePassword(buildReq());
+    const result = await service.changePassword(buildBody());
 
     expect(authService.updatePassword).toHaveBeenCalledWith("auth1", "newHash");
     expect(mockedGenTokens).toHaveBeenCalledWith({

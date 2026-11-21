@@ -1,6 +1,6 @@
 // types
 import type { Schema } from "mongoose";
-import type { Request } from "express";
+import type { ClientInfo } from "@/utils/request-context";
 import type { LoginMethod } from "../types";
 import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 import type { LoginHistoryRepository } from "../repository/login-history.repository";
@@ -17,6 +17,7 @@ import {
 } from "@/modules/notification/constants";
 // others
 import { Logger } from "@/libs/logger";
+import { RequestContext } from "@/utils/request-context";
 import { MILLISECONDS_PER_DAY } from "@/constants/time";
 import {
   assessLoginAnomaly,
@@ -28,7 +29,6 @@ interface SuccessfulLoginParams {
   userId: Schema.Types.ObjectId | string;
   usernameAttempted: string;
   loginMethod: LoginMethod;
-  req: Request;
 }
 
 /**
@@ -45,7 +45,8 @@ export const recordSuccessfulLogin = (
   },
   params: SuccessfulLoginParams
 ): void => {
-  void recordAndAssess(deps, params);
+  // Read now, while still inside the request that caused the sign-in.
+  void recordAndAssess(deps, params, RequestContext.getClient());
 };
 
 const recordAndAssess = async (
@@ -53,7 +54,8 @@ const recordAndAssess = async (
     loginHistoryRepo: LoginHistoryRepository;
     notificationDispatcher: NotificationDispatcher;
   },
-  { userId, usernameAttempted, loginMethod, req }: SuccessfulLoginParams
+  { userId, usernameAttempted, loginMethod }: SuccessfulLoginParams,
+  client: ClientInfo
 ): Promise<void> => {
   const authId = userId.toString();
 
@@ -63,7 +65,7 @@ const recordAndAssess = async (
       usernameAttempted,
       status: LOGIN_STATUSES.SUCCESS,
       loginMethod,
-      req
+      client
     });
 
     // Read the history before writing this sign-in, or it would always find

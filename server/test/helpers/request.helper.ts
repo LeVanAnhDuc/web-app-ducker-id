@@ -1,7 +1,7 @@
 // types
 import type { Request } from "express";
 
-type MockRequestOverrides = {
+export type MockRequestOverrides = {
   language?: string;
   ip?: string;
   headers?: Record<string, string | string[] | undefined>;

@@ -1,4 +1,3 @@
-export { CategoryIdParamsDto } from "./category-id.params";
 export {
   CreateCategoryBodyDto,
   CreateCategoryNameDto

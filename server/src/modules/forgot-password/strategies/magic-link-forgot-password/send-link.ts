@@ -1,5 +1,5 @@
 // types
-import type { FPMagicLinkSendRequest } from "../../types";
+import type { MagicLinkSendBodyDto } from "../../dtos/requests";
 import type { SendMagicLinkResponseDto } from "../../dtos";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { MagicLinkForgotPasswordRepository } from "../../repositories/magic-link-forgot-password.repository";
@@ -11,6 +11,7 @@ import type {
 // dtos
 import { toSendMagicLinkResponseDto } from "../../dtos";
 // others
+import { RequestContext } from "@/utils/request-context";
 import ENV from "@/constants/env";
 import { EmailType } from "@/types/services/email";
 import { Logger } from "@/libs/logger";
@@ -42,10 +43,10 @@ export const sendLink = async (
     resendLimitGuard: MagicLinkResendLimitGuard;
     authExistsGuard: AuthExistsGuard;
   },
-  req: FPMagicLinkSendRequest
+  body: MagicLinkSendBodyDto
 ): Promise<SendMagicLinkResponseDto> => {
-  const { email } = req.body;
-  const { language } = req;
+  const { email } = body;
+  const { language } = RequestContext.getClient();
 
   await deps.cooldownGuard.assert(email);
   await deps.resendLimitGuard.assert(email);

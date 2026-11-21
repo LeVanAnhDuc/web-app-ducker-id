@@ -1,5 +1,5 @@
 // types
-import type { FPResetPasswordRequest } from "../../types";
+import type { ResetPasswordBodyDto } from "../../dtos/requests";
 import type { ResetPasswordResponseDto } from "../../dtos";
 import type { AuthenticationService } from "@/modules/authentication/services";
 import type { ResetTokenRepository } from "../../repositories/reset-token.repository";
@@ -18,9 +18,9 @@ export const resetPassword = async (
     resetTokenValidGuard: ResetTokenValidGuard;
     audit: ForgotPasswordAuditService;
   },
-  req: FPResetPasswordRequest
+  body: ResetPasswordBodyDto
 ): Promise<ResetPasswordResponseDto> => {
-  const { email, resetToken, newPassword } = req.body;
+  const { email, resetToken, newPassword } = body;
 
   await deps.resetTokenValidGuard.assert(email, resetToken);
 
@@ -31,7 +31,7 @@ export const resetPassword = async (
 
   await deps.resetTokenRepo.clear(email);
 
-  deps.audit.recordPasswordReset({ email, auth, req });
+  deps.audit.recordPasswordReset({ email, auth });
 
   return toResetPasswordResponseDto();
 };

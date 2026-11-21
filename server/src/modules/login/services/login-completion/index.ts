@@ -1,5 +1,4 @@
 // types
-import type { Request } from "express";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { UserDocument } from "@/modules/user/types";
 import type { LoginMethod } from "@/modules/login-history/types";
@@ -20,11 +19,10 @@ export class LoginCompletionService {
     auth: AuthenticationDocument;
     user: UserDocument;
     method: LoginMethod;
-    req: Request;
   }): LoginResponseDto {
-    const { auth, user, method, req } = params;
+    const { auth, user, method } = params;
 
-    this.audit.recordSuccess({ auth, user, method, req });
+    this.audit.recordSuccess({ auth, user, method });
 
     // Đặt danh tính vào RequestContext để LoginController mở được phiên IdP
     // (cookie `sid`) mà không phải đổi chữ ký của cả ba login strategy.

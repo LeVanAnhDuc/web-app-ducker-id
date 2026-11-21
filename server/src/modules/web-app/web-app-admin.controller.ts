@@ -7,15 +7,16 @@ import type { WebAppService } from "./services";
 import {
   Admin,
   Auth,
+  PathVariable,
+  RequestParam,
   Respond,
-  ValidBody,
-  ValidParams,
-  ValidQuery
+  ValidBody
 } from "@/common/routing";
+// validators
+import { IsRequiredObjectId } from "@/validators/decorators";
 // others
 import {
   AdminAppsQueryDto,
-  AppIdParamsDto,
   CreateAppBodyDto,
   UpdateAppBodyDto
 } from "./dtos/requests";
@@ -28,7 +29,7 @@ export class WebAppAdminController {
 
   @Get("/")
   @Respond({ message: "webApp:success.listApps" })
-  listApps(@ValidQuery(AdminAppsQueryDto) query: AdminAppsQueryDto) {
+  listApps(@RequestParam(AdminAppsQueryDto) query: AdminAppsQueryDto) {
     return this.service.listApps(query);
   }
 
@@ -44,9 +45,10 @@ export class WebAppAdminController {
   @Patch("/:id")
   @Respond({ message: "webApp:success.updateApp" })
   updateApp(
-    @ValidParams(AppIdParamsDto) params: AppIdParamsDto,
+    @PathVariable("id", IsRequiredObjectId("webApp:validation.id.invalid"))
+    id: string,
     @ValidBody(UpdateAppBodyDto) body: UpdateAppBodyDto
   ) {
-    return this.service.updateApp(params.id, body);
+    return this.service.updateApp(id, body);
   }
 }

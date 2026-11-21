@@ -1,5 +1,4 @@
 // types
-import type { Request } from "express";
 import type { LoginHistoryService } from "@/modules/login-history/services";
 // modules
 import {
@@ -11,16 +10,15 @@ import { Logger } from "@/libs/logger";
 
 export const recordInvalidCredentials = (
   historyService: LoginHistoryService,
-  params: { email: string; req: Request }
+  params: { email: string }
 ): void => {
-  const { email, req } = params;
+  const { email } = params;
 
   historyService.recordFailedLogin({
     userId: null,
     usernameAttempted: email,
     loginMethod: LOGIN_METHODS.PASSWORD,
-    failReason: LOGIN_FAIL_REASONS.INVALID_CREDENTIALS,
-    req
+    failReason: LOGIN_FAIL_REASONS.INVALID_CREDENTIALS
   });
 
   Logger.warn("Login failed - email not found", { email });

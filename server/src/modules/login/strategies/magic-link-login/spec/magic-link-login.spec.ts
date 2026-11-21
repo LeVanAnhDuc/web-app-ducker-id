@@ -4,7 +4,6 @@ jest.mock("@/constants/env", () => ({
   default: { app: { clientUrl: "https://app.test" } }
 }));
 // types
-import type { Request } from "express";
 import type { MagicLinkLoginRepository } from "../../../repositories/magic-link-login.repository";
 import type {
   AccountExistsGuard,
@@ -21,7 +20,6 @@ import { TooManyRequestsError, UnauthorizedError } from "@/exceptions";
 // modules
 import { LOGIN_METHODS } from "@/modules/login-history/constants";
 // others
-import { makeMockRequest } from "@test/helpers/request.helper";
 import { createMagicLinkLoginRepoMock } from "@test/mocks/magic-link-login-repo.mock";
 import { createEmailDispatcherMock } from "@test/mocks/email-dispatcher.mock";
 import {
@@ -45,7 +43,6 @@ const EMAIL = "user@example.com";
 const TOKEN = "secure-token-xyz";
 
 describe("MagicLinkLoginStrategy", () => {
-  let req: Request;
   let accountExists: jest.Mocked<AccountExistsGuard>;
   let accountActive: jest.Mocked<AccountActiveGuard>;
   let emailVerified: jest.Mocked<EmailVerifiedGuard>;
@@ -58,7 +55,6 @@ describe("MagicLinkLoginStrategy", () => {
   let strategy: MagicLinkLoginStrategy;
 
   beforeEach(() => {
-    req = makeMockRequest({ language: "en" });
     accountExists = createAccountExistsGuardMock();
     accountActive = createAccountActiveGuardMock();
     emailVerified = createEmailVerifiedGuardMock();
@@ -91,7 +87,7 @@ describe("MagicLinkLoginStrategy", () => {
       accountExists.isLoginEligible.mockReturnValue(true);
       magicLinkRepo.createAndStoreToken.mockResolvedValue(TOKEN);
 
-      const result = await strategy.sendLink({ email: EMAIL }, req);
+      const result = await strategy.sendLink({ email: EMAIL });
 
       expect(cooldown.assert).toHaveBeenCalledWith(EMAIL);
       expect(accountExists.tryFind).toHaveBeenCalledWith(EMAIL);
@@ -118,7 +114,7 @@ describe("MagicLinkLoginStrategy", () => {
       accountExists.tryFind.mockResolvedValue(null);
       accountExists.isLoginEligible.mockReturnValue(false);
 
-      const result = await strategy.sendLink({ email: EMAIL }, req);
+      const result = await strategy.sendLink({ email: EMAIL });
 
       expect(magicLinkRepo.createAndStoreToken).not.toHaveBeenCalled();
       expect(emailDispatcher.send).not.toHaveBeenCalled();
@@ -144,7 +140,7 @@ describe("MagicLinkLoginStrategy", () => {
         buildUserWithAuth({ auth: { isActive: false } })
       );
 
-      const result = await strategy.sendLink({ email: EMAIL }, req);
+      const result = await strategy.sendLink({ email: EMAIL });
 
       expect(magicLinkRepo.createAndStoreToken).not.toHaveBeenCalled();
       expect(emailDispatcher.send).not.toHaveBeenCalled();
@@ -160,7 +156,7 @@ describe("MagicLinkLoginStrategy", () => {
         buildUserWithAuth({ auth: { verifiedEmail: false } })
       );
 
-      const result = await strategy.sendLink({ email: EMAIL }, req);
+      const result = await strategy.sendLink({ email: EMAIL });
 
       expect(magicLinkRepo.createAndStoreToken).not.toHaveBeenCalled();
       expect(emailDispatcher.send).not.toHaveBeenCalled();
@@ -184,29 +180,23 @@ describe("MagicLinkLoginStrategy", () => {
         expiresIn: 3600
       });
 
-      const result = await strategy.verifyLink(
-        { email: EMAIL, token: TOKEN },
-        req
-      );
+      const result = await strategy.verifyLink({ email: EMAIL, token: TOKEN });
 
       expect(accountActive.assertWithAudit).toHaveBeenCalledWith(
         fixture.auth,
         EMAIL,
-        LOGIN_METHODS.MAGIC_LINK,
-        req
+        LOGIN_METHODS.MAGIC_LINK
       );
       expect(emailVerified.assertWithAudit).toHaveBeenCalledWith(
         fixture.auth,
         EMAIL,
-        LOGIN_METHODS.MAGIC_LINK,
-        req
+        LOGIN_METHODS.MAGIC_LINK
       );
       expect(magicLinkRepo.verifyToken).toHaveBeenCalledWith(EMAIL, TOKEN);
       expect(completion.complete).toHaveBeenCalledWith({
         auth: fixture.auth,
         user: fixture.user,
-        method: LOGIN_METHODS.MAGIC_LINK,
-        req
+        method: LOGIN_METHODS.MAGIC_LINK
       });
       expect(result).toEqual({
         accessToken: "a",
@@ -224,7 +214,7 @@ describe("MagicLinkLoginStrategy", () => {
         })
       );
 
-      const promise = strategy.verifyLink({ email: EMAIL, token: TOKEN }, req);
+      const promise = strategy.verifyLink({ email: EMAIL, token: TOKEN });
 
       await expect(promise).rejects.toBeInstanceOf(TooManyRequestsError);
       await expect(promise).rejects.toMatchObject({
@@ -245,7 +235,7 @@ describe("MagicLinkLoginStrategy", () => {
       });
 
       await expect(
-        strategy.verifyLink({ email: EMAIL, token: TOKEN }, req)
+        strategy.verifyLink({ email: EMAIL, token: TOKEN })
       ).rejects.toMatchObject({
         code: ERROR_CODES.LOGIN_EMAIL_NOT_VERIFIED
       });
@@ -258,7 +248,7 @@ describe("MagicLinkLoginStrategy", () => {
       accountExists.assert.mockResolvedValue(fixture);
       magicLinkRepo.verifyToken.mockResolvedValue(false);
 
-      const promise = strategy.verifyLink({ email: EMAIL, token: "bad" }, req);
+      const promise = strategy.verifyLink({ email: EMAIL, token: "bad" });
 
       await expect(promise).rejects.toBeInstanceOf(UnauthorizedError);
       await expect(promise).rejects.toMatchObject({
@@ -266,8 +256,7 @@ describe("MagicLinkLoginStrategy", () => {
       });
       expect(audit.recordInvalidMagicLink).toHaveBeenCalledWith({
         auth: fixture.auth,
-        email: EMAIL,
-        req
+        email: EMAIL
       });
       expect(completion.complete).not.toHaveBeenCalled();
     });

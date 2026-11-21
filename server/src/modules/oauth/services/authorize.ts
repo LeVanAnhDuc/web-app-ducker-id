@@ -1,11 +1,11 @@
 // types
-import type { Request } from "express";
 import type { WebAppDocument } from "@/modules/web-app/types";
 import type { SessionRecord } from "@/modules/session/types";
 import type {
   AppSignInAudit,
   AuthorizeOutcome,
-  AuthorizeParams
+  AuthorizeParams,
+  OAuthQuery
 } from "../types";
 import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
 import type { UserService } from "@/modules/user/services";
@@ -122,7 +122,7 @@ const auditAppSignIn = async (
     loginHistoryService: LoginHistoryService;
     recentAppService: RecentAppService;
   },
-  { client, session, interactive, req, denied }: AppSignInAudit
+  { client, session, interactive, denied }: AppSignInAudit
 ): Promise<void> => {
   try {
     const user = await deps.userService.findByAuthId(session.authId);
@@ -135,8 +135,7 @@ const auditAppSignIn = async (
         webAppId: client._id,
         clientName: client.displayName,
         interactive
-      },
-      req
+      }
     };
 
     if (denied) {
@@ -275,16 +274,15 @@ export const authorize = async (
     recentAppService: RecentAppService;
     accessPolicy: AccessPolicy;
   },
-  req: Request
+  query: OAuthQuery,
+  sid: string | null
 ): Promise<AuthorizeOutcome> => {
-  const query = req.query as Record<string, string | undefined>;
-
   const params = query.auth_req
     ? await restorePendingRequest(deps.oauthRepo, query.auth_req)
     : await buildParamsFromQuery(deps.webAppRepo, query);
 
   const client = await resolveClient(deps.webAppRepo, params.clientId);
-  const session = await deps.sessionService.resolve(req);
+  const session = await deps.sessionService.resolve(sid);
 
   if (!session) {
     // prompt=none nghĩa là client chỉ dò xem có phiên không, tuyệt đối không
@@ -316,7 +314,6 @@ export const authorize = async (
     client,
     session,
     interactive: isInteractiveSignIn(query.auth_req, session),
-    req,
     denied: false
   };
 

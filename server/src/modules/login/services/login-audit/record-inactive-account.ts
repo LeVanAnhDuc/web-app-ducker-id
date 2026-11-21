@@ -1,5 +1,4 @@
 // types
-import type { Request } from "express";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { LoginHistoryService } from "@/modules/login-history/services";
 import type { LoginMethod } from "@/modules/login-history/types";
@@ -14,17 +13,15 @@ export const recordInactiveAccount = (
     auth: AuthenticationDocument;
     email: string;
     method: LoginMethod;
-    req: Request;
   }
 ): void => {
-  const { auth, email, method, req } = params;
+  const { auth, email, method } = params;
 
   historyService.recordFailedLogin({
     userId: auth._id,
     usernameAttempted: email,
     loginMethod: method,
-    failReason: LOGIN_FAIL_REASONS.ACCOUNT_INACTIVE,
-    req
+    failReason: LOGIN_FAIL_REASONS.ACCOUNT_INACTIVE
   });
 
   Logger.warn("Account inactive", { email });

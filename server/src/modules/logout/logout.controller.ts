@@ -8,6 +8,11 @@ import type { LogoutService } from "./services";
 import { PasswordChangeAuth, Respond } from "@/common/routing";
 // modules
 import {
+  SESSION_CLEAR_COOKIE_OPTIONS,
+  SESSION_COOKIE
+} from "@/modules/session/constants";
+import { readSid } from "@/modules/session/helpers";
+import {
   REFRESH_TOKEN,
   REFRESH_TOKEN_CLEAR_COOKIE_OPTIONS
 } from "@/modules/token/constants";
@@ -21,8 +26,11 @@ export class LogoutController {
   @PasswordChangeAuth()
   @Respond({ status: StatusCodes.NO_CONTENT })
   async logout(@Req() req: Request, @Res() res: Response): Promise<void> {
-    await this.service.logout(req, res);
+    const cookies = req.cookies as Record<string, string> | undefined;
+
+    await this.service.logout(cookies?.[REFRESH_TOKEN], readSid(req));
 
     res.clearCookie(REFRESH_TOKEN, REFRESH_TOKEN_CLEAR_COOKIE_OPTIONS);
+    res.clearCookie(SESSION_COOKIE, SESSION_CLEAR_COOKIE_OPTIONS);
   }
 }

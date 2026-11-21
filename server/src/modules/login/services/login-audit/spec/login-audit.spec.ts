@@ -1,5 +1,4 @@
 // types
-import type { Request } from "express";
 import type { LoginHistoryService } from "@/modules/login-history/services";
 // modules
 import {
@@ -7,7 +6,6 @@ import {
   LOGIN_FAIL_REASONS
 } from "@/modules/login-history/constants";
 // others
-import { makeMockRequest } from "@test/helpers/request.helper";
 import { createLoginHistoryServiceMock } from "@test/mocks/login-history-service.mock";
 import { buildAuth, buildUser } from "@test/factories/user-with-auth.factory";
 import { LoginAuditService } from "../";
@@ -15,12 +13,10 @@ import { LoginAuditService } from "../";
 const EMAIL = "user@example.com";
 
 describe("LoginAuditService", () => {
-  let req: Request;
   let historyService: jest.Mocked<LoginHistoryService>;
   let audit: LoginAuditService;
 
   beforeEach(() => {
-    req = makeMockRequest();
     historyService = createLoginHistoryServiceMock();
     audit = new LoginAuditService(historyService);
   });
@@ -33,29 +29,26 @@ describe("LoginAuditService", () => {
       audit.recordSuccess({
         auth,
         user,
-        method: LOGIN_METHODS.PASSWORD,
-        req
+        method: LOGIN_METHODS.PASSWORD
       });
 
       expect(historyService.recordSuccessfulLogin).toHaveBeenCalledWith({
         userId: auth._id,
         usernameAttempted: user.email,
-        loginMethod: LOGIN_METHODS.PASSWORD,
-        req
+        loginMethod: LOGIN_METHODS.PASSWORD
       });
     });
   });
 
   describe("recordInvalidCredentials", () => {
     it("records failed login with userId=null and INVALID_CREDENTIALS reason", () => {
-      audit.recordInvalidCredentials({ email: EMAIL, req });
+      audit.recordInvalidCredentials({ email: EMAIL });
 
       expect(historyService.recordFailedLogin).toHaveBeenCalledWith({
         userId: null,
         usernameAttempted: EMAIL,
         loginMethod: LOGIN_METHODS.PASSWORD,
-        failReason: LOGIN_FAIL_REASONS.INVALID_CREDENTIALS,
-        req
+        failReason: LOGIN_FAIL_REASONS.INVALID_CREDENTIALS
       });
     });
   });
@@ -64,14 +57,13 @@ describe("LoginAuditService", () => {
     it("records failed login with auth._id and INVALID_PASSWORD reason", () => {
       const auth = buildAuth();
 
-      audit.recordInvalidPassword({ auth, email: EMAIL, attemptCount: 3, req });
+      audit.recordInvalidPassword({ auth, email: EMAIL, attemptCount: 3 });
 
       expect(historyService.recordFailedLogin).toHaveBeenCalledWith({
         userId: auth._id,
         usernameAttempted: EMAIL,
         loginMethod: LOGIN_METHODS.PASSWORD,
-        failReason: LOGIN_FAIL_REASONS.INVALID_PASSWORD,
-        req
+        failReason: LOGIN_FAIL_REASONS.INVALID_PASSWORD
       });
     });
   });
@@ -83,16 +75,14 @@ describe("LoginAuditService", () => {
       audit.recordInactiveAccount({
         auth,
         email: EMAIL,
-        method: LOGIN_METHODS.PASSWORD,
-        req
+        method: LOGIN_METHODS.PASSWORD
       });
 
       expect(historyService.recordFailedLogin).toHaveBeenCalledWith({
         userId: auth._id,
         usernameAttempted: EMAIL,
         loginMethod: LOGIN_METHODS.PASSWORD,
-        failReason: LOGIN_FAIL_REASONS.ACCOUNT_INACTIVE,
-        req
+        failReason: LOGIN_FAIL_REASONS.ACCOUNT_INACTIVE
       });
     });
   });
@@ -104,8 +94,7 @@ describe("LoginAuditService", () => {
       audit.recordEmailNotVerified({
         auth,
         email: EMAIL,
-        method: LOGIN_METHODS.PASSWORD,
-        req
+        method: LOGIN_METHODS.PASSWORD
       });
 
       expect(historyService.recordFailedLogin).toHaveBeenCalledWith(
@@ -121,7 +110,7 @@ describe("LoginAuditService", () => {
     it("records failed login with OTP method and INVALID_OTP reason", () => {
       const auth = buildAuth();
 
-      audit.recordInvalidOtp({ auth, email: EMAIL, attempts: 2, req });
+      audit.recordInvalidOtp({ auth, email: EMAIL, attempts: 2 });
 
       expect(historyService.recordFailedLogin).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -137,7 +126,7 @@ describe("LoginAuditService", () => {
     it("records failed login with MAGIC_LINK method and INVALID_MAGIC_LINK reason", () => {
       const auth = buildAuth();
 
-      audit.recordInvalidMagicLink({ auth, email: EMAIL, req });
+      audit.recordInvalidMagicLink({ auth, email: EMAIL });
 
       expect(historyService.recordFailedLogin).toHaveBeenCalledWith(
         expect.objectContaining({

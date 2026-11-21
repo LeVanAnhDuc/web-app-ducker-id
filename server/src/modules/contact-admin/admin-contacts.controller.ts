@@ -6,15 +6,16 @@ import type { ContactAdminService } from "./services";
 import {
   Admin,
   Auth,
+  PathVariable,
+  RequestParam,
   Respond,
-  ValidBody,
-  ValidParams,
-  ValidQuery
+  ValidBody
 } from "@/common/routing";
+// validators
+import { IsRequiredObjectId } from "@/validators/decorators";
 // others
 import {
   AdminContactsQueryDto,
-  ContactIdParamsDto,
   UpdateContactStatusBodyDto
 } from "./dtos/requests";
 
@@ -27,7 +28,7 @@ export class AdminContactsController {
   @Get("/")
   @Respond({ message: "contactAdmin:success.getContactList" })
   getContactList(
-    @ValidQuery(AdminContactsQueryDto) query: AdminContactsQueryDto
+    @RequestParam(AdminContactsQueryDto) query: AdminContactsQueryDto
   ) {
     return this.service.getContactList(query);
   }
@@ -35,17 +36,19 @@ export class AdminContactsController {
   @Get("/:id")
   @Respond({ message: "contactAdmin:success.getContactDetail" })
   getContactDetail(
-    @ValidParams(ContactIdParamsDto) params: ContactIdParamsDto
+    @PathVariable("id", IsRequiredObjectId("contactAdmin:errors.invalidId"))
+    id: string
   ) {
-    return this.service.getContactDetail(params.id);
+    return this.service.getContactDetail(id);
   }
 
   @Patch("/:id/status")
   @Respond({ message: "contactAdmin:success.updateContactStatus" })
   updateContactStatus(
-    @ValidParams(ContactIdParamsDto) params: ContactIdParamsDto,
+    @PathVariable("id", IsRequiredObjectId("contactAdmin:errors.invalidId"))
+    id: string,
     @ValidBody(UpdateContactStatusBodyDto) body: UpdateContactStatusBodyDto
   ) {
-    return this.service.updateContactStatus(params.id, body.status);
+    return this.service.updateContactStatus(id, body.status);
   }
 }

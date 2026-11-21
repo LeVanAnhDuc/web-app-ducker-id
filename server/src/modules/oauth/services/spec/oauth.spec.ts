@@ -1,5 +1,4 @@
 // types
-import type { Request } from "express";
 import type { WebAppDocument } from "@/modules/web-app/types";
 import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
 import type { AuthenticationService } from "@/modules/authentication/services";
@@ -125,8 +124,8 @@ const setup = ({
   };
 };
 
-const reqWith = (query: Record<string, string>) =>
-  ({ query, headers: {} }) as unknown as Request;
+// The controller reads it from the cookie; the session mock ignores it.
+const SID = "sid-1";
 
 // The audit runs fire-and-forget after the redirect is decided.
 const flush = () => new Promise((resolve) => setImmediate(resolve));
@@ -135,7 +134,7 @@ describe("OAuthService.authorize — app sign-in audit", () => {
   it("records a silent SSO when a code is issued from an existing session", async () => {
     const { service, loginHistoryService } = setup();
 
-    const outcome = await service.authorize(reqWith(freshQuery));
+    const outcome = await service.authorize(freshQuery, SID);
     await flush();
 
     expect(outcome.kind).toBe("redirect");
@@ -154,7 +153,7 @@ describe("OAuthService.authorize — app sign-in audit", () => {
   it("records an interactive sign-in when resuming right after a login", async () => {
     const { service, loginHistoryService } = setup();
 
-    await service.authorize(reqWith({ auth_req: "req-1" }));
+    await service.authorize({ auth_req: "req-1" }, SID);
     await flush();
 
     expect(loginHistoryService.recordAppSignIn).toHaveBeenCalledWith(
@@ -170,7 +169,7 @@ describe("OAuthService.authorize — app sign-in audit", () => {
       session: makeSession({ authTime: stale })
     });
 
-    await service.authorize(reqWith({ auth_req: "req-1" }));
+    await service.authorize({ auth_req: "req-1" }, SID);
     await flush();
 
     expect(loginHistoryService.recordAppSignIn).toHaveBeenCalledWith(
@@ -185,7 +184,7 @@ describe("OAuthService.authorize — app sign-in audit", () => {
       client: makeClient({ requiredRoles: ["admin"] } as never)
     });
 
-    await expect(service.authorize(reqWith(freshQuery))).rejects.toBeInstanceOf(
+    await expect(service.authorize(freshQuery, SID)).rejects.toBeInstanceOf(
       OAuthError
     );
     await flush();
@@ -202,7 +201,7 @@ describe("OAuthService.authorize — app sign-in audit", () => {
     const { service, loginHistoryService } = setup({ session: null });
 
     await expect(
-      service.authorize(reqWith({ ...freshQuery, prompt: "none" }))
+      service.authorize({ ...freshQuery, prompt: "none" }, SID)
     ).rejects.toBeInstanceOf(OAuthError);
     await flush();
 
@@ -213,7 +212,7 @@ describe("OAuthService.authorize — app sign-in audit", () => {
   it("records nothing when sending the user to the login page", async () => {
     const { service, loginHistoryService } = setup({ session: null });
 
-    const outcome = await service.authorize(reqWith(freshQuery));
+    const outcome = await service.authorize(freshQuery, SID);
     await flush();
 
     expect(outcome.kind).toBe("login");
@@ -226,7 +225,7 @@ describe("OAuthService.authorize — app sign-in audit", () => {
       new Error("mongo down")
     );
 
-    const outcome = await service.authorize(reqWith(freshQuery));
+    const outcome = await service.authorize(freshQuery, SID);
     await flush();
 
     expect(outcome.kind).toBe("redirect");
@@ -236,7 +235,7 @@ describe("OAuthService.authorize — app sign-in audit", () => {
   it("records the app as recently used when a code is issued", async () => {
     const { service, recentAppService } = setup();
 
-    await service.authorize(reqWith(freshQuery));
+    await service.authorize(freshQuery, SID);
     await flush();
 
     expect(recentAppService.record).toHaveBeenCalledWith(
@@ -250,7 +249,7 @@ describe("OAuthService.authorize — app sign-in audit", () => {
       client: makeClient({ requiredRoles: ["admin"] } as never)
     });
 
-    await expect(service.authorize(reqWith(freshQuery))).rejects.toBeInstanceOf(
+    await expect(service.authorize(freshQuery, SID)).rejects.toBeInstanceOf(
       OAuthError
     );
     await flush();
@@ -264,7 +263,7 @@ describe("OAuthService.authorize — app sign-in audit", () => {
       new Error("mongo down")
     );
 
-    const outcome = await service.authorize(reqWith(freshQuery));
+    const outcome = await service.authorize(freshQuery, SID);
     await flush();
 
     expect(outcome.kind).toBe("redirect");
@@ -276,7 +275,7 @@ describe("OAuthService.authorize — entitlement", () => {
   const APP = "64b7f0c2f1a2b3c4d5e6f7c1";
 
   const expectDenied = async (service: OAuthService) => {
-    await expect(service.authorize(reqWith(freshQuery))).rejects.toMatchObject({
+    await expect(service.authorize(freshQuery, SID)).rejects.toMatchObject({
       oauthError: "access_denied"
     });
   };
@@ -284,7 +283,7 @@ describe("OAuthService.authorize — entitlement", () => {
   it("reads the overrides of the session's user", async () => {
     const { service, entitlementRepo } = setup();
 
-    await service.authorize(reqWith(freshQuery));
+    await service.authorize(freshQuery, SID);
 
     expect(entitlementRepo.findByUser).toHaveBeenCalledWith(SESSION_USER);
   });
@@ -295,7 +294,7 @@ describe("OAuthService.authorize — entitlement", () => {
       session: makeSession({ roles: "admin" })
     });
 
-    const outcome = await service.authorize(reqWith(freshQuery));
+    const outcome = await service.authorize(freshQuery, SID);
 
     expect(outcome.kind).toBe("redirect");
   });
@@ -325,7 +324,7 @@ describe("OAuthService.authorize — entitlement", () => {
       overrides: [{ userId: SESSION_USER, webAppId: APP, effect: "allow" }]
     });
 
-    const outcome = await service.authorize(reqWith(freshQuery));
+    const outcome = await service.authorize(freshQuery, SID);
 
     expect(outcome.kind).toBe("redirect");
   });

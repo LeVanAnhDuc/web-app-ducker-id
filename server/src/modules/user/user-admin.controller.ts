@@ -6,13 +6,15 @@ import type { UserService } from "./services";
 import {
   Admin,
   Auth,
+  PathVariable,
   RateLimit,
-  Respond,
-  ValidParams,
-  ValidQuery
+  RequestParam,
+  Respond
 } from "@/common/routing";
+// validators
+import { IsRequiredObjectId } from "@/validators/decorators";
 // others
-import { AdminUserIdParamsDto, AdminUsersQueryDto } from "./dtos/requests";
+import { AdminUsersQueryDto } from "./dtos/requests";
 
 @JsonController("/admin/users")
 @Auth()
@@ -22,30 +24,34 @@ export class UserAdminController {
 
   @Get("/")
   @Respond({ message: "user:success.getAdminUsers" })
-  getAdminUsers(@ValidQuery(AdminUsersQueryDto) query: AdminUsersQueryDto) {
+  getAdminUsers(@RequestParam(AdminUsersQueryDto) query: AdminUsersQueryDto) {
     return this.service.getAdminUsers(query);
   }
 
   @Patch("/:id/lock")
   @RateLimit("adminUserMutationByIpAndUser")
   @Respond({ message: "user:success.lockUser" })
-  lockUser(@ValidParams(AdminUserIdParamsDto) params: AdminUserIdParamsDto) {
-    return this.service.setUserActive(params.id, false);
+  lockUser(
+    @PathVariable("id", IsRequiredObjectId("user:errors.invalidId")) id: string
+  ) {
+    return this.service.setUserActive(id, false);
   }
 
   @Patch("/:id/unlock")
   @RateLimit("adminUserMutationByIpAndUser")
   @Respond({ message: "user:success.unlockUser" })
-  unlockUser(@ValidParams(AdminUserIdParamsDto) params: AdminUserIdParamsDto) {
-    return this.service.setUserActive(params.id, true);
+  unlockUser(
+    @PathVariable("id", IsRequiredObjectId("user:errors.invalidId")) id: string
+  ) {
+    return this.service.setUserActive(id, true);
   }
 
   @Post("/:id/reset-password")
   @RateLimit("adminUserMutationByIpAndUser")
   @Respond({ message: "user:success.resetPassword" })
   resetUserPassword(
-    @ValidParams(AdminUserIdParamsDto) params: AdminUserIdParamsDto
+    @PathVariable("id", IsRequiredObjectId("user:errors.invalidId")) id: string
   ) {
-    return this.service.adminResetPassword(params.id);
+    return this.service.adminResetPassword(id);
   }
 }

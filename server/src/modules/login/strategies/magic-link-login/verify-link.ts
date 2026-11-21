@@ -1,5 +1,4 @@
 // types
-import type { Request } from "express";
 import type { MagicLinkVerifyBodyDto } from "../../dtos/requests";
 import type { LoginResponseDto } from "../../dtos";
 import type { MagicLinkLoginRepository } from "../../repositories/magic-link-login.repository";
@@ -30,8 +29,7 @@ export const verifyLink = async (
     audit: LoginAuditService;
     completion: LoginCompletionService;
   },
-  body: MagicLinkVerifyBodyDto,
-  req: Request
+  body: MagicLinkVerifyBodyDto
 ): Promise<LoginResponseDto> => {
   const { email, token } = body;
 
@@ -44,19 +42,17 @@ export const verifyLink = async (
   deps.accountActiveGuard.assertWithAudit(
     auth,
     email,
-    LOGIN_METHODS.MAGIC_LINK,
-    req
+    LOGIN_METHODS.MAGIC_LINK
   );
   deps.emailVerifiedGuard.assertWithAudit(
     auth,
     email,
-    LOGIN_METHODS.MAGIC_LINK,
-    req
+    LOGIN_METHODS.MAGIC_LINK
   );
 
   const isValid = await deps.magicLinkLoginRepo.verifyToken(email, token);
   if (!isValid) {
-    deps.audit.recordInvalidMagicLink({ auth, email, req });
+    deps.audit.recordInvalidMagicLink({ auth, email });
     throw new UnauthorizedError({
       key: "login:errors.invalidMagicLink",
       code: ERROR_CODES.LOGIN_MAGIC_LINK_INVALID
@@ -73,7 +69,6 @@ export const verifyLink = async (
   return deps.completion.complete({
     auth,
     user,
-    method: LOGIN_METHODS.MAGIC_LINK,
-    req
+    method: LOGIN_METHODS.MAGIC_LINK
   });
 };

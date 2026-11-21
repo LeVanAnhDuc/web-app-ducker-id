@@ -2,7 +2,7 @@ jest.mock("@/utils/crypto/bcrypt");
 
 // types
 import type { AuthenticationService } from "@/modules/authentication/services";
-import type { FPResetPasswordRequest } from "../../../types";
+import type { ResetPasswordBodyDto } from "../../../dtos/requests";
 import type { ResetTokenRepository } from "../../../repositories/reset-token.repository";
 // common
 import { UnauthorizedError } from "@/exceptions";
@@ -12,7 +12,6 @@ import { AuthExistsGuard, ResetTokenValidGuard } from "../../../guards";
 import { ForgotPasswordAuditService } from "../../forgot-password-audit";
 import { buildUserWithAuth } from "@test/factories/user-with-auth.factory";
 import { createLoginHistoryServiceMock } from "@test/mocks/login-history-service.mock";
-import { makeMockRequest } from "@test/helpers/request.helper";
 import { ForgotPasswordService } from "../";
 
 const mockedHash = hashValue as jest.MockedFunction<typeof hashValue>;
@@ -20,15 +19,14 @@ const mockedHash = hashValue as jest.MockedFunction<typeof hashValue>;
 const EMAIL = "user@example.com";
 const AUTH_ID = "auth-id-123";
 
-const req = (over: Partial<FPResetPasswordRequest["body"]> = {}) =>
-  makeMockRequest({
-    body: {
-      email: EMAIL,
-      resetToken: "a-reset-token",
-      newPassword: "Str0ng@New",
-      ...over
-    }
-  }) as unknown as FPResetPasswordRequest;
+const body = (
+  over: Partial<ResetPasswordBodyDto> = {}
+): ResetPasswordBodyDto => ({
+  email: EMAIL,
+  resetToken: "a-reset-token",
+  newPassword: "Str0ng@New",
+  ...over
+});
 
 const setup = () => {
   const authService = {
@@ -74,7 +72,7 @@ describe("ForgotPasswordService.resetPassword", () => {
   it("stores the hashed password against the right auth record", async () => {
     const { service, authService } = setup();
 
-    const result = await service.resetPassword(req());
+    const result = await service.resetPassword(body());
 
     expect(mockedHash).toHaveBeenCalledWith("Str0ng@New");
     expect(authService.updatePassword).toHaveBeenCalledWith(
@@ -87,7 +85,7 @@ describe("ForgotPasswordService.resetPassword", () => {
   it("burns the reset token so it cannot be replayed", async () => {
     const { service, resetTokenRepo } = setup();
 
-    await service.resetPassword(req());
+    await service.resetPassword(body());
 
     expect(resetTokenRepo.clear).toHaveBeenCalledWith(EMAIL);
   });
@@ -95,7 +93,7 @@ describe("ForgotPasswordService.resetPassword", () => {
   it("records the reset in login history", async () => {
     const { service, historyService } = setup();
 
-    await service.resetPassword(req());
+    await service.resetPassword(body());
 
     expect(historyService.recordSuccessfulLogin).toHaveBeenCalledWith(
       expect.objectContaining({ usernameAttempted: EMAIL })
@@ -106,7 +104,7 @@ describe("ForgotPasswordService.resetPassword", () => {
     const { service, resetTokenRepo, authService } = setup();
     resetTokenRepo.verify.mockResolvedValue(false);
 
-    await expect(service.resetPassword(req())).rejects.toThrow(
+    await expect(service.resetPassword(body())).rejects.toThrow(
       UnauthorizedError
     );
     expect(authService.updatePassword).not.toHaveBeenCalled();
@@ -117,7 +115,7 @@ describe("ForgotPasswordService.resetPassword", () => {
     const { service, resetTokenRepo, userService } = setup();
     resetTokenRepo.verify.mockResolvedValue(false);
 
-    await expect(service.resetPassword(req())).rejects.toThrow(
+    await expect(service.resetPassword(body())).rejects.toThrow(
       UnauthorizedError
     );
     expect(userService.findByEmailWithAuth).not.toHaveBeenCalled();
@@ -127,7 +125,7 @@ describe("ForgotPasswordService.resetPassword", () => {
     const { service, userService, authService } = setup();
     userService.findByEmailWithAuth.mockResolvedValue(null);
 
-    await expect(service.resetPassword(req())).rejects.toThrow(
+    await expect(service.resetPassword(body())).rejects.toThrow(
       UnauthorizedError
     );
     expect(authService.updatePassword).not.toHaveBeenCalled();

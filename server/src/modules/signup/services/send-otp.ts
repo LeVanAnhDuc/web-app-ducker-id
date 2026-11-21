@@ -1,5 +1,4 @@
 // types
-import type { Request } from "express";
 import type { SendOtpBodyDto } from "../dtos/requests";
 import type { SendOtpDto } from "../dtos";
 import type { OtpSignupRepository } from "../repositories/otp-signup.repository";
@@ -8,6 +7,7 @@ import type { EmailAvailableGuard, CooldownGuard } from "../guards";
 // dtos
 import { toSendOtpDto } from "../dtos";
 // others
+import { RequestContext } from "@/utils/request-context";
 import { EmailType } from "@/types/services/email";
 import { Logger } from "@/libs/logger";
 import {
@@ -23,11 +23,10 @@ export const sendOtp = async (
     emailAvailableGuard: EmailAvailableGuard;
     cooldownGuard: CooldownGuard;
   },
-  body: SendOtpBodyDto,
-  req: Request
+  body: SendOtpBodyDto
 ): Promise<SendOtpDto> => {
   const { email } = body;
-  const { language } = req;
+  const { language } = RequestContext.getClient();
 
   await deps.cooldownGuard.assert(email);
   await deps.emailAvailableGuard.assert(email);

@@ -1,19 +1,20 @@
 // libs
 import { StatusCodes } from "http-status-codes";
-import { Get, JsonController, Post, Req, Res } from "routing-controllers";
+import { Get, JsonController, Post, Res } from "routing-controllers";
 // types
-import type { Request, Response } from "express";
+import type { Response } from "express";
 import type { SignupService } from "./services";
 // common
-import { RateLimit, Respond, ValidBody, ValidParams } from "@/common/routing";
+import { RateLimit, RequestParam, Respond, ValidBody } from "@/common/routing";
 // modules
 import {
   REFRESH_TOKEN,
   REFRESH_TOKEN_COOKIE_OPTIONS
 } from "@/modules/token/constants";
+// validators
+import { IsAppEmail } from "@/validators/decorators";
 // others
 import {
-  CheckEmailParamsDto,
   CompleteSignupBodyDto,
   ResendOtpBodyDto,
   SendOtpBodyDto,
@@ -27,11 +28,8 @@ export class SignupController {
   @Post("/send-otp")
   @RateLimit("signupOtpByIp", "signupOtpByEmail")
   @Respond({ message: "signup:success.otpSent" })
-  sendOtp(
-    @ValidBody(SendOtpBodyDto) body: SendOtpBodyDto,
-    @Req() req: Request
-  ) {
-    return this.service.sendOtp(body, req);
+  sendOtp(@ValidBody(SendOtpBodyDto) body: SendOtpBodyDto) {
+    return this.service.sendOtp(body);
   }
 
   @Post("/verify-otp")
@@ -43,11 +41,8 @@ export class SignupController {
   @Post("/resend-otp")
   @RateLimit("signupOtpByIp", "signupOtpByEmail")
   @Respond({ message: "signup:success.otpResent" })
-  resendOtp(
-    @ValidBody(ResendOtpBodyDto) body: ResendOtpBodyDto,
-    @Req() req: Request
-  ) {
-    return this.service.resendOtp(body, req);
+  resendOtp(@ValidBody(ResendOtpBodyDto) body: ResendOtpBodyDto) {
+    return this.service.resendOtp(body);
   }
 
   @Post("/complete")
@@ -72,10 +67,12 @@ export class SignupController {
     return { ...account, tokens };
   }
 
-  @Get("/check-email/:email")
+  // A query value, not a path segment: an email is what is looked up, not a
+  // resource of its own, and it stays out of the path the access log records.
+  @Get("/check-email")
   @RateLimit("checkEmailByIp")
   @Respond()
-  checkEmail(@ValidParams(CheckEmailParamsDto) params: CheckEmailParamsDto) {
-    return this.service.checkEmail(params);
+  checkEmail(@RequestParam("email", IsAppEmail()) email: string) {
+    return this.service.checkEmail(email);
   }
 }

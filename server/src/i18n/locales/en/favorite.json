@@ -9,7 +9,6 @@
   },
   "validation": {
     "appId": {
-      "required": "App id is required.",
       "invalid": "Invalid app id."
     },
     "sort": {
