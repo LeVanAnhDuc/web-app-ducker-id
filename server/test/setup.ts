@@ -25,6 +25,7 @@ jest.mock("@/libs/logger", () => ({
 
 jest.mock("@/constants/env", () => ({
   __esModule: true,
+  ENV_WARNINGS: [],
   default: {
     nodeEnv: "test",
     app: {
