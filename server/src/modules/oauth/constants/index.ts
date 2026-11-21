@@ -6,7 +6,6 @@ export const OAUTH_CONFIG = {
    * nghị tối đa 10 phút; 60s là đủ cho một vòng redirect). */
   CODE_TTL_SECONDS: SECONDS_PER_MINUTE,
   CODE_RANDOM_BYTES: 32,
-  /** Request authorize đang chờ user đăng nhập. */
   PENDING_REQUEST_TTL_SECONDS: 10 * SECONDS_PER_MINUTE,
   PENDING_REQUEST_RANDOM_BYTES: 16,
   /** Token phát cho app vệ tinh ngắn hơn token first-party (8h) — badminton
@@ -65,7 +64,6 @@ export const OAUTH_SUPPORTED_SCOPES: string[] = [
   OAUTH_SCOPES.EMAIL
 ];
 
-/** Claim nào thuộc scope nào — dùng chung cho id_token và /oauth/userinfo. */
 export const OAUTH_SCOPE_CLAIMS: Record<string, string[]> = {
   [OAUTH_SCOPES.PROFILE]: ["name", "picture"],
   [OAUTH_SCOPES.EMAIL]: ["email", "email_verified"]

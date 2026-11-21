@@ -48,13 +48,11 @@ import type { LucideIcon } from "lucide-react";
 
 // Defined outside component — never recreated
 const ALL_ICONS: LucideIcon[] = [
-  // Social & Communication
   MessageCircle,
   Mail,
   Users,
   Bell,
   Search,
-  // Media & Entertainment
   Music,
   Video,
   Camera,
@@ -63,13 +61,11 @@ const ALL_ICONS: LucideIcon[] = [
   Headphones,
   Gamepad2,
   Star,
-  // Productivity & Work
   Calendar,
   FileText,
   BookOpen,
   PenTool,
   Briefcase,
-  // Shopping & Finance
   ShoppingCart,
   ShoppingBag,
   CreditCard,
@@ -77,13 +73,11 @@ const ALL_ICONS: LucideIcon[] = [
   DollarSign,
   BarChart2,
   TrendingUp,
-  // Travel & Navigation
   Map,
   Navigation,
   Globe,
   Plane,
   Car,
-  // System & Utility
   Settings,
   Lock,
   Shield,
@@ -92,7 +86,6 @@ const ALL_ICONS: LucideIcon[] = [
   Cpu,
   Smartphone,
   Monitor,
-  // Lifestyle
   Heart,
   Bookmark
 ];

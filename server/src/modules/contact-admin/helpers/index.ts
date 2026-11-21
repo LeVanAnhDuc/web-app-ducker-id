@@ -9,21 +9,17 @@ export const buildContactFilter = (
 ): FilterQuery<ContactDocument> => {
   const filter: FilterQuery<ContactDocument> = {};
 
-  // Exact match fields
   if (query.status) filter.status = query.status;
   if (query.priority) filter.priority = query.priority;
 
-  // Partial match (case-insensitive regex)
   if (query.email)
     filter.email = { $regex: escapeRegex(query.email), $options: "i" };
 
-  // Text search: OR across subject, email
   if (query.search) {
     const searchRegex = { $regex: escapeRegex(query.search), $options: "i" };
     filter.$or = [{ subject: searchRegex }, { email: searchRegex }];
   }
 
-  // Date range
   if (query.fromDate || query.toDate) {
     filter.createdAt = {};
     if (query.fromDate) filter.createdAt.$gte = new Date(query.fromDate);

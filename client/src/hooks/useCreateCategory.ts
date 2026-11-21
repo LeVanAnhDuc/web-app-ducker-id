@@ -7,7 +7,6 @@ import { createAdminCategory } from "@/requests/adminCategories";
 // hooks
 import useInvalidateCategories from "./useInvalidateCategories";
 
-/** Shared by the category page and the quick-create dialog in the app form. */
 const useCreateCategory = () => {
   const invalidate = useInvalidateCategories();
   const tToast = useTranslations("adminCategories.toast");

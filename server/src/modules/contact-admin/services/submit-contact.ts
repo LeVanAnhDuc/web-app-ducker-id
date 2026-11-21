@@ -34,7 +34,6 @@ export const submitContact = async (
     CONTACT_CONFIG.MESSAGE_MAX_LENGTH
   );
 
-  // Owner attach: nullable — logged-in submitter gets userId, guest stays null.
   // MUST come from RequestContext (server-verified JWT), never from client body.
   const userId = RequestContext.getUserId() ?? null;
 

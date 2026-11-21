@@ -7,7 +7,7 @@
  * Hanoi lands on the previous day's column.
  */
 
-/** The calendar day `instant` falls on in `timeZone`. `en-CA` formats as ISO. */
+/** `en-CA` formats as ISO. */
 export const toZonedDay = (instant: Date, timeZone: string): string =>
   new Intl.DateTimeFormat("en-CA", {
     timeZone,
@@ -17,8 +17,8 @@ export const toZonedDay = (instant: Date, timeZone: string): string =>
   }).format(instant);
 
 /**
- * Shift a day string by whole days. The arithmetic runs on the date parts, not
- * on a timestamp: adding 24h across a DST boundary skips or repeats a day.
+ * The arithmetic runs on the date parts, not on a timestamp: adding 24h across
+ * a DST boundary skips or repeats a day.
  */
 export const addDays = (day: string, amount: number): string => {
   const [year, month, date] = day.split("-").map(Number);
@@ -27,7 +27,6 @@ export const addDays = (day: string, amount: number): string => {
     .slice(0, 10);
 };
 
-/** How far `timeZone` runs ahead of UTC at this instant, in milliseconds. */
 const zoneOffsetMs = (instant: Date, timeZone: string): number => {
   const parts = new Intl.DateTimeFormat("en-US", {
     timeZone,
@@ -57,9 +56,8 @@ const zoneOffsetMs = (instant: Date, timeZone: string): number => {
 };
 
 /**
- * The instant at which a calendar day begins in `timeZone`. Used as the lower
- * bound of a stats range so the first bucket is a whole day rather than a
- * partial one starting at whatever time of day the request arrived.
+ * Used as the lower bound of a stats range so the first bucket is a whole day
+ * rather than a partial one starting at whatever time of day the request arrived.
  */
 export const startOfZonedDay = (day: string, timeZone: string): Date => {
   const [year, month, date] = day.split("-").map(Number);

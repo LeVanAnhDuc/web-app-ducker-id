@@ -174,7 +174,6 @@ export class ValidationError extends ErrorResponse {
 }
 
 export interface OAuthErrorOptions {
-  /** Mã lỗi theo chuẩn OAuth/OIDC — giá trị của field `error` trong response. */
   error: string;
   description?: string;
   status?: number;

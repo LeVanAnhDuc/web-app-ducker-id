@@ -23,8 +23,6 @@ const FormFieldMessage = ({
 
   if (!error?.message) return null;
 
-  // Try to translate: validation.{fieldName}.{errorKey}
-  // If not found, fallback to the raw message
   const errorKey = error.message;
   const translationKey = `${name}.${errorKey}`;
 
@@ -33,7 +31,6 @@ const FormFieldMessage = ({
   if (t.has(translationKey as Parameters<typeof t.has>[0])) {
     message = t(translationKey as Parameters<typeof t>[0]);
   } else {
-    // Fallback to raw message if translation not found
     message = errorKey;
   }
 

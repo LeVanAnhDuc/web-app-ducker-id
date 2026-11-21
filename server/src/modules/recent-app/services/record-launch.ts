@@ -10,7 +10,6 @@ import { RECENT_APP_CONFIG } from "../constants";
 import { ERROR_CODES } from "@/constants/error-code";
 import { RequestContext } from "@/utils/request-context";
 
-/** The launcher reports that the current user opened an app. */
 export const recordLaunch = async (
   deps: RecentAppServiceDeps,
   appId: string

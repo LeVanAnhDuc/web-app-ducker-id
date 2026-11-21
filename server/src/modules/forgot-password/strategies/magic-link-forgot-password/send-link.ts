@@ -11,7 +11,6 @@ import { Logger } from "@/libs/logger";
 import { withRetry } from "@/utils/resilience/retry";
 import { FORGOT_PASSWORD_MAGIC_LINK_CONFIG } from "../../constants";
 
-/** Pure-ish wrapper quanh dispatcher; chỉ `sendLink` dùng. */
 const sendMagicLinkEmail = (
   deps: MagicLinkForgotPasswordStrategyDeps,
   email: string,

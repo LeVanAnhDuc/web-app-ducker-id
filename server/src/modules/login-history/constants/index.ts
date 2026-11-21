@@ -116,7 +116,6 @@ export const LOGIN_HISTORY_STATS = {
   DEFAULT_TIMEZONE: "UTC"
 } as const;
 
-/** Query values for `range`, derived from the day counts above: `7d`, `30d`, … */
 export const LOGIN_HISTORY_STATS_RANGES = LOGIN_HISTORY_STATS.RANGE_DAYS.map(
   (days) => `${days}d`
 );
@@ -124,13 +123,13 @@ export const LOGIN_HISTORY_STATS_RANGES = LOGIN_HISTORY_STATS.RANGE_DAYS.map(
 export const LOCALHOST_VALUES = ["localhost", "0.0.0.0"] as const;
 
 export const PRIVATE_IP_PATTERNS = [
-  /^127\./, // Loopback
-  /^10\./, // Private Class A
-  /^172\.(1[6-9]|2[0-9]|3[0-1])\./, // Private Class B
-  /^192\.168\./, // Private Class C
-  /^169\.254\./, // Link-local
-  /^::1$/, // IPv6 loopback
-  /^fe80:/, // IPv6 link-local
-  /^fc00:/, // IPv6 private
-  /^fd00:/ // IPv6 private
+  /^127\./,
+  /^10\./,
+  /^172\.(1[6-9]|2[0-9]|3[0-1])\./,
+  /^192\.168\./,
+  /^169\.254\./,
+  /^::1$/,
+  /^fe80:/,
+  /^fc00:/,
+  /^fd00:/
 ] as const;

@@ -3,7 +3,6 @@ import type { WebAppDocument } from "@/modules/web-app/types";
 import type { SessionRecord } from "@/modules/session/types";
 import type { Request } from "express";
 
-/** Tham số của một authorization request, sau khi đã validate. */
 export interface AuthorizeParams {
   clientId: string;
   redirectUri: string;
@@ -16,7 +15,7 @@ export interface AuthorizeParams {
   prompt?: string;
 }
 
-/** Bản ghi authorization code trên Redis. Đọc bằng GETDEL nên dùng đúng 1 lần. */
+/** Đọc bằng GETDEL nên dùng đúng 1 lần. */
 export interface AuthorizationCodeRecord {
   clientId: string;
   redirectUri: string;

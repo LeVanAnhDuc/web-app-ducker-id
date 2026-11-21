@@ -138,10 +138,10 @@ describe("WebAppService.createApp", () => {
     const persisted = webAppRepo.create.mock.calls[0][0];
     expect(persisted.clientId).toMatch(/^client_/);
     expect(persisted.clientSecretHash).not.toBe("");
-    expect(persisted.clientSecretHash).not.toMatch(/^[a-f0-9]{64}$/); // hashed, not raw secret
+    expect(persisted.clientSecretHash).not.toMatch(/^[a-f0-9]{64}$/);
     expect(persisted.status).toBe(WEB_APP_STATUSES.ACTIVE);
     expect(persisted.scopes).toEqual(["openid", "profile", "email"]);
-    expect(persisted.description).toBeNull(); // "" → null
+    expect(persisted.description).toBeNull();
     expect(persisted.name).toBe(validBody.name);
     expect(persisted.categoryIds).toEqual(validBody.categoryIds);
     expect(persisted.homeUrl).toBe(validBody.homeUrl);

@@ -31,7 +31,6 @@ export const slugifyCategoryName = (value: string): string =>
     .slice(0, CATEGORY_CONFIG.SLUG_BASE_MAX_LENGTH)
     .replace(EDGE_DASHES, "");
 
-/** `base` itself for the first slot, then `base-2`, `base-3`, … */
 export const pickFreeSlug = (base: string, taken: string[]): string => {
   const used = new Set(taken);
   if (!used.has(base)) return base;

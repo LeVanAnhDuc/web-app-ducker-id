@@ -6,9 +6,6 @@ import { STATUS_CODES } from "@/common/http";
 // others
 import { OAUTH_ERRORS } from "../../constants";
 
-/**
- * Dùng chung bởi `exchangeToken` (qua issueTokens) và `getUserInfo`.
- */
 export const loadClaims = async (
   deps: OAuthServiceDeps,
   authId: string,

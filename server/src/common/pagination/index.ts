@@ -13,8 +13,8 @@ export const PAGINATION = {
 export type PaginationDefaults = typeof PAGINATION;
 
 /**
- * Phần phân trang của một query string đã qua Joi. Mọi query type của module
- * đều gán được vào đây vì `sortBy` của chúng là union của string.
+ * Mọi query type của module đều gán được vào đây vì `sortBy` của chúng là
+ * union của string.
  */
 export interface PagingQuery {
   page?: number;
@@ -23,7 +23,6 @@ export interface PagingQuery {
   sortOrder?: SortOrder;
 }
 
-/** `PaginationOptions` (skip/limit/sort) mà repository nhận, kèm `page` để dựng meta. */
 export interface ResolvedPaging extends PaginationOptions {
   page: number;
 }
@@ -41,8 +40,6 @@ export interface PaginatedResult<T> {
 }
 
 /**
- * Quy đổi query sang tham số repository.
- *
  * `page` không cần chặn cận dưới: mọi schema phân trang trong
  * `src/validators/schemas/` đều khai `Joi.number().integer().min(1)`, nên
  * `page < 1` bị từ chối ở pipe trước khi tới service.

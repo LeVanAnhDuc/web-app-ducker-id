@@ -27,7 +27,6 @@ export interface AccessScope {
   denyIds: string[];
 }
 
-/** The fields of an app the access rule reads. */
 export interface AppAccessRule {
   _id: { toString(): string };
   requiredRoles: readonly string[];
@@ -48,7 +47,6 @@ export interface EntitlementPair {
   webAppId: string;
 }
 
-/** One matrix row: what the user gets and which of it is an exception. */
 export interface UserAccess {
   userId: string;
   grantedAppIds: string[];

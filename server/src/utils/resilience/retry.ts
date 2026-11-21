@@ -1,8 +1,3 @@
-/**
- * Retry utility with exponential backoff
- * Use for fire-and-forget operations that need resilience
- */
-
 // others
 import { Logger } from "@/libs/logger";
 
