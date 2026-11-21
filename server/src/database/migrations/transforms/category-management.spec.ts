@@ -2,7 +2,7 @@
 import {
   findCaseInsensitiveDuplicates,
   migrateCategories
-} from "./category-management.transform";
+} from "./category-management";
 
 const legacy = [
   { _id: "c3", name: "identity", displayName: "Identity", sortOrder: 3 },
