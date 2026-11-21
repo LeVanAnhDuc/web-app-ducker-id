@@ -1,13 +1,10 @@
+// libs
+import { Get, JsonController, Res } from "routing-controllers";
 // types
-import type { Request, Response } from "express";
+import type { Response } from "express";
 import type { CategoryService } from "./services";
-import type {
-  CategoryIdRequest,
-  CreateCategoryRequest,
-  DeleteCategoryRequest,
-  MoveCategoryRequest,
-  UpdateCategoryRequest
-} from "./types";
+// common
+import { OptionalAuth, RateLimit, Respond } from "@/common/routing";
 
 /**
  * Short enough that a rename or delete reaches the /apps filter quickly, long
@@ -15,29 +12,17 @@ import type {
  */
 const PUBLIC_CACHE_CONTROL = "public, max-age=60";
 
+@JsonController("/apps/categories")
 export class CategoryController {
   constructor(private readonly service: CategoryService) {}
 
-  list = async () => this.service.list();
-
-  listPublic = async (_req: Request, res: Response) => {
+  @Get("/")
+  @RateLimit("categoriesByIp")
+  @OptionalAuth()
+  @Respond({ message: "category:success.list" })
+  async listPublic(@Res() res: Response) {
     const data = await this.service.listPublic();
     res.set("Cache-Control", PUBLIC_CACHE_CONTROL);
     return data;
-  };
-
-  create = async (req: CreateCategoryRequest) => this.service.create(req.body);
-
-  update = async (req: UpdateCategoryRequest) =>
-    this.service.update(req.params.id, req.body);
-
-  move = async (req: MoveCategoryRequest) =>
-    this.service.move(req.params.id, req.body.direction);
-
-  deleteImpact = async (req: CategoryIdRequest) =>
-    this.service.deleteImpact(req.params.id);
-
-  remove = async (req: DeleteCategoryRequest) => {
-    await this.service.remove(req.params.id, req.body.reassignments);
-  };
+  }
 }

@@ -1,9 +1,11 @@
 // types
 import type { Request } from "express";
+import type { RateLimitName } from "./rate-limiter.middleware";
 // others
 import {
   createRateLimiters,
   emailRateLimitKey,
+  isUserKeyed,
   RATE_LIMITS
 } from "./rate-limiter.middleware";
 
@@ -62,5 +64,21 @@ describe("createRateLimiters", () => {
     for (const limiter of Object.values(limiters)) {
       expect(typeof limiter).toBe("function");
     }
+  });
+});
+
+describe("isUserKeyed", () => {
+  it("names exactly the limiters keyed by the authenticated user", () => {
+    const userKeyed = (Object.keys(RATE_LIMITS) as RateLimitName[]).filter(
+      isUserKeyed
+    );
+
+    expect(userKeyed.sort()).toEqual([
+      "adminUserMutationByIpAndUser",
+      "categoryMutationByIpAndUser",
+      "changePasswordByIpAndUser",
+      "entitlementMutationByIpAndUser",
+      "recordRecentAppByUser"
+    ]);
   });
 });

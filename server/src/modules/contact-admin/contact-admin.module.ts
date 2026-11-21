@@ -1,23 +1,16 @@
-// types
-import type { RateLimiters } from "@/middlewares";
 // others
 import { MongoContactRepository } from "./repository/impl/mongo-contact-admin.repository";
 import { ContactAdminService } from "./services";
-import { ContactAdminController } from "./contact-admin.controller";
-import {
-  createContactRoutes,
-  createAdminContactsRoutes,
-  createMyContactsRoutes
-} from "./contact-admin.routes";
+import { AdminContactsController } from "./admin-contacts.controller";
+import { ContactController } from "./contact.controller";
+import { MyContactsController } from "./my-contacts.controller";
 
-export const createContactAdminModule = (rateLimiter: RateLimiters) => {
-  const contactRepo = new MongoContactRepository();
-  const service = new ContactAdminService(contactRepo);
-  const controller = new ContactAdminController(service);
+export const createContactAdminModule = () => {
+  const service = new ContactAdminService(new MongoContactRepository());
 
   return {
-    contactAdminRouter: createContactRoutes(controller, rateLimiter),
-    adminContactsRouter: createAdminContactsRoutes(controller),
-    myContactsRouter: createMyContactsRoutes(controller)
+    contactController: new ContactController(service),
+    adminContactsController: new AdminContactsController(service),
+    myContactsController: new MyContactsController(service)
   };
 };

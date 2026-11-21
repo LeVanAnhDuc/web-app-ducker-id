@@ -7,6 +7,13 @@ import {
   REFRESH_TOKEN,
   REFRESH_TOKEN_COOKIE_OPTIONS
 } from "@/modules/token/constants";
+import {
+  LoginBodyDto,
+  MagicLinkSendBodyDto,
+  MagicLinkVerifyBodyDto,
+  OtpSendBodyDto,
+  OtpVerifyBodyDto
+} from "./dtos/requests";
 // others
 import { makeMockRequest } from "@test/helpers/request.helper";
 import { LoginController } from "./login.controller";
@@ -80,11 +87,14 @@ describe("LoginController", () => {
   describe("login (password)", () => {
     it("dispatches to service.passwordLogin, sets refresh cookie, returns data without refreshToken", async () => {
       service.passwordLogin.mockResolvedValue(TOKENS_WITH_REFRESH);
-      const body = { email: EMAIL, password: "pw" };
-      (req as unknown as { body: unknown }).body = body;
+      const body = Object.assign(new LoginBodyDto(), {
+        email: EMAIL,
+        password: "pw"
+      });
 
       const data = await controller.login(
-        req as never,
+        body,
+        req,
         res as unknown as Response
       );
 
@@ -106,7 +116,11 @@ describe("LoginController", () => {
     it("does not set cookie when refreshToken absent", async () => {
       service.passwordLogin.mockResolvedValue(TOKENS_NO_REFRESH);
 
-      await controller.login(req as never, res as unknown as Response);
+      await controller.login(
+        new LoginBodyDto(),
+        req,
+        res as unknown as Response
+      );
 
       expect(res.cookie).not.toHaveBeenCalled();
     });
@@ -116,10 +130,9 @@ describe("LoginController", () => {
     it("dispatches to service.sendOtp and returns its result", async () => {
       const dto = { success: true, expiresIn: 300, cooldown: 60 };
       service.sendOtp.mockResolvedValue(dto);
-      const body = { email: EMAIL };
-      (req as unknown as { body: unknown }).body = body;
+      const body = Object.assign(new OtpSendBodyDto(), { email: EMAIL });
 
-      const data = await controller.sendOtp(req as never);
+      const data = await controller.sendOtp(body, req);
 
       expect(service.sendOtp).toHaveBeenCalledWith(body, req);
       expect(res.cookie).not.toHaveBeenCalled();
@@ -131,11 +144,14 @@ describe("LoginController", () => {
   describe("verifyOtp", () => {
     it("sets refresh cookie and strips refreshToken from response data", async () => {
       service.verifyOtp.mockResolvedValue(TOKENS_WITH_REFRESH);
-      const body = { email: EMAIL, otp: "123456" };
-      (req as unknown as { body: unknown }).body = body;
+      const body = Object.assign(new OtpVerifyBodyDto(), {
+        email: EMAIL,
+        otp: "123456"
+      });
 
       const data = await controller.verifyOtp(
-        req as never,
+        body,
+        req,
         res as unknown as Response
       );
 
@@ -152,7 +168,11 @@ describe("LoginController", () => {
     it("skips cookie when refreshToken missing", async () => {
       service.verifyOtp.mockResolvedValue(TOKENS_NO_REFRESH);
 
-      await controller.verifyOtp(req as never, res as unknown as Response);
+      await controller.verifyOtp(
+        new OtpVerifyBodyDto(),
+        req,
+        res as unknown as Response
+      );
 
       expect(res.cookie).not.toHaveBeenCalled();
     });
@@ -162,10 +182,9 @@ describe("LoginController", () => {
     it("dispatches to service.sendMagicLink and returns its result", async () => {
       const dto = { success: true, expiresIn: 900, cooldown: 60 };
       service.sendMagicLink.mockResolvedValue(dto);
-      const body = { email: EMAIL };
-      (req as unknown as { body: unknown }).body = body;
+      const body = Object.assign(new MagicLinkSendBodyDto(), { email: EMAIL });
 
-      const data = await controller.sendMagicLink(req as never);
+      const data = await controller.sendMagicLink(body, req);
 
       expect(service.sendMagicLink).toHaveBeenCalledWith(body, req);
       expect(res.cookie).not.toHaveBeenCalled();
@@ -177,11 +196,14 @@ describe("LoginController", () => {
   describe("verifyMagicLink", () => {
     it("sets refresh cookie and strips refreshToken from response data", async () => {
       service.verifyMagicLink.mockResolvedValue(TOKENS_WITH_REFRESH);
-      const body = { email: EMAIL, token: "tok" };
-      (req as unknown as { body: unknown }).body = body;
+      const body = Object.assign(new MagicLinkVerifyBodyDto(), {
+        email: EMAIL,
+        token: "tok"
+      });
 
       const data = await controller.verifyMagicLink(
-        req as never,
+        body,
+        req,
         res as unknown as Response
       );
 
@@ -199,7 +221,8 @@ describe("LoginController", () => {
       service.verifyMagicLink.mockResolvedValue(TOKENS_NO_REFRESH);
 
       await controller.verifyMagicLink(
-        req as never,
+        new MagicLinkVerifyBodyDto(),
+        req,
         res as unknown as Response
       );
 

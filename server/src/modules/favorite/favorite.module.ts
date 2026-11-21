@@ -6,7 +6,6 @@ import { MongoWebAppRepository } from "@/modules/web-app/repository/impl/mongo-w
 import { AppFavoritableGuard } from "./guards";
 import { FavoriteService } from "./services";
 import { FavoriteController } from "./favorite.controller";
-import { createFavoriteUserRoutes } from "./favorite.routes";
 
 export const createFavoriteModule = (accessPolicy: AccessPolicy) => {
   const favoriteRepo = new MongoFavoriteRepository();
@@ -18,10 +17,10 @@ export const createFavoriteModule = (accessPolicy: AccessPolicy) => {
     favoritableGuard,
     accessPolicy
   );
-  const controller = new FavoriteController(service);
+  const favoriteController = new FavoriteController(service);
 
   return {
     favoriteRepository: favoriteRepo,
-    favoriteUserRouter: createFavoriteUserRoutes(controller)
+    favoriteController
   };
 };

@@ -1,5 +1,4 @@
 // types
-import type { RateLimiters } from "@/middlewares";
 import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 // modules
 import { MongoUserRepository } from "@/modules/user/repository/impl/mongo-user.repository";
@@ -8,15 +7,13 @@ import { MongoWebAppRepository } from "@/modules/web-app/repository/impl/mongo-w
 import { MongoEntitlementRepository } from "./repository/impl/mongo-entitlement.repository";
 import { AccessPolicy } from "./services/access-policy";
 import { EntitlementAdminService } from "./services/entitlement-admin";
-import { EntitlementController } from "./entitlement.controller";
-import { createEntitlementAdminRoutes } from "./entitlement.routes";
+import { EntitlementAdminController } from "./entitlement-admin.controller";
 
 /**
  * Wired before every module that decides what a user may open: they take
  * `accessPolicy` from here, so the one rule lives in one place.
  */
 export const createEntitlementModule = (
-  rateLimiter: RateLimiters,
   notificationDispatcher: NotificationDispatcher
 ) => {
   const entitlementRepo = new MongoEntitlementRepository();
@@ -26,13 +23,9 @@ export const createEntitlementModule = (
     new MongoWebAppRepository(),
     notificationDispatcher
   );
-  const controller = new EntitlementController(service);
 
   return {
     accessPolicy: new AccessPolicy(entitlementRepo),
-    entitlementAdminRouter: createEntitlementAdminRoutes(
-      controller,
-      rateLimiter
-    )
+    entitlementAdminController: new EntitlementAdminController(service)
   };
 };

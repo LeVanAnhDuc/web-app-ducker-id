@@ -3,7 +3,6 @@ import type { RedisClientType } from "redis";
 import type { UserService } from "@/modules/user/services";
 import type { LoginHistoryService } from "@/modules/login-history/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
-import type { RateLimiters } from "@/middlewares";
 import type { SessionService } from "@/modules/session/services";
 import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 // repositories
@@ -27,14 +26,12 @@ import { PasswordLoginStrategy } from "./strategies/password-login";
 import { OtpLoginStrategy } from "./strategies/otp-login";
 import { MagicLinkLoginStrategy } from "./strategies/magic-link-login";
 import { LoginController } from "./login.controller";
-import { createLoginRoutes } from "./login.routes";
 
 export const createLoginModule = (
   redisClient: RedisClientType,
   userService: UserService,
   loginHistorySvc: LoginHistoryService,
   emailDispatcher: EmailDispatcher,
-  rateLimiter: RateLimiters,
   sessionService: SessionService,
   notificationDispatcher: NotificationDispatcher
 ) => {
@@ -93,10 +90,8 @@ export const createLoginModule = (
     magicLinkStrategy,
     failedAttemptsRepo
   );
-  const loginController = new LoginController(loginService, sessionService);
-
   return {
-    loginRouter: createLoginRoutes(loginController, rateLimiter),
+    loginController: new LoginController(loginService, sessionService),
     loginService
   };
 };

@@ -1,5 +1,4 @@
 // types
-import type { RateLimiters } from "@/middlewares";
 import type { FavoriteRepository } from "@/modules/favorite/repository/favorite.repository";
 import type { AccessPolicy } from "@/modules/entitlement/services/access-policy";
 // modules
@@ -8,12 +7,10 @@ import { MongoWebAppRepository } from "@/modules/web-app/repository/impl/mongo-w
 import { MongoRecentAppRepository } from "./repository/impl/mongo-recent-app.repository";
 import { RecentAppService } from "./services";
 import { RecentAppController } from "./recent-app.controller";
-import { createRecentAppUserRoutes } from "./recent-app.routes";
 
 export const createRecentAppModule = (
   favoriteRepo: FavoriteRepository,
-  accessPolicy: AccessPolicy,
-  rateLimiter: RateLimiters
+  accessPolicy: AccessPolicy
 ) => {
   const service = new RecentAppService(
     new MongoRecentAppRepository(),
@@ -21,10 +18,10 @@ export const createRecentAppModule = (
     favoriteRepo,
     accessPolicy
   );
-  const controller = new RecentAppController(service);
+  const recentAppController = new RecentAppController(service);
 
   return {
     recentAppService: service,
-    recentAppUserRouter: createRecentAppUserRoutes(controller, rateLimiter)
+    recentAppController
   };
 };

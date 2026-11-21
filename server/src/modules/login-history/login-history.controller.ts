@@ -1,24 +1,31 @@
+// libs
+import { Get, JsonController } from "routing-controllers";
 // types
-import type {
-  MyHistoryRequest,
-  AllHistoryRequest,
-  HistoryIdParamRequest,
-  MyStatsRequest
-} from "@/modules/login-history/types";
 import type { LoginHistoryService } from "./services";
+// common
+import { Auth, Respond, ValidQuery } from "@/common/routing";
+// others
+import {
+  LoginHistoryQueryDto,
+  LoginHistoryStatsQueryDto
+} from "./dtos/requests";
 
+@JsonController("/login-history")
+@Auth()
 export class LoginHistoryController {
   constructor(private readonly service: LoginHistoryService) {}
 
-  getMyHistory = async (req: MyHistoryRequest) =>
-    this.service.getMyLoginHistory(req.query);
+  @Get("/stats")
+  @Respond({ message: "loginHistory:success.getMyStats" })
+  getMyStats(
+    @ValidQuery(LoginHistoryStatsQueryDto) query: LoginHistoryStatsQueryDto
+  ) {
+    return this.service.getMyLoginStats(query);
+  }
 
-  getMyStats = async (req: MyStatsRequest) =>
-    this.service.getMyLoginStats(req.query);
-
-  getAllHistory = async (req: AllHistoryRequest) =>
-    this.service.getAllLoginHistory(req.query);
-
-  getHistoryDetail = async (req: HistoryIdParamRequest) =>
-    this.service.getLoginHistoryDetail(req.params.id);
+  @Get("/")
+  @Respond({ message: "loginHistory:success.getMyHistory" })
+  getMyHistory(@ValidQuery(LoginHistoryQueryDto) query: LoginHistoryQueryDto) {
+    return this.service.getMyLoginHistory(query);
+  }
 }

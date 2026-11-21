@@ -173,9 +173,9 @@ Each feature module follows a consistent pattern:
 
 ```
 modules/{feature}/
-├── {feature}.module.ts        # Factory — wires dependencies, exports routes
-├── {feature}.controller.ts    # Request handlers
-├── {feature}.routes.ts        # Express router with validation middleware
+├── {feature}.module.ts        # Factory — wires dependencies, returns the controller instances
+├── {feature}.controller.ts    # Routes: @JsonController + verb decorators + @/common/routing decorators
+│                              #   (one controller per base path, e.g. user + user-admin)
 ├── {feature}.service.ts       # Business logic
 ├── {feature}.helper.ts        # Module-specific helpers (optional)
 ├── dtos/                      # Response DTOs; requests/ holds the request DTO classes

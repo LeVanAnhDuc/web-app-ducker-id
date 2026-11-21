@@ -4,7 +4,6 @@ import type { AuthenticationService } from "@/modules/authentication/services";
 import type { UserService } from "@/modules/user/services";
 import type { LoginHistoryService } from "@/modules/login-history/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
-import type { RateLimiters } from "@/middlewares";
 // repositories
 import { RedisOtpForgotPasswordRepository } from "./repositories/impl/redis-otp-forgot-password.repository";
 import { RedisMagicLinkForgotPasswordRepository } from "./repositories/impl/redis-magic-link-forgot-password.repository";
@@ -25,15 +24,13 @@ import { ForgotPasswordAuditService } from "./services/forgot-password-audit";
 import { OtpForgotPasswordStrategy } from "./strategies/otp-forgot-password";
 import { MagicLinkForgotPasswordStrategy } from "./strategies/magic-link-forgot-password";
 import { ForgotPasswordController } from "./forgot-password.controller";
-import { createForgotPasswordRoutes } from "./forgot-password.routes";
 
 export const createForgotPasswordModule = (
   redisClient: RedisClientType,
   authService: AuthenticationService,
   userService: UserService,
   loginHistorySvc: LoginHistoryService,
-  emailDispatcher: EmailDispatcher,
-  rateLimiter: RateLimiters
+  emailDispatcher: EmailDispatcher
 ) => {
   const otpRepo = new RedisOtpForgotPasswordRepository(redisClient);
   const magicLinkRepo = new RedisMagicLinkForgotPasswordRepository(redisClient);
@@ -80,14 +77,10 @@ export const createForgotPasswordModule = (
     resetTokenValidGuard,
     auditService
   );
-  const forgotPasswordController = new ForgotPasswordController(
-    forgotPasswordService
-  );
 
   return {
-    forgotPasswordRouter: createForgotPasswordRoutes(
-      forgotPasswordController,
-      rateLimiter
+    forgotPasswordController: new ForgotPasswordController(
+      forgotPasswordService
     )
   };
 };

@@ -1,33 +1,43 @@
+// libs
+import { Get, JsonController, Patch } from "routing-controllers";
 // types
-import type {
-  UpdateProfileRequest,
-  GetPublicProfileRequest,
-  GetAdminUsersRequest,
-  LockUserRequest,
-  ResetPasswordRequest
-} from "@/modules/user/types";
 import type { UserService } from "./services";
+// common
+import {
+  Auth,
+  RateLimit,
+  Respond,
+  ValidBody,
+  ValidParams
+} from "@/common/routing";
+// others
+import { PublicProfileParamsDto, UpdateProfileBodyDto } from "./dtos/requests";
 
+@JsonController("/users")
 export class UserController {
   constructor(private readonly service: UserService) {}
 
-  getMyProfile = async () => this.service.getMyProfile();
+  // Declared before the id route so the literal segment is not read as an id.
+  @Get("/me")
+  @Auth()
+  @Respond({ message: "user:success.getProfile" })
+  getMyProfile() {
+    return this.service.getMyProfile();
+  }
 
-  updateMyProfile = async (req: UpdateProfileRequest) =>
-    this.service.updateMyProfile(req.body);
+  @Patch("/me")
+  @RateLimit("updateProfileByIp")
+  @Auth()
+  @Respond({ message: "user:success.updateProfile" })
+  updateMyProfile(@ValidBody(UpdateProfileBodyDto) body: UpdateProfileBodyDto) {
+    return this.service.updateMyProfile(body);
+  }
 
-  getPublicProfile = async (req: GetPublicProfileRequest) =>
-    this.service.getPublicProfile(req.params.id);
-
-  getAdminUsers = async (req: GetAdminUsersRequest) =>
-    this.service.getAdminUsers(req.query);
-
-  lockUser = async (req: LockUserRequest) =>
-    this.service.setUserActive(req.params.id, false);
-
-  unlockUser = async (req: LockUserRequest) =>
-    this.service.setUserActive(req.params.id, true);
-
-  resetUserPassword = async (req: ResetPasswordRequest) =>
-    this.service.adminResetPassword(req.params.id);
+  @Get("/:id")
+  @Respond({ message: "user:success.getPublicProfile" })
+  getPublicProfile(
+    @ValidParams(PublicProfileParamsDto) params: PublicProfileParamsDto
+  ) {
+    return this.service.getPublicProfile(params.id);
+  }
 }

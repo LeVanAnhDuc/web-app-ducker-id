@@ -1,19 +1,43 @@
+// libs
+import { Get, JsonController, Patch } from "routing-controllers";
 // types
-import type {
-  NotificationListRequest,
-  NotificationIdRequest
-} from "@/modules/notification/types";
 import type { NotificationService } from "./services";
+// common
+import { Auth, Respond, ValidParams, ValidQuery } from "@/common/routing";
+// others
+import {
+  NotificationIdParamsDto,
+  NotificationListQueryDto
+} from "./dtos/requests";
 
+@JsonController("/notifications")
+@Auth()
 export class NotificationController {
   constructor(private readonly service: NotificationService) {}
 
-  list = async (req: NotificationListRequest) => this.service.list(req.query);
+  @Get("/unread-count")
+  @Respond({ message: "notification:success.unreadCount" })
+  unreadCount() {
+    return this.service.unreadCount();
+  }
 
-  unreadCount = async () => this.service.unreadCount();
+  @Patch("/read-all")
+  @Respond({ message: "notification:success.markAllRead" })
+  markAllRead() {
+    return this.service.markAllRead();
+  }
 
-  markRead = async (req: NotificationIdRequest) =>
-    this.service.markRead(req.params.id);
+  @Get("/")
+  @Respond({ message: "notification:success.list" })
+  list(@ValidQuery(NotificationListQueryDto) query: NotificationListQueryDto) {
+    return this.service.list(query);
+  }
 
-  markAllRead = async () => this.service.markAllRead();
+  @Patch("/:id/read")
+  @Respond({ message: "notification:success.markRead" })
+  markRead(
+    @ValidParams(NotificationIdParamsDto) params: NotificationIdParamsDto
+  ) {
+    return this.service.markRead(params.id);
+  }
 }

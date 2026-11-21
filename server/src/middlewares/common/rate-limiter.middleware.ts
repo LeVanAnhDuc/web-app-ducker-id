@@ -138,6 +138,19 @@ export const RATE_LIMITS = {
 export type RateLimitName = keyof typeof RATE_LIMITS;
 export type RateLimiters = Record<RateLimitName, RateLimitRequestHandler>;
 
+/**
+ * A user-keyed limiter reads the authenticated user, so it must run after the
+ * route's auth guard; an IP- or email-keyed one runs before it.
+ */
+export const isUserKeyed = (name: RateLimitName): boolean => {
+  const [, , keyGenerator] = RATE_LIMITS[name] as readonly [
+    LimitConfig,
+    I18n.Key,
+    KeyGenerator?
+  ];
+  return keyGenerator === byIpAndAuth || keyGenerator === byUser;
+};
+
 /** Answers 429 in the app's error envelope, translated for the request. */
 const tooManyRequests =
   (messageKey: I18n.Key) =>

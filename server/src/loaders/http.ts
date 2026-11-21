@@ -1,8 +1,9 @@
-// libs
-import { Router } from "express";
 // types
-import type { Express } from "express";
+import type { Express, Router } from "express";
 import type { RedisClientType } from "redis";
+import type { RateLimiters } from "@/middlewares/common/rate-limiter.middleware";
+// common
+import { mountControllers } from "@/common/routing";
 // services
 import { BULL_BOARD_PATH } from "@/services/queue/queue.module";
 // middlewares
@@ -14,7 +15,8 @@ interface HttpParts {
   redis: RedisClientType;
   bullBoardRouter: Router;
   oauthRouter: Router;
-  apiRouters: Router[];
+  controllers: object[];
+  rateLimiters: RateLimiters;
 }
 
 export const mountHttp = (app: Express, parts: HttpParts): void => {
@@ -25,9 +27,11 @@ export const mountHttp = (app: Express, parts: HttpParts): void => {
   // mounted straight onto `app`, not under `/api/v1`.
   app.use(parts.oauthRouter);
 
-  const v1Router = Router();
-  parts.apiRouters.forEach((router) => v1Router.use(router));
-  app.use("/api/v1", v1Router);
+  // Every /api/v1 route is an annotated controller. handleNotFound and
+  // handleError below must stay after this call: mountControllers stops the
+  // request after a controller answers, because routing-controllers calls
+  // next() once it has sent a response.
+  mountControllers(app, parts.controllers, parts.rateLimiters);
 
   app.use("/health", createHealthRouter(parts.redis));
 

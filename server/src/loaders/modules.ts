@@ -1,6 +1,7 @@
 // types
 import type { Router } from "express";
 import type { RedisClientType } from "redis";
+import type { RateLimiters } from "@/middlewares/common/rate-limiter.middleware";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 // modules
@@ -34,12 +35,14 @@ export interface ModuleDeps {
 
 export interface ModuleRouters {
   oauthRouter: Router;
-  apiRouters: Router[];
+  /** Annotated controllers in route-precedence order: a literal route goes before a parametric one that would shadow it. */
+  controllers: object[];
+  rateLimiters: RateLimiters;
 }
 
 /**
  * Calls every module factory in dependency order — a module is built only
- * after the services it takes exist — and returns their routers unmounted.
+ * after the services it takes exist — and returns the OAuth router and the controllers, unmounted.
  */
 export const createModules = ({
   redis: redisClient,
@@ -50,8 +53,7 @@ export const createModules = ({
   const rateLimiter = createRateLimiters(redisClient);
   const { sessionService } = createSessionModule(redisClient);
 
-  const { userRouter, userAdminRouter, userService } = createUserModule(
-    rateLimiter,
+  const { userController, userAdminController, userService } = createUserModule(
     authService,
     emailDispatcher,
     notificationDispatcher
@@ -59,88 +61,81 @@ export const createModules = ({
 
   const {
     loginHistoryService,
-    loginHistoryUserRouter,
-    loginHistoryAdminRouter
+    loginHistoryController,
+    loginHistoryAdminController
   } = createLoginHistoryModule(notificationDispatcher);
 
-  const { loginRouter, loginService } = createLoginModule(
+  const { loginController, loginService } = createLoginModule(
     redisClient,
     userService,
     loginHistoryService,
     emailDispatcher,
-    rateLimiter,
     sessionService,
     notificationDispatcher
   );
 
-  const { signupRouter } = createSignupModule(
+  const { signupController } = createSignupModule(
     redisClient,
     authService,
     userService,
-    emailDispatcher,
-    rateLimiter
+    emailDispatcher
   );
 
-  const { tokenRouter, tokenService } = createTokenModule(
+  const { tokenController, tokenService } = createTokenModule(
     redisClient,
     authService,
     userService
   );
-  const { logoutRouter } = createLogoutModule(sessionService, tokenService);
+  const { logoutController } = createLogoutModule(sessionService, tokenService);
 
-  const { unlockAccountRouter } = createUnlockAccountModule(
+  const { unlockAccountController } = createUnlockAccountModule(
     redisClient,
     authService,
     userService,
     loginHistoryService,
     loginService,
-    emailDispatcher,
-    rateLimiter
+    emailDispatcher
   );
 
-  const { forgotPasswordRouter } = createForgotPasswordModule(
+  const { forgotPasswordController } = createForgotPasswordModule(
     redisClient,
     authService,
     userService,
     loginHistoryService,
-    emailDispatcher,
-    rateLimiter
+    emailDispatcher
   );
 
-  const { changePasswordRouter } = createChangePasswordModule(
+  const { changePasswordController } = createChangePasswordModule(
     authService,
     userService,
     emailDispatcher,
-    notificationDispatcher,
-    rateLimiter
-  );
-
-  const { contactAdminRouter, adminContactsRouter, myContactsRouter } =
-    createContactAdminModule(rateLimiter);
-
-  const { categoryRepository, categoryAdminRouter, categoryUserRouter } =
-    createCategoryModule(rateLimiter);
-
-  const { accessPolicy, entitlementAdminRouter } = createEntitlementModule(
-    rateLimiter,
     notificationDispatcher
   );
 
-  const { webAppAdminRouter, webAppUserRouter } = createWebAppModule(
+  const { contactController, adminContactsController, myContactsController } =
+    createContactAdminModule();
+
+  const { categoryRepository, categoryAdminController, categoryController } =
+    createCategoryModule();
+
+  const { accessPolicy, entitlementAdminController } = createEntitlementModule(
+    notificationDispatcher
+  );
+
+  const { webAppAdminController, webAppController } = createWebAppModule(
     categoryRepository,
     accessPolicy,
     notificationDispatcher
   );
 
-  const { notificationUserRouter } = createNotificationModule();
+  const { notificationController } = createNotificationModule();
 
-  const { favoriteRepository, favoriteUserRouter } =
+  const { favoriteRepository, favoriteController } =
     createFavoriteModule(accessPolicy);
 
-  const { recentAppService, recentAppUserRouter } = createRecentAppModule(
+  const { recentAppService, recentAppController } = createRecentAppModule(
     favoriteRepository,
-    accessPolicy,
-    rateLimiter
+    accessPolicy
   );
 
   const { oauthRouter } = createOAuthModule(
@@ -156,29 +151,30 @@ export const createModules = ({
 
   return {
     oauthRouter,
-    apiRouters: [
-      signupRouter,
-      loginRouter,
-      logoutRouter,
-      tokenRouter,
-      unlockAccountRouter,
-      forgotPasswordRouter,
-      changePasswordRouter,
-      userRouter,
-      userAdminRouter,
-      loginHistoryUserRouter,
-      loginHistoryAdminRouter,
-      notificationUserRouter,
-      favoriteUserRouter,
-      recentAppUserRouter,
-      contactAdminRouter,
-      adminContactsRouter,
-      myContactsRouter,
-      webAppAdminRouter,
-      webAppUserRouter,
-      categoryAdminRouter,
-      categoryUserRouter,
-      entitlementAdminRouter
-    ]
+    controllers: [
+      signupController,
+      loginController,
+      logoutController,
+      tokenController,
+      unlockAccountController,
+      forgotPasswordController,
+      changePasswordController,
+      userController,
+      userAdminController,
+      loginHistoryController,
+      loginHistoryAdminController,
+      notificationController,
+      favoriteController,
+      recentAppController,
+      contactController,
+      adminContactsController,
+      myContactsController,
+      webAppAdminController,
+      webAppController,
+      categoryAdminController,
+      categoryController,
+      entitlementAdminController
+    ],
+    rateLimiters: rateLimiter
   };
 };

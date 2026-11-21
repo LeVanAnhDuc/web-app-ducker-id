@@ -15,7 +15,7 @@ import { mountHttp } from "./http";
 export const bootstrap = async (app: Express): Promise<() => Promise<void>> => {
   const infrastructure = await connectInfrastructure();
   const services = createServices();
-  const { oauthRouter, apiRouters } = createModules({
+  const { oauthRouter, controllers, rateLimiters } = createModules({
     redis: infrastructure.redis,
     emailDispatcher: services.emailDispatcher,
     notificationDispatcher: services.notificationDispatcher
@@ -25,7 +25,8 @@ export const bootstrap = async (app: Express): Promise<() => Promise<void>> => {
     redis: infrastructure.redis,
     bullBoardRouter: services.bullBoardRouter,
     oauthRouter,
-    apiRouters
+    controllers,
+    rateLimiters
   });
 
   Logger.info("Server bootstrapped");
