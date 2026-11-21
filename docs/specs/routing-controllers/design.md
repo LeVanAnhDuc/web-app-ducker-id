@@ -56,15 +56,20 @@ routing-controllers 0.11.3 registers each action as (`ExpressDriver.js`, `regist
 → @UseAfter
 ```
 
-Two rules follow, and the design builds them into decorators so they cannot be broken:
+**Revised while planning:** the order is computed rather than placed. Our decorators only record
+metadata, and one function, `orderMiddlewares()`, registers each action's middlewares in a single
+`UseBefore(...)` in this fixed order:
 
-1. **Guards on the class, limits on the method.** Class-level `@UseBefore` runs before
-   method-level, so `@Auth()` / `@Admin()` on the class always precede `@RateLimit(...)` — which
-   matters for the five limiters keyed by the authenticated user (`byIpAndAuth`, `byUser`). A
-   controller whose methods need different guards puts them on the method, **above**
-   `@RateLimit`, and `@RateLimit` asserts at boot that a user-keyed limiter has a guard before it.
-2. **Validation always last.** It happens inside the handler, after every middleware, which is
-   today's order (`rl.*` before `bodyPipe`).
+```
+IP/email-keyed limiters > guards (class, then method) > user-keyed limiters > params > query > body
+```
+
+A plain "guards on the class, limits on the method" rule would have been wrong: `PATCH /users/me`,
+`POST /contact/submit` and `GET /apps/categories` run an IP limiter **before** the guard, so a
+request with a bad or missing token is still counted. The computed order reproduces all 63 current
+chains (plan, Appendix A). Validation stays a middleware placed last, as today; the parameter
+decorators only inject the validated value. That settles the open question in *Input*, and it
+keeps params-before-body deterministic, which parallel parameter resolution would not.
 
 Two framework behaviours are avoided on purpose:
 
