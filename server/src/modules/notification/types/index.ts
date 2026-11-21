@@ -1,14 +1,9 @@
 // types
-import type { Request } from "express";
 import type { Schema } from "mongoose";
 import type {
   NOTIFICATION_TYPES,
   NOTIFICATION_CATEGORIES
 } from "@/modules/notification/constants";
-import type {
-  NotificationIdParamsDto,
-  NotificationListQueryDto
-} from "../dtos/requests";
 
 export type NotificationType =
   (typeof NOTIFICATION_TYPES)[keyof typeof NOTIFICATION_TYPES];
@@ -48,14 +43,4 @@ export interface NotificationFilter {
   userId: string;
   isRead?: boolean;
   category?: NotificationCategory;
-}
-
-// The index signature keeps the handlers assignable to Express's own, whose
-// query and params are string dictionaries.
-export interface NotificationListRequest extends Omit<Request, "query"> {
-  query: NotificationListQueryDto & Request["query"];
-}
-
-export interface NotificationIdRequest extends Omit<Request, "params"> {
-  params: NotificationIdParamsDto & Record<string, string>;
 }

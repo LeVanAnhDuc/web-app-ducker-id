@@ -63,8 +63,8 @@ export const createModules = ({
 
   const {
     loginHistoryService,
-    loginHistoryUserRouter,
-    loginHistoryAdminRouter
+    loginHistoryController,
+    loginHistoryAdminController
   } = createLoginHistoryModule(notificationDispatcher);
 
   const { loginRouter, loginService } = createLoginModule(
@@ -136,15 +136,14 @@ export const createModules = ({
     notificationDispatcher
   );
 
-  const { notificationUserRouter } = createNotificationModule();
+  const { notificationController } = createNotificationModule();
 
   const { favoriteRepository, favoriteController } =
     createFavoriteModule(accessPolicy);
 
-  const { recentAppService, recentAppUserRouter } = createRecentAppModule(
+  const { recentAppService, recentAppController } = createRecentAppModule(
     favoriteRepository,
-    accessPolicy,
-    rateLimiter
+    accessPolicy
   );
 
   const { oauthRouter } = createOAuthModule(
@@ -170,10 +169,6 @@ export const createModules = ({
       changePasswordRouter,
       userRouter,
       userAdminRouter,
-      loginHistoryUserRouter,
-      loginHistoryAdminRouter,
-      notificationUserRouter,
-      recentAppUserRouter,
       contactAdminRouter,
       adminContactsRouter,
       myContactsRouter,
@@ -183,7 +178,13 @@ export const createModules = ({
       categoryUserRouter,
       entitlementAdminRouter
     ],
-    controllers: [favoriteController],
+    controllers: [
+      loginHistoryController,
+      loginHistoryAdminController,
+      notificationController,
+      recentAppController,
+      favoriteController
+    ],
     rateLimiters: rateLimiter
   };
 };

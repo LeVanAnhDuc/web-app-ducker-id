@@ -4,10 +4,7 @@ import type { NotificationDispatcher } from "@/services/notification/notificatio
 import { MongoLoginHistoryRepository } from "./repository/impl/mongo-login-history.repository";
 import { LoginHistoryService } from "./services";
 import { LoginHistoryController } from "./login-history.controller";
-import {
-  createLoginHistoryUserRoutes,
-  createLoginHistoryAdminRoutes
-} from "./login-history.routes";
+import { LoginHistoryAdminController } from "./login-history-admin.controller";
 
 export const createLoginHistoryModule = (
   notificationDispatcher: NotificationDispatcher
@@ -17,17 +14,12 @@ export const createLoginHistoryModule = (
     loginHistoryRepo,
     notificationDispatcher
   });
-  const loginHistoryController = new LoginHistoryController(
-    loginHistoryService
-  );
 
   return {
     loginHistoryService,
-    loginHistoryUserRouter: createLoginHistoryUserRoutes(
-      loginHistoryController
-    ),
-    loginHistoryAdminRouter: createLoginHistoryAdminRoutes(
-      loginHistoryController
+    loginHistoryController: new LoginHistoryController(loginHistoryService),
+    loginHistoryAdminController: new LoginHistoryAdminController(
+      loginHistoryService
     )
   };
 };

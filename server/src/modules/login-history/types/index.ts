@@ -12,12 +12,6 @@ import type {
   LOGIN_HISTORY_SORT_BY_ADMIN,
   LOGIN_ANOMALY_REASONS
 } from "@/modules/login-history/constants";
-import type {
-  LoginHistoryAdminQueryDto,
-  LoginHistoryIdParamsDto,
-  LoginHistoryQueryDto,
-  LoginHistoryStatsQueryDto
-} from "../dtos/requests";
 
 export type LoginMethod = (typeof LOGIN_METHODS)[keyof typeof LOGIN_METHODS];
 
@@ -28,20 +22,6 @@ export type LoginHistorySortByUser =
 
 export type LoginHistorySortByAdmin =
   (typeof LOGIN_HISTORY_SORT_BY_ADMIN)[number];
-
-// The index signature keeps the handlers assignable to Express's own, whose
-// query and params are string dictionaries.
-export interface MyHistoryRequest extends Omit<Request, "query"> {
-  query: LoginHistoryQueryDto & Request["query"];
-}
-
-export interface AllHistoryRequest extends Omit<Request, "query"> {
-  query: LoginHistoryAdminQueryDto & Request["query"];
-}
-
-export interface HistoryIdParamRequest extends Omit<Request, "params"> {
-  params: LoginHistoryIdParamsDto & Record<string, string>;
-}
 
 export type LoginStatus = (typeof LOGIN_STATUSES)[keyof typeof LOGIN_STATUSES];
 
@@ -193,8 +173,4 @@ export interface LoginStatsRange {
   /** IANA zone the day buckets are cut in; never built from raw user input. */
   timezone: string;
   topAppsLimit: number;
-}
-
-export interface MyStatsRequest extends Omit<Request, "query"> {
-  query: LoginHistoryStatsQueryDto & Request["query"];
 }
