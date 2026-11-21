@@ -1,11 +1,11 @@
 // types
 import type { PaginatedResult } from "@/common/pagination";
 import type {
-  AdminAppCreateBody,
-  AdminAppUpdateBody,
-  AdminAppsQuery,
-  UserAppsQuery
-} from "../types";
+  AdminAppsQueryDto,
+  CreateAppBodyDto,
+  UpdateAppBodyDto,
+  UserAppsQueryDto
+} from "../dtos/requests";
 import type { AdminAppCreatedDto, AdminAppDto, UserAppDto } from "../dtos";
 import type { WebAppServiceDeps } from "./deps";
 // others
@@ -17,22 +17,22 @@ import { updateApp } from "./update-app";
 export class WebAppService {
   constructor(private readonly deps: WebAppServiceDeps) {}
 
-  listApps(query: AdminAppsQuery): Promise<{ items: AdminAppDto[] }> {
+  listApps(query: AdminAppsQueryDto): Promise<{ items: AdminAppDto[] }> {
     return listApps(this.deps, query);
   }
 
   listUserApps(
-    query: UserAppsQuery,
+    query: UserAppsQueryDto,
     role?: string
   ): Promise<PaginatedResult<UserAppDto>> {
     return listUserApps(this.deps, query, role);
   }
 
-  createApp(body: AdminAppCreateBody): Promise<AdminAppCreatedDto> {
+  createApp(body: CreateAppBodyDto): Promise<AdminAppCreatedDto> {
     return createApp(this.deps, body);
   }
 
-  updateApp(id: string, body: AdminAppUpdateBody): Promise<AdminAppDto> {
+  updateApp(id: string, body: UpdateAppBodyDto): Promise<AdminAppDto> {
     return updateApp(this.deps, id, body);
   }
 }

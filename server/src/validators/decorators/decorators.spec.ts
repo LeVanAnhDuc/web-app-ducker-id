@@ -1,5 +1,6 @@
 // libs
 import {
+  IsArray,
   IsBoolean,
   IsDate,
   IsInt,
@@ -11,19 +12,24 @@ import {
 import { getDateOfBirthBounds } from "@/validators/date-of-birth";
 import { validateDto } from "@/validators/validate-dto";
 import {
+  ArrayUniqueItems,
+  EachItem,
   IsDateOfBirthNotTooOld,
   IsDateOfBirthNotTooYoung,
   IsIsoDateString,
   IsNotEmptyBody,
   IsObjectId,
   IsOnOrAfter,
+  IsRedirectUri,
+  IsRequiredObjectId,
   Lowercase,
   MatchesProperty,
   ToBoolean,
   ToDate,
   ToInt,
   ToIsoDateString,
-  Trim
+  Trim,
+  TrimEach
 } from "@/validators/decorators";
 
 class IsoDateDto {
@@ -98,6 +104,38 @@ class PatchDto {
   @IsOptional()
   @IsString()
   name?: string;
+}
+
+class EachObjectIdDto {
+  @IsObjectId("validation:userId.invalid", { each: true })
+  @IsArray({ message: "validation:userIds.invalid" })
+  ids!: string[];
+}
+
+class RedirectUrisDto {
+  @IsRedirectUri({
+    each: true,
+    message: "webApp:validation.redirectUris.invalid"
+  })
+  @TrimEach()
+  uris!: string[];
+}
+
+class UniqueDto {
+  @ArrayUniqueItems({ message: "validation:ids.duplicate" })
+  ids!: unknown[];
+}
+
+class EvenDto {
+  @EachItem("isEven", (item) => typeof item === "number" && item % 2 === 0, {
+    message: "validation:numbers.invalid"
+  })
+  numbers!: unknown[];
+}
+
+class RequiredIdDto {
+  @IsRequiredObjectId("category:validation.id.invalid")
+  id!: string;
 }
 
 const yearsAgo = (years: number, days = 0): string => {
@@ -412,5 +450,91 @@ describe("IsNotEmptyBody", () => {
 
     expect(failures).toEqual([]);
     expect({ ...value }).toEqual({ name: "x" });
+  });
+});
+
+describe("EachItem", () => {
+  it("reports each failing item at its index", async () => {
+    const { failures } = await validateDto(EvenDto, {
+      numbers: [2, 3, 4, "6"]
+    });
+    expect(failures).toEqual([
+      {
+        field: "numbers.1",
+        reason: "isEven",
+        key: "validation:numbers.invalid"
+      },
+      {
+        field: "numbers.3",
+        reason: "isEven",
+        key: "validation:numbers.invalid"
+      }
+    ]);
+  });
+
+  it("accepts an empty list", async () => {
+    expect((await validateDto(EvenDto, { numbers: [] })).failures).toEqual([]);
+  });
+});
+
+describe("IsObjectId / IsRedirectUri with { each: true }", () => {
+  it("reports each bad id at its index", async () => {
+    const { failures } = await validateDto(EachObjectIdDto, {
+      ids: ["a".repeat(24), "x", 5]
+    });
+    expect(failures.map((failure) => failure.field)).toEqual([
+      "ids.1",
+      "ids.2"
+    ]);
+    expect(failures[0].reason).toBe("isObjectId");
+  });
+
+  it("leaves a non-array to @IsArray", async () => {
+    const { failures } = await validateDto(EachObjectIdDto, { ids: "x" });
+    expect(failures).toEqual([
+      { field: "ids", reason: "isArray", key: "validation:userIds.invalid" }
+    ]);
+  });
+
+  it("trims each redirect URI before checking it", async () => {
+    const { value, failures } = await validateDto(RedirectUrisDto, {
+      uris: [" https://a.example.com/cb ", "http://evil.example.com/cb"]
+    });
+    expect(value.uris[0]).toBe("https://a.example.com/cb");
+    expect(failures).toEqual([
+      {
+        field: "uris.1",
+        reason: "isRedirectUri",
+        key: "webApp:validation.redirectUris.invalid"
+      }
+    ]);
+  });
+});
+
+describe("ArrayUniqueItems", () => {
+  it("reports every repeat, never the first occurrence", async () => {
+    const { failures } = await validateDto(UniqueDto, {
+      ids: ["a", "b", "a", "a"]
+    });
+    expect(failures.map((failure) => failure.field)).toEqual([
+      "ids.2",
+      "ids.3"
+    ]);
+    expect(failures[0].reason).toBe("arrayUnique");
+  });
+});
+
+describe("IsRequiredObjectId", () => {
+  it.each([
+    [undefined, "isDefined"],
+    [null, "isDefined"],
+    [5, "isString"],
+    ["", "isNotEmpty"],
+    ["x", "isObjectId"]
+  ])("refuses %p as %s with the one key", async (id, reason) => {
+    const { failures } = await validateDto(RequiredIdDto, { id });
+    expect(failures).toEqual([
+      { field: "id", reason, key: "category:validation.id.invalid" }
+    ]);
   });
 });

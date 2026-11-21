@@ -14,6 +14,29 @@ export interface DtoFailure {
 
 const ROOT_FIELD = "";
 
+/**
+ * Context key under which an array rule carries its per-item check. Joi
+ * reported a bad item at `field.<index>`, class-validator reports the whole
+ * array at `field`; with the check at hand every failing index is named.
+ */
+export const ITEM_CHECK = "itemCheck";
+
+export type ItemCheck = (
+  item: unknown,
+  index: number,
+  items: unknown[]
+) => boolean;
+
+const itemCheckOf = (
+  error: ClassValidatorError,
+  reason: string
+): ItemCheck | undefined => {
+  const check: unknown = error.contexts?.[reason]?.[ITEM_CHECK];
+  return typeof check === "function" && Array.isArray(error.value)
+    ? (check as ItemCheck)
+    : undefined;
+};
+
 const flatten = (
   errors: ClassValidatorError[],
   parentPath: string
@@ -22,16 +45,28 @@ const flatten = (
     const path = parentPath
       ? `${parentPath}.${error.property}`
       : error.property;
-    const own = Object.entries(error.constraints ?? {}).map(
-      ([reason, key]) => ({
-        // An object-level rule (date range, empty PATCH body) sits on one
-        // property but Joi reported it against the object itself.
-        field: error.contexts?.[reason]?.root === true ? ROOT_FIELD : path,
-        reason,
-        key
-      })
+    const own = Object.entries(error.constraints ?? {}).flatMap(
+      ([reason, key]): DtoFailure[] => {
+        const check = itemCheckOf(error, reason);
+        if (check) {
+          const items = error.value as unknown[];
+          return items.flatMap((item, index) =>
+            check(item, index, items)
+              ? []
+              : [{ field: `${path}.${index}`, reason, key }]
+          );
+        }
+        return [
+          {
+            // An object-level rule (date range, empty PATCH body) sits on one
+            // property but Joi reported it against the object itself.
+            field: error.contexts?.[reason]?.root === true ? ROOT_FIELD : path,
+            reason,
+            key
+          }
+        ];
+      }
     );
-
     return [...own, ...flatten(error.children ?? [], path)];
   });
 
@@ -50,7 +85,9 @@ export const validateDto = async <T extends object>(
     // Otherwise a value with no decorator metadata fails with class-validator's
     // own "unknownValue" constraint, which carries no i18n key.
     forbidUnknownValues: false,
-    validationError: { target: false, value: false }
+    // The value stays on each error so an array rule can name its bad items;
+    // it never leaves this function.
+    validationError: { target: false, value: true }
   });
 
   return { value, failures: flatten(errors, "") };

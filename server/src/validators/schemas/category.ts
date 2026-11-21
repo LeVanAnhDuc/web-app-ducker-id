@@ -1,13 +1,5 @@
 // libs
 import Joi from "joi";
-// types
-import type {
-  CategoryIdParams,
-  CreateCategoryBody,
-  DeleteCategoryBody,
-  MoveCategoryBody,
-  UpdateCategoryBody
-} from "@/modules/category/types";
 // modules
 import {
   normalizeCategoryName,
@@ -48,66 +40,61 @@ const nameSchema = (field: NameField) =>
 
 const objectId = (key: string) => objectIdSchema("category", key);
 
-export const createCategoryBodySchema: Joi.ObjectSchema<CreateCategoryBody> =
-  Joi.object({
-    name: Joi.object({
-      en: nameSchema("nameEn").required(),
-      vi: nameSchema("nameVi").required()
+export const createCategoryBodySchema = Joi.object({
+  name: Joi.object({
+    en: nameSchema("nameEn").required(),
+    vi: nameSchema("nameVi").required()
+  })
+    .required()
+    .messages({
+      "any.required": "category:validation.nameEn.required",
+      "object.base": "category:validation.nameEn.required"
     })
-      .required()
-      .messages({
-        "any.required": "category:validation.nameEn.required",
-        "object.base": "category:validation.nameEn.required"
-      })
-  });
+});
 
-export const updateCategoryBodySchema: Joi.ObjectSchema<UpdateCategoryBody> =
-  Joi.object({
-    name: Joi.object({
-      en: nameSchema("nameEn"),
-      vi: nameSchema("nameVi")
+export const updateCategoryBodySchema = Joi.object({
+  name: Joi.object({
+    en: nameSchema("nameEn"),
+    vi: nameSchema("nameVi")
+  })
+    .min(1)
+    .required()
+    .messages({
+      "any.required": "category:validation.body.empty",
+      "object.base": "category:validation.body.empty",
+      "object.min": "category:validation.body.empty"
     })
-      .min(1)
-      .required()
-      .messages({
-        "any.required": "category:validation.body.empty",
-        "object.base": "category:validation.body.empty",
-        "object.min": "category:validation.body.empty"
-      })
-  });
+});
 
-export const moveCategoryBodySchema: Joi.ObjectSchema<MoveCategoryBody> =
-  Joi.object({
-    direction: Joi.string()
-      .valid(...Object.values(CATEGORY_MOVE_DIRECTIONS))
-      .required()
-      .messages({
-        "any.only": "category:validation.direction.invalid",
-        "any.required": "category:validation.direction.invalid",
-        "string.base": "category:validation.direction.invalid"
-      })
-  });
+export const moveCategoryBodySchema = Joi.object({
+  direction: Joi.string()
+    .valid(...Object.values(CATEGORY_MOVE_DIRECTIONS))
+    .required()
+    .messages({
+      "any.only": "category:validation.direction.invalid",
+      "any.required": "category:validation.direction.invalid",
+      "string.base": "category:validation.direction.invalid"
+    })
+});
 
-export const deleteCategoryBodySchema: Joi.ObjectSchema<DeleteCategoryBody> =
-  Joi.object({
-    reassignments: Joi.array()
-      .items(
-        Joi.object({
-          appId: objectId("appId"),
-          categoryId: objectId("targetId")
-        })
-      )
-      // A repeated appId is not checked here: the contract answers it with
-      // CATEGORY_REASSIGN_INVALID, which the service raises.
-      .max(CATEGORY_CONFIG.MAX_REASSIGNMENTS)
-      .default([])
-      .messages({
-        "array.base": "category:validation.reassignments.invalid",
-        "array.max": "category:validation.reassignments.tooMany"
+export const deleteCategoryBodySchema = Joi.object({
+  reassignments: Joi.array()
+    .items(
+      Joi.object({
+        appId: objectId("appId"),
+        categoryId: objectId("targetId")
       })
-  }).default();
+    )
+    // A repeated appId is not checked here: the contract answers it with
+    // CATEGORY_REASSIGN_INVALID, which the service raises.
+    .max(CATEGORY_CONFIG.MAX_REASSIGNMENTS)
+    .default([])
+    .messages({
+      "array.base": "category:validation.reassignments.invalid",
+      "array.max": "category:validation.reassignments.tooMany"
+    })
+}).default();
 
-export const categoryIdParamSchema: Joi.ObjectSchema<CategoryIdParams> =
-  Joi.object({
-    id: objectId("id")
-  });
+export const categoryIdParamSchema = Joi.object({
+  id: objectId("id")
+});

@@ -2,6 +2,10 @@
 import type { Request } from "express";
 import type { Schema } from "mongoose";
 import type { ENTITLEMENT_EFFECTS } from "@/modules/entitlement/constants";
+import type {
+  EntitlementMatrixQueryDto,
+  UpdateEntitlementsBodyDto
+} from "../dtos/requests";
 
 export type EntitlementEffect =
   (typeof ENTITLEMENT_EFFECTS)[keyof typeof ENTITLEMENT_EFFECTS];
@@ -59,18 +63,10 @@ export interface EntitlementChange {
   granted: boolean;
 }
 
-export interface EntitlementMatrixQuery {
-  userIds: string[];
-}
-
-export interface UpdateEntitlementsBody {
-  changes: EntitlementChange[];
-}
-
 export interface EntitlementMatrixRequest extends Omit<Request, "query"> {
-  query: EntitlementMatrixQuery & Request["query"];
+  query: EntitlementMatrixQueryDto & Request["query"];
 }
 
 export interface UpdateEntitlementsRequest extends Omit<Request, "body"> {
-  body: UpdateEntitlementsBody;
+  body: UpdateEntitlementsBodyDto;
 }

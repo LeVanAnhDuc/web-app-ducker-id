@@ -11,6 +11,16 @@ export const Trim = (): PropertyDecorator =>
     typeof value === "string" ? value.trim() : value
   );
 
+// Joi's `array().items(string().trim())` trims every string item.
+export const TrimEach = (): PropertyDecorator =>
+  Transform(({ value }: { value: unknown }) =>
+    Array.isArray(value)
+      ? value.map((item: unknown) =>
+          typeof item === "string" ? item.trim() : item
+        )
+      : value
+  );
+
 export const Lowercase = (): PropertyDecorator =>
   Transform(({ value }: { value: unknown }) =>
     typeof value === "string" ? value.toLowerCase() : value

@@ -1,12 +1,12 @@
 // types
 import type { FilterQuery } from "mongoose";
 import type {
-  AdminAppsQuery,
   WebAppDocument,
   WebAppStatus,
   WebAppStatusPublic,
   WebAppWithCategories
 } from "../types";
+import type { AdminAppsQueryDto } from "../dtos/requests";
 import type { WebAppCategoryDocument } from "@/modules/category/types";
 import type { AccessScope } from "@/modules/entitlement/types";
 // modules
@@ -22,7 +22,7 @@ const PUBLIC_TO_STATUS = {
 } as const;
 
 export const buildWebAppFilter = (
-  query: AdminAppsQuery
+  query: AdminAppsQueryDto
 ): FilterQuery<WebAppDocument> => {
   const filter: FilterQuery<WebAppDocument> = {};
 

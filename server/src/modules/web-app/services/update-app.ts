@@ -1,5 +1,6 @@
 // types
-import type { AdminAppUpdateBody, WebAppUpdateInput } from "../types";
+import type { WebAppUpdateInput } from "../types";
+import type { UpdateAppBodyDto } from "../dtos/requests";
 import type { AdminAppDto } from "../dtos";
 import type { WebAppServiceDeps } from "./deps";
 // common
@@ -16,7 +17,7 @@ import { ERROR_CODES } from "@/constants/error-code";
 export const updateApp = async (
   deps: WebAppServiceDeps,
   id: string,
-  body: AdminAppUpdateBody
+  body: UpdateAppBodyDto
 ): Promise<AdminAppDto> => {
   const existing = await deps.webAppRepo.findById(id);
   if (!existing) {
@@ -63,7 +64,6 @@ export const updateApp = async (
     updateInput.postLogoutRedirectUris = body.postLogoutRedirectUris;
   if (body.tokenEndpointAuthMethod !== undefined)
     updateInput.tokenEndpointAuthMethod = body.tokenEndpointAuthMethod;
-  if (body.scopes !== undefined) updateInput.scopes = body.scopes;
 
   const updated = await deps.webAppRepo.updateById(id, updateInput);
   if (!updated) {

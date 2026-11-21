@@ -1,0 +1,2754 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`entitlement request DTOs match the Joi schemas EntitlementMatrixQueryDto ≡ entitlementMatrixQuerySchema: atMax 1`] = `
+{
+  "failures": [],
+  "value": EntitlementMatrixQueryDto {
+    "userIds": [
+      "000000000000000000000001",
+      "000000000000000000000002",
+      "000000000000000000000003",
+      "000000000000000000000004",
+      "000000000000000000000005",
+      "000000000000000000000006",
+      "000000000000000000000007",
+      "000000000000000000000008",
+      "000000000000000000000009",
+      "00000000000000000000000a",
+      "00000000000000000000000b",
+      "00000000000000000000000c",
+      "00000000000000000000000d",
+      "00000000000000000000000e",
+      "00000000000000000000000f",
+      "000000000000000000000010",
+      "000000000000000000000011",
+      "000000000000000000000012",
+      "000000000000000000000013",
+      "000000000000000000000014",
+      "000000000000000000000015",
+      "000000000000000000000016",
+      "000000000000000000000017",
+      "000000000000000000000018",
+      "000000000000000000000019",
+      "00000000000000000000001a",
+      "00000000000000000000001b",
+      "00000000000000000000001c",
+      "00000000000000000000001d",
+      "00000000000000000000001e",
+      "00000000000000000000001f",
+      "000000000000000000000020",
+      "000000000000000000000021",
+      "000000000000000000000022",
+      "000000000000000000000023",
+      "000000000000000000000024",
+      "000000000000000000000025",
+      "000000000000000000000026",
+      "000000000000000000000027",
+      "000000000000000000000028",
+      "000000000000000000000029",
+      "00000000000000000000002a",
+      "00000000000000000000002b",
+      "00000000000000000000002c",
+      "00000000000000000000002d",
+      "00000000000000000000002e",
+      "00000000000000000000002f",
+      "000000000000000000000030",
+      "000000000000000000000031",
+      "000000000000000000000032",
+    ],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas EntitlementMatrixQueryDto ≡ entitlementMatrixQuerySchema: badId 1`] = `
+{
+  "failures": [
+    {
+      "field": "userIds.1",
+      "key": "entitlement:validation.userId.invalid",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": EntitlementMatrixQueryDto {
+    "userIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+      "abc",
+    ],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas EntitlementMatrixQueryDto ≡ entitlementMatrixQuerySchema: badIdInArray 1`] = `
+{
+  "failures": [
+    {
+      "field": "userIds.1",
+      "key": "entitlement:validation.userId.invalid",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": EntitlementMatrixQueryDto {
+    "userIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+      " 64b2f0c2f1a2b3c4d5e6f7a2 ",
+    ],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas EntitlementMatrixQueryDto ≡ entitlementMatrixQuerySchema: commaList 1`] = `
+{
+  "failures": [],
+  "value": EntitlementMatrixQueryDto {
+    "userIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+      "64b2f0c2f1a2b3c4d5e6f7a2",
+    ],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas EntitlementMatrixQueryDto ≡ entitlementMatrixQuerySchema: commaListBlankEntries 1`] = `
+{
+  "failures": [],
+  "value": EntitlementMatrixQueryDto {
+    "userIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+      "64b2f0c2f1a2b3c4d5e6f7a2",
+    ],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas EntitlementMatrixQueryDto ≡ entitlementMatrixQuerySchema: commaListPadded 1`] = `
+{
+  "failures": [],
+  "value": EntitlementMatrixQueryDto {
+    "userIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+      "64b2f0c2f1a2b3c4d5e6f7a2",
+    ],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas EntitlementMatrixQueryDto ≡ entitlementMatrixQuerySchema: duplicate 1`] = `
+{
+  "failures": [
+    {
+      "field": "userIds.2",
+      "key": "entitlement:validation.userIds.duplicate",
+      "reason": "arrayUnique",
+    },
+  ],
+  "value": EntitlementMatrixQueryDto {
+    "userIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+      "64b2f0c2f1a2b3c4d5e6f7a2",
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas EntitlementMatrixQueryDto ≡ entitlementMatrixQuerySchema: empty 1`] = `
+{
+  "failures": [
+    {
+      "field": "userIds",
+      "key": "entitlement:validation.userIds.required",
+      "reason": "arrayMinSize",
+    },
+  ],
+  "value": EntitlementMatrixQueryDto {
+    "userIds": [],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas EntitlementMatrixQueryDto ≡ entitlementMatrixQuerySchema: emptyArray 1`] = `
+{
+  "failures": [
+    {
+      "field": "userIds",
+      "key": "entitlement:validation.userIds.required",
+      "reason": "arrayMinSize",
+    },
+  ],
+  "value": EntitlementMatrixQueryDto {
+    "userIds": [],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas EntitlementMatrixQueryDto ≡ entitlementMatrixQuerySchema: missing 1`] = `
+{
+  "failures": [
+    {
+      "field": "userIds",
+      "key": "entitlement:validation.userIds.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": EntitlementMatrixQueryDto {},
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas EntitlementMatrixQueryDto ≡ entitlementMatrixQuerySchema: nestedObject 1`] = `
+{
+  "failures": [
+    {
+      "field": "userIds",
+      "key": "entitlement:validation.userIds.required",
+      "reason": "isArray",
+    },
+  ],
+  "value": EntitlementMatrixQueryDto {
+    "userIds": {
+      "a": "64b2f0c2f1a2b3c4d5e6f7a1",
+    },
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas EntitlementMatrixQueryDto ≡ entitlementMatrixQuerySchema: onlyCommas 1`] = `
+{
+  "failures": [
+    {
+      "field": "userIds",
+      "key": "entitlement:validation.userIds.required",
+      "reason": "arrayMinSize",
+    },
+  ],
+  "value": EntitlementMatrixQueryDto {
+    "userIds": [],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas EntitlementMatrixQueryDto ≡ entitlementMatrixQuerySchema: repeatedParam 1`] = `
+{
+  "failures": [],
+  "value": EntitlementMatrixQueryDto {
+    "userIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+      "64b2f0c2f1a2b3c4d5e6f7a2",
+    ],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas EntitlementMatrixQueryDto ≡ entitlementMatrixQuerySchema: tooMany 1`] = `
+{
+  "failures": [
+    {
+      "field": "userIds",
+      "key": "entitlement:validation.userIds.tooMany",
+      "reason": "arrayMaxSize",
+    },
+  ],
+  "value": EntitlementMatrixQueryDto {
+    "userIds": [
+      "000000000000000000000001",
+      "000000000000000000000002",
+      "000000000000000000000003",
+      "000000000000000000000004",
+      "000000000000000000000005",
+      "000000000000000000000006",
+      "000000000000000000000007",
+      "000000000000000000000008",
+      "000000000000000000000009",
+      "00000000000000000000000a",
+      "00000000000000000000000b",
+      "00000000000000000000000c",
+      "00000000000000000000000d",
+      "00000000000000000000000e",
+      "00000000000000000000000f",
+      "000000000000000000000010",
+      "000000000000000000000011",
+      "000000000000000000000012",
+      "000000000000000000000013",
+      "000000000000000000000014",
+      "000000000000000000000015",
+      "000000000000000000000016",
+      "000000000000000000000017",
+      "000000000000000000000018",
+      "000000000000000000000019",
+      "00000000000000000000001a",
+      "00000000000000000000001b",
+      "00000000000000000000001c",
+      "00000000000000000000001d",
+      "00000000000000000000001e",
+      "00000000000000000000001f",
+      "000000000000000000000020",
+      "000000000000000000000021",
+      "000000000000000000000022",
+      "000000000000000000000023",
+      "000000000000000000000024",
+      "000000000000000000000025",
+      "000000000000000000000026",
+      "000000000000000000000027",
+      "000000000000000000000028",
+      "000000000000000000000029",
+      "00000000000000000000002a",
+      "00000000000000000000002b",
+      "00000000000000000000002c",
+      "00000000000000000000002d",
+      "00000000000000000000002e",
+      "00000000000000000000002f",
+      "000000000000000000000030",
+      "000000000000000000000031",
+      "000000000000000000000032",
+      "000000000000000000000033",
+    ],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas EntitlementMatrixQueryDto ≡ entitlementMatrixQuerySchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": EntitlementMatrixQueryDto {
+    "userIds": [
+      "64b2f0c2f1a2b3c4d5e6f7a1",
+    ],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas UpdateEntitlementsBodyDto ≡ updateEntitlementsBodySchema: atMax 1`] = `
+{
+  "failures": [],
+  "value": UpdateEntitlementsBodyDto {
+    "changes": [
+      EntitlementChangeDto {
+        "appId": "000000000000000000000001",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000002",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000003",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000004",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000005",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000006",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000007",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000008",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000009",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000000a",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000000b",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000000c",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000000d",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000000e",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000000f",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000010",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000011",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000012",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000013",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000014",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000015",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000016",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000017",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000018",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000019",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000001a",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000001b",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000001c",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000001d",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000001e",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000001f",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000020",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000021",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000022",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000023",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000024",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000025",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000026",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000027",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000028",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000029",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000002a",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000002b",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000002c",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000002d",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000002e",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000002f",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000030",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000031",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000032",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000033",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000034",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000035",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000036",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000037",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000038",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000039",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000003a",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000003b",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000003c",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000003d",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000003e",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000003f",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000040",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000041",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000042",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000043",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000044",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000045",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000046",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000047",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000048",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000049",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000004a",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000004b",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000004c",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000004d",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000004e",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000004f",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000050",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000051",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000052",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000053",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000054",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000055",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000056",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000057",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000058",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000059",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000005a",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000005b",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000005c",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000005d",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000005e",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000005f",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000060",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000061",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000062",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000063",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000064",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000065",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000066",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000067",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000068",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000069",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000006a",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000006b",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000006c",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000006d",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000006e",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000006f",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000070",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000071",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000072",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000073",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000074",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000075",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000076",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000077",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000078",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000079",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000007a",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000007b",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000007c",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000007d",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000007e",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000007f",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000080",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000081",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000082",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000083",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000084",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000085",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000086",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000087",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000088",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000089",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000008a",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000008b",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000008c",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000008d",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000008e",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000008f",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000090",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000091",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000092",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000093",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000094",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000095",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000096",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000097",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000098",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000099",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000009a",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000009b",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000009c",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000009d",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000009e",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000009f",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000a0",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000a1",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000a2",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000a3",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000a4",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000a5",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000a6",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000a7",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000a8",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000a9",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000aa",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000ab",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000ac",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000ad",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000ae",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000af",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000b0",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000b1",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000b2",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000b3",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000b4",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000b5",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000b6",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000b7",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000b8",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000b9",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000ba",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000bb",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000bc",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000bd",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000be",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000bf",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000c0",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000c1",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000c2",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000c3",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000c4",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000c5",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000c6",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000c7",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000c8",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+    ],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas UpdateEntitlementsBodyDto ≡ updateEntitlementsBodySchema: badAppId 1`] = `
+{
+  "failures": [
+    {
+      "field": "changes.0.appId",
+      "key": "entitlement:validation.appId.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": UpdateEntitlementsBodyDto {
+    "changes": [
+      EntitlementChangeDto {
+        "appId": 5,
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+    ],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas UpdateEntitlementsBodyDto ≡ updateEntitlementsBodySchema: badUserId 1`] = `
+{
+  "failures": [
+    {
+      "field": "changes.0.userId",
+      "key": "entitlement:validation.userId.invalid",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": UpdateEntitlementsBodyDto {
+    "changes": [
+      EntitlementChangeDto {
+        "appId": "64b2f0c2f1a2b3c4d5e6f7a2",
+        "granted": true,
+        "userId": "x",
+      },
+    ],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas UpdateEntitlementsBodyDto ≡ updateEntitlementsBodySchema: emptyBody 1`] = `
+{
+  "failures": [
+    {
+      "field": "changes",
+      "key": "entitlement:validation.changes.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": UpdateEntitlementsBodyDto {},
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas UpdateEntitlementsBodyDto ≡ updateEntitlementsBodySchema: emptyIds 1`] = `
+{
+  "failures": [
+    {
+      "field": "changes.0.userId",
+      "key": "entitlement:validation.userId.invalid",
+      "reason": "isNotEmpty",
+    },
+    {
+      "field": "changes.0.appId",
+      "key": "entitlement:validation.appId.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": UpdateEntitlementsBodyDto {
+    "changes": [
+      EntitlementChangeDto {
+        "appId": "",
+        "granted": true,
+        "userId": "",
+      },
+    ],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas UpdateEntitlementsBodyDto ≡ updateEntitlementsBodySchema: emptyList 1`] = `
+{
+  "failures": [
+    {
+      "field": "changes",
+      "key": "entitlement:validation.changes.required",
+      "reason": "arrayMinSize",
+    },
+  ],
+  "value": UpdateEntitlementsBodyDto {
+    "changes": [],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas UpdateEntitlementsBodyDto ≡ updateEntitlementsBodySchema: grantedMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "changes.0.granted",
+      "key": "entitlement:validation.granted.invalid",
+      "reason": "isDefined",
+    },
+  ],
+  "value": UpdateEntitlementsBodyDto {
+    "changes": [
+      EntitlementChangeDto {
+        "appId": "64b2f0c2f1a2b3c4d5e6f7a2",
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+    ],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas UpdateEntitlementsBodyDto ≡ updateEntitlementsBodySchema: grantedNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "changes.0.granted",
+      "key": "entitlement:validation.granted.invalid",
+      "reason": "isDefined",
+    },
+  ],
+  "value": UpdateEntitlementsBodyDto {
+    "changes": [
+      EntitlementChangeDto {
+        "appId": "64b2f0c2f1a2b3c4d5e6f7a2",
+        "granted": null,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+    ],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas UpdateEntitlementsBodyDto ≡ updateEntitlementsBodySchema: grantedNumber 1`] = `
+{
+  "failures": [
+    {
+      "field": "changes.0.granted",
+      "key": "entitlement:validation.granted.invalid",
+      "reason": "isBoolean",
+    },
+  ],
+  "value": UpdateEntitlementsBodyDto {
+    "changes": [
+      EntitlementChangeDto {
+        "appId": "64b2f0c2f1a2b3c4d5e6f7a2",
+        "granted": 1,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+    ],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas UpdateEntitlementsBodyDto ≡ updateEntitlementsBodySchema: grantedString 1`] = `
+{
+  "failures": [
+    {
+      "field": "changes.0.granted",
+      "key": "entitlement:validation.granted.invalid",
+      "reason": "isBoolean",
+    },
+  ],
+  "value": UpdateEntitlementsBodyDto {
+    "changes": [
+      EntitlementChangeDto {
+        "appId": "64b2f0c2f1a2b3c4d5e6f7a2",
+        "granted": "true",
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+    ],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas UpdateEntitlementsBodyDto ≡ updateEntitlementsBodySchema: listNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "changes",
+      "key": "entitlement:validation.changes.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": UpdateEntitlementsBodyDto {
+    "changes": null,
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas UpdateEntitlementsBodyDto ≡ updateEntitlementsBodySchema: listObject 1`] = `
+{
+  "failures": [
+    {
+      "field": "changes",
+      "key": "entitlement:validation.changes.required",
+      "reason": "isArray",
+    },
+  ],
+  "value": UpdateEntitlementsBodyDto {
+    "changes": EntitlementChangeDto {
+      "appId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      "granted": true,
+      "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+    },
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas UpdateEntitlementsBodyDto ≡ updateEntitlementsBodySchema: listString 1`] = `
+{
+  "failures": [
+    {
+      "field": "changes",
+      "key": "entitlement:validation.changes.required",
+      "reason": "isArray",
+    },
+  ],
+  "value": UpdateEntitlementsBodyDto {
+    "changes": "x",
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas UpdateEntitlementsBodyDto ≡ updateEntitlementsBodySchema: missingAll 1`] = `
+{
+  "failures": [
+    {
+      "field": "changes.0.userId",
+      "key": "entitlement:validation.userId.invalid",
+      "reason": "isDefined",
+    },
+    {
+      "field": "changes.0.appId",
+      "key": "entitlement:validation.appId.invalid",
+      "reason": "isDefined",
+    },
+    {
+      "field": "changes.0.granted",
+      "key": "entitlement:validation.granted.invalid",
+      "reason": "isDefined",
+    },
+  ],
+  "value": UpdateEntitlementsBodyDto {
+    "changes": [
+      EntitlementChangeDto {},
+    ],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas UpdateEntitlementsBodyDto ≡ updateEntitlementsBodySchema: nonObjectItems 1`] = `
+{
+  "failures": [
+    {
+      "field": "changes.0",
+      "key": "entitlement:validation.changes.required",
+      "reason": "nestedValidation",
+    },
+    {
+      "field": "changes.1",
+      "key": "entitlement:validation.changes.required",
+      "reason": "nestedValidation",
+    },
+  ],
+  "value": UpdateEntitlementsBodyDto {
+    "changes": [
+      5,
+      "x",
+    ],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas UpdateEntitlementsBodyDto ≡ updateEntitlementsBodySchema: one 1`] = `
+{
+  "failures": [],
+  "value": UpdateEntitlementsBodyDto {
+    "changes": [
+      EntitlementChangeDto {
+        "appId": "000000000000000000000001",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+    ],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas UpdateEntitlementsBodyDto ≡ updateEntitlementsBodySchema: revoke 1`] = `
+{
+  "failures": [],
+  "value": UpdateEntitlementsBodyDto {
+    "changes": [
+      EntitlementChangeDto {
+        "appId": "64b2f0c2f1a2b3c4d5e6f7a2",
+        "granted": false,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+    ],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas UpdateEntitlementsBodyDto ≡ updateEntitlementsBodySchema: samePairThirdItem 1`] = `
+{
+  "failures": [
+    {
+      "field": "changes.2",
+      "key": "entitlement:validation.changes.duplicate",
+      "reason": "arrayUnique",
+    },
+  ],
+  "value": UpdateEntitlementsBodyDto {
+    "changes": [
+      EntitlementChangeDto {
+        "appId": "64b2f0c2f1a2b3c4d5e6f7a2",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "64b2f0c2f1a2b3c4d5e6f7a2",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+      EntitlementChangeDto {
+        "appId": "64b2f0c2f1a2b3c4d5e6f7a2",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+    ],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas UpdateEntitlementsBodyDto ≡ updateEntitlementsBodySchema: samePairTwice 1`] = `
+{
+  "failures": [
+    {
+      "field": "changes.1",
+      "key": "entitlement:validation.changes.duplicate",
+      "reason": "arrayUnique",
+    },
+  ],
+  "value": UpdateEntitlementsBodyDto {
+    "changes": [
+      EntitlementChangeDto {
+        "appId": "64b2f0c2f1a2b3c4d5e6f7a2",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "64b2f0c2f1a2b3c4d5e6f7a2",
+        "granted": false,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+    ],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas UpdateEntitlementsBodyDto ≡ updateEntitlementsBodySchema: secondItemBad 1`] = `
+{
+  "failures": [
+    {
+      "field": "changes.1.appId",
+      "key": "entitlement:validation.appId.invalid",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": UpdateEntitlementsBodyDto {
+    "changes": [
+      EntitlementChangeDto {
+        "appId": "64b2f0c2f1a2b3c4d5e6f7a2",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "x",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a2",
+      },
+    ],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas UpdateEntitlementsBodyDto ≡ updateEntitlementsBodySchema: tooMany 1`] = `
+{
+  "failures": [
+    {
+      "field": "changes",
+      "key": "entitlement:validation.changes.tooMany",
+      "reason": "arrayMaxSize",
+    },
+  ],
+  "value": UpdateEntitlementsBodyDto {
+    "changes": [
+      EntitlementChangeDto {
+        "appId": "000000000000000000000001",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000002",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000003",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000004",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000005",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000006",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000007",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000008",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000009",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000000a",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000000b",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000000c",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000000d",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000000e",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000000f",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000010",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000011",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000012",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000013",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000014",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000015",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000016",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000017",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000018",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000019",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000001a",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000001b",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000001c",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000001d",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000001e",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000001f",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000020",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000021",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000022",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000023",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000024",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000025",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000026",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000027",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000028",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000029",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000002a",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000002b",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000002c",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000002d",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000002e",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000002f",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000030",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000031",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000032",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000033",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000034",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000035",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000036",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000037",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000038",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000039",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000003a",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000003b",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000003c",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000003d",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000003e",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000003f",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000040",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000041",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000042",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000043",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000044",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000045",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000046",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000047",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000048",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000049",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000004a",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000004b",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000004c",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000004d",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000004e",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000004f",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000050",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000051",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000052",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000053",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000054",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000055",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000056",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000057",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000058",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000059",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000005a",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000005b",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000005c",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000005d",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000005e",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000005f",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000060",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000061",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000062",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000063",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000064",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000065",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000066",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000067",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000068",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000069",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000006a",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000006b",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000006c",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000006d",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000006e",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000006f",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000070",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000071",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000072",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000073",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000074",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000075",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000076",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000077",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000078",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000079",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000007a",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000007b",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000007c",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000007d",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000007e",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000007f",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000080",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000081",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000082",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000083",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000084",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000085",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000086",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000087",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000088",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000089",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000008a",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000008b",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000008c",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000008d",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000008e",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000008f",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000090",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000091",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000092",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000093",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000094",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000095",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000096",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000097",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000098",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "000000000000000000000099",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000009a",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000009b",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000009c",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000009d",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000009e",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "00000000000000000000009f",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000a0",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000a1",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000a2",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000a3",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000a4",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000a5",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000a6",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000a7",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000a8",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000a9",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000aa",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000ab",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000ac",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000ad",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000ae",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000af",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000b0",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000b1",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000b2",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000b3",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000b4",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000b5",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000b6",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000b7",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000b8",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000b9",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000ba",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000bb",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000bc",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000bd",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000be",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000bf",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000c0",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000c1",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000c2",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000c3",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000c4",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000c5",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000c6",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000c7",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000c8",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+      EntitlementChangeDto {
+        "appId": "0000000000000000000000c9",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+    ],
+  },
+}
+`;
+
+exports[`entitlement request DTOs match the Joi schemas UpdateEntitlementsBodyDto ≡ updateEntitlementsBodySchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": UpdateEntitlementsBodyDto {
+    "changes": [
+      EntitlementChangeDto {
+        "appId": "64b2f0c2f1a2b3c4d5e6f7a2",
+        "granted": true,
+        "userId": "64b2f0c2f1a2b3c4d5e6f7a1",
+      },
+    ],
+  },
+}
+`;

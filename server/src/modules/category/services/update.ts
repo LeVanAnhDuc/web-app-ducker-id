@@ -1,5 +1,6 @@
 // types
-import type { CategoryName, UpdateCategoryBody } from "../types";
+import type { CategoryName } from "../types";
+import type { UpdateCategoryBodyDto } from "../dtos/requests";
 import type { AdminCategoryDto } from "../dtos";
 import type { CategoryServiceDeps } from "./deps";
 // common
@@ -19,7 +20,7 @@ const notFound = () =>
 export const update = async (
   deps: CategoryServiceDeps,
   id: string,
-  body: UpdateCategoryBody
+  body: UpdateCategoryBodyDto
 ): Promise<AdminCategoryDto> => {
   const existing = await deps.categoryRepo.findById(id);
   if (!existing) throw notFound();

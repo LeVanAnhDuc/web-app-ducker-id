@@ -6,14 +6,14 @@ import type { RateLimiterMiddleware } from "@/middlewares";
 import type { CategoryController } from "./category.controller";
 // common
 import { handle } from "@/common/responses";
-// validators
+// modules
 import {
-  categoryIdParamSchema,
-  createCategoryBodySchema,
-  deleteCategoryBodySchema,
-  moveCategoryBodySchema,
-  updateCategoryBodySchema
-} from "@/validators/schemas/category";
+  CategoryIdParamsDto,
+  CreateCategoryBodyDto,
+  DeleteCategoryBodyDto,
+  MoveCategoryBodyDto,
+  UpdateCategoryBodyDto
+} from "@/modules/category/dtos/requests";
 // others
 import {
   adminGuard,
@@ -39,7 +39,7 @@ export const createCategoryAdminRoutes = (
   categories.post(
     "/",
     rl.categoryMutationByIpAndUser,
-    bodyPipe(createCategoryBodySchema),
+    bodyPipe(CreateCategoryBodyDto),
     handle(controller.create, {
       status: StatusCodes.CREATED,
       message: "category:success.create"
@@ -48,20 +48,20 @@ export const createCategoryAdminRoutes = (
   categories.patch(
     "/:id",
     rl.categoryMutationByIpAndUser,
-    paramsPipe(categoryIdParamSchema),
-    bodyPipe(updateCategoryBodySchema),
+    paramsPipe(CategoryIdParamsDto),
+    bodyPipe(UpdateCategoryBodyDto),
     handle(controller.update, { message: "category:success.update" })
   );
   categories.post(
     "/:id/move",
     rl.categoryMutationByIpAndUser,
-    paramsPipe(categoryIdParamSchema),
-    bodyPipe(moveCategoryBodySchema),
+    paramsPipe(CategoryIdParamsDto),
+    bodyPipe(MoveCategoryBodyDto),
     handle(controller.move, { message: "category:success.move" })
   );
   categories.get(
     "/:id/delete-impact",
-    paramsPipe(categoryIdParamSchema),
+    paramsPipe(CategoryIdParamsDto),
     handle(controller.deleteImpact, {
       message: "category:success.deleteImpact"
     })
@@ -69,8 +69,8 @@ export const createCategoryAdminRoutes = (
   categories.delete(
     "/:id",
     rl.categoryMutationByIpAndUser,
-    paramsPipe(categoryIdParamSchema),
-    bodyPipe(deleteCategoryBodySchema),
+    paramsPipe(CategoryIdParamsDto),
+    bodyPipe(DeleteCategoryBodyDto),
     handle(controller.remove, { status: StatusCodes.NO_CONTENT })
   );
 

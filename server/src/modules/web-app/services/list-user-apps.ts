@@ -1,5 +1,5 @@
 // types
-import type { UserAppsQuery } from "../types";
+import type { UserAppsQueryDto } from "../dtos/requests";
 import type { PaginatedResult } from "@/common/pagination";
 import type { UserAppDto } from "../dtos";
 import type { WebAppServiceDeps } from "./deps";
@@ -14,7 +14,7 @@ import { RequestContext } from "@/utils/request-context";
 
 export const listUserApps = async (
   deps: WebAppServiceDeps,
-  query: UserAppsQuery,
+  query: UserAppsQueryDto,
   role?: string
 ): Promise<PaginatedResult<UserAppDto>> => {
   // Không dùng `sort` của resolvePaging: findActivePaginated chỉ nhận

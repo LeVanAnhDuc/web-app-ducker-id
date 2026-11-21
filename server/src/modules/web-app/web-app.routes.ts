@@ -5,14 +5,14 @@ import { StatusCodes } from "http-status-codes";
 import type { WebAppController } from "./web-app.controller";
 // common
 import { handle } from "@/common/responses";
-// validators
+// modules
 import {
-  adminListAppsQuerySchema,
-  adminCreateAppBodySchema,
-  adminUpdateAppBodySchema,
-  adminAppIdParamSchema,
-  listAppsQuerySchema
-} from "@/validators/schemas/web-app";
+  AdminAppsQueryDto,
+  AppIdParamsDto,
+  CreateAppBodyDto,
+  UpdateAppBodyDto,
+  UserAppsQueryDto
+} from "@/modules/web-app/dtos/requests";
 // others
 import {
   adminGuard,
@@ -32,13 +32,13 @@ export const createAdminWebAppRoutes = (
 
   adminApps.get(
     "/",
-    queryPipe(adminListAppsQuerySchema),
+    queryPipe(AdminAppsQueryDto),
     handle(controller.listApps, { message: "webApp:success.listApps" })
   );
 
   adminApps.post(
     "/",
-    bodyPipe(adminCreateAppBodySchema),
+    bodyPipe(CreateAppBodyDto),
     handle(controller.createApp, {
       status: StatusCodes.CREATED,
       message: "webApp:success.createApp"
@@ -47,8 +47,8 @@ export const createAdminWebAppRoutes = (
 
   adminApps.patch(
     "/:id",
-    paramsPipe(adminAppIdParamSchema),
-    bodyPipe(adminUpdateAppBodySchema),
+    paramsPipe(AppIdParamsDto),
+    bodyPipe(UpdateAppBodyDto),
     handle(controller.updateApp, { message: "webApp:success.updateApp" })
   );
 
@@ -65,7 +65,7 @@ export const createUserWebAppRoutes = (
   apps.get(
     "/",
     authGuard,
-    queryPipe(listAppsQuerySchema),
+    queryPipe(UserAppsQueryDto),
     handle(controller.listUserApps, { message: "webApp:success.listApps" })
   );
 

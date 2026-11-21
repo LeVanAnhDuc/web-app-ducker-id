@@ -9,6 +9,8 @@ import { isValidRedirectUri } from "@/modules/oauth/helpers";
 import { OBJECTID_PATTERN } from "@/validators/constants";
 import { getDateOfBirthBounds } from "@/validators/date-of-birth";
 import { isSupportedTimeZone, toIsoDateString } from "@/validators/utils";
+import { ITEM_CHECK } from "@/validators/validate-dto";
+import type { ItemCheck } from "@/validators/validate-dto";
 
 type Check = (value: unknown, args: ValidationArguments) => boolean;
 
@@ -35,11 +37,59 @@ const toDate = (value: unknown): Date | null => {
   return Number.isNaN(date.getTime()) ? null : date;
 };
 
+/**
+ * A rule checked item by item, which Joi reported at `field.<index>` for each
+ * failing item. class-validator's own `each` reports the whole array once, so
+ * the check rides along in the context and validateDto names every index.
+ * A non-array is left to the `@IsArray()` underneath.
+ */
+export const EachItem = (
+  name: string,
+  check: ItemCheck,
+  options?: ValidationOptions
+): PropertyDecorator =>
+  rule(name, (value) => !Array.isArray(value) || value.every(check), {
+    ...options,
+    context: { ...options?.context, [ITEM_CHECK]: check }
+  });
+
+// A single-value rule that also takes `{ each: true }`, reported per item.
+const itemRule = (
+  name: string,
+  check: (value: unknown) => boolean,
+  options?: ValidationOptions
+): PropertyDecorator => {
+  if (!options?.each) return rule(name, check, options);
+  const { each: _each, ...rest } = options;
+  return EachItem(name, (item) => check(item), rest);
+};
+
+const sameValue = (a: unknown, b: unknown): boolean => a === b;
+
+/**
+ * Joi's `array().unique()`: every repeat is reported at its own index, the
+ * first occurrence is not.
+ */
+export const ArrayUniqueItems = (
+  options?: ValidationOptions,
+  same: (a: unknown, b: unknown) => boolean = sameValue
+): PropertyDecorator =>
+  EachItem(
+    "arrayUnique",
+    (item, index, items) => {
+      // A comparator may not match an item to itself (a pair comparator on a
+      // non-object): with no match at all the item is not a repeat.
+      const first = items.findIndex((other) => same(other, item));
+      return first === -1 || first === index;
+    },
+    options
+  );
+
 export const IsObjectId = (
   key: string,
   options?: ValidationOptions
 ): PropertyDecorator =>
-  rule(
+  itemRule(
     "isObjectId",
     (value) => typeof value === "string" && OBJECTID_PATTERN.test(value),
     { ...options, message: key }
@@ -93,7 +143,7 @@ export const IsSupportedTimeZone = (
   );
 
 export const IsRedirectUri = (options?: ValidationOptions): PropertyDecorator =>
-  rule(
+  itemRule(
     "isRedirectUri",
     (value) => typeof value === "string" && isValidRedirectUri(value),
     options

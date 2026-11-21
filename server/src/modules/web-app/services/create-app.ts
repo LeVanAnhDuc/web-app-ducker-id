@@ -1,5 +1,5 @@
 // types
-import type { AdminAppCreateBody } from "../types";
+import type { CreateAppBodyDto } from "../dtos/requests";
 import type { AdminAppCreatedDto } from "../dtos";
 import type { WebAppServiceDeps } from "./deps";
 // common
@@ -23,7 +23,7 @@ import { hashValue } from "@/utils/crypto/bcrypt";
 
 export const createApp = async (
   deps: WebAppServiceDeps,
-  body: AdminAppCreateBody
+  body: CreateAppBodyDto
 ): Promise<AdminAppCreatedDto> => {
   const nameTaken = await deps.webAppRepo.existsByName(body.name);
   if (nameTaken) {
@@ -60,7 +60,7 @@ export const createApp = async (
     clientId,
     clientSecretHash: clientSecret ? hashValue(clientSecret) : null,
     tokenEndpointAuthMethod: authMethod,
-    scopes: body.scopes ?? [...WEB_APP_DEFAULT_SCOPES]
+    scopes: [...WEB_APP_DEFAULT_SCOPES]
   });
 
   await announceApp(deps, doc);

@@ -27,6 +27,7 @@ import {
   SAFE_EMAIL_PATTERN,
   SAFE_FULLNAME_PATTERN
 } from "@/validators/constants";
+import { IsObjectId } from "./rules";
 import { Lowercase, Trim } from "./transforms";
 
 const GENDER_VALUES = Object.values(GENDERS);
@@ -149,4 +150,17 @@ export const IsGender = (): PropertyDecorator =>
           ? "validation:gender.invalid"
           : "validation:gender.required"
     })
+  );
+
+/**
+ * `objectIdSchema(ns, key)`: a required id whose every failure — missing,
+ * wrong type, blank, malformed — carries the one key, each under its own
+ * constraint name.
+ */
+export const IsRequiredObjectId = (key: string): PropertyDecorator =>
+  composeDecorators(
+    IsObjectId(key),
+    IsNotEmpty({ message: key }),
+    IsString({ message: key }),
+    IsDefined({ message: key })
   );
