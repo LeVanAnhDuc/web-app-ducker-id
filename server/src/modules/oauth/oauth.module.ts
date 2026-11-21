@@ -1,6 +1,6 @@
 // types
 import type { RedisClientType } from "redis";
-import type { RateLimiterMiddleware } from "@/middlewares";
+import type { RateLimiters } from "@/middlewares";
 import type { AuthenticationService } from "@/modules/authentication/services";
 import type { UserService } from "@/modules/user/services";
 import type { SessionService } from "@/modules/session/services";
@@ -23,7 +23,7 @@ export const createOAuthModule = (
   loginHistoryService: LoginHistoryService,
   recentAppService: RecentAppService,
   accessPolicy: AccessPolicy,
-  rateLimiter: RateLimiterMiddleware
+  rateLimiter: RateLimiters
 ) => {
   const oauthRepo = new RedisOAuthRepository(redisClient);
   const webAppRepo = new MongoWebAppRepository();

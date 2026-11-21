@@ -3,7 +3,7 @@ import type { RedisClientType } from "redis";
 import type { UserService } from "@/modules/user/services";
 import type { LoginHistoryService } from "@/modules/login-history/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
-import type { RateLimiterMiddleware } from "@/middlewares";
+import type { RateLimiters } from "@/middlewares";
 import type { SessionService } from "@/modules/session/services";
 import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 // repositories
@@ -34,7 +34,7 @@ export const createLoginModule = (
   userService: UserService,
   loginHistorySvc: LoginHistoryService,
   emailDispatcher: EmailDispatcher,
-  rateLimiter: RateLimiterMiddleware,
+  rateLimiter: RateLimiters,
   sessionService: SessionService,
   notificationDispatcher: NotificationDispatcher
 ) => {

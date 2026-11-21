@@ -1,5 +1,5 @@
 // types
-import type { RateLimiterMiddleware } from "@/middlewares";
+import type { RateLimiters } from "@/middlewares";
 import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 // modules
 import { MongoUserRepository } from "@/modules/user/repository/impl/mongo-user.repository";
@@ -16,7 +16,7 @@ import { createEntitlementAdminRoutes } from "./entitlement.routes";
  * `accessPolicy` from here, so the one rule lives in one place.
  */
 export const createEntitlementModule = (
-  rateLimiter: RateLimiterMiddleware,
+  rateLimiter: RateLimiters,
   notificationDispatcher: NotificationDispatcher
 ) => {
   const entitlementRepo = new MongoEntitlementRepository();

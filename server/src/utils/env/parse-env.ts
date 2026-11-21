@@ -1,29 +1,3 @@
-// common
-import { ConfigError } from "@/exceptions";
-
-export const parseRequired = (
-  name: string,
-  raw: string | undefined
-): string => {
-  const value = raw?.trim();
-  if (!value) {
-    throw new ConfigError(`Missing required environment variable ${name}`);
-  }
-  return value;
-};
-
-// `Number(raw) || fallback` would turn a deliberate 0 into the fallback.
-export const parseNumber = (
-  raw: string | undefined,
-  fallback: number
-): number => {
-  const value = Number(raw);
-  return raw?.trim() && !Number.isNaN(value) ? value : fallback;
-};
-
-export const parseBoolean = (raw: string | undefined): boolean =>
-  raw?.trim() === "true";
-
 export const parseList = (raw: string): string[] =>
   raw
     .split(",")

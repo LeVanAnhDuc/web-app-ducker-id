@@ -2,7 +2,7 @@
 import { Router } from "express";
 import { StatusCodes } from "http-status-codes";
 // types
-import type { RateLimiterMiddleware } from "@/middlewares";
+import type { RateLimiters } from "@/middlewares";
 import type { ContactAdminController } from "./contact-admin.controller";
 // common
 import { handle } from "@/common/responses";
@@ -26,7 +26,7 @@ import {
 
 export const createContactRoutes = (
   controller: ContactAdminController,
-  rl: RateLimiterMiddleware
+  rl: RateLimiters
 ): Router => {
   const router = Router();
   const contact = Router();

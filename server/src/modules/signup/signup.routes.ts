@@ -2,7 +2,7 @@
 import { Router } from "express";
 import { StatusCodes } from "http-status-codes";
 // types
-import type { RateLimiterMiddleware } from "@/middlewares";
+import type { RateLimiters } from "@/middlewares";
 import type { SignupController } from "./signup.controller";
 // common
 import { handle } from "@/common/responses";
@@ -19,7 +19,7 @@ import { bodyPipe, paramsPipe } from "@/middlewares";
 
 export const createSignupRoutes = (
   controller: SignupController,
-  rl: RateLimiterMiddleware
+  rl: RateLimiters
 ): Router => {
   const router = Router();
   const signup = Router();

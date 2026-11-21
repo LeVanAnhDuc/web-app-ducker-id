@@ -1,7 +1,7 @@
 // libs
 import { Router } from "express";
 // types
-import type { RateLimiterMiddleware } from "@/middlewares";
+import type { RateLimiters } from "@/middlewares";
 import type { EntitlementController } from "./entitlement.controller";
 // common
 import { handle } from "@/common/responses";
@@ -15,7 +15,7 @@ import { adminGuard, authGuard, bodyPipe, queryPipe } from "@/middlewares";
 
 export const createEntitlementAdminRoutes = (
   controller: EntitlementController,
-  rl: RateLimiterMiddleware
+  rl: RateLimiters
 ): Router => {
   const router = Router();
   const entitlements = Router();

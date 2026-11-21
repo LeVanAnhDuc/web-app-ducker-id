@@ -1,5 +1,5 @@
 // types
-import type { RateLimiterMiddleware } from "@/middlewares";
+import type { RateLimiters } from "@/middlewares";
 // others
 import { MongoContactRepository } from "./repository/impl/mongo-contact-admin.repository";
 import { ContactAdminService } from "./services";
@@ -10,9 +10,7 @@ import {
   createMyContactsRoutes
 } from "./contact-admin.routes";
 
-export const createContactAdminModule = (
-  rateLimiter: RateLimiterMiddleware
-) => {
+export const createContactAdminModule = (rateLimiter: RateLimiters) => {
   const contactRepo = new MongoContactRepository();
   const service = new ContactAdminService(contactRepo);
   const controller = new ContactAdminController(service);

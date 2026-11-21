@@ -1,5 +1,5 @@
 // types
-import type { RateLimiterMiddleware } from "@/middlewares";
+import type { RateLimiters } from "@/middlewares";
 import type { AuthenticationService } from "@/modules/authentication/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
@@ -10,7 +10,7 @@ import { UserController } from "./user.controller";
 import { createUserRoutes, createUserAdminRoutes } from "./user.routes";
 
 export const createUserModule = (
-  rateLimiter: RateLimiterMiddleware,
+  rateLimiter: RateLimiters,
   authService: AuthenticationService,
   emailDispatcher: EmailDispatcher,
   notificationDispatcher: NotificationDispatcher

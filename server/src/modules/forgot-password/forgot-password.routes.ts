@@ -1,7 +1,7 @@
 // libs
 import { Router } from "express";
 // types
-import type { RateLimiterMiddleware } from "@/middlewares";
+import type { RateLimiters } from "@/middlewares";
 import type { ForgotPasswordController } from "./forgot-password.controller";
 // common
 import { handle } from "@/common/responses";
@@ -18,7 +18,7 @@ import { bodyPipe } from "@/middlewares";
 
 export const createForgotPasswordRoutes = (
   controller: ForgotPasswordController,
-  rl: RateLimiterMiddleware
+  rl: RateLimiters
 ): Router => {
   const router = Router();
   const forgotPassword = Router();

@@ -7,11 +7,17 @@ import type { createClient } from "redis";
 // common
 import { TooManyRequestsError } from "@/exceptions";
 // others
-import { RATE_LIMIT_CONFIG } from "@/constants/redis/rate-limit";
+import { RATE_LIMIT_CONFIG as C } from "@/constants/redis/rate-limit";
 import { RequestContext } from "@/utils/request-context";
 
 type RedisClient = ReturnType<typeof createClient>;
-type RateLimitHandler = (req: Request, res: Response) => void;
+type KeyGenerator = (req: Request) => string;
+
+interface LimitConfig {
+  KEY: string;
+  MAX_REQUESTS: number;
+  WINDOW_SECONDS: number;
+}
 
 /**
  * Per-email limiters run before `bodyPipe`, so the body is still unvalidated:
@@ -19,361 +25,152 @@ type RateLimitHandler = (req: Request, res: Response) => void;
  * string shares the "unknown" bucket and is then refused by validation (400),
  * instead of throwing here and surfacing as a 500.
  */
-export const emailRateLimitKey = (req: Request): string => {
+export const emailRateLimitKey: KeyGenerator = (req) => {
   const email: unknown = req.body?.email;
   return typeof email === "string" && email ? email.toLowerCase() : "unknown";
 };
 
-export class RateLimiterMiddleware {
-  private readonly redisClient: RedisClient;
+const byIp: KeyGenerator = (req) => req.ip ?? "unknown";
 
-  // All limiters are initialized once in the constructor after Redis connects.
-  // createModules() builds this before any module factory runs, so by the time
-  // controllers access these properties during initRoutes(), they are ready.
-  public readonly loginByIp: RateLimitRequestHandler;
-  public readonly signupOtpByIp: RateLimitRequestHandler;
-  public readonly signupOtpByEmail: RateLimitRequestHandler;
-  public readonly checkEmailByIp: RateLimitRequestHandler;
-  public readonly loginOtpByIp: RateLimitRequestHandler;
-  public readonly loginOtpByEmail: RateLimitRequestHandler;
-  public readonly magicLinkByIp: RateLimitRequestHandler;
-  public readonly magicLinkByEmail: RateLimitRequestHandler;
-  public readonly forgotPasswordOtpByIp: RateLimitRequestHandler;
-  public readonly forgotPasswordOtpByEmail: RateLimitRequestHandler;
-  public readonly forgotPasswordMagicLinkByIp: RateLimitRequestHandler;
-  public readonly forgotPasswordMagicLinkByEmail: RateLimitRequestHandler;
-  public readonly forgotPasswordResetByIp: RateLimitRequestHandler;
-  public readonly changePasswordByIpAndUser: RateLimitRequestHandler;
-  public readonly contactByIp: RateLimitRequestHandler;
-  public readonly updateProfileByIp: RateLimitRequestHandler;
-  public readonly categoriesByIp: RateLimitRequestHandler;
-  public readonly categoryMutationByIpAndUser: RateLimitRequestHandler;
-  public readonly entitlementMutationByIpAndUser: RateLimitRequestHandler;
-  public readonly adminUserMutationByIpAndUser: RateLimitRequestHandler;
-  public readonly recordRecentAppByUser: RateLimitRequestHandler;
+// Both need an authenticated request: the route's auth guard must run first
+const byIpAndAuth: KeyGenerator = (req) =>
+  `${req.ip ?? "unknown"}:${RequestContext.requireAuthId()}`;
+const byUser: KeyGenerator = () => RequestContext.requireUserId();
 
-  constructor(redisClient: RedisClient) {
-    this.redisClient = redisClient;
+/**
+ * Every limiter, by the name routes use (`rl.loginByIp`). The Redis prefix,
+ * window and ceiling come from RATE_LIMIT_CONFIG; with no key generator the
+ * library's default (the client IP) is used.
+ */
+export const RATE_LIMITS = {
+  loginByIp: [C.LOGIN.PASSWORD.PER_IP, "login:errors.rateLimitExceeded"],
+  loginOtpByIp: [C.LOGIN.OTP.PER_IP, "login:errors.rateLimitExceeded"],
+  loginOtpByEmail: [
+    C.LOGIN.OTP.PER_EMAIL,
+    "login:errors.rateLimitExceeded",
+    emailRateLimitKey
+  ],
+  magicLinkByIp: [C.LOGIN.MAGIC_LINK.PER_IP, "login:errors.rateLimitExceeded"],
+  magicLinkByEmail: [
+    C.LOGIN.MAGIC_LINK.PER_EMAIL,
+    "login:errors.rateLimitExceeded",
+    emailRateLimitKey
+  ],
 
-    this.loginByIp = rateLimit({
-      windowMs: RATE_LIMIT_CONFIG.LOGIN.PASSWORD.PER_IP.WINDOW_SECONDS * 1000,
-      max: RATE_LIMIT_CONFIG.LOGIN.PASSWORD.PER_IP.MAX_REQUESTS,
-      store: this.createRedisStore(RATE_LIMIT_CONFIG.LOGIN.PASSWORD.PER_IP.KEY),
-      standardHeaders: true,
-      legacyHeaders: false,
-      handler: this.createRateLimitExceededHandler(
-        "login:errors.rateLimitExceeded"
-      )
-    });
+  signupOtpByIp: [C.SIGNUP.SEND_OTP.PER_IP, "signup:errors.rateLimitExceeded"],
+  signupOtpByEmail: [
+    C.SIGNUP.SEND_OTP.PER_EMAIL,
+    "signup:errors.rateLimitExceeded",
+    emailRateLimitKey
+  ],
+  checkEmailByIp: [
+    C.SIGNUP.CHECK_EMAIL.PER_IP,
+    "signup:errors.rateLimitExceeded"
+  ],
 
-    this.signupOtpByIp = rateLimit({
-      windowMs: RATE_LIMIT_CONFIG.SIGNUP.SEND_OTP.PER_IP.WINDOW_SECONDS * 1000,
-      max: RATE_LIMIT_CONFIG.SIGNUP.SEND_OTP.PER_IP.MAX_REQUESTS,
-      store: this.createRedisStore(
-        RATE_LIMIT_CONFIG.SIGNUP.SEND_OTP.PER_IP.KEY
-      ),
-      standardHeaders: true,
-      legacyHeaders: false,
-      handler: this.createRateLimitExceededHandler(
-        "signup:errors.rateLimitExceeded"
-      )
-    });
+  forgotPasswordOtpByIp: [
+    C.FORGOT_PASSWORD.OTP.PER_IP,
+    "forgotPassword:errors.rateLimitExceeded"
+  ],
+  forgotPasswordOtpByEmail: [
+    C.FORGOT_PASSWORD.OTP.PER_EMAIL,
+    "forgotPassword:errors.rateLimitExceeded",
+    emailRateLimitKey
+  ],
+  forgotPasswordMagicLinkByIp: [
+    C.FORGOT_PASSWORD.MAGIC_LINK.PER_IP,
+    "forgotPassword:errors.rateLimitExceeded"
+  ],
+  forgotPasswordMagicLinkByEmail: [
+    C.FORGOT_PASSWORD.MAGIC_LINK.PER_EMAIL,
+    "forgotPassword:errors.rateLimitExceeded",
+    emailRateLimitKey
+  ],
+  forgotPasswordResetByIp: [
+    C.FORGOT_PASSWORD.RESET.PER_IP,
+    "forgotPassword:errors.rateLimitExceeded"
+  ],
 
-    this.signupOtpByEmail = rateLimit({
-      windowMs:
-        RATE_LIMIT_CONFIG.SIGNUP.SEND_OTP.PER_EMAIL.WINDOW_SECONDS * 1000,
-      max: RATE_LIMIT_CONFIG.SIGNUP.SEND_OTP.PER_EMAIL.MAX_REQUESTS,
-      store: this.createRedisStore(
-        RATE_LIMIT_CONFIG.SIGNUP.SEND_OTP.PER_EMAIL.KEY
-      ),
-      standardHeaders: true,
-      legacyHeaders: false,
-      keyGenerator: emailRateLimitKey,
-      handler: this.createRateLimitExceededHandler(
-        "signup:errors.rateLimitExceeded"
-      )
-    });
+  changePasswordByIpAndUser: [
+    C.CHANGE_PASSWORD.PER_IP_USER,
+    "changePassword:errors.rateLimitExceeded",
+    byIpAndAuth
+  ],
+  contactByIp: [
+    C.CONTACT.SUBMIT.PER_IP,
+    "contactAdmin:errors.rateLimitExceeded"
+  ],
+  updateProfileByIp: [
+    C.USER.UPDATE_PROFILE.PER_IP,
+    "user:errors.rateLimitExceeded"
+  ],
+  adminUserMutationByIpAndUser: [
+    C.USER.ADMIN_MUTATION.PER_IP_USER,
+    "user:errors.rateLimitExceeded",
+    byIpAndAuth
+  ],
 
-    this.checkEmailByIp = rateLimit({
-      windowMs:
-        RATE_LIMIT_CONFIG.SIGNUP.CHECK_EMAIL.PER_IP.WINDOW_SECONDS * 1000,
-      max: RATE_LIMIT_CONFIG.SIGNUP.CHECK_EMAIL.PER_IP.MAX_REQUESTS,
-      store: this.createRedisStore(
-        RATE_LIMIT_CONFIG.SIGNUP.CHECK_EMAIL.PER_IP.KEY
-      ),
-      standardHeaders: true,
-      legacyHeaders: false,
-      handler: this.createRateLimitExceededHandler(
-        "signup:errors.rateLimitExceeded"
-      )
-    });
+  categoriesByIp: [
+    C.CATEGORIES.PER_IP,
+    "category:errors.rateLimitExceeded",
+    byIp
+  ],
+  categoryMutationByIpAndUser: [
+    C.CATEGORIES.MUTATION.PER_IP_USER,
+    "category:errors.rateLimitExceeded",
+    byIpAndAuth
+  ],
+  entitlementMutationByIpAndUser: [
+    C.ENTITLEMENTS.MUTATION.PER_IP_USER,
+    "entitlement:errors.rateLimitExceeded",
+    byIpAndAuth
+  ],
+  recordRecentAppByUser: [
+    C.RECENT_APP.RECORD.PER_USER,
+    "recentApp:errors.rateLimitExceeded",
+    byUser
+  ]
+} as const satisfies Record<
+  string,
+  readonly [LimitConfig, I18n.Key, KeyGenerator?]
+>;
 
-    this.loginOtpByIp = rateLimit({
-      windowMs: RATE_LIMIT_CONFIG.LOGIN.OTP.PER_IP.WINDOW_SECONDS * 1000,
-      max: RATE_LIMIT_CONFIG.LOGIN.OTP.PER_IP.MAX_REQUESTS,
-      store: this.createRedisStore(RATE_LIMIT_CONFIG.LOGIN.OTP.PER_IP.KEY),
-      standardHeaders: true,
-      legacyHeaders: false,
-      handler: this.createRateLimitExceededHandler(
-        "login:errors.rateLimitExceeded"
-      )
-    });
+export type RateLimitName = keyof typeof RATE_LIMITS;
+export type RateLimiters = Record<RateLimitName, RateLimitRequestHandler>;
 
-    this.loginOtpByEmail = rateLimit({
-      windowMs: RATE_LIMIT_CONFIG.LOGIN.OTP.PER_EMAIL.WINDOW_SECONDS * 1000,
-      max: RATE_LIMIT_CONFIG.LOGIN.OTP.PER_EMAIL.MAX_REQUESTS,
-      store: this.createRedisStore(RATE_LIMIT_CONFIG.LOGIN.OTP.PER_EMAIL.KEY),
-      standardHeaders: true,
-      legacyHeaders: false,
-      keyGenerator: emailRateLimitKey,
-      handler: this.createRateLimitExceededHandler(
-        "login:errors.rateLimitExceeded"
-      )
-    });
-
-    this.magicLinkByIp = rateLimit({
-      windowMs: RATE_LIMIT_CONFIG.LOGIN.MAGIC_LINK.PER_IP.WINDOW_SECONDS * 1000,
-      max: RATE_LIMIT_CONFIG.LOGIN.MAGIC_LINK.PER_IP.MAX_REQUESTS,
-      store: this.createRedisStore(
-        RATE_LIMIT_CONFIG.LOGIN.MAGIC_LINK.PER_IP.KEY
-      ),
-      standardHeaders: true,
-      legacyHeaders: false,
-      handler: this.createRateLimitExceededHandler(
-        "login:errors.rateLimitExceeded"
-      )
-    });
-
-    this.magicLinkByEmail = rateLimit({
-      windowMs:
-        RATE_LIMIT_CONFIG.LOGIN.MAGIC_LINK.PER_EMAIL.WINDOW_SECONDS * 1000,
-      max: RATE_LIMIT_CONFIG.LOGIN.MAGIC_LINK.PER_EMAIL.MAX_REQUESTS,
-      store: this.createRedisStore(
-        RATE_LIMIT_CONFIG.LOGIN.MAGIC_LINK.PER_EMAIL.KEY
-      ),
-      standardHeaders: true,
-      legacyHeaders: false,
-      keyGenerator: emailRateLimitKey,
-      handler: this.createRateLimitExceededHandler(
-        "login:errors.rateLimitExceeded"
-      )
-    });
-
-    this.forgotPasswordOtpByIp = rateLimit({
-      windowMs:
-        RATE_LIMIT_CONFIG.FORGOT_PASSWORD.OTP.PER_IP.WINDOW_SECONDS * 1000,
-      max: RATE_LIMIT_CONFIG.FORGOT_PASSWORD.OTP.PER_IP.MAX_REQUESTS,
-      store: this.createRedisStore(
-        RATE_LIMIT_CONFIG.FORGOT_PASSWORD.OTP.PER_IP.KEY
-      ),
-      standardHeaders: true,
-      legacyHeaders: false,
-      handler: this.createRateLimitExceededHandler(
-        "forgotPassword:errors.rateLimitExceeded"
-      )
-    });
-
-    this.forgotPasswordOtpByEmail = rateLimit({
-      windowMs:
-        RATE_LIMIT_CONFIG.FORGOT_PASSWORD.OTP.PER_EMAIL.WINDOW_SECONDS * 1000,
-      max: RATE_LIMIT_CONFIG.FORGOT_PASSWORD.OTP.PER_EMAIL.MAX_REQUESTS,
-      store: this.createRedisStore(
-        RATE_LIMIT_CONFIG.FORGOT_PASSWORD.OTP.PER_EMAIL.KEY
-      ),
-      standardHeaders: true,
-      legacyHeaders: false,
-      keyGenerator: emailRateLimitKey,
-      handler: this.createRateLimitExceededHandler(
-        "forgotPassword:errors.rateLimitExceeded"
-      )
-    });
-
-    this.forgotPasswordMagicLinkByIp = rateLimit({
-      windowMs:
-        RATE_LIMIT_CONFIG.FORGOT_PASSWORD.MAGIC_LINK.PER_IP.WINDOW_SECONDS *
-        1000,
-      max: RATE_LIMIT_CONFIG.FORGOT_PASSWORD.MAGIC_LINK.PER_IP.MAX_REQUESTS,
-      store: this.createRedisStore(
-        RATE_LIMIT_CONFIG.FORGOT_PASSWORD.MAGIC_LINK.PER_IP.KEY
-      ),
-      standardHeaders: true,
-      legacyHeaders: false,
-      handler: this.createRateLimitExceededHandler(
-        "forgotPassword:errors.rateLimitExceeded"
-      )
-    });
-
-    this.forgotPasswordMagicLinkByEmail = rateLimit({
-      windowMs:
-        RATE_LIMIT_CONFIG.FORGOT_PASSWORD.MAGIC_LINK.PER_EMAIL.WINDOW_SECONDS *
-        1000,
-      max: RATE_LIMIT_CONFIG.FORGOT_PASSWORD.MAGIC_LINK.PER_EMAIL.MAX_REQUESTS,
-      store: this.createRedisStore(
-        RATE_LIMIT_CONFIG.FORGOT_PASSWORD.MAGIC_LINK.PER_EMAIL.KEY
-      ),
-      standardHeaders: true,
-      legacyHeaders: false,
-      keyGenerator: emailRateLimitKey,
-      handler: this.createRateLimitExceededHandler(
-        "forgotPassword:errors.rateLimitExceeded"
-      )
-    });
-
-    this.contactByIp = rateLimit({
-      windowMs: RATE_LIMIT_CONFIG.CONTACT.SUBMIT.PER_IP.WINDOW_SECONDS * 1000,
-      max: RATE_LIMIT_CONFIG.CONTACT.SUBMIT.PER_IP.MAX_REQUESTS,
-      store: this.createRedisStore(RATE_LIMIT_CONFIG.CONTACT.SUBMIT.PER_IP.KEY),
-      standardHeaders: true,
-      legacyHeaders: false,
-      handler: this.createRateLimitExceededHandler(
-        "contactAdmin:errors.rateLimitExceeded"
-      )
-    });
-
-    this.updateProfileByIp = rateLimit({
-      windowMs:
-        RATE_LIMIT_CONFIG.USER.UPDATE_PROFILE.PER_IP.WINDOW_SECONDS * 1000,
-      max: RATE_LIMIT_CONFIG.USER.UPDATE_PROFILE.PER_IP.MAX_REQUESTS,
-      store: this.createRedisStore(
-        RATE_LIMIT_CONFIG.USER.UPDATE_PROFILE.PER_IP.KEY
-      ),
-      standardHeaders: true,
-      legacyHeaders: false,
-      handler: this.createRateLimitExceededHandler(
-        "user:errors.rateLimitExceeded"
-      )
-    });
-
-    this.forgotPasswordResetByIp = rateLimit({
-      windowMs:
-        RATE_LIMIT_CONFIG.FORGOT_PASSWORD.RESET.PER_IP.WINDOW_SECONDS * 1000,
-      max: RATE_LIMIT_CONFIG.FORGOT_PASSWORD.RESET.PER_IP.MAX_REQUESTS,
-      store: this.createRedisStore(
-        RATE_LIMIT_CONFIG.FORGOT_PASSWORD.RESET.PER_IP.KEY
-      ),
-      standardHeaders: true,
-      legacyHeaders: false,
-      handler: this.createRateLimitExceededHandler(
-        "forgotPassword:errors.rateLimitExceeded"
-      )
-    });
-
-    this.changePasswordByIpAndUser = rateLimit({
-      windowMs:
-        RATE_LIMIT_CONFIG.CHANGE_PASSWORD.PER_IP_USER.WINDOW_SECONDS * 1000,
-      max: RATE_LIMIT_CONFIG.CHANGE_PASSWORD.PER_IP_USER.MAX_REQUESTS,
-      store: this.createRedisStore(
-        RATE_LIMIT_CONFIG.CHANGE_PASSWORD.PER_IP_USER.KEY
-      ),
-      standardHeaders: true,
-      legacyHeaders: false,
-      keyGenerator: (req) =>
-        `${req.ip ?? "unknown"}:${RequestContext.requireAuthId()}`,
-      handler: this.createRateLimitExceededHandler(
-        "changePassword:errors.rateLimitExceeded"
-      )
-    });
-
-    this.categoriesByIp = rateLimit({
-      windowMs: RATE_LIMIT_CONFIG.CATEGORIES.PER_IP.WINDOW_SECONDS * 1000,
-      max: RATE_LIMIT_CONFIG.CATEGORIES.PER_IP.MAX_REQUESTS,
-      store: this.createRedisStore(RATE_LIMIT_CONFIG.CATEGORIES.PER_IP.KEY),
-      standardHeaders: true,
-      legacyHeaders: false,
-      keyGenerator: (req) => req.ip ?? "unknown",
-      handler: this.createRateLimitExceededHandler(
-        "category:errors.rateLimitExceeded"
-      )
-    });
-
-    this.categoryMutationByIpAndUser = rateLimit({
-      windowMs:
-        RATE_LIMIT_CONFIG.CATEGORIES.MUTATION.PER_IP_USER.WINDOW_SECONDS * 1000,
-      max: RATE_LIMIT_CONFIG.CATEGORIES.MUTATION.PER_IP_USER.MAX_REQUESTS,
-      store: this.createRedisStore(
-        RATE_LIMIT_CONFIG.CATEGORIES.MUTATION.PER_IP_USER.KEY
-      ),
-      standardHeaders: true,
-      legacyHeaders: false,
-      keyGenerator: (req) =>
-        `${req.ip ?? "unknown"}:${RequestContext.requireAuthId()}`,
-      handler: this.createRateLimitExceededHandler(
-        "category:errors.rateLimitExceeded"
-      )
-    });
-
-    this.entitlementMutationByIpAndUser = rateLimit({
-      windowMs:
-        RATE_LIMIT_CONFIG.ENTITLEMENTS.MUTATION.PER_IP_USER.WINDOW_SECONDS *
-        1000,
-      max: RATE_LIMIT_CONFIG.ENTITLEMENTS.MUTATION.PER_IP_USER.MAX_REQUESTS,
-      store: this.createRedisStore(
-        RATE_LIMIT_CONFIG.ENTITLEMENTS.MUTATION.PER_IP_USER.KEY
-      ),
-      standardHeaders: true,
-      legacyHeaders: false,
-      keyGenerator: (req) =>
-        `${req.ip ?? "unknown"}:${RequestContext.requireAuthId()}`,
-      handler: this.createRateLimitExceededHandler(
-        "entitlement:errors.rateLimitExceeded"
-      )
-    });
-
-    this.adminUserMutationByIpAndUser = rateLimit({
-      windowMs:
-        RATE_LIMIT_CONFIG.USER.ADMIN_MUTATION.PER_IP_USER.WINDOW_SECONDS * 1000,
-      max: RATE_LIMIT_CONFIG.USER.ADMIN_MUTATION.PER_IP_USER.MAX_REQUESTS,
-      store: this.createRedisStore(
-        RATE_LIMIT_CONFIG.USER.ADMIN_MUTATION.PER_IP_USER.KEY
-      ),
-      standardHeaders: true,
-      legacyHeaders: false,
-      keyGenerator: (req) =>
-        `${req.ip ?? "unknown"}:${RequestContext.requireAuthId()}`,
-      handler: this.createRateLimitExceededHandler(
-        "user:errors.rateLimitExceeded"
-      )
-    });
-
-    this.recordRecentAppByUser = rateLimit({
-      windowMs:
-        RATE_LIMIT_CONFIG.RECENT_APP.RECORD.PER_USER.WINDOW_SECONDS * 1000,
-      max: RATE_LIMIT_CONFIG.RECENT_APP.RECORD.PER_USER.MAX_REQUESTS,
-      store: this.createRedisStore(
-        RATE_LIMIT_CONFIG.RECENT_APP.RECORD.PER_USER.KEY
-      ),
-      standardHeaders: true,
-      legacyHeaders: false,
-      keyGenerator: () => RequestContext.requireUserId(),
-      handler: this.createRateLimitExceededHandler(
-        "recentApp:errors.rateLimitExceeded"
-      )
-    });
-  }
-
-  private createRedisStore(prefix: string): RedisStore {
-    return new RedisStore({
-      sendCommand: (...args: string[]) => this.redisClient.sendCommand(args),
-      prefix
-    });
-  }
-
-  private createRateLimitExceededHandler(
-    messageKey: I18n.Key
-  ): RateLimitHandler {
-    return (req: Request, res: Response): void => {
-      const error = new TooManyRequestsError({
-        key: messageKey
-      });
-
-      const body: ErrorPattern = {
-        code: error.code,
-        message: error.key ? req.t(error.key, error.params) : error.message,
-        timestamp: new Date().toISOString(),
-        path: req.originalUrl
-      };
-
-      res.status(error.status).json(body);
+/** Answers 429 in the app's error envelope, translated for the request. */
+const tooManyRequests =
+  (messageKey: I18n.Key) =>
+  (req: Request, res: Response): void => {
+    const error = new TooManyRequestsError({ key: messageKey });
+    const body: ErrorPattern = {
+      code: error.code,
+      message: req.t(messageKey),
+      timestamp: new Date().toISOString(),
+      path: req.originalUrl
     };
-  }
-}
+
+    res.status(error.status).json(body);
+  };
+
+/** Builds every limiter once, after Redis has connected. */
+export const createRateLimiters = (redisClient: RedisClient): RateLimiters =>
+  Object.fromEntries(
+    Object.entries(RATE_LIMITS).map(
+      ([name, [config, messageKey, keyGenerator]]) => [
+        name,
+        rateLimit({
+          windowMs: config.WINDOW_SECONDS * 1000,
+          max: config.MAX_REQUESTS,
+          store: new RedisStore({
+            sendCommand: (...args: string[]) => redisClient.sendCommand(args),
+            prefix: config.KEY
+          }),
+          standardHeaders: true,
+          legacyHeaders: false,
+          ...(keyGenerator && { keyGenerator }),
+          handler: tooManyRequests(messageKey)
+        })
+      ]
+    )
+  ) as RateLimiters;
