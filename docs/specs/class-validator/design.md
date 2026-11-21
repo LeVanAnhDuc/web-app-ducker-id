@@ -2,6 +2,8 @@
 
 Date: 2026-11-21 · Branch: `refactor/class-validator`
 
+**Status:** implemented 2026-11-21 — Joi and `joi-to-swagger` removed, every route validated by a request DTO.
+
 ## Why
 
 Input validation lives in Joi schemas under `server/src/validators/schemas/`, while the TypeScript
@@ -228,7 +230,7 @@ so every commit builds and passes `pnpm test`:
 
 ## Verification
 
-- `server`: `pnpm type-check`, `pnpm lint`, `pnpm test` (currently 103 suites / 787 tests) green at
+- `server`: `pnpm type-check`, `pnpm lint`, `pnpm test` (103 suites / 787 tests before; 117 suites / 875 tests after) green at
   every commit.
 - `automation-test`: `pnpm test:api` against the dedicated e2e stack (`DB_NAME=ducker-id-e2e`, API
   `:5600`, client `:3600` — see `automation-test/src/docs/test-plan.md`) once, at the end. The API
@@ -243,3 +245,17 @@ so every commit builds and passes `pnpm test`:
 - How module groups are split into commits.
 - How exhaustive the "every constraint has a key" test is.
 - Whether `ValidationErrorItem` gets a stricter `reason` type.
+
+## Known differences from Joi
+
+Found while pinning every case against Joi; none is asserted by the API suite.
+
+- **Mixed array failures.** An array with both a bad item and a duplicate, or a bad item and too
+  many entries, reports one entry per array property; Joi reported several.
+- **Email TLD list.** The allow-list comes from `@hapi/tlds` 1.1.7, slightly newer than the list
+  Joi bundled — a handful of retired brand TLDs are judged differently.
+- **One entry per field.** Where Joi reported two entries for one field (e.g. `acceptTerms`, a
+  short password that also breaks the pattern), only the first is reported.
+- **`null` on optional query fields** is accepted. Unreachable through a query string.
+- **`null` entitlement change item.** Joi's unique comparator crashed on it (500); it is now a
+  400 at `changes.<i>`.
