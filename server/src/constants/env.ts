@@ -12,23 +12,19 @@ const parseTrustProxy = (raw?: string): boolean | number | string => {
   return value;
 };
 
-// `Number(raw) || fallback` would turn a deliberate 0 (e.g. DB_MIN_POOL_SIZE) into the fallback.
 const parseNumber = (raw: string | undefined, fallback: number): number => {
   const value = Number(raw);
   return raw?.trim() && !Number.isNaN(value) ? value : fallback;
 };
 
-// Grouped like a Spring application.yml: one branch per concern, read as
-// `config.db.pool.max`. The .env variable names stay flat and unchanged.
 const ENV = {
   nodeEnv: process.env.NODE_ENV || "development",
 
   app: {
     port: process.env.APP_PORT,
     clientUrl: process.env.CLIENT_URL || "http://localhost:3000",
-    corsOrigins: process.env.CORS_ORIGINS.split(",").map((origin) =>
-      origin.trim()
-    ),
+    corsOrigins:
+      process.env.CORS_ORIGINS?.split(",").map((origin) => origin.trim()) ?? [],
     logLevel: process.env.LOG_LEVEL || "info",
     allowCrossOriginCookies: process.env.ALLOW_CROSS_ORIGIN_COOKIES,
     trustProxy: parseTrustProxy(process.env.TRUST_PROXY)

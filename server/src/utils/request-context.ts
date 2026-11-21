@@ -12,7 +12,6 @@ interface RequestStore {
   requestId?: string;
 }
 
-// AsyncLocalStorage share data across the same Async Context
 const storage = new AsyncLocalStorage<RequestStore>();
 
 export const RequestContext = {
