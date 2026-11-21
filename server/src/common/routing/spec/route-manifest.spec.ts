@@ -25,6 +25,7 @@ import { createLoginHistoryModule } from "@/modules/login-history/login-history.
 import { createNotificationModule } from "@/modules/notification/notification.module";
 import { createRecentAppModule } from "@/modules/recent-app/recent-app.module";
 // others
+import { createModules } from "@/loaders/modules";
 import { describeRoutes } from "../mount";
 
 type Row = [
@@ -662,9 +663,38 @@ describe("route manifest", () => {
 
     expect(rows).toHaveLength(63);
     expect(rows).toEqual(EXPECTED);
+  });
 
-    // Route precedence is controller order: it must stay the order the
-    // hand-assembled routers were mounted in.
+  it("GET /users/me is registered before GET /users/:id", () => {
+    const { userController } = createUserModule(
+      {} as AuthenticationService,
+      {} as EmailDispatcher,
+      {} as NotificationDispatcher
+    );
+    const paths = describeRoutes([userController], rl).map(
+      ({ method, path }) => `${method} ${path}`
+    );
+
+    expect(paths.indexOf("GET /api/v1/users/me")).toBeGreaterThanOrEqual(0);
+    expect(paths.indexOf("GET /api/v1/users/me")).toBeLessThan(
+      paths.indexOf("GET /api/v1/users/:id")
+    );
+  });
+
+  // Route precedence is controller order, so the array createModules() really
+  // hands to mountControllers is what must keep the order the hand-assembled
+  // routers were mounted in. The factories only construct objects, so stub
+  // connections are enough.
+  it("createModules returns the controllers in route-precedence order", () => {
+    const { controllers } = createModules({
+      // rate-limit-redis loads its scripts at construction and wants a sha back.
+      redis: {
+        sendCommand: () => Promise.resolve("sha")
+      } as unknown as RedisClientType,
+      emailDispatcher: {} as EmailDispatcher,
+      notificationDispatcher: {} as NotificationDispatcher
+    });
+
     expect(
       controllers.map((controller) => controller.constructor.name)
     ).toEqual([
@@ -691,21 +721,5 @@ describe("route manifest", () => {
       "CategoryController",
       "EntitlementAdminController"
     ]);
-  });
-
-  it("GET /users/me is registered before GET /users/:id", () => {
-    const { userController } = createUserModule(
-      {} as AuthenticationService,
-      {} as EmailDispatcher,
-      {} as NotificationDispatcher
-    );
-    const paths = describeRoutes([userController], rl).map(
-      ({ method, path }) => `${method} ${path}`
-    );
-
-    expect(paths.indexOf("GET /api/v1/users/me")).toBeGreaterThanOrEqual(0);
-    expect(paths.indexOf("GET /api/v1/users/me")).toBeLessThan(
-      paths.indexOf("GET /api/v1/users/:id")
-    );
   });
 });
