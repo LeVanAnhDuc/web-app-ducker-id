@@ -1,12 +1,12 @@
 // types
 import type { CategoryName } from "../types";
 import type { UpdateCategoryBodyDto } from "../dtos/requests";
-import type { AdminCategoryDto } from "../dtos";
 import type { CategoryServiceDeps } from "./deps";
 // common
+import { toDto } from "@/common/dto";
 import { ConflictRequestError, NotFoundError } from "@/exceptions";
 // dtos
-import { toAdminCategoryDto } from "../dtos";
+import { AdminCategoryDto } from "../dtos";
 // others
 import { generateSlug, withSlugRetry } from "./shared/generate-slug";
 import { ERROR_CODES } from "@/constants/error-code";
@@ -48,5 +48,5 @@ export const update = async (
   if (!updated) throw notFound();
 
   const appCount = await deps.webAppRepo.countByCategory(id);
-  return toAdminCategoryDto({ ...updated, appCount });
+  return toDto(AdminCategoryDto, { ...updated, appCount });
 };

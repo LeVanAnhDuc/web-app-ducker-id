@@ -1,7 +1,9 @@
 // types
 import type { AdminUserAggregateRow } from "@/modules/user/types";
+// common
+import { toDto } from "@/common/dto";
 // dtos
-import { toAdminUserDto } from "./admin-user-item.dto";
+import { AdminUserDto } from "./admin-user-item.dto";
 
 const baseRow = (): AdminUserAggregateRow => ({
   _id: { toString: () => "user1" } as unknown as AdminUserAggregateRow["_id"],
@@ -14,9 +16,9 @@ const baseRow = (): AdminUserAggregateRow => ({
   lastLoginAt: new Date("2026-05-24T08:12:00.000Z")
 });
 
-describe("toAdminUserDto", () => {
+describe("AdminUserDto", () => {
   it("maps all fields and serialises dates to ISO strings", () => {
-    expect(toAdminUserDto(baseRow())).toEqual({
+    expect(toDto(AdminUserDto, baseRow())).toStrictEqual({
       _id: "user1",
       fullName: "Alice",
       email: "alice@example.com",
@@ -29,12 +31,12 @@ describe("toAdminUserDto", () => {
   });
 
   it("returns null lastLoginAt when user never logged in", () => {
-    const dto = toAdminUserDto({ ...baseRow(), lastLoginAt: null });
+    const dto = toDto(AdminUserDto, { ...baseRow(), lastLoginAt: null });
     expect(dto.lastLoginAt).toBeNull();
   });
 
   it("coerces undefined avatar to null", () => {
-    const dto = toAdminUserDto({ ...baseRow(), avatar: undefined });
+    const dto = toDto(AdminUserDto, { ...baseRow(), avatar: undefined });
     expect(dto.avatar).toBeNull();
   });
 });

@@ -1,12 +1,13 @@
 // types
-import type { AdminCategoryDto } from "../dtos";
 import type { CategoryServiceDeps } from "./deps";
+// common
+import { toDto } from "@/common/dto";
 // dtos
-import { toAdminCategoryDto } from "../dtos";
+import { AdminCategoryDto } from "../dtos";
 
 export const list = async (
   deps: CategoryServiceDeps
 ): Promise<AdminCategoryDto[]> => {
   const docs = await deps.categoryRepo.findAllWithAppCount();
-  return docs.map(toAdminCategoryDto);
+  return toDto(AdminCategoryDto, docs);
 };

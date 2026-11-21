@@ -1,27 +1,16 @@
 // types
-import type {
-  AdminUserAggregateRow,
-  AdminUserRole
-} from "@/modules/user/types";
+import type { AdminUserRole } from "@/modules/user/types";
+// common
+import { Expose, ExposeDate, ExposeId, ExposeOrNull } from "@/common/dto";
 
-export interface AdminUserDto {
-  _id: string;
-  fullName: string;
-  email: string;
-  avatar: string | null;
-  role: AdminUserRole;
-  isActive: boolean;
-  lastLoginAt: string | null;
-  createdAt: string;
+/** Source: a row of the admin users aggregation (`AdminUserAggregateRow`). */
+export class AdminUserDto {
+  @ExposeId() _id!: string;
+  @Expose() fullName!: string;
+  @Expose() email!: string;
+  @ExposeOrNull() avatar!: string | null;
+  @Expose() role!: AdminUserRole;
+  @Expose() isActive!: boolean;
+  @ExposeDate() lastLoginAt!: string | null;
+  @ExposeDate() createdAt!: string;
 }
-
-export const toAdminUserDto = (row: AdminUserAggregateRow): AdminUserDto => ({
-  _id: row._id.toString(),
-  fullName: row.fullName,
-  email: row.email,
-  avatar: row.avatar ?? null,
-  role: row.role,
-  isActive: row.isActive,
-  lastLoginAt: row.lastLoginAt ? row.lastLoginAt.toISOString() : null,
-  createdAt: row.createdAt.toISOString()
-});

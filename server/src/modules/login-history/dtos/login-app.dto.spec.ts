@@ -1,16 +1,18 @@
 // types
 import type { LoginHistoryDocument } from "@/modules/login-history/types";
+// common
+import { toDto } from "@/common/dto";
 // module under test
-import { toLoginAppFieldsDto } from "./login-app.dto";
+import { LoginAppFieldsDto } from "./login-app.dto";
 
 const WEB_APP_ID = "64b7f0c2f1a2b3c4d5e6f7c1";
 
 const doc = (fields: Record<string, unknown>) =>
   fields as unknown as LoginHistoryDocument;
 
-describe("toLoginAppFieldsDto", () => {
+describe("LoginAppFieldsDto", () => {
   it("treats a row written before the app fields existed as an interactive IdP login", () => {
-    expect(toLoginAppFieldsDto(doc({}))).toEqual({
+    expect(toDto(LoginAppFieldsDto, doc({}))).toEqual({
       source: "idp",
       app: null,
       interactive: true
@@ -18,7 +20,8 @@ describe("toLoginAppFieldsDto", () => {
   });
 
   it("uses the populated web app for an OAuth sign-in", () => {
-    const result = toLoginAppFieldsDto(
+    const result = toDto(
+      LoginAppFieldsDto,
       doc({
         source: "oauth",
         interactive: false,
@@ -43,7 +46,8 @@ describe("toLoginAppFieldsDto", () => {
   });
 
   it("falls back to the name snapshot when the app was deleted", () => {
-    const result = toLoginAppFieldsDto(
+    const result = toDto(
+      LoginAppFieldsDto,
       doc({
         source: "oauth",
         interactive: true,
@@ -60,7 +64,8 @@ describe("toLoginAppFieldsDto", () => {
   });
 
   it("drops app info for an IdP row even if a stray ref is present", () => {
-    const result = toLoginAppFieldsDto(
+    const result = toDto(
+      LoginAppFieldsDto,
       doc({ source: "idp", webAppId: WEB_APP_ID, interactive: true })
     );
 

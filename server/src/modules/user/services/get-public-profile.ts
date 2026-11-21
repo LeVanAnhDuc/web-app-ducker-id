@@ -1,10 +1,10 @@
 // types
-import type { PublicProfileDto } from "../dtos";
 import type { UserServiceDeps } from "./deps";
 // common
+import { toDto } from "@/common/dto";
 import { NotFoundError } from "@/exceptions";
 // dtos
-import { toPublicProfileDto } from "../dtos";
+import { PublicProfileDto } from "../dtos";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 
@@ -21,5 +21,5 @@ export const getPublicProfile = async (
     });
   }
 
-  return toPublicProfileDto(user, user.avatar ?? null);
+  return toDto(PublicProfileDto, user);
 };

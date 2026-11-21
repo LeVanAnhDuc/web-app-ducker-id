@@ -1,30 +1,38 @@
 // types
 import type { WebAppWithCategories } from "../types";
-import type { PublicCategoryDto } from "@/modules/category/dtos";
+// common
+import {
+  Expose,
+  ExposeFrom,
+  ExposeId,
+  ExposeOrNull,
+  toDto
+} from "@/common/dto";
 // modules
-import { toPublicCategoryDto } from "@/modules/category/dtos";
+import { PublicCategoryDto } from "@/modules/category/dtos";
+// others
 import { orderByCategoryIds } from "../helpers";
 
-export interface UserAppDto {
-  _id: string;
-  displayName: string;
-  description: string | null;
-  iconUrl: string | null;
-  homeUrl: string;
+/** Source: a web-app record with its categories (`WebAppWithCategories`). The launcher card, minus the per-user flag. */
+export class UserAppCardDto {
+  @ExposeId() _id!: string;
+  @Expose() displayName!: string;
+  @ExposeOrNull() description!: string | null;
+  @ExposeOrNull() iconUrl!: string | null;
+  @Expose() homeUrl!: string;
   /** In the order the admin chose; the first one is the primary category. */
-  categories: PublicCategoryDto[];
+  @ExposeFrom<WebAppWithCategories>((doc) =>
+    toDto(PublicCategoryDto, orderByCategoryIds(doc))
+  )
+  categories!: PublicCategoryDto[];
+}
+
+export interface UserAppDto extends UserAppCardDto {
   isFavorite: boolean;
 }
 
+// Whether the app is a favourite depends on the viewer, not the record.
 export const toUserAppDto = (
   doc: WebAppWithCategories,
   isFavorite = false
-): UserAppDto => ({
-  _id: doc._id.toString(),
-  displayName: doc.displayName,
-  description: doc.description ?? null,
-  iconUrl: doc.iconUrl ?? null,
-  homeUrl: doc.homeUrl,
-  categories: orderByCategoryIds(doc).map(toPublicCategoryDto),
-  isFavorite
-});
+): UserAppDto => ({ ...toDto(UserAppCardDto, doc), isFavorite });

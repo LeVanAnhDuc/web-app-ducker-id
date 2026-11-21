@@ -1,24 +1,15 @@
 // types
-import type { ContactPriority, ContactStatus, ContactDocument } from "../types";
+import type { ContactPriority, ContactStatus } from "../types";
+// common
+import { Expose, ExposeDate, ExposeId, ExposeOrNull } from "@/common/dto";
 
-export interface ContactListItemDto {
-  _id: string;
-  email: string | null;
-  subject: string;
-  priority: ContactPriority;
-  status: ContactStatus;
-  createdAt: string;
-  updatedAt: string;
+/** Source: a contact record. A list row — no message body. */
+export class ContactListItemDto {
+  @ExposeId() _id!: string;
+  @ExposeOrNull() email!: string | null;
+  @Expose() subject!: string;
+  @Expose() priority!: ContactPriority;
+  @Expose() status!: ContactStatus;
+  @ExposeDate() createdAt!: string;
+  @ExposeDate() updatedAt!: string;
 }
-
-export const toContactListItemDto = (
-  doc: ContactDocument
-): ContactListItemDto => ({
-  _id: doc._id.toString(),
-  email: doc.email ?? null,
-  subject: doc.subject,
-  priority: doc.priority,
-  status: doc.status,
-  createdAt: doc.createdAt.toISOString(),
-  updatedAt: doc.updatedAt.toISOString()
-});

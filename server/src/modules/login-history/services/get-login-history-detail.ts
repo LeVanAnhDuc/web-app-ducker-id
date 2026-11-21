@@ -1,10 +1,10 @@
 // types
-import type { HistoryDetailItemDto } from "../dtos";
 import type { LoginHistoryServiceDeps } from "./deps";
 // common
+import { toDto } from "@/common/dto";
 import { NotFoundError } from "@/exceptions";
 // dtos
-import { toHistoryDetailItemDto } from "../dtos";
+import { HistoryDetailItemDto } from "../dtos";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 
@@ -21,5 +21,5 @@ export const getLoginHistoryDetail = async (
     });
   }
 
-  return toHistoryDetailItemDto(doc);
+  return toDto(HistoryDetailItemDto, doc);
 };

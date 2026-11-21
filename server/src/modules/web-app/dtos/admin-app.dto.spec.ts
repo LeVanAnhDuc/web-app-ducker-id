@@ -1,5 +1,7 @@
+// common
+import { toDto } from "@/common/dto";
 // dtos
-import { toAdminAppDto, toAdminAppCreatedDto } from "./admin-app.dto";
+import { AdminAppDto, toAdminAppCreatedDto } from "./admin-app.dto";
 // modules
 import { WEB_APP_STATUSES, TOKEN_ENDPOINT_AUTH_METHODS } from "../constants";
 
@@ -28,13 +30,16 @@ const baseDoc = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 } as any;
 
-describe("toAdminAppDto", () => {
+describe("AdminAppDto", () => {
   it("maps BE status ACTIVE to public 'active'", () => {
-    expect(toAdminAppDto(baseDoc).status).toBe("active");
+    expect(toDto(AdminAppDto, baseDoc).status).toBe("active");
   });
 
   it("excludes clientSecretHash and OAuth internals", () => {
-    const dto = toAdminAppDto(baseDoc) as unknown as Record<string, unknown>;
+    const dto = toDto(AdminAppDto, baseDoc) as unknown as Record<
+      string,
+      unknown
+    >;
     expect(dto.clientSecretHash).toBeUndefined();
     expect(dto.grantTypes).toBeUndefined();
     expect(dto.scopes).toBeUndefined();
@@ -43,13 +48,33 @@ describe("toAdminAppDto", () => {
   it("exposes tokenEndpointAuthMethod so admin sees public vs confidential", () => {
     // Không phải bí mật, và là thứ quyết định app có client_secret hay không —
     // màn hình admin phải đọc được để hiển thị và sửa.
-    expect(toAdminAppDto(baseDoc).tokenEndpointAuthMethod).toBe(
+    expect(toDto(AdminAppDto, baseDoc).tokenEndpointAuthMethod).toBe(
       baseDoc.tokenEndpointAuthMethod
     );
   });
 
+  it("exposes exactly the admin fields", () => {
+    expect(Object.keys(toDto(AdminAppDto, baseDoc)).sort()).toEqual([
+      "_id",
+      "categoryIds",
+      "clientId",
+      "createdAt",
+      "description",
+      "displayName",
+      "homeUrl",
+      "iconUrl",
+      "name",
+      "postLogoutRedirectUris",
+      "redirectUris",
+      "requiredRoles",
+      "status",
+      "tokenEndpointAuthMethod",
+      "updatedAt"
+    ]);
+  });
+
   it("converts ObjectIds and dates to strings", () => {
-    const dto = toAdminAppDto(baseDoc);
+    const dto = toDto(AdminAppDto, baseDoc);
     expect(dto._id).toBe("app1");
     expect(dto.categoryIds).toEqual(["cat1"]);
     expect(dto.createdAt).toBe("2026-03-12T09:24:00.000Z");

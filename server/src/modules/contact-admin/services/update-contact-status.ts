@@ -1,11 +1,11 @@
 // types
 import type { ContactStatus } from "../types";
-import type { UpdateContactStatusDto } from "../dtos";
 import type { ContactRepository } from "../repository/contact-admin.repository";
 // common
+import { toDto } from "@/common/dto";
 import { NotFoundError } from "@/exceptions";
 // dtos
-import { toUpdateContactStatusDto } from "../dtos";
+import { UpdateContactStatusDto } from "../dtos";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 
@@ -23,5 +23,5 @@ export const updateContactStatus = async (
     });
   }
 
-  return toUpdateContactStatusDto(updated);
+  return toDto(UpdateContactStatusDto, updated);
 };

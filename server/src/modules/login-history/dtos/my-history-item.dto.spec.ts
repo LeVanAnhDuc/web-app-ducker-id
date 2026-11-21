@@ -1,7 +1,9 @@
 // types
 import type { LoginHistoryDocument } from "@/modules/login-history/types";
+// common
+import { toDto } from "@/common/dto";
 // module under test
-import { toMyHistoryItemDto } from "./my-history-item.dto";
+import { MyHistoryItemDto } from "./my-history-item.dto";
 
 const doc = (fields: Record<string, unknown>) =>
   ({
@@ -20,9 +22,9 @@ const doc = (fields: Record<string, unknown>) =>
     ...fields
   }) as unknown as LoginHistoryDocument;
 
-describe("toMyHistoryItemDto", () => {
+describe("MyHistoryItemDto", () => {
   it("carries the fail reason, the OS and the anomaly flag", () => {
-    const result = toMyHistoryItemDto(doc({ isAnomaly: true }));
+    const result = toDto(MyHistoryItemDto, doc({ isAnomaly: true }));
 
     expect(result).toEqual(
       expect.objectContaining({
@@ -34,6 +36,6 @@ describe("toMyHistoryItemDto", () => {
   });
 
   it("reports a row written before the flag existed as not anomalous", () => {
-    expect(toMyHistoryItemDto(doc({})).isAnomaly).toBe(false);
+    expect(toDto(MyHistoryItemDto, doc({})).isAnomaly).toBe(false);
   });
 });

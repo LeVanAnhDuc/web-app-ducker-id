@@ -1,12 +1,12 @@
 // types
 import type { WebAppUpdateInput } from "../types";
 import type { UpdateAppBodyDto } from "../dtos/requests";
-import type { AdminAppDto } from "../dtos";
 import type { WebAppServiceDeps } from "./deps";
 // common
+import { toDto } from "@/common/dto";
 import { ConflictRequestError, NotFoundError } from "@/exceptions";
 // dtos
-import { toAdminAppDto } from "../dtos";
+import { AdminAppDto } from "../dtos";
 // others
 import { announceApp } from "./shared/announce-app";
 import { assertCategoriesExist } from "./shared/assert-categories-exist";
@@ -81,5 +81,5 @@ export const updateApp = async (
     await announceApp(deps, updated);
   }
 
-  return toAdminAppDto(updated);
+  return toDto(AdminAppDto, updated);
 };
