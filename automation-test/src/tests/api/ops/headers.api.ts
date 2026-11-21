@@ -30,7 +30,7 @@ test(
 );
 
 test(
-  "Every response carries an X-Request-Id, echoing a caller's id up to 128 characters",
+  "Every response carries a server-minted X-Request-Id, ignoring the caller's",
   { tag: "@TC-OPS-014" },
   async ({ ops }) => {
     // No id sent → a fresh UUID per request.
@@ -40,14 +40,12 @@ test(
     expect(second).toMatch(UUID);
     expect(second).not.toBe(first);
 
-    // Boundary: 128 characters is echoed, 129 is replaced.
-    const atLimit = "a".repeat(128);
-    const echoed = await ops.healthAll({ "X-Request-Id": atLimit });
-    expect(echoed.headers()["x-request-id"]).toBe(atLimit);
-
-    const overLimit = "a".repeat(129);
-    const replaced = await ops.healthAll({ "X-Request-Id": overLimit });
-    expect(replaced.headers()["x-request-id"]).toMatch(UUID);
+    // A caller's id is never echoed — the server always mints its own.
+    const callerId = "caller-chosen-id";
+    const sent = await ops.healthAll({ "X-Request-Id": callerId });
+    const minted = sent.headers()["x-request-id"];
+    expect(minted).toMatch(UUID);
+    expect(minted).not.toBe(callerId);
   }
 );
 
