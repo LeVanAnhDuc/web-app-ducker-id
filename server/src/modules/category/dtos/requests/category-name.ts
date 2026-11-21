@@ -1,11 +1,6 @@
 // libs
 import { Transform } from "class-transformer";
-import {
-  IsNotEmpty,
-  IsString,
-  MaxLength,
-  registerDecorator
-} from "class-validator";
+import { IsNotEmpty, IsString, MaxLength } from "class-validator";
 // modules
 import {
   normalizeCategoryName,
@@ -13,7 +8,7 @@ import {
 } from "@/modules/category/category.helper";
 import { CATEGORY_CONFIG } from "@/modules/category/constants";
 // validators
-import { composeDecorators } from "@/validators/decorators";
+import { composeDecorators, rule } from "@/validators/decorators";
 
 type NameField = "nameEn" | "nameVi";
 
@@ -29,17 +24,11 @@ const NormalizeCategoryName = (): PropertyDecorator =>
 
 // An English name with no letter or digit left after folding has no slug (DR-12).
 const HasCategorySlug = (options: { message: string }): PropertyDecorator =>
-  ((target, propertyKey) =>
-    registerDecorator({
-      name: "hasCategorySlug",
-      target: target.constructor,
-      propertyName: propertyKey as string,
-      options,
-      validator: {
-        validate: (value: unknown) =>
-          typeof value === "string" && slugifyCategoryName(value) !== ""
-      }
-    })) as PropertyDecorator;
+  rule(
+    "hasCategorySlug",
+    (value) => typeof value === "string" && slugifyCategoryName(value) !== "",
+    options
+  );
 
 // A wrong type or a name that normalises to nothing is "required", as in Joi.
 const nameRules = (field: NameField, ...extra: PropertyDecorator[]) =>

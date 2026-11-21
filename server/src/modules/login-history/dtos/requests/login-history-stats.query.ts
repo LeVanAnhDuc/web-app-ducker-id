@@ -3,9 +3,7 @@ import { IsNotEmpty, IsOptional, IsString, MaxLength } from "class-validator";
 // modules
 import { LOGIN_HISTORY_STATS_RANGES } from "@/modules/login-history/constants";
 // validators
-import { IsSupportedTimeZone } from "@/validators/decorators";
-// others
-import { OneOf } from "./filters";
+import { IsSupportedTimeZone, OneOf } from "@/validators/decorators";
 
 // Long enough for any IANA name, short enough that a junk value never reaches
 // the resolver.

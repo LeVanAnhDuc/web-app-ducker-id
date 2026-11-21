@@ -1,5 +1,5 @@
 // libs
-import { IsIn, IsNotEmpty, IsOptional, IsString } from "class-validator";
+import { IsNotEmpty, IsOptional, IsString } from "class-validator";
 // types
 import type { ContactPriority } from "@/modules/contact-admin/types";
 // modules
@@ -8,6 +8,7 @@ import { CONTACT_PRIORITIES } from "@/modules/contact-admin/constants";
 import {
   IsIsoDateString,
   IsOnOrAfter,
+  OneOf,
   ToIsoDateString,
   Trim
 } from "@/validators/decorators";
@@ -17,9 +18,7 @@ import { MyContactsQueryDto } from "./my-contacts.query";
 const PRIORITY_VALUES = Object.values(CONTACT_PRIORITIES);
 
 export class AdminContactsQueryDto extends MyContactsQueryDto {
-  @IsIn(PRIORITY_VALUES, { message: "validation:priority.invalid" })
-  @IsString({ message: "validation:priority.invalid" })
-  @IsOptional()
+  @OneOf(PRIORITY_VALUES, "validation:priority.invalid")
   priority?: ContactPriority;
 
   // A partial match, not an address: no email rules, only a non-blank string.

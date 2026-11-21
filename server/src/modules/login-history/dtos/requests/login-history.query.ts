@@ -22,12 +22,13 @@ import {
 import {
   IsOnOrAfter,
   ObjectIdFilter,
+  OneOf,
   SearchFilter,
   ToBoolean
 } from "@/validators/decorators";
 import { PaginationQueryDto } from "@/validators/dtos/pagination.query";
 // others
-import { IsoDateFilter, OneOf } from "./filters";
+import { IsoDateFilter } from "./filters";
 
 /** The filters on a user's own sign-ins; the admin list extends it. */
 export class LoginHistoryQueryDto extends PaginationQueryDto {

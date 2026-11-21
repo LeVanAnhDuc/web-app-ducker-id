@@ -1,12 +1,5 @@
 // libs
-import {
-  IsIn,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  MaxLength,
-  ValidateIf
-} from "class-validator";
+import { IsIn, IsString } from "class-validator";
 // types
 import type {
   AdminContactsSortBy,
@@ -18,8 +11,7 @@ import {
   CONTACT_STATUSES
 } from "@/modules/contact-admin/constants";
 // validators
-import { SEARCH_MAX_LENGTH } from "@/validators/constants";
-import { Trim } from "@/validators/decorators";
+import { OneOf, SearchFilter, UnlessMissing } from "@/validators/decorators";
 import { PaginationQueryDto } from "@/validators/dtos/pagination.query";
 
 const STATUS_VALUES = Object.values(CONTACT_STATUSES);
@@ -30,19 +22,12 @@ export class MyContactsQueryDto extends PaginationQueryDto {
   // only a missing one is skipped — `@IsOptional()` would let `null` through.
   @IsIn(STATUS_VALUES, { message: "validation:status.invalid" })
   @IsString({ message: "validation:status.invalid" })
-  @ValidateIf((_object, value) => value !== undefined)
+  @UnlessMissing()
   status?: ContactStatus;
 
-  // Trimmed before the length check, so padding does not count toward the max.
-  @MaxLength(SEARCH_MAX_LENGTH, { message: "validation:search.invalid" })
-  @IsNotEmpty({ message: "validation:search.invalid" })
-  @IsString({ message: "validation:search.invalid" })
-  @IsOptional()
-  @Trim()
+  @SearchFilter()
   search?: string;
 
-  @IsIn(ADMIN_CONTACTS_SORT_BY, { message: "validation:sortBy.invalid" })
-  @IsString({ message: "validation:sortBy.invalid" })
-  @IsOptional()
+  @OneOf(ADMIN_CONTACTS_SORT_BY, "validation:sortBy.invalid")
   sortBy?: AdminContactsSortBy;
 }

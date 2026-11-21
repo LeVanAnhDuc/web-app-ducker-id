@@ -1,5 +1,11 @@
 // libs
-import { IsNotEmpty, IsOptional, IsString, MaxLength } from "class-validator";
+import {
+  IsIn,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength
+} from "class-validator";
 // validators
 import { SEARCH_MAX_LENGTH } from "@/validators/constants";
 import { composeDecorators } from "./fields";
@@ -27,6 +33,17 @@ export const ObjectIdFilter = (key: string): PropertyDecorator =>
   composeDecorators(
     IsObjectId(key),
     IsNotEmpty({ message: key }),
+    IsString({ message: key }),
+    IsOptional()
+  );
+
+/** One of a fixed set: Joi checks `.valid()` first, so blank is unknown too. */
+export const OneOf = (
+  values: readonly unknown[],
+  key: string
+): PropertyDecorator =>
+  composeDecorators(
+    IsIn(values, { message: key }),
     IsString({ message: key }),
     IsOptional()
   );

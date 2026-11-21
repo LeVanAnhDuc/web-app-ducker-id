@@ -20,7 +20,6 @@ import {
   IsNotEmptyBody,
   IsObjectId,
   IsOnOrAfter,
-  IsRedirectUri,
   IsRequiredObjectId,
   Lowercase,
   MatchesProperty,
@@ -28,8 +27,7 @@ import {
   ToDate,
   ToInt,
   ToIsoDateString,
-  Trim,
-  TrimEach
+  Trim
 } from "@/validators/decorators";
 
 class IsoDateDto {
@@ -110,15 +108,6 @@ class EachObjectIdDto {
   @IsObjectId("validation:userId.invalid", { each: true })
   @IsArray({ message: "validation:userIds.invalid" })
   ids!: string[];
-}
-
-class RedirectUrisDto {
-  @IsRedirectUri({
-    each: true,
-    message: "webApp:validation.redirectUris.invalid"
-  })
-  @TrimEach()
-  uris!: string[];
 }
 
 class UniqueDto {
@@ -494,7 +483,7 @@ describe("EachItem", () => {
   });
 });
 
-describe("IsObjectId / IsRedirectUri with { each: true }", () => {
+describe("IsObjectId with { each: true }", () => {
   it("reports each bad id at its index", async () => {
     const { failures } = await validateDto(EachObjectIdDto, {
       ids: ["a".repeat(24), "x", 5]
@@ -510,20 +499,6 @@ describe("IsObjectId / IsRedirectUri with { each: true }", () => {
     const { failures } = await validateDto(EachObjectIdDto, { ids: "x" });
     expect(failures).toEqual([
       { field: "ids", reason: "isArray", key: "validation:userIds.invalid" }
-    ]);
-  });
-
-  it("trims each redirect URI before checking it", async () => {
-    const { value, failures } = await validateDto(RedirectUrisDto, {
-      uris: [" https://a.example.com/cb ", "http://evil.example.com/cb"]
-    });
-    expect(value.uris[0]).toBe("https://a.example.com/cb");
-    expect(failures).toEqual([
-      {
-        field: "uris.1",
-        reason: "isRedirectUri",
-        key: "webApp:validation.redirectUris.invalid"
-      }
     ]);
   });
 });

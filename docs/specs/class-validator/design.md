@@ -150,7 +150,7 @@ Replace each reusable Joi fragment with a decorator or base class:
 | object-level `.custom` date range (login-history, contact-admin) | `@IsOnOrAfter("fromDate", { context: { root: true } })` on `toDate` → reported as `field: ""` |
 | `adminUpdateAppBodySchema.min(1)` (empty PATCH body) | class-level non-empty constraint with `context: { root: true }` → `field: ""`, key `webApp:validation.body.empty` |
 | `isSupportedTimeZone` custom | `@IsSupportedTimeZone()` |
-| `isValidRedirectUri` custom (web-app) | `@IsRedirectUri()` with `{ each: true }` on the array |
+| `isValidRedirectUri` custom (web-app) | `EachItem("isRedirectUri", …)` on the array (`app-fields.ts`) |
 | category name custom (normalise + slug check, **returns the normalised value**) | `@Transform(normalizeCategoryName)` then `@IsNotEmpty` + `@HasSlug()` for `nameEn` |
 | pagination `page` / `limit` / `sortOrder` repeated in every list query | `PaginationQueryDto` base class, extended per module |
 | `loginHistoryQuerySchema.keys({...})` (admin variant) | `class LoginHistoryAdminQueryDto extends LoginHistoryQueryDto` |
@@ -178,6 +178,13 @@ const validationPipe = <T extends object>(source: "body" | "params" | "query", D
     } catch (e) { next(e); }
   };
 ```
+
+A request part that is not a plain object — `express.json()` accepts a top-level array or
+primitive — is refused before any transform with one failure
+`{ field: "", reason: "isObject", key: "validation:body.invalid" }` and `req[source]` is left
+alone. `plainToInstance` would hand an array straight back and `validate()` finds nothing wrong
+with it, so every rule would be skipped; Joi's `object()` refused it with 400. The pipe throws
+rather than calling `next(err)`, since Express 5 forwards a rejected middleware itself.
 
 `flatten` walks `children` for nested objects / arrays and emits
 `{ field: "parent.0.child", reason: <constraint name>, message: req.t(<key>) }` — the `field`
@@ -230,7 +237,7 @@ so every commit builds and passes `pnpm test`:
 
 ## Verification
 
-- `server`: `pnpm type-check`, `pnpm lint`, `pnpm test` (103 suites / 787 tests before; 118 suites / 878 tests after) green at
+- `server`: `pnpm type-check`, `pnpm lint`, `pnpm test` (103 suites / 787 tests before; 123 suites / 923 tests after the merge of Express 5 and the fix wave) green at
   every commit.
 - `automation-test`: `pnpm test:api` against the dedicated e2e stack (`DB_NAME=ducker-id-e2e`, API
   `:5600`, client `:3600` — see `automation-test/src/docs/test-plan.md`) once, at the end. The API

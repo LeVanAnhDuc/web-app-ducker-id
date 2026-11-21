@@ -9,8 +9,7 @@ import {
   Length,
   Matches,
   MaxLength,
-  MinLength,
-  registerDecorator
+  MinLength
 } from "class-validator";
 // types
 import type { ValidationOptions } from "class-validator";
@@ -27,7 +26,7 @@ import {
   SAFE_EMAIL_PATTERN,
   SAFE_FULLNAME_PATTERN
 } from "@/validators/constants";
-import { IsObjectId } from "./rules";
+import { IsObjectId, rule } from "./rules";
 import { Lowercase, Trim } from "./transforms";
 
 const GENDER_VALUES = Object.values(GENDERS);
@@ -37,19 +36,12 @@ const GENDER_VALUES = Object.values(GENDERS);
 // `user@test.local` would pass here and fail under Joi.
 const EMAIL_OPTIONS = { tlds: { allow: tlds } };
 
-const IsIanaEmail =
-  (options: ValidationOptions): PropertyDecorator =>
-  (target, propertyKey) =>
-    registerDecorator({
-      name: "isEmail",
-      target: target.constructor,
-      propertyName: propertyKey as string,
-      options,
-      validator: {
-        validate: (value: unknown) =>
-          typeof value === "string" && isEmailValid(value, EMAIL_OPTIONS)
-      }
-    });
+const IsIanaEmail = (options: ValidationOptions): PropertyDecorator =>
+  rule(
+    "isEmail",
+    (value) => typeof value === "string" && isEmailValid(value, EMAIL_OPTIONS),
+    options
+  );
 
 /**
  * Reads like a stack of decorators written in source: the first one listed is

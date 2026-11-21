@@ -1,13 +1,11 @@
 // libs
 import {
-  IsIn,
   IsNotEmpty,
   IsOptional,
   IsString,
   Matches,
   MaxLength,
-  MinLength,
-  ValidateIf
+  MinLength
 } from "class-validator";
 // types
 import type { Gender } from "@/modules/user/types";
@@ -23,8 +21,10 @@ import {
   IsDateOfBirthNotTooOld,
   IsDateOfBirthNotTooYoung,
   IsIsoDateString,
+  OneOf,
   ToIsoDateString,
-  Trim
+  Trim,
+  UnlessMissing
 } from "@/validators/decorators";
 
 const GENDER_VALUES = Object.values(GENDERS);
@@ -47,7 +47,7 @@ export class UpdateProfileBodyDto {
   @IsNotEmpty({ message: "validation:fullName.required" })
   @IsString({ message: "validation:fullName.invalid" })
   // Unlike the other fields a name cannot be cleared, so `null` is checked.
-  @ValidateIf((_object, value) => value !== undefined)
+  @UnlessMissing()
   @Trim()
   fullName?: string;
 
@@ -77,8 +77,6 @@ export class UpdateProfileBodyDto {
   @ToIsoDateString()
   dateOfBirth?: string | null;
 
-  @IsIn(GENDER_VALUES, { message: "validation:gender.invalid" })
-  @IsString({ message: "validation:gender.invalid" })
-  @IsOptional()
+  @OneOf(GENDER_VALUES, "validation:gender.invalid")
   gender?: Gender | null;
 }

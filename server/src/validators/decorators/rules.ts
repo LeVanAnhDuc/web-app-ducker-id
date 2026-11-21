@@ -3,8 +3,6 @@ import { Exclude } from "class-transformer";
 import { registerDecorator, ValidateIf } from "class-validator";
 // types
 import type { ValidationArguments, ValidationOptions } from "class-validator";
-// modules
-import { isValidRedirectUri } from "@/modules/oauth/helpers";
 // validators
 import { OBJECTID_PATTERN } from "@/validators/constants";
 import { getDateOfBirthBounds } from "@/validators/date-of-birth";
@@ -14,7 +12,8 @@ import type { ItemCheck } from "@/validators/validate-dto";
 
 type Check = (value: unknown, args: ValidationArguments) => boolean;
 
-const rule =
+/** Registers a named custom constraint on one property. */
+export const rule =
   (
     name: string,
     validate: Check,
@@ -146,13 +145,6 @@ export const IsSupportedTimeZone = (
   rule(
     "isSupportedTimeZone",
     (value) => typeof value === "string" && isSupportedTimeZone(value),
-    options
-  );
-
-export const IsRedirectUri = (options?: ValidationOptions): PropertyDecorator =>
-  itemRule(
-    "isRedirectUri",
-    (value) => typeof value === "string" && isValidRedirectUri(value),
     options
   );
 

@@ -1,13 +1,8 @@
 // libs
 import { Type } from "class-transformer";
-import {
-  IsDefined,
-  IsObject,
-  registerDecorator,
-  ValidateNested
-} from "class-validator";
+import { IsDefined, IsObject, ValidateNested } from "class-validator";
 // validators
-import { UnlessMissing } from "@/validators/decorators";
+import { rule, UnlessMissing } from "@/validators/decorators";
 // others
 import { NameEnRules, NameViRules } from "./category-name";
 
@@ -26,19 +21,14 @@ export class UpdateCategoryNameDto {
  * `{ fr: "…" }` names nothing. Reported on `name`, not on the body.
  */
 const HasCategoryName = (options: { message: string }): PropertyDecorator =>
-  ((target, propertyKey) =>
-    registerDecorator({
-      name: "hasCategoryName",
-      target: target.constructor,
-      propertyName: propertyKey as string,
-      options,
-      validator: {
-        validate: (value: unknown) => {
-          const name = value as Partial<UpdateCategoryNameDto>;
-          return name.en !== undefined || name.vi !== undefined;
-        }
-      }
-    })) as PropertyDecorator;
+  rule(
+    "hasCategoryName",
+    (value) => {
+      const name = value as Partial<UpdateCategoryNameDto>;
+      return name.en !== undefined || name.vi !== undefined;
+    },
+    options
+  );
 
 export class UpdateCategoryBodyDto {
   @ValidateNested({ message: "category:validation.body.empty" })

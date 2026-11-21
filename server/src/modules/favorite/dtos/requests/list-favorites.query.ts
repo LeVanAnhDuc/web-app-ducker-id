@@ -1,11 +1,9 @@
-// libs
-import { IsIn, IsOptional, IsString } from "class-validator";
 // types
 import type { FavoriteSort } from "@/modules/favorite/types";
 // modules
 import { FAVORITE_SORTS } from "@/modules/favorite/constants";
 // validators
-import { ObjectIdFilter, SearchFilter } from "@/validators/decorators";
+import { ObjectIdFilter, OneOf, SearchFilter } from "@/validators/decorators";
 
 const SORT_VALUES = Object.values(FAVORITE_SORTS);
 
@@ -19,8 +17,6 @@ export class ListFavoritesQueryDto {
   @ObjectIdFilter("validation:categoryId.invalid")
   categoryId?: string;
 
-  @IsIn(SORT_VALUES, { message: "favorite:validation.sort.invalid" })
-  @IsString({ message: "favorite:validation.sort.invalid" })
-  @IsOptional()
+  @OneOf(SORT_VALUES, "favorite:validation.sort.invalid")
   sort?: FavoriteSort;
 }

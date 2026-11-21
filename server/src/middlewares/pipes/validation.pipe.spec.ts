@@ -20,9 +20,9 @@ import type {
 // common
 import { AppError, ValidationError } from "@/exceptions";
 // validators
-import { IsAppEmail, ToInt } from "@/validators/decorators";
+import { IsAppEmail, IsRequiredObjectId, ToInt } from "@/validators/decorators";
 // others
-import { bodyPipe, queryPipe } from "./validation.pipe";
+import { bodyPipe, paramsPipe, queryPipe } from "./validation.pipe";
 import { makeMockRequest } from "@test/helpers/request.helper";
 
 class FixtureDto {
@@ -122,6 +122,11 @@ class EmailBodyDto {
   email!: string;
 }
 
+class IdParamsDto {
+  @IsRequiredObjectId("validation:id.invalid")
+  id!: string;
+}
+
 const reportErrors: ErrorRequestHandler = (err, _req, res, _next) => {
   if (err instanceof AppError) {
     res.status(err.status).json({ code: err.code, errors: err.errors });
@@ -153,6 +158,10 @@ describe("validation pipes in a real Express app", () => {
 
     app.get("/query", queryPipe(PageQueryDto), (req, res) => {
       res.json(req.query);
+    });
+
+    app.get("/items/:id", paramsPipe(IdParamsDto), (req, res) => {
+      res.json(req.params);
     });
 
     app.post("/body", bodyPipe(EmailBodyDto), (req, res) => {
@@ -193,5 +202,29 @@ describe("validation pipes in a real Express app", () => {
 
     expect(res.status).toBe(200);
     expect(await res.json()).toEqual({ email: "a@b.co" });
+  });
+
+  it("passes valid route params through", async () => {
+    const id = "a".repeat(24);
+    const res = await fetch(`${url}/items/${id}`);
+
+    expect(res.status).toBe(200);
+    expect(await res.json()).toEqual({ id });
+  });
+
+  it("rejects invalid route params with the param's key", async () => {
+    const res = await fetch(`${url}/items/not-an-id`);
+
+    expect(res.status).toBe(400);
+    expect(await res.json()).toEqual({
+      code: "VALIDATION_ERROR",
+      errors: [
+        {
+          field: "id",
+          reason: "isObjectId",
+          message: "validation:id.invalid"
+        }
+      ]
+    });
   });
 });
