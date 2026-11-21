@@ -131,7 +131,20 @@ describe("ToInt", () => {
     expect(value.page).toBe(2);
   });
 
-  it.each(["1.5", "abc", ""])(
+  it.each([
+    ["+2", 2],
+    [" 2", 2],
+    ["2.0", 2],
+    ["1e2", 100],
+    ["02", 2]
+  ])("converts %p as Joi's number() does", async (page, expected) => {
+    const { value, failures } = await validateDto(IntDto, { page });
+
+    expect(failures).toEqual([]);
+    expect(value.page).toBe(expected);
+  });
+
+  it.each(["1.5", "abc", "", "   ", "99999999999999999999"])(
     "leaves %p for @IsInt to reject",
     async (page) => {
       const { failures } = await validateDto(IntDto, { page });
@@ -216,6 +229,15 @@ describe("IsOnOrAfter", () => {
       { fromDate: "2026-01-01", toDate: "2026-02-01" },
       { toDate: "2026-02-01" },
       { fromDate: "2026-02-01" }
+    ]) {
+      expect((await validateDto(RangeDto, input)).failures).toEqual([]);
+    }
+  });
+
+  it("leaves an unparsable bound to the field's own rules, as Joi did", async () => {
+    for (const input of [
+      { fromDate: "2026-02-01", toDate: "not-a-date" },
+      { fromDate: "not-a-date", toDate: "2026-01-01" }
     ]) {
       expect((await validateDto(RangeDto, input)).failures).toEqual([]);
     }

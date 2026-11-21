@@ -36,6 +36,8 @@
   "dependencies": {
     "@bull-board/api": "^6.21.3",
     "@bull-board/express": "^6.21.3",
+    "@hapi/address": "5.1.1",
+    "@hapi/tlds": "1.1.7",
     "@react-email/components": "^1.0.8",
     "@react-email/render": "^2.0.4",
     "bcrypt": "^5.1.1",

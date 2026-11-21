@@ -1,15 +1,19 @@
 // libs
+import { isEmailValid } from "@hapi/address";
+import { tlds } from "@hapi/tlds";
 import {
   IsDefined,
-  IsEmail,
   IsIn,
   IsNotEmpty,
   IsString,
   Length,
   Matches,
   MaxLength,
-  MinLength
+  MinLength,
+  registerDecorator
 } from "class-validator";
+// types
+import type { ValidationOptions } from "class-validator";
 // modules
 import { GENDERS } from "@/modules/user/constants";
 // validators
@@ -27,6 +31,25 @@ import { Lowercase, Trim } from "./transforms";
 
 const GENDER_VALUES = Object.values(GENDERS);
 
+// The checker Joi's `.email()` delegates to, with the IANA TLD allow-list
+// Joi applies by default: validator.js's `isEmail` takes any TLD, so
+// `user@test.local` would pass here and fail under Joi.
+const EMAIL_OPTIONS = { tlds: { allow: tlds } };
+
+const IsIanaEmail =
+  (options: ValidationOptions): PropertyDecorator =>
+  (target, propertyKey) =>
+    registerDecorator({
+      name: "isEmail",
+      target: target.constructor,
+      propertyName: propertyKey as string,
+      options,
+      validator: {
+        validate: (value: unknown) =>
+          typeof value === "string" && isEmailValid(value, EMAIL_OPTIONS)
+      }
+    });
+
 /**
  * Reads like a stack of decorators written in source: the first one listed is
  * the top one. Decorators apply bottom-up, so the list is applied in reverse
@@ -42,8 +65,9 @@ export const composeDecorators =
 
 // Each field is required, as every use of the Joi fragment is (`.required()`)
 // — an `@IsOptional()` would not skip `@IsDefined`. Rules run bottom-up in
-// Joi's order: type, then empty, then the rules as the Joi chain declares them. A wrong type had no key in Joi (it
-// shipped English), so it takes the field's `.invalid` key, else `.required`.
+// Joi's order: type, then empty, then the rules as the Joi chain declares
+// them. A wrong type had no key in Joi (it shipped English), so it takes the
+// field's `.invalid` key, else `.required`.
 
 export const IsAppEmail = (): PropertyDecorator =>
   composeDecorators(
@@ -54,7 +78,7 @@ export const IsAppEmail = (): PropertyDecorator =>
     MinLength(EMAIL_VALIDATION.MIN_LENGTH, {
       message: "validation:email.minLength"
     }),
-    IsEmail({}, { message: "validation:email.invalid" }),
+    IsIanaEmail({ message: "validation:email.invalid" }),
     IsNotEmpty({ message: "validation:email.required" }),
     IsString({ message: "validation:email.invalid" }),
     IsDefined({ message: "validation:email.required" }),

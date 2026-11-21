@@ -9,6 +9,15 @@ exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQ
 }
 `;
 
+exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: limitExponent 1`] = `
+{
+  "failures": [],
+  "value": PaginationQueryDto {
+    "limit": 10,
+  },
+}
+`;
+
 exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: limitOverMax 1`] = `
 {
   "failures": [
@@ -24,6 +33,15 @@ exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQ
 }
 `;
 
+exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: limitPadded 1`] = `
+{
+  "failures": [],
+  "value": PaginationQueryDto {
+    "limit": 50,
+  },
+}
+`;
+
 exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: limitText 1`] = `
 {
   "failures": [
@@ -35,6 +53,21 @@ exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQ
   ],
   "value": PaginationQueryDto {
     "limit": "ten",
+  },
+}
+`;
+
+exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: limitUnsafe 1`] = `
+{
+  "failures": [
+    {
+      "field": "limit",
+      "key": "validation:limit.invalid",
+      "reason": "isInt",
+    },
+  ],
+  "value": PaginationQueryDto {
+    "limit": "99999999999999999999",
   },
 }
 `;
@@ -71,6 +104,21 @@ exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQ
 }
 `;
 
+exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: pageBlank 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "isInt",
+    },
+  ],
+  "value": PaginationQueryDto {
+    "page": "   ",
+  },
+}
+`;
+
 exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: pageDecimal 1`] = `
 {
   "failures": [
@@ -81,7 +129,7 @@ exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQ
     },
   ],
   "value": PaginationQueryDto {
-    "page": "1.5",
+    "page": 1.5,
   },
 }
 `;
@@ -101,6 +149,24 @@ exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQ
 }
 `;
 
+exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: pageExponent 1`] = `
+{
+  "failures": [],
+  "value": PaginationQueryDto {
+    "page": 100,
+  },
+}
+`;
+
+exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: pageLeadingZero 1`] = `
+{
+  "failures": [],
+  "value": PaginationQueryDto {
+    "page": 2,
+  },
+}
+`;
+
 exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: pageNegative 1`] = `
 {
   "failures": [
@@ -116,6 +182,24 @@ exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQ
 }
 `;
 
+exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: pagePadded 1`] = `
+{
+  "failures": [],
+  "value": PaginationQueryDto {
+    "page": 2,
+  },
+}
+`;
+
+exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: pagePlusSign 1`] = `
+{
+  "failures": [],
+  "value": PaginationQueryDto {
+    "page": 2,
+  },
+}
+`;
+
 exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: pageText 1`] = `
 {
   "failures": [
@@ -127,6 +211,30 @@ exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQ
   ],
   "value": PaginationQueryDto {
     "page": "abc",
+  },
+}
+`;
+
+exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: pageTrailingZero 1`] = `
+{
+  "failures": [],
+  "value": PaginationQueryDto {
+    "page": 2,
+  },
+}
+`;
+
+exports[`PaginationQueryDto matches the repeated Joi pagination keys PaginationQueryDto ≡ page / limit / sortOrder: pageUnsafe 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "isInt",
+    },
+  ],
+  "value": PaginationQueryDto {
+    "page": "99999999999999999999",
   },
 }
 `;
@@ -312,6 +420,51 @@ exports[`shared field decorators match the Joi fragments IsAppEmail ≡ emailSch
 }
 `;
 
+exports[`shared field decorators match the Joi fragments IsAppEmail ≡ emailSchema: reservedTldInvalid 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:email.invalid",
+      "reason": "isEmail",
+    },
+  ],
+  "value": EmailDto {
+    "v": "user@example.invalid",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppEmail ≡ emailSchema: reservedTldLocal 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:email.invalid",
+      "reason": "isEmail",
+    },
+  ],
+  "value": EmailDto {
+    "v": "user@test.local",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppEmail ≡ emailSchema: singleLabelDomain 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:email.invalid",
+      "reason": "isEmail",
+    },
+  ],
+  "value": EmailDto {
+    "v": "user@localhost",
+  },
+}
+`;
+
 exports[`shared field decorators match the Joi fragments IsAppEmail ≡ emailSchema: tooLong 1`] = `
 {
   "failures": [
@@ -353,6 +506,45 @@ exports[`shared field decorators match the Joi fragments IsAppEmail ≡ emailSch
   ],
   "value": EmailDto {
     "v": "a@",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppEmail ≡ emailSchema: unicodeDomain 1`] = `
+{
+  "failures": [],
+  "value": EmailDto {
+    "v": "user@bücher.de",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppEmail ≡ emailSchema: unicodeDomainUnknownTld 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:email.invalid",
+      "reason": "isEmail",
+    },
+  ],
+  "value": EmailDto {
+    "v": "user@例え.テスト",
+  },
+}
+`;
+
+exports[`shared field decorators match the Joi fragments IsAppEmail ≡ emailSchema: unknownTld 1`] = `
+{
+  "failures": [
+    {
+      "field": "v",
+      "key": "validation:email.invalid",
+      "reason": "isEmail",
+    },
+  ],
+  "value": EmailDto {
+    "v": "a@b.xyzzy",
   },
 }
 `;

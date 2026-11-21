@@ -73,7 +73,13 @@ describe("shared field decorators match the Joi fragments", () => {
       // Over 254 characters: both email checks refuse it before the length
       // rule, so `maxLength` is unreachable in either validator.
       tooLong: { v: `${"a".repeat(64)}@${`${"b".repeat(62)}.`.repeat(3)}com` },
-      controlCharacter: { v: `us${ZERO_WIDTH_SPACE}er@example.com` }
+      controlCharacter: { v: `us${ZERO_WIDTH_SPACE}er@example.com` },
+      reservedTldLocal: { v: "user@test.local" },
+      reservedTldInvalid: { v: "user@example.invalid" },
+      unknownTld: { v: "a@b.xyzzy" },
+      singleLabelDomain: { v: "user@localhost" },
+      unicodeDomain: { v: "user@bücher.de" },
+      unicodeDomainUnknownTld: { v: "user@例え.テスト" }
     });
   });
 
@@ -138,6 +144,16 @@ describe("PaginationQueryDto matches the repeated Joi pagination keys", () => {
       pageDecimal: { page: "1.5" },
       pageText: { page: "abc" },
       pageEmpty: { page: "" },
+      pageBlank: { page: "   " },
+      pagePlusSign: { page: "+2" },
+      pagePadded: { page: " 2" },
+      pageTrailingZero: { page: "2.0" },
+      pageExponent: { page: "1e2" },
+      pageLeadingZero: { page: "02" },
+      pageUnsafe: { page: "99999999999999999999" },
+      limitPadded: { limit: " 50 " },
+      limitExponent: { limit: "1e1" },
+      limitUnsafe: { limit: "99999999999999999999" },
       limitZero: { limit: "0" },
       limitAtMax: { limit: "100" },
       limitOverMax: { limit: "101" },
