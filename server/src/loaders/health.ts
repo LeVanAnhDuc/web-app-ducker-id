@@ -10,10 +10,8 @@ import { sendSuccess } from "@/common/responses";
 // database
 import { isMongoHealthy } from "@/database/mongodb";
 import { checkRedisHealth } from "@/database/redis";
-// others
-import { asyncHandler } from "@/utils/async-handler";
 
-const checkMongoDB = asyncHandler(async (req: Request, res: Response) => {
+const checkMongoDB = (req: Request, res: Response): void => {
   const isHealthy = isMongoHealthy();
 
   if (!isHealthy) {
@@ -28,10 +26,11 @@ const checkMongoDB = asyncHandler(async (req: Request, res: Response) => {
     message: "MongoDB is healthy",
     data: { mongodb: { status: "up" } }
   });
-});
+};
 
-const checkRedis = (redis: RedisClientType) =>
-  asyncHandler(async (req: Request, res: Response) => {
+const checkRedis =
+  (redis: RedisClientType) =>
+  async (req: Request, res: Response): Promise<void> => {
     const redisHealth = await checkRedisHealth(redis);
 
     if (!redisHealth.isHealthy) {
@@ -48,10 +47,11 @@ const checkRedis = (redis: RedisClientType) =>
         redis: { status: "up", latency_ms: redisHealth.latency ?? null }
       }
     });
-  });
+  };
 
-const checkAll = (redis: RedisClientType) =>
-  asyncHandler(async (req: Request, res: Response) => {
+const checkAll =
+  (redis: RedisClientType) =>
+  async (req: Request, res: Response): Promise<void> => {
     const mongoHealthy = isMongoHealthy();
     const redisHealth = await checkRedisHealth(redis);
     const allHealthy = mongoHealthy && redisHealth.isHealthy;
@@ -76,7 +76,7 @@ const checkAll = (redis: RedisClientType) =>
         redis: { status: "up", latency_ms: redisHealth.latency ?? null }
       }
     });
-  });
+  };
 
 export const createHealthRouter = (redis: RedisClientType): Router => {
   const healthRouter = Router();

@@ -5,9 +5,6 @@ import type { RateLimiterMiddleware } from "@/middlewares";
 import type { OAuthController } from "./oauth.controller";
 // middlewares
 import { handleOAuthError, handleOAuthUnexpectedError } from "@/middlewares";
-// others
-import { asyncHandler } from "@/utils/async-handler";
-
 /**
  * KHÁC MỌI MODULE KHÁC: router này KHÔNG mount dưới `/api/v1`.
  *
@@ -26,10 +23,10 @@ export const createOAuthRoutes = (
 
   const oauth = Router();
 
-  oauth.get("/authorize", rl.loginByIp, asyncHandler(controller.authorize));
-  oauth.post("/token", rl.loginByIp, asyncHandler(controller.token));
-  oauth.get("/userinfo", asyncHandler(controller.userInfo));
-  oauth.get("/logout", asyncHandler(controller.logout));
+  oauth.get("/authorize", rl.loginByIp, controller.authorize);
+  oauth.post("/token", rl.loginByIp, controller.token);
+  oauth.get("/userinfo", controller.userInfo);
+  oauth.get("/logout", controller.logout);
 
   router.use("/oauth", oauth);
 
