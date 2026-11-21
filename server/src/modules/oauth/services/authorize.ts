@@ -243,8 +243,6 @@ const restorePendingRequest = async (
 };
 
 /**
- * GET /oauth/authorize.
- *
  * Có hai đường vào: request mới (đầy đủ tham số) hoặc quay lại sau khi đăng
  * nhập (`auth_req=<id>` — tham số gốc đã được cất ở Redis nên user không sửa
  * được giữa chừng).

@@ -11,10 +11,6 @@ export type FPOtpSendRequest = Request<
   FPOtpSendBody
 >;
 
-// ──────────────────────────────────────────────
-// OTP Verify
-// ──────────────────────────────────────────────
-
 export interface FPOtpVerifyBody {
   email: string;
   otp: string;
@@ -26,10 +22,6 @@ export type FPOtpVerifyRequest = Request<
   FPOtpVerifyBody
 >;
 
-// ──────────────────────────────────────────────
-// Magic Link Send
-// ──────────────────────────────────────────────
-
 export interface FPMagicLinkSendBody {
   email: string;
 }
@@ -39,10 +31,6 @@ export type FPMagicLinkSendRequest = Request<
   unknown,
   FPMagicLinkSendBody
 >;
-
-// ──────────────────────────────────────────────
-// Magic Link Verify
-// ──────────────────────────────────────────────
 
 export interface FPMagicLinkVerifyBody {
   email: string;
@@ -55,18 +43,10 @@ export type FPMagicLinkVerifyRequest = Request<
   FPMagicLinkVerifyBody
 >;
 
-// ──────────────────────────────────────────────
-// Verify Response (shared for OTP & Magic Link)
-// ──────────────────────────────────────────────
-
 export interface FPVerifyResponse {
   success: boolean;
   resetToken: string;
 }
-
-// ──────────────────────────────────────────────
-// Reset Password
-// ──────────────────────────────────────────────
 
 export interface FPResetPasswordBody {
   email: string;

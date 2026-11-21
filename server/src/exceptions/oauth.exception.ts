@@ -5,7 +5,6 @@ import { ERROR_CODES } from "@/constants/error-code";
 import { AppError } from "./base.exception";
 
 export interface OAuthErrorOptions {
-  /** Mã lỗi theo chuẩn OAuth/OIDC — giá trị của field `error` trong response. */
   error: string;
   description?: string;
   status?: number;

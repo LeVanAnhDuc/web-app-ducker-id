@@ -18,7 +18,6 @@ const ForgotPasswordReset = async ({
 }) => {
   const { email, token, method } = await searchParams;
 
-  // Security: Redirect if missing email or token
   if (!email || !token) redirect(LOGIN);
 
   const decodedEmail = decodeURIComponent(email);

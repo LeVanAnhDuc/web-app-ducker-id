@@ -84,7 +84,6 @@ export const toAccessScope = (
   return scope;
 };
 
-/** One matrix row over the given catalog, in catalog order. */
 export const toUserAccess = (
   userId: string,
   scope: AccessScope,

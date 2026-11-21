@@ -142,7 +142,6 @@ export interface LoginEventApp {
 export type LoginAnomalyReason =
   (typeof LOGIN_ANOMALY_REASONS)[keyof typeof LOGIN_ANOMALY_REASONS];
 
-/** What a user's previous successful IdP sign-ins looked like. */
 export interface SignInTraits {
   hasHistory: boolean;
   /** `browser|os|deviceType` of each distinct device. */

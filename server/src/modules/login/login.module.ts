@@ -38,16 +38,13 @@ export const createLoginModule = (
   sessionService: SessionService,
   notificationDispatcher: NotificationDispatcher
 ) => {
-  // repositories
   const otpLoginRepo = new RedisOtpLoginRepository(redisClient);
   const magicLinkLoginRepo = new RedisMagicLinkLoginRepository(redisClient);
   const failedAttemptsRepo = new RedisFailedAttemptsRepository(redisClient);
 
-  // collaborator services
   const auditService = new LoginAuditService(loginHistorySvc);
   const completionService = new LoginCompletionService(auditService);
 
-  // guards
   const accountExistsGuard = new AccountExistsGuard(userService, auditService);
   const accountActiveGuard = new AccountActiveGuard(auditService);
   const emailVerifiedGuard = new EmailVerifiedGuard(auditService);
@@ -56,7 +53,6 @@ export const createLoginModule = (
   const otpCooldownGuard = new OtpCooldownGuard(otpLoginRepo);
   const magicLinkCooldownGuard = new MagicLinkCooldownGuard(magicLinkLoginRepo);
 
-  // strategies
   const passwordStrategy = new PasswordLoginStrategy(
     accountExistsGuard,
     accountActiveGuard,
@@ -91,7 +87,6 @@ export const createLoginModule = (
     completion: completionService
   });
 
-  // facade + controller + routes
   const loginService = new LoginService(
     passwordStrategy,
     otpStrategy,

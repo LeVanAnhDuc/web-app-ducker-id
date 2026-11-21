@@ -39,11 +39,9 @@ const startServer = async (): Promise<void> => {
     const gracefulShutdown = async (signal: string): Promise<void> => {
       Logger.info(`${signal} received, starting graceful shutdown`);
 
-      // 1. Ngừng accept request mới
       server.closeIdleConnections();
 
       try {
-        // 2. Chờ hết request đang xử lý (timeout 30s)
         await new Promise<void>((resolve) => {
           const timeout = setTimeout(() => {
             Logger.warn("Force closing connections after 30s");

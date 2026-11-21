@@ -56,7 +56,6 @@ axiosInstance.interceptors.response.use(
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig;
 
-    // Session expired
     if (error.response?.status === 401) {
       const errorCode = (error.response.data as ErrorResponsePattern)?.code;
 
@@ -70,12 +69,10 @@ axiosInstance.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // Cancelled request — silent reject
     if (axios.isCancel(error) || error.code === "ERR_CANCELED") {
       return Promise.reject(error);
     }
 
-    // Network Error (no response from server)
     if (!error.response) {
       await confirmErrorToast(
         "Unable to connect to server. Please check your internet connection."
@@ -83,7 +80,6 @@ axiosInstance.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    // Timeout Error
     if (error.code === "ECONNABORTED") {
       await confirmErrorToast("Request timeout. Please try again.");
       return Promise.reject(error);

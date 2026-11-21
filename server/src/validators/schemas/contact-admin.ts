@@ -56,8 +56,6 @@ export const submitContactSchema: Joi.ObjectSchema<SubmitContactBody> =
       })
   });
 
-// ─── v2.0 Schemas ──────────────────────────────────────────────────────────
-
 export const contactIdParamSchema = Joi.object({
   id: Joi.string().pattern(OBJECTID_PATTERN).required().messages({
     "string.empty": "contactAdmin:errors.invalidId",
@@ -140,8 +138,6 @@ export const adminListContactsQuerySchema = Joi.object({
     return value;
   })
   .messages({ "date.range": "validation:dateRange.invalid" });
-
-// ─── MyContacts (user, owner-scoped) ────────────────────────────────────────
 
 export const myContactsQuerySchema: Joi.ObjectSchema<MyContactsQuery> =
   Joi.object({

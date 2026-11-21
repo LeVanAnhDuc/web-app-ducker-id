@@ -7,7 +7,6 @@ import {
   slugifyCategoryName
 } from "@/modules/category/category.helper";
 
-/** A category document as the pre-feature schema stored it. */
 export interface LegacyCategory {
   _id: unknown;
   name: string;

@@ -81,7 +81,6 @@ const queryClient = new QueryClient({
         if (isAxiosError(error)) {
           const status = error.response?.status;
 
-          // DON'T retry client errors (4xx)
           if (status && status >= 400 && status < 500) {
             return false;
           }
@@ -92,10 +91,9 @@ const queryClient = new QueryClient({
           }
         }
 
-        // Retry server errors (5xx) or unknown errors max 2 times
         return failureCount < 2;
       },
-      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000) // Exponential backoff: 1s, 2s, 4s
+      retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000)
     },
     mutations: {
       retry: false

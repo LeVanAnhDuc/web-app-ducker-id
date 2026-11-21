@@ -13,10 +13,6 @@ import {
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 
-/**
- * Each app is reassigned at most once, and every target must be another
- * category that still exists.
- */
 const assertTargetsValid = async (
   deps: CategoryServiceDeps,
   id: string,

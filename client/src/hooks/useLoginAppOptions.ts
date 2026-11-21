@@ -9,7 +9,6 @@ import { getApps } from "@/requests/apps";
 // The catalog is small; one page at the API's max limit covers it.
 const LOGIN_APP_OPTIONS_LIMIT = 100;
 
-/** Catalog apps offered by the login-history "app" filter. */
 const useLoginAppOptions = (): LoginAppOption[] => {
   const { data } = useQuery({
     queryKey: ["apps", { limit: LOGIN_APP_OPTIONS_LIMIT }],

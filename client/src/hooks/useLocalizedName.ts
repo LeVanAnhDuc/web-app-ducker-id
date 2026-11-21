@@ -8,7 +8,6 @@ import type { CategoryName } from "@/types/Apps";
 // others
 import { pickLocalized } from "@/utils";
 
-/** Category names come in both languages; pick the one for the current locale. */
 const useLocalizedName = () => {
   const locale = useLocale();
   return useCallback(

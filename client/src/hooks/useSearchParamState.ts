@@ -6,7 +6,7 @@ import { useSearchParams } from "next/navigation";
 // others
 import { useRouter, usePathname } from "@/i18n/navigation";
 
-/** Read/write a single URL query param. Returns [value, setValue]. Empty string removes the param. */
+/** Empty string removes the param. */
 const useSearchParamState = (
   key: string,
   defaultValue = ""

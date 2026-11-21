@@ -9,7 +9,6 @@ export const setupSwagger = (app: Application): void => {
   const customCss = `
     .swagger-ui .topbar { display: none }
 
-    /* Improve description text readability */
     .swagger-ui .opblock-description-wrapper p,
     .swagger-ui .opblock-description-wrapper li,
     .swagger-ui .markdown p,
@@ -19,13 +18,11 @@ export const setupSwagger = (app: Application): void => {
       line-height: 1.6 !important;
     }
 
-    /* Bold text styling */
     .swagger-ui .markdown strong {
       color: #1a1a1a !important;
       font-weight: 700 !important;
     }
 
-    /* Inline code styling for better visibility */
     .swagger-ui .markdown code {
       background-color: #e8f4fd !important;
       color: #0066cc !important;
@@ -34,7 +31,6 @@ export const setupSwagger = (app: Application): void => {
       font-weight: 600 !important;
     }
 
-    /* Bullet list styling */
     .swagger-ui .markdown ul {
       margin-left: 20px !important;
     }
@@ -43,7 +39,6 @@ export const setupSwagger = (app: Application): void => {
       margin-bottom: 4px !important;
     }
 
-    /* Dark mode support via media query */
     @media (prefers-color-scheme: dark) {
       .swagger-ui .opblock-description-wrapper p,
       .swagger-ui .opblock-description-wrapper li,

@@ -103,8 +103,6 @@ export const sanitizeText = (text: string): string =>
 const timeZoneCache = new Map<string, boolean>();
 
 /**
- * Whether this runtime can actually resolve a timezone name.
- *
  * A timezone from the client reaches `$dateToString`, so it has to be checked
  * against the runtime rather than against a pattern. The check is "can ICU use
  * it", not "is it in `Intl.supportedValuesOf`": that list holds only the

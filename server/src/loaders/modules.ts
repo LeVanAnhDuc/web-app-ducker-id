@@ -46,12 +46,10 @@ export const createModules = ({
   emailDispatcher,
   notificationDispatcher
 }: ModuleDeps): ModuleRouters => {
-  // --- Shared infrastructure ---
   const { authService } = createAuthenticationModule();
   const rateLimiter = new RateLimiterMiddleware(redisClient);
   const { sessionService } = createSessionModule(redisClient);
 
-  // --- Module creation ---
   const { userRouter, userAdminRouter, userService } = createUserModule(
     rateLimiter,
     authService,
@@ -159,7 +157,6 @@ export const createModules = ({
   return {
     oauthRouter,
     apiRouters: [
-      // Auth
       signupRouter,
       loginRouter,
       logoutRouter,
@@ -167,7 +164,6 @@ export const createModules = ({
       unlockAccountRouter,
       forgotPasswordRouter,
       changePasswordRouter,
-      // User
       userRouter,
       userAdminRouter,
       loginHistoryUserRouter,
@@ -175,11 +171,9 @@ export const createModules = ({
       notificationUserRouter,
       favoriteUserRouter,
       recentAppUserRouter,
-      // Contact
       contactAdminRouter,
       adminContactsRouter,
       myContactsRouter,
-      // App Registry
       webAppAdminRouter,
       webAppUserRouter,
       categoryAdminRouter,

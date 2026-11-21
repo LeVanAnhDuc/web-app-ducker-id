@@ -12,13 +12,7 @@ import {
 } from "./category-management.transform";
 
 /**
- * Moves data to the shape of feature `category-management`:
- *
- * - `web_app_categories`: `name` (slug) + `displayName` + `icon` →
- *   `slug` + `name: { en, vi }`, sortOrder renumbered 0..n-1.
- * - `web_apps`: `categoryId` → `categoryIds: [categoryId]`.
- * - Indexes are synced to the new schemas, which drops `name_1`,
- *   `sortOrder_1_name_1` and `categoryId_1_sortOrder_1`.
+ * Moves data to the shape of feature `category-management`.
  *
  * Writes go through the native driver: the old fields are no longer in the
  * schemas and Mongoose strict mode would silently drop the `$unset`.

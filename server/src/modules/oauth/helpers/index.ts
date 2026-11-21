@@ -35,7 +35,6 @@ export const matchRedirectUri = (
   candidate: string
 ): boolean => registered.includes(candidate);
 
-/** Tách tham số `scope` (phân cách bằng khoảng trắng) thành mảng đã khử trùng. */
 export const parseScopeParam = (raw?: string): string[] => {
   if (!raw) return [];
   return [...new Set(raw.split(/\s+/).filter(Boolean))];
@@ -48,8 +47,8 @@ export const resolveGrantedScopes = (
 ): string[] => requested.filter((scope) => allowed.includes(scope));
 
 /**
- * Ghép query vào một URL đã có sẵn query. Bỏ qua giá trị undefined để không
- * sinh ra `state=undefined` khi client không gửi state.
+ * Bỏ qua giá trị undefined để không sinh ra `state=undefined` khi client
+ * không gửi state.
  */
 export const buildRedirectUrl = (
   base: string,
@@ -64,7 +63,6 @@ export const buildRedirectUrl = (
   return url.toString();
 };
 
-/** Lọc claim theo scope đã được cấp — dùng chung cho id_token và userinfo. */
 export const filterClaimsByScopes = (
   claims: Record<string, unknown>,
   scopes: string[]

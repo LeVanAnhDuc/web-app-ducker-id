@@ -59,10 +59,6 @@ export const extractIp = (req: Request): string => {
   return normalizeIp(rawIp);
 };
 
-// ──────────────────────────────────────────────
-// parseUserAgent
-// ──────────────────────────────────────────────
-
 const MOBILE_DEVICE_TYPE = "mobile";
 const TABLET_DEVICE_TYPE = "tablet";
 
@@ -121,10 +117,6 @@ export const parseUserAgent = (
   }
 };
 
-// ──────────────────────────────────────────────
-// geoipLookup
-// ──────────────────────────────────────────────
-
 export const geoipLookup = (
   ip: string
 ): {
@@ -169,10 +161,6 @@ export const geoipLookup = (
   }
 };
 
-// ──────────────────────────────────────────────
-// maskIp
-// ──────────────────────────────────────────────
-
 const IPV4_PARTS = 4;
 const IPV4_KEEP_PARTS = 2;
 const IPV6_MIN_PARTS = 4;
@@ -198,10 +186,6 @@ export const maskIp = (rawIp: string): string => {
   return ip;
 };
 
-// ──────────────────────────────────────────────
-// determineClientType
-// ──────────────────────────────────────────────
-
 export const determineClientType = (clientTypeHeader?: string): ClientType => {
   if (!clientTypeHeader) {
     return CLIENT_TYPES.WEB;
@@ -215,10 +199,6 @@ export const determineClientType = (clientTypeHeader?: string): ClientType => {
 
   return CLIENT_TYPES.WEB;
 };
-
-// ──────────────────────────────────────────────
-// buildLoginHistoryFilter
-// ──────────────────────────────────────────────
 
 const DATE_ONLY_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -260,11 +240,6 @@ export const buildLoginHistoryFilter = (
   return filter;
 };
 
-// ──────────────────────────────────────────────
-// buildLoginHistoryData
-// ──────────────────────────────────────────────
-
-/** Turns a login event into the row to store — UA parsing and geoip included. */
 export const buildLoginHistoryData = (
   payload: LoginEventPayload
 ): CreateLoginHistoryData => {
@@ -310,10 +285,6 @@ export const buildLoginHistoryData = (
     interactive: app?.interactive ?? true
   };
 };
-
-// ──────────────────────────────────────────────
-// Login anomaly
-// ──────────────────────────────────────────────
 
 /**
  * `parseUserAgent` keeps versions (`Chrome 126.0.0.0`, `Windows 10`). An

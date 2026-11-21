@@ -14,7 +14,6 @@ const rule = (id: string, requiredRoles: string[]) => ({
   requiredRoles
 });
 
-/** Blog is open to users, Operations Console to admins only. */
 export const CATALOG = [rule(BLOG_ID, ["user"]), rule(OPS_ID, ["admin"])];
 
 /**

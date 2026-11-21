@@ -38,8 +38,6 @@ export interface SubmitContactRequest extends Omit<Request, "user"> {
   body: SubmitContactBody;
 }
 
-// ─── v2.0 Query Types ──────────────────────────────────────────────────────
-
 export interface AdminContactsQuery {
   page?: number;
   limit?: number;
@@ -60,8 +58,6 @@ export interface AdminContactsQueryRequest extends Omit<Request, "query"> {
 export interface ContactIdParamRequest extends Omit<Request, "params"> {
   params: { id: string };
 }
-
-// ─── MyContacts (authenticated user, owner-scoped) ─────────────────────────
 
 export interface MyContactsQuery {
   page?: number;

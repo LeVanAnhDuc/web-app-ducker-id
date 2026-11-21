@@ -7,7 +7,6 @@ import { SUPPORTED_LOCALES, DEFAULT_LOCALE } from "./locales.config";
 
 const DEFAULT_NAMESPACE = "common" as const;
 
-// Using process.cwd() for absolute path from project root
 // Avoids path resolution errors in both dev (src) and prod (dist)
 const isCompiledCode = __dirname.includes("dist");
 const PROJECT_ROOT = process.cwd();
@@ -24,8 +23,6 @@ i18next.use(Backend).init({
   fallbackLng: DEFAULT_LOCALE,
   supportedLngs: SUPPORTED_LOCALES,
 
-  // Using namespaces to separate concerns by domain/module
-  // Prevents large monolithic translation files and improves maintainability
   defaultNS: DEFAULT_NAMESPACE,
   ns: [
     "common",
@@ -48,12 +45,9 @@ i18next.use(Backend).init({
     "entitlement"
   ],
 
-  // Preload all supported languages and namespaces on startup
-  // Ensures translations are available immediately without lazy loading
   preload: SUPPORTED_LOCALES,
 
   backend: {
-    // Using absolute path to ensure files are found in all environments
     loadPath: join(I18N_BASE_PATH, "{{lng}}", "{{ns}}.json")
   },
 
@@ -63,11 +57,8 @@ i18next.use(Backend).init({
     escapeValue: false
   },
 
-  // Disable debug to prevent verbose i18n logging. Set to true only when troubleshooting
   debug: false,
 
-  // Explicitly return undefined for missing keys to catch translation errors early
-  // Prevents silent failures where empty strings might be valid values
   saveMissing: false,
   returnEmptyString: false,
   returnNull: false

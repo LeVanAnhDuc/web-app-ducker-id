@@ -1,4 +1,3 @@
-/** One matrix row as the server computes it. */
 export interface UserAccess {
   userId: string;
   grantedAppIds: string[];

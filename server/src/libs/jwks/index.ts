@@ -5,8 +5,6 @@ import ENV from "@/constants/env";
 import { Logger } from "@/libs/logger";
 
 /**
- * Khoá ký bất đối xứng cho OIDC.
- *
  * App vệ tinh verify id_token/access_token bằng public key lấy từ
  * /.well-known/jwks.json — nên chúng KHÔNG được giữ private key. Đây là lý do
  * access_token và id_token chuyển từ HS256 (secret dùng chung) sang RS256.
@@ -100,7 +98,6 @@ export const getVerificationKey = (): crypto.KeyObject =>
 
 export const getKeyId = (): string => getKeyMaterial().keyId;
 
-/** Public key ở dạng JWK để phục vụ /.well-known/jwks.json */
 export const getPublicJwk = (): PublicJwk => {
   const { publicKey, keyId } = getKeyMaterial();
   const jwk = publicKey.export({ format: "jwk" }) as {

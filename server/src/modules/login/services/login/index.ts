@@ -58,10 +58,6 @@ export class LoginService {
     return this.magicLinkStrategy.verifyLink(body, req);
   }
 
-  // ──────────────────────────────────────────────
-  // Public lockout operations (used by unlock-account module)
-  // ──────────────────────────────────────────────
-
   async isEmailLocked(email: string): Promise<boolean> {
     const { isLocked } = await this.failedAttemptsRepo.checkLockout(email);
     return isLocked;

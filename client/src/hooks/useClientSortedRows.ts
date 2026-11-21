@@ -6,8 +6,6 @@ import type { SortOrder } from "@/types/List";
 import { SORT_ORDER } from "@/constants/list";
 
 /**
- * Client-side stable sort for list rows.
- *
  * CONSTRAINT: only use for client-side tables where the ENTIRE dataset lives on
  * one page (e.g. AdminApps `getAdminApps` returns all items, totalPages=1). Do
  * NOT use with server-paginated tables — it would only sort the current page.

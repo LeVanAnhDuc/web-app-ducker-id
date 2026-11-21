@@ -11,7 +11,6 @@ declare module "next-intl" {
   }
 }
 
-// Export inferred message types for reuse
 export type Messages = typeof messages;
 export type LoginMessages = Messages["login"];
 export type SignupMessages = Messages["signup"];

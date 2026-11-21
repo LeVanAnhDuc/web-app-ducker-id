@@ -78,7 +78,6 @@ export class ChangePasswordService {
       mustChangePassword: false
     });
 
-    // Fire-and-forget security alert (queued).
     this.emailDispatcher.send(EmailType.PASSWORD_CHANGED, {
       email: user.email,
       data: {

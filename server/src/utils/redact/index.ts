@@ -34,9 +34,7 @@ function redactValue(value: unknown, depth: number): unknown {
 }
 
 /**
- * Deep-copy `value`, replacing the value of any key whose name matches a
- * sensitive substring (case-insensitive) with "[REDACTED]". Pure — never
- * mutates the input. Used before logging request payloads.
+ * Pure — never mutates the input. Used before logging request payloads.
  */
 export function redactSensitive(value: unknown): unknown {
   return redactValue(value, 0);
