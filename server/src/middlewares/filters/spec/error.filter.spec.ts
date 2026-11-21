@@ -2,6 +2,8 @@
 import type { Request, Response } from "express";
 // others
 import { handleError } from "../error.filter";
+import { InternalServerError, NotFoundError } from "@/exceptions";
+import { Logger } from "@/libs/logger";
 
 /** body-parser raises http-errors objects: a 4xx status, a type, expose. */
 const bodyParserError = (status: number, type: string) =>
@@ -65,5 +67,49 @@ describe("handleError — request body errors", () => {
 
     expect(status).toBe(500);
     expect(body.code).toBe("INTERNAL_SERVER_ERROR");
+  });
+});
+
+describe("handleError — logging", () => {
+  let logError: jest.SpyInstance;
+
+  beforeEach(() => {
+    logError = jest.spyOn(Logger, "error").mockImplementation(() => {});
+  });
+
+  it("logs an unknown error with its stack", () => {
+    const boom = new TypeError("x is undefined");
+    run(boom);
+
+    expect(logError).toHaveBeenCalledWith(
+      expect.stringContaining("/api/v1/auth/login"),
+      boom,
+      expect.any(Object)
+    );
+  });
+
+  it("logs a 5xx AppError together with the error it wraps", () => {
+    const cause = new Error("connection reset");
+    run(new InternalServerError({ cause }));
+
+    expect(logError).toHaveBeenCalledTimes(1);
+    expect(logError.mock.calls[0][2]).toMatchObject({
+      code: "INTERNAL_SERVER_ERROR",
+      cause: cause.stack
+    });
+  });
+
+  it("does not log a 4xx — the client's mistake is not ours", () => {
+    run(new NotFoundError({ key: "common:errors.notFound" }));
+
+    expect(logError).not.toHaveBeenCalled();
+  });
+
+  it("never sends the cause to the client", () => {
+    const { body } = run(
+      new InternalServerError({ cause: new Error("secret detail") })
+    );
+
+    expect(JSON.stringify(body)).not.toContain("secret detail");
   });
 });
