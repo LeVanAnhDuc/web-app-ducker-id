@@ -108,6 +108,21 @@ describe("additionalConverters", () => {
     });
   });
 
+  it("documents EachItem(isRedirectUri) as an array of uri strings", () => {
+    class RedirectFixtureDto {
+      @EachItem("isRedirectUri", () => true)
+      @IsArray()
+      redirectUris!: string[];
+    }
+    expect(
+      (
+        targetConstructorToSchema(RedirectFixtureDto, jsonSchemaOptions) as {
+          properties: Record<string, unknown>;
+        }
+      ).properties.redirectUris
+    ).toEqual({ type: "array", items: { type: "string", format: "uri" } });
+  });
+
   it("documents IsObjectId each as an array of ObjectId strings", () => {
     expect(properties().ids).toEqual({
       type: "array",

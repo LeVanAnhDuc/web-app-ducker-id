@@ -74,13 +74,22 @@ const successResponse = (
   };
 };
 
+const omitNullable = (
+  property: Schema | OpenAPIV3.ReferenceObject
+): Schema | OpenAPIV3.ReferenceObject => {
+  if ("$ref" in property || !("nullable" in property)) return property;
+  const { nullable: _nullable, ...rest } = property;
+  return rest;
+};
+
 const queryParameters = (Dto: Function): Parameter[] => {
   const schema = dtoSchema(Dto);
   return Object.entries(schema.properties ?? {}).map(([name, property]) => ({
     in: "query",
     name,
     required: (schema.required ?? []).includes(name),
-    schema: property
+    // A query string cannot carry null; `nullable` only comes from IsOptional.
+    schema: omitNullable(property)
   }));
 };
 

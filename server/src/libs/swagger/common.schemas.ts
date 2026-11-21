@@ -107,7 +107,7 @@ export const commonResponses: Record<
   OpenAPIV3.ResponseObject | OpenAPIV3.ReferenceObject
 > = {
   ValidationError: {
-    description: "Validation failed - Invalid input data",
+    description: "Validation failed or a business rule was violated",
     content: {
       "application/json": {
         schema: {

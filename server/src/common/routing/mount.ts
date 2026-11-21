@@ -344,6 +344,37 @@ const ALLOWED_COMMON_OPENAPI_IMPORTS = new Set([
 ]);
 const NONE = new Set<string>();
 
+const STRING_LITERAL = /"(?:[^"\\]|\\.)*"|'(?:[^'\\]|\\.)*'|`(?:[^`\\]|\\.)*`/g;
+const BRIDGE_OWNED_KEYS =
+  /(?:^|[\s,{])(responses|parameters|security|requestBody)\s*:/g;
+
+/**
+ * The bridge fills `responses`, `parameters`, `security` and `requestBody`
+ * from the routing metadata; an `@OpenAPI({...})` that names one would
+ * override it. Returns the offending keys found in any `@OpenAPI({...})` call.
+ */
+export const findBridgeOwnedOpenApiKeys = (source: string): string[] => {
+  const found: string[] = [];
+  const marker = "@OpenAPI(";
+  let from = source.indexOf(marker);
+  while (from !== -1) {
+    let depth = 1;
+    let i = from + marker.length;
+    while (i < source.length && depth > 0) {
+      if (source[i] === "(") depth++;
+      else if (source[i] === ")") depth--;
+      i++;
+    }
+    // String contents are prose, not keys.
+    const call = source
+      .slice(from + marker.length, i - 1)
+      .replace(STRING_LITERAL, '""');
+    for (const match of call.matchAll(BRIDGE_OWNED_KEYS)) found.push(match[1]);
+    from = source.indexOf(marker, i);
+  }
+  return found;
+};
+
 /**
  * What a module file may not take for its OpenAPI documentation: any name
  * from routing-controllers-openapi but `OpenAPI`, from `@/common/openapi` but

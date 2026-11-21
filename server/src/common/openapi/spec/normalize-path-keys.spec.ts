@@ -18,10 +18,20 @@ describe("normalizePathKeys", () => {
     ).toEqual({ "/a": { get }, "/b": { get }, "/": { get } });
   });
 
-  it("throws when two keys collapse onto one", () => {
+  it("merges two keys that collapse onto one when their verbs are disjoint", () => {
+    const get = { responses: {} };
+    const post = { responses: {} };
+    expect(
+      normalizePathKeys(doc({ "/a/": { get }, "/a": { post } })).paths
+    ).toEqual({ "/a": { get, post } });
+  });
+
+  it("throws when two keys that collapse onto one define the same verb", () => {
     const get = { responses: {} };
     expect(() =>
-      normalizePathKeys(doc({ "/a/": { get }, "/a": { post: get } }))
-    ).toThrow('OpenAPI paths "/a/" and "/a" collide once normalised to "/a"');
+      normalizePathKeys(doc({ "/a/": { get }, "/a": { get } }))
+    ).toThrow(
+      'OpenAPI paths "/a/" and "/a" collide once normalised to "/a" (both define get)'
+    );
   });
 });

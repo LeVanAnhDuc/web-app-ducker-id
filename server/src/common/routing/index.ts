@@ -16,6 +16,7 @@ export { readRouteMeta } from "./metadata";
 export {
   describeRoutes,
   findDisallowedJsonSchemaImports,
+  findBridgeOwnedOpenApiKeys,
   findDisallowedOpenApiImports,
   findDisallowedRoutingImports,
   mountControllers,

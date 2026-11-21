@@ -32,6 +32,7 @@ import {
 } from "../decorators";
 import {
   findDisallowedJsonSchemaImports,
+  findBridgeOwnedOpenApiKeys,
   findDisallowedOpenApiImports,
   findDisallowedRoutingImports,
   mountControllers
@@ -581,6 +582,32 @@ describe("OpenAPI imports", () => {
       }))
       .filter(({ names }) => names.length > 0);
 
+    expect(offenders).toEqual([]);
+  });
+
+  it("finds a bridge-owned key in an @OpenAPI call, and none in the controllers", () => {
+    const fixture = [
+      `@OpenAPI({ summary: "ok", description: "security: none (prose)" })`,
+      `@OpenAPI({ summary: "x", responses: { "200": {} }, security: [] })`,
+      `@OpenAPI({ summary: "y", parameters: [], requestBody: {} })`
+    ].join("\n");
+    expect(findBridgeOwnedOpenApiKeys(fixture)).toEqual([
+      "responses",
+      "security",
+      "parameters",
+      "requestBody"
+    ]);
+
+    const modulesDir = join(__dirname, "../../../modules");
+    const offenders = (readdirSync(modulesDir, { recursive: true }) as string[])
+      .filter((file) => file.endsWith(".controller.ts"))
+      .map((file) => ({
+        file,
+        keys: findBridgeOwnedOpenApiKeys(
+          readFileSync(join(modulesDir, file), "utf8")
+        )
+      }))
+      .filter(({ keys }) => keys.length > 0);
     expect(offenders).toEqual([]);
   });
 

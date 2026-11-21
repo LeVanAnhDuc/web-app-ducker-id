@@ -308,7 +308,7 @@ describe("routeOperation", () => {
         in: "query",
         name: "cursor",
         required: false,
-        schema: { type: "string", nullable: true }
+        schema: { type: "string" }
       }
     ]);
     expect(list.requestBody).toBeUndefined();

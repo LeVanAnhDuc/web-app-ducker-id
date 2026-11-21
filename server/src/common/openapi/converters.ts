@@ -50,6 +50,8 @@ export const additionalConverters: Record<string, Converter | Schema> = {
   // (and so `UnlessMissing`) shares the validation type but skips `undefined` only.
   [ValidationTypes.CONDITIONAL_VALIDATION]: (meta) =>
     meta.name === "isOptional" ? { nullable: true } : {},
+  // Our `EachItem("isRedirectUri")`: an absolute https (or localhost http) URI.
+  isRedirectUri: (meta) => perItem(meta, { type: "string", format: "uri" }),
   // Any other named rule, and our `apiProperty` constraint. On a request DTO
   // the type comes from the real rules, and reflecting `design:type` would add
   // `$ref Array` to an array field; on a response DTO reflection is the type.

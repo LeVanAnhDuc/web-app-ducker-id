@@ -2,7 +2,10 @@
 import { readdirSync, readFileSync } from "fs";
 import { join } from "path";
 import express from "express";
+import { defaultMetadataStorage } from "class-transformer/cjs/storage";
+import { Expose } from "class-transformer";
 import { getMetadataStorage, IsDefined, IsString } from "class-validator";
+import { targetConstructorToSchema } from "class-validator-jsonschema";
 import {
   Get,
   getMetadataArgsStorage,
@@ -19,7 +22,9 @@ import type { RedisClientType } from "redis";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 // common
+import { ApiProperty } from "@/common/openapi";
 import { isDocumented } from "@/common/openapi/bridge";
+import { jsonSchemaOptions } from "@/common/openapi/converters";
 import {
   isNamedValueClass,
   readRouteMeta,
@@ -530,6 +535,68 @@ describe("buildOpenApiSpec", () => {
     for (const tag of document.tags ?? []) {
       expect(tag.description).toBeTruthy();
     }
+  });
+
+  describe("exposed response fields", () => {
+    const classesByName = (): Map<string, Function[]> => {
+      const targets = (
+        getMetadataStorage() as unknown as {
+          validationMetadatas: Map<unknown, unknown>;
+        }
+      ).validationMetadatas.keys();
+      const byName = new Map<string, Function[]>();
+      for (const target of targets) {
+        if (typeof target !== "function") continue;
+        byName.set(target.name, [...(byName.get(target.name) ?? []), target]);
+      }
+      return byName;
+    };
+
+    /** Exposed property names of a class (inherited included) missing from its schema. */
+    const undocumented = (
+      Class: Function,
+      schema: OpenAPIV3.SchemaObject
+    ): string[] => {
+      const excluded = new Set(
+        defaultMetadataStorage
+          .getExcludedMetadatas(Class)
+          .map((meta) => meta.propertyName)
+      );
+      return defaultMetadataStorage
+        .getExposedMetadatas(Class)
+        .filter((meta) => !excluded.has(meta.propertyName))
+        .map((meta) => meta.options?.name ?? meta.propertyName)
+        .filter((name) => !(name in (schema.properties ?? {})));
+    };
+
+    it("documents every @Expose property of every schema class", () => {
+      const byName = classesByName();
+      const gaps = Object.entries(document.components?.schemas ?? {}).flatMap(
+        ([name, schema]) =>
+          (byName.get(name) ?? []).flatMap((Class) =>
+            undocumented(Class, schema as OpenAPIV3.SchemaObject).map(
+              (property) => `${name}.${property}`
+            )
+          )
+      );
+      expect(gaps).toEqual([]);
+    });
+
+    it("bites: a bare @Expose field without @ApiProperty is reported", () => {
+      class BareExposeFixture {
+        @Expose()
+        hidden!: string;
+
+        @Expose()
+        @ApiProperty({ type: "string" })
+        shown!: string;
+      }
+      const schema = targetConstructorToSchema(
+        BareExposeFixture,
+        jsonSchemaOptions
+      ) as OpenAPIV3.SchemaObject;
+      expect(undocumented(BareExposeFixture, schema)).toEqual(["hidden"]);
+    });
   });
 
   // The refresh token lives only in its HttpOnly cookie (BUG-AUTH-07); a

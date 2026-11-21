@@ -25,7 +25,7 @@ Paths are relative to the worktree root `.worktrees/openapi-annotations/`; `@/` 
 - Schema names are class names. Two classes with one name fail the build, and the error names both files.
 - All 63 `/api/v1` routes are documented; there are no exemptions. OAuth, `/health` and Bull Board stay out.
 - Modules import from `routing-controllers-openapi` only `OpenAPI`, and from `@/common/openapi` only `ApiErrors`, `ApiProperty` and `Paginated`. `class-validator-jsonschema` is imported only inside `@/common/openapi` and `@/libs/swagger`. The existing source-scan spec enforces this.
-- Exactly one post-processing step, `normalizePathKeys(spec)`. No library patches.
+- Exactly two post-processing steps, no library patches: `normalizePathKeys(spec)` (paths) and `normalizeRefSiblings(node)` (generated component and inline DTO schemas).
 - No runtime behaviour changes. Response DTO classes stay plain data: no constructor, no methods.
 - Dependencies are pinned exactly. **User review gate before every commit**, unless the user waives it for the run. Conventional Commits with scope `openapi`, English.
 
@@ -67,7 +67,7 @@ Paths are relative to the worktree root `.worktrees/openapi-annotations/`; `@/` 
 - `Paginated<T>(Dto: new () => T): new () => { items: T[]; meta: PageMeta }`.
 - `routeOperation(op: OperationObject, route: { target: Function; method: string }): OperationObject`. It deletes the library's default `summary` and `tags` first.
 - `additionalConverters` from `converters.ts`: `isIn`, `isObjectId`, `isIsoDateString`, `isDefined`, `min`/`max` (integer when paired with `ToInt`), and `isOptional` → `nullable` (not under `UnlessMissing`).
-- `normalizePathKeys(spec): spec` strips a trailing `/` and throws on a collision.
+- `normalizePathKeys(spec): spec` strips a trailing `/`, merges two keys with disjoint verbs and throws when the same verb collides.
 - `buildOpenApiSpec(controllers)`.
 - `GENERATED_MODULES: string[]`.
 
