@@ -3,6 +3,8 @@ import { readdirSync, readFileSync } from "fs";
 import { join } from "path";
 // others
 import i18next from "./config";
+import * as en from "./locales/en";
+import * as vi from "./locales/vi";
 import { SUPPORTED_LOCALES } from "./locales.config";
 
 /**
@@ -53,20 +55,19 @@ const catalogueValue = (locale: string, key: string): unknown => {
     );
 };
 
-beforeAll(async () => {
-  if (!i18next.isInitialized) {
-    await new Promise<void>((resolve) =>
-      i18next.on("initialized", () => resolve())
-    );
-  }
-  await i18next.loadNamespaces(namespaces);
-});
-
 describe("server i18n catalogue", () => {
+  it("is ready as soon as it is imported", () => {
+    expect(i18next.isInitialized).toBe(true);
+  });
+
   it("loads every namespace that has a locale file", () => {
     expect([...(i18next.options.ns as string[])].sort()).toEqual(
       [...namespaces].sort()
     );
+  });
+
+  it("vi exports the same namespaces as en", () => {
+    expect(Object.keys(vi).sort()).toEqual(Object.keys(en).sort());
   });
 
   it("finds the keys the code uses", () => {
