@@ -338,6 +338,27 @@ describe("mountControllers", () => {
     ).toThrow(/UnguardedController\.record.*recordRecentAppByUser/);
   });
 
+  it("refuses at mount a limiter name missing from the limiters", () => {
+    @JsonController("/limited")
+    class LimitedController {
+      @Post("/")
+      @RateLimit("updateProfileByIp")
+      update() {
+        return undefined;
+      }
+    }
+    const { updateProfileByIp: _omitted, ...incomplete } =
+      rl as unknown as Record<string, RequestHandler>;
+
+    expect(() =>
+      mountControllers(
+        express(),
+        [new LimitedController()],
+        incomplete as unknown as RateLimiters
+      )
+    ).toThrow(/LimitedController\.update.*updateProfileByIp/);
+  });
+
   it("serves a second app with its own limiters and instances", async () => {
     const second = express();
     second.use(i18nMiddleware);
@@ -382,7 +403,7 @@ describe("mountControllers", () => {
   });
 });
 
-describe("routing-controllers imports in module controllers", () => {
+describe("routing-controllers imports in modules", () => {
   it("reports every name off the allowlist, in every import form", () => {
     const fixture = [
       `import { Get, JsonController } from "routing-controllers";`,
@@ -414,12 +435,12 @@ describe("routing-controllers imports in module controllers", () => {
     ]);
   });
 
-  it("finds none in src/modules/**/*.controller.ts", () => {
+  it("finds none in any src/modules/**/*.ts", () => {
     const modulesDir = join(__dirname, "../../../modules");
-    const controllers = (
+    const files = (
       readdirSync(modulesDir, { recursive: true }) as string[]
-    ).filter((file) => file.endsWith(".controller.ts"));
-    const offenders = controllers
+    ).filter((file) => file.endsWith(".ts"));
+    const offenders = files
       .map((file) => ({
         file,
         names: findDisallowedRoutingImports(
@@ -428,7 +449,7 @@ describe("routing-controllers imports in module controllers", () => {
       }))
       .filter(({ names }) => names.length > 0);
 
-    expect(controllers.length).toBeGreaterThan(0);
+    expect(files.length).toBeGreaterThan(0);
     expect(offenders).toEqual([]);
   });
 });

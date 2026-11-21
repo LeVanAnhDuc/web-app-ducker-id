@@ -172,9 +172,20 @@ export const mountControllers = (
     throw new Error("mountControllers was already called for this app");
   }
 
-  // Validates every chain with the real limiters before anything is
-  // registered; the chains registered use the per-app stand-ins.
-  planActions(controllers, rl);
+  // Refuses a refused chain before anything is registered, and checks that
+  // every limiter name an action uses is a function in `rl`; the chains
+  // registered use the per-app stand-ins.
+  for (const { Ctor, method, meta } of planActions(controllers, rl)) {
+    for (const name of meta.rateLimits) {
+      if (
+        typeof (rl as unknown as Record<string, unknown>)[name] !== "function"
+      ) {
+        throw new Error(
+          `${(Ctor as { name: string }).name}.${method} uses rate limiter "${name}", which is missing from the limiters given to mountControllers`
+        );
+      }
+    }
+  }
   const planned = planActions(controllers, perAppLimiters);
 
   for (const { Ctor, method, meta, handlers } of planned) {

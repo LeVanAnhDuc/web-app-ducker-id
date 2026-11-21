@@ -13,7 +13,7 @@ export type ValidationSource = "body" | "params" | "query";
  * Validates `req[source]` against the DTO and replaces it with the validated
  * instance. Throws a ValidationError (400) on the first failure per field.
  */
-export const validateRequest = async (
+const validateRequest = async (
   req: Request,
   source: ValidationSource,
   Dto: DtoClass<object>
