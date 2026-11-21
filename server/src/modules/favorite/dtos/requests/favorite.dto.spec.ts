@@ -5,18 +5,14 @@ import {
 } from "@/modules/favorite/dtos/requests";
 // validators
 import { SEARCH_MAX_LENGTH } from "@/validators/constants";
-import {
-  favoriteAppIdParamSchema,
-  listFavoritesQuerySchema
-} from "@/validators/schemas/favorite";
 // others
-import { expectParity } from "@test/helpers/validation-parity";
+import { expectDto } from "@test/helpers/dto-cases";
 
 const APP_ID = "507f1f77bcf86cd799439011";
 
 describe("favorite request DTOs match the Joi schemas", () => {
   it("FavoriteAppIdParamsDto ≡ favoriteAppIdParamSchema", async () => {
-    await expectParity(favoriteAppIdParamSchema, FavoriteAppIdParamsDto, {
+    await expectDto(FavoriteAppIdParamsDto, {
       valid: { appId: APP_ID },
       unknownStripped: { appId: APP_ID, extra: "x" },
       missing: {},
@@ -29,7 +25,7 @@ describe("favorite request DTOs match the Joi schemas", () => {
   });
 
   it("ListFavoritesQueryDto ≡ listFavoritesQuerySchema", async () => {
-    await expectParity(listFavoritesQuerySchema, ListFavoritesQueryDto, {
+    await expectDto(ListFavoritesQueryDto, {
       empty: {},
       // The list is not paged: Joi stripped page/limit/sortOrder, as must the DTO.
       unknownStripped: { page: "2", limit: "5", sortOrder: "asc", foo: "x" },

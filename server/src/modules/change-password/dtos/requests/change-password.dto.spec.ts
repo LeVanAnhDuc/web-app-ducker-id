@@ -1,9 +1,8 @@
 // modules
 import { ChangePasswordBodyDto } from "@/modules/change-password/dtos/requests";
 // validators
-import { changePasswordSchema } from "@/validators/schemas/change-password";
 // others
-import { expectParity } from "@test/helpers/validation-parity";
+import { expectDto } from "@test/helpers/dto-cases";
 
 const VALID = {
   currentPassword: "OldSecret1!",
@@ -19,7 +18,7 @@ const without = (field: keyof typeof VALID) => {
 
 describe("change-password request DTO matches the Joi schema", () => {
   it("ChangePasswordBodyDto ≡ changePasswordSchema", async () => {
-    await expectParity(changePasswordSchema, ChangePasswordBodyDto, {
+    await expectDto(ChangePasswordBodyDto, {
       valid: VALID,
       // The current password is compared with the stored hash, never re-policed.
       weakCurrentPasswordAccepted: { ...VALID, currentPassword: "a" },

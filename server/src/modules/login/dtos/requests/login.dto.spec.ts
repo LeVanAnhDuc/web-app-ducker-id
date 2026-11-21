@@ -7,15 +7,8 @@ import {
   OtpVerifyBodyDto
 } from "@/modules/login/dtos/requests";
 // validators
-import {
-  loginSchema,
-  magicLinkSendSchema,
-  magicLinkVerifySchema,
-  otpSendSchema,
-  otpVerifySchema
-} from "@/validators/schemas/login";
 // others
-import { expectParity } from "@test/helpers/validation-parity";
+import { expectDto } from "@test/helpers/dto-cases";
 
 const EMAIL = "user@example.com";
 const TOKEN = "a1".repeat(64);
@@ -33,7 +26,7 @@ const emailCases = {
 
 describe("login request DTOs match the Joi schemas", () => {
   it("LoginBodyDto ≡ loginSchema", async () => {
-    await expectParity(loginSchema, LoginBodyDto, {
+    await expectDto(LoginBodyDto, {
       valid: { email: EMAIL, password: "anything" },
       // Sign-in checks the stored hash only; the strength policy is not applied.
       weakPasswordAccepted: { email: EMAIL, password: "a" },
@@ -54,11 +47,11 @@ describe("login request DTOs match the Joi schemas", () => {
   });
 
   it("OtpSendBodyDto ≡ otpSendSchema", async () => {
-    await expectParity(otpSendSchema, OtpSendBodyDto, emailCases);
+    await expectDto(OtpSendBodyDto, emailCases);
   });
 
   it("OtpVerifyBodyDto ≡ otpVerifySchema", async () => {
-    await expectParity(otpVerifySchema, OtpVerifyBodyDto, {
+    await expectDto(OtpVerifyBodyDto, {
       valid: { email: EMAIL, otp: "123456" },
       emailMissing: { otp: "123456" },
       emailInvalid: { email: "user", otp: "123456" },
@@ -74,11 +67,11 @@ describe("login request DTOs match the Joi schemas", () => {
   });
 
   it("MagicLinkSendBodyDto ≡ magicLinkSendSchema", async () => {
-    await expectParity(magicLinkSendSchema, MagicLinkSendBodyDto, emailCases);
+    await expectDto(MagicLinkSendBodyDto, emailCases);
   });
 
   it("MagicLinkVerifyBodyDto ≡ magicLinkVerifySchema", async () => {
-    await expectParity(magicLinkVerifySchema, MagicLinkVerifyBodyDto, {
+    await expectDto(MagicLinkVerifyBodyDto, {
       valid: { email: EMAIL, token: TOKEN },
       unknownStripped: { email: EMAIL, token: TOKEN, extra: 1 },
       emailMissing: { token: TOKEN },

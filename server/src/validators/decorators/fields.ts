@@ -153,7 +153,7 @@ export const IsGender = (): PropertyDecorator =>
   );
 
 /**
- * `objectIdSchema(ns, key)`: a required id whose every failure — missing,
+ * A required id whose every failure — missing,
  * wrong type, blank, malformed — carries the one key, each under its own
  * constraint name.
  */

@@ -1,8 +1,5 @@
-// libs
-import Joi from "joi";
 // types
 import type { Request, Response, NextFunction } from "express";
-import type { Schema } from "joi";
 import type { ValidationErrorItem } from "@/types/common";
 import type { DtoClass } from "@/validators/validate-dto";
 // common
@@ -11,55 +8,20 @@ import { ValidationError } from "@/exceptions";
 import { validateDto } from "@/validators/validate-dto";
 
 type Source = "body" | "params" | "query";
-type SchemaOrDto = Schema | DtoClass<object>;
-
-const validateWithJoi = (
-  schema: Schema,
-  data: unknown,
-  req: Request
-): { value: unknown; errors: ValidationErrorItem[] } => {
-  const { error, value } = schema.validate(data, {
-    abortEarly: false,
-    stripUnknown: true
-  });
-
-  const errors: ValidationErrorItem[] = (error?.details ?? []).map(
-    (detail) => ({
-      field: detail.path.join("."),
-      reason: detail.type,
-      message: req.t(detail.message as I18n.Key)
-    })
-  );
-
-  return { value, errors };
-};
-
-const validateWithDto = async (
-  Dto: DtoClass<object>,
-  data: unknown,
-  req: Request
-): Promise<{ value: unknown; errors: ValidationErrorItem[] }> => {
-  const { value, failures } = await validateDto(Dto, data);
-
-  const errors: ValidationErrorItem[] = failures.map((failure) => ({
-    field: failure.field,
-    reason: failure.reason,
-    message: req.t(failure.key as I18n.Key)
-  }));
-
-  return { value, errors };
-};
 
 const validationPipe =
-  (source: Source, schemaOrDto: SchemaOrDto) =>
+  (source: Source, Dto: DtoClass<object>) =>
   async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
     try {
-      const data: unknown = req[source] ?? {};
-      const { value, errors } = Joi.isSchema(schemaOrDto)
-        ? validateWithJoi(schemaOrDto, data, req)
-        : await validateWithDto(schemaOrDto, data, req);
+      const { value, failures } = await validateDto(Dto, req[source] ?? {});
 
-      if (errors.length > 0) {
+      if (failures.length > 0) {
+        const errors: ValidationErrorItem[] = failures.map((failure) => ({
+          field: failure.field,
+          reason: failure.reason,
+          message: req.t(failure.key as I18n.Key)
+        }));
+
         throw new ValidationError({
           key: "common:errors.validationFailed",
           errors
@@ -80,9 +42,8 @@ const validationPipe =
     }
   };
 
-export const bodyPipe = (schemaOrDto: SchemaOrDto) =>
-  validationPipe("body", schemaOrDto);
-export const paramsPipe = (schemaOrDto: SchemaOrDto) =>
-  validationPipe("params", schemaOrDto);
-export const queryPipe = (schemaOrDto: SchemaOrDto) =>
-  validationPipe("query", schemaOrDto);
+export const bodyPipe = (Dto: DtoClass<object>) => validationPipe("body", Dto);
+export const paramsPipe = (Dto: DtoClass<object>) =>
+  validationPipe("params", Dto);
+export const queryPipe = (Dto: DtoClass<object>) =>
+  validationPipe("query", Dto);

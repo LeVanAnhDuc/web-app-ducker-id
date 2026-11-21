@@ -9,14 +9,8 @@ import {
 } from "@/modules/login-history/dtos/requests";
 // validators
 import { SEARCH_MAX_LENGTH } from "@/validators/constants";
-import {
-  loginHistoryAdminQuerySchema,
-  loginHistoryIdParamSchema,
-  loginHistoryQuerySchema,
-  loginHistoryStatsQuerySchema
-} from "@/validators/schemas/login-history";
 // others
-import { expectParity } from "@test/helpers/validation-parity";
+import { expectDto } from "@test/helpers/dto-cases";
 
 const ID = "507f1f77bcf86cd799439011";
 
@@ -101,7 +95,7 @@ const sharedQueryCases = {
 
 describe("login-history request DTOs match the Joi schemas", () => {
   it("LoginHistoryQueryDto ≡ loginHistoryQuerySchema", async () => {
-    await expectParity(loginHistoryQuerySchema, LoginHistoryQueryDto, {
+    await expectDto(LoginHistoryQueryDto, {
       ...sharedQueryCases,
       allFields: {
         page: "1",
@@ -130,63 +124,55 @@ describe("login-history request DTOs match the Joi schemas", () => {
   });
 
   it("LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema", async () => {
-    await expectParity(
-      loginHistoryAdminQuerySchema,
-      LoginHistoryAdminQueryDto,
-      {
-        ...sharedQueryCases,
-        allFields: {
-          page: "1",
-          limit: "20",
-          userId: ID,
-          ip: " 10.0.0.1 ",
-          status: "failed",
-          interactive: "true",
-          fromDate: "2026-10-01T00:00:00Z",
-          toDate: "2026-10-04",
-          sortBy: "usernameAttempted",
-          sortOrder: "asc"
-        },
-        userIdValid: { userId: ID },
-        userIdEmpty: { userId: "" },
-        userIdNotHex: { userId: "nope" },
-        ipPadded: { ip: "  10.0.0.1  " },
-        ipEmpty: { ip: "" },
-        ipTooLong: { ip: "1".repeat(SEARCH_MAX_LENGTH + 1) },
-        sortByIp: { sortBy: "ip" },
-        sortByUsernameAttempted: { sortBy: "usernameAttempted" }
-      }
-    );
+    await expectDto(LoginHistoryAdminQueryDto, {
+      ...sharedQueryCases,
+      allFields: {
+        page: "1",
+        limit: "20",
+        userId: ID,
+        ip: " 10.0.0.1 ",
+        status: "failed",
+        interactive: "true",
+        fromDate: "2026-10-01T00:00:00Z",
+        toDate: "2026-10-04",
+        sortBy: "usernameAttempted",
+        sortOrder: "asc"
+      },
+      userIdValid: { userId: ID },
+      userIdEmpty: { userId: "" },
+      userIdNotHex: { userId: "nope" },
+      ipPadded: { ip: "  10.0.0.1  " },
+      ipEmpty: { ip: "" },
+      ipTooLong: { ip: "1".repeat(SEARCH_MAX_LENGTH + 1) },
+      sortByIp: { sortBy: "ip" },
+      sortByUsernameAttempted: { sortBy: "usernameAttempted" }
+    });
   });
 
   it("LoginHistoryStatsQueryDto ≡ loginHistoryStatsQuerySchema", async () => {
-    await expectParity(
-      loginHistoryStatsQuerySchema,
-      LoginHistoryStatsQueryDto,
-      {
-        empty: {},
-        unknownStripped: { foo: "x" },
-        allFields: { range: "30d", tz: "Asia/Saigon" },
+    await expectDto(LoginHistoryStatsQueryDto, {
+      empty: {},
+      unknownStripped: { foo: "x" },
+      allFields: { range: "30d", tz: "Asia/Saigon" },
 
-        rangeValid: { range: "90d" },
-        rangeEmpty: { range: "" },
-        rangeUnknown: { range: "365d" },
-        rangeWrongType: { range: ["7d"] },
+      rangeValid: { range: "90d" },
+      rangeEmpty: { range: "" },
+      rangeUnknown: { range: "365d" },
+      rangeWrongType: { range: ["7d"] },
 
-        tzCanonical: { tz: "Asia/Ho_Chi_Minh" },
-        tzLink: { tz: "Asia/Saigon" },
-        tzUtc: { tz: "UTC" },
-        tzUnknown: { tz: "Mars/Base" },
-        tzEmpty: { tz: "" },
-        tzTooLong: { tz: `Asia/${"a".repeat(64)}` },
-        tzWrongType: { tz: ["UTC"] },
-        tzPathLike: { tz: "../../etc" }
-      }
-    );
+      tzCanonical: { tz: "Asia/Ho_Chi_Minh" },
+      tzLink: { tz: "Asia/Saigon" },
+      tzUtc: { tz: "UTC" },
+      tzUnknown: { tz: "Mars/Base" },
+      tzEmpty: { tz: "" },
+      tzTooLong: { tz: `Asia/${"a".repeat(64)}` },
+      tzWrongType: { tz: ["UTC"] },
+      tzPathLike: { tz: "../../etc" }
+    });
   });
 
   it("LoginHistoryIdParamsDto ≡ loginHistoryIdParamSchema", async () => {
-    await expectParity(loginHistoryIdParamSchema, LoginHistoryIdParamsDto, {
+    await expectDto(LoginHistoryIdParamsDto, {
       valid: { id: ID },
       unknownStripped: { id: ID, extra: "x" },
       missing: {},

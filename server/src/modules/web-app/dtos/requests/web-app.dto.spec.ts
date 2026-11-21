@@ -7,15 +7,8 @@ import {
   UserAppsQueryDto
 } from "@/modules/web-app/dtos/requests";
 // validators
-import {
-  adminAppIdParamSchema,
-  adminCreateAppBodySchema,
-  adminListAppsQuerySchema,
-  adminUpdateAppBodySchema,
-  listAppsQuerySchema
-} from "@/validators/schemas/web-app";
 // others
-import { expectParity } from "@test/helpers/validation-parity";
+import { expectDto } from "@test/helpers/dto-cases";
 
 const ID = "64b2f0c2f1a2b3c4d5e6f7a1";
 const ID2 = "64b2f0c2f1a2b3c4d5e6f7a2";
@@ -185,7 +178,7 @@ const sharedQueryCases = {
 
 describe("web-app request DTOs match the Joi schemas", () => {
   it("CreateAppBodyDto ≡ adminCreateAppBodySchema", async () => {
-    await expectParity(adminCreateAppBodySchema, CreateAppBodyDto, {
+    await expectDto(CreateAppBodyDto, {
       valid: VALID_APP,
       allFields: app({
         description: "  A blog  ",
@@ -209,7 +202,7 @@ describe("web-app request DTOs match the Joi schemas", () => {
   });
 
   it("UpdateAppBodyDto ≡ adminUpdateAppBodySchema", async () => {
-    await expectParity(adminUpdateAppBodySchema, UpdateAppBodyDto, {
+    await expectDto(UpdateAppBodyDto, {
       // PATCH /admin/apps/:id with nothing to change is an object-level
       // failure, field "".
       emptyBody: {},
@@ -227,11 +220,11 @@ describe("web-app request DTOs match the Joi schemas", () => {
   });
 
   it("AppIdParamsDto ≡ adminAppIdParamSchema", async () => {
-    await expectParity(adminAppIdParamSchema, AppIdParamsDto, idCases);
+    await expectDto(AppIdParamsDto, idCases);
   });
 
   it("AdminAppsQueryDto ≡ adminListAppsQuerySchema", async () => {
-    await expectParity(adminListAppsQuerySchema, AdminAppsQueryDto, {
+    await expectDto(AdminAppsQueryDto, {
       ...sharedQueryCases,
       allFields: { search: " blog ", status: "inactive", categoryId: ID },
       // The admin list has no paging: page and limit are stripped unchecked.
@@ -244,7 +237,7 @@ describe("web-app request DTOs match the Joi schemas", () => {
   });
 
   it("UserAppsQueryDto ≡ listAppsQuerySchema", async () => {
-    await expectParity(listAppsQuerySchema, UserAppsQueryDto, {
+    await expectDto(UserAppsQueryDto, {
       ...sharedQueryCases,
       allFields: { page: "2", limit: "20", search: " blog ", categoryId: ID },
       // Neither sort order nor status is a launcher filter: both are stripped.

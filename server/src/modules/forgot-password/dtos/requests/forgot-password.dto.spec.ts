@@ -7,15 +7,8 @@ import {
   ResetPasswordBodyDto
 } from "@/modules/forgot-password/dtos/requests";
 // validators
-import {
-  fpMagicLinkSendSchema,
-  fpMagicLinkVerifySchema,
-  fpOtpSendSchema,
-  fpOtpVerifySchema,
-  fpResetPasswordSchema
-} from "@/validators/schemas/forgot-password";
 // others
-import { expectParity } from "@test/helpers/validation-parity";
+import { expectDto } from "@test/helpers/dto-cases";
 
 const EMAIL = "user@example.com";
 const TOKEN = "a1".repeat(64);
@@ -34,11 +27,11 @@ const emailCases = {
 
 describe("forgot-password request DTOs match the Joi schemas", () => {
   it("OtpSendBodyDto ≡ fpOtpSendSchema", async () => {
-    await expectParity(fpOtpSendSchema, OtpSendBodyDto, emailCases);
+    await expectDto(OtpSendBodyDto, emailCases);
   });
 
   it("OtpVerifyBodyDto ≡ fpOtpVerifySchema", async () => {
-    await expectParity(fpOtpVerifySchema, OtpVerifyBodyDto, {
+    await expectDto(OtpVerifyBodyDto, {
       valid: { email: EMAIL, otp: "123456" },
       emailMissing: { otp: "123456" },
       emailInvalid: { email: "user", otp: "123456" },
@@ -54,11 +47,11 @@ describe("forgot-password request DTOs match the Joi schemas", () => {
   });
 
   it("MagicLinkSendBodyDto ≡ fpMagicLinkSendSchema", async () => {
-    await expectParity(fpMagicLinkSendSchema, MagicLinkSendBodyDto, emailCases);
+    await expectDto(MagicLinkSendBodyDto, emailCases);
   });
 
   it("MagicLinkVerifyBodyDto ≡ fpMagicLinkVerifySchema", async () => {
-    await expectParity(fpMagicLinkVerifySchema, MagicLinkVerifyBodyDto, {
+    await expectDto(MagicLinkVerifyBodyDto, {
       valid: { email: EMAIL, token: TOKEN },
       unknownStripped: { email: EMAIL, token: TOKEN, extra: 1 },
       emailMissing: { token: TOKEN },
@@ -77,7 +70,7 @@ describe("forgot-password request DTOs match the Joi schemas", () => {
 
   it("ResetPasswordBodyDto ≡ fpResetPasswordSchema", async () => {
     const valid = { email: EMAIL, resetToken: TOKEN, newPassword: PASSWORD };
-    await expectParity(fpResetPasswordSchema, ResetPasswordBodyDto, {
+    await expectDto(ResetPasswordBodyDto, {
       valid,
       unknownStripped: { ...valid, confirmPassword: PASSWORD },
       empty: {},

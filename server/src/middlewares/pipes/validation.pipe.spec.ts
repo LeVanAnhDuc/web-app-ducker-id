@@ -1,5 +1,4 @@
 // libs
-import Joi from "joi";
 import { IsDefined, IsString, MaxLength } from "class-validator";
 // types
 import type { NextFunction, Response } from "express";
@@ -27,16 +26,6 @@ const firstError = (next: jest.Mock): ValidationError => {
 };
 
 describe("validation pipe", () => {
-  it("Joi schema path is unchanged", async () => {
-    const schema = Joi.object({ a: Joi.string().max(2).required() });
-    const req = makeMockRequest({ body: { a: "abcd" }, t: translate });
-    const next = jest.fn();
-
-    await bodyPipe(schema)(req, res, next as NextFunction);
-
-    expect(firstError(next).errors[0].reason).toBe("string.max");
-  });
-
   it("DTO path translates keys", async () => {
     const req = makeMockRequest({ body: { a: "abcd" }, t: translate });
     const next = jest.fn();

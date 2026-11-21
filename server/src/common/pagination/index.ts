@@ -40,8 +40,8 @@ export interface PaginatedResult<T> {
 }
 
 /**
- * `page` không cần chặn cận dưới: mọi schema phân trang trong
- * `src/validators/schemas/` đều khai `Joi.number().integer().min(1)`, nên
+ * `page` không cần chặn cận dưới: mọi query DTO phân trang đều kế thừa
+ * `PaginationQueryDto` / `PageQueryDto` (`@Min(1)`), nên
  * `page < 1` bị từ chối ở pipe trước khi tới service.
  */
 export const resolvePaging = (

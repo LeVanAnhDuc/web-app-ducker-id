@@ -1,7 +1,3 @@
-// libs
-import Joi from "joi";
-// types
-import type { Schema } from "joi";
 // validators
 import {
   IsAppEmail,
@@ -11,21 +7,11 @@ import {
   IsOtp
 } from "@/validators/decorators";
 import { PaginationQueryDto } from "@/validators/dtos/pagination.query";
-import {
-  emailSchema,
-  fullNameSchema,
-  genderSchema,
-  otpSchema,
-  passwordSchema
-} from "@/validators/schemas/base";
-import { notificationListQuerySchema } from "@/validators/schemas/notification";
 // others
-import { expectParity } from "@test/helpers/validation-parity";
+import { expectDto } from "@test/helpers/dto-cases";
 
 // Invisible in source, so spelled out: SAFE_EMAIL_PATTERN refuses it.
 const ZERO_WIDTH_SPACE = String.fromCharCode(0x200b);
-
-const field = (schema: Schema) => Joi.object({ v: schema.required() });
 
 class EmailDto {
   @IsAppEmail()
@@ -62,7 +48,7 @@ const commonCases = {
 
 describe("shared field decorators match the Joi fragments", () => {
   it("IsAppEmail ≡ emailSchema", async () => {
-    await expectParity(field(emailSchema), EmailDto, {
+    await expectDto(EmailDto, {
       ...commonCases,
       valid: { v: "user@example.com" },
       paddedUpperCase: { v: "  User@Example.COM  " },
@@ -84,7 +70,7 @@ describe("shared field decorators match the Joi fragments", () => {
   });
 
   it("IsAppPassword ≡ passwordSchema", async () => {
-    await expectParity(field(passwordSchema), PasswordDto, {
+    await expectDto(PasswordDto, {
       ...commonCases,
       valid: { v: "Secret1!" },
       tooShort: { v: "Se1!" },
@@ -95,7 +81,7 @@ describe("shared field decorators match the Joi fragments", () => {
   });
 
   it("IsOtp ≡ otpSchema", async () => {
-    await expectParity(field(otpSchema), OtpDto, {
+    await expectDto(OtpDto, {
       ...commonCases,
       valid: { v: "123456" },
       tooShort: { v: "12345" },
@@ -106,7 +92,7 @@ describe("shared field decorators match the Joi fragments", () => {
   });
 
   it("IsFullName ≡ fullNameSchema", async () => {
-    await expectParity(field(fullNameSchema), FullNameDto, {
+    await expectDto(FullNameDto, {
       ...commonCases,
       valid: { v: "Nguyễn Văn A" },
       tooShort: { v: "A" },
@@ -117,7 +103,7 @@ describe("shared field decorators match the Joi fragments", () => {
   });
 
   it("IsGender ≡ genderSchema", async () => {
-    await expectParity(field(genderSchema), GenderDto, {
+    await expectDto(GenderDto, {
       ...commonCases,
       valid: { v: "male" },
       unknownValue: { v: "robot" },
@@ -127,14 +113,8 @@ describe("shared field decorators match the Joi fragments", () => {
 });
 
 describe("PaginationQueryDto matches the repeated Joi pagination keys", () => {
-  const pagination = Joi.object({
-    page: notificationListQuerySchema.extract("page"),
-    limit: notificationListQuerySchema.extract("limit"),
-    sortOrder: notificationListQuerySchema.extract("sortOrder")
-  });
-
   it("PaginationQueryDto ≡ page / limit / sortOrder", async () => {
-    await expectParity(pagination, PaginationQueryDto, {
+    await expectDto(PaginationQueryDto, {
       none: {},
       valid: { page: "2", limit: "50", sortOrder: "asc" },
       numbers: { page: 3, limit: 10 },

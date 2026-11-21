@@ -7,15 +7,8 @@ import {
   UpdateContactStatusBodyDto
 } from "@/modules/contact-admin/dtos/requests";
 // validators
-import {
-  adminListContactsQuerySchema,
-  contactIdParamSchema,
-  myContactsQuerySchema,
-  submitContactSchema,
-  updateContactStatusSchema
-} from "@/validators/schemas/contact-admin";
 // others
-import { expectParity } from "@test/helpers/validation-parity";
+import { expectDto } from "@test/helpers/dto-cases";
 
 const VALID_SUBMIT = {
   email: "user@example.com",
@@ -66,7 +59,7 @@ const sharedQueryCases = {
 
 describe("contact-admin request DTOs match the Joi schemas", () => {
   it("SubmitContactBodyDto ≡ submitContactSchema", async () => {
-    await expectParity(submitContactSchema, SubmitContactBodyDto, {
+    await expectDto(SubmitContactBodyDto, {
       valid: VALID_SUBMIT,
       unknownStripped: submit({ priority: "high" }),
       emptyBody: {},
@@ -98,7 +91,7 @@ describe("contact-admin request DTOs match the Joi schemas", () => {
   });
 
   it("ContactIdParamsDto ≡ contactIdParamSchema", async () => {
-    await expectParity(contactIdParamSchema, ContactIdParamsDto, {
+    await expectDto(ContactIdParamsDto, {
       valid: { id: "507f1f77bcf86cd799439011" },
       missing: {},
       null: { id: null },
@@ -110,7 +103,7 @@ describe("contact-admin request DTOs match the Joi schemas", () => {
   });
 
   it("UpdateContactStatusBodyDto ≡ updateContactStatusSchema", async () => {
-    await expectParity(updateContactStatusSchema, UpdateContactStatusBodyDto, {
+    await expectDto(UpdateContactStatusBodyDto, {
       valid: { status: "resolved" },
       unknownStripped: { status: "new", priority: "high" },
       missing: {},
@@ -123,7 +116,7 @@ describe("contact-admin request DTOs match the Joi schemas", () => {
   });
 
   it("AdminContactsQueryDto ≡ adminListContactsQuerySchema", async () => {
-    await expectParity(adminListContactsQuerySchema, AdminContactsQueryDto, {
+    await expectDto(AdminContactsQueryDto, {
       ...sharedQueryCases,
       allFields: {
         page: "1",
@@ -176,7 +169,7 @@ describe("contact-admin request DTOs match the Joi schemas", () => {
   });
 
   it("MyContactsQueryDto ≡ myContactsQuerySchema", async () => {
-    await expectParity(myContactsQuerySchema, MyContactsQueryDto, {
+    await expectDto(MyContactsQueryDto, {
       ...sharedQueryCases,
       allFields: {
         page: "2",

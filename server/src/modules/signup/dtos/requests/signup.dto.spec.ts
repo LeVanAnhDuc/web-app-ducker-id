@@ -7,15 +7,8 @@ import {
   VerifyOtpBodyDto
 } from "@/modules/signup/dtos/requests";
 // validators
-import {
-  checkEmailSchema,
-  completeSignupSchema,
-  resendOtpSchema,
-  sendOtpSchema,
-  verifyOtpSchema
-} from "@/validators/schemas/signup";
 // others
-import { expectParity } from "@test/helpers/validation-parity";
+import { expectDto } from "@test/helpers/dto-cases";
 
 const emailCases = {
   valid: { email: "user@example.com" },
@@ -52,16 +45,16 @@ const completeWithout = (field: keyof typeof VALID_COMPLETE) => {
 
 describe("signup request DTOs match the Joi schemas", () => {
   it("SendOtpBodyDto ≡ sendOtpSchema", async () => {
-    await expectParity(sendOtpSchema, SendOtpBodyDto, emailCases);
+    await expectDto(SendOtpBodyDto, emailCases);
   });
 
   it("ResendOtpBodyDto ≡ resendOtpSchema", async () => {
-    await expectParity(resendOtpSchema, ResendOtpBodyDto, emailCases);
+    await expectDto(ResendOtpBodyDto, emailCases);
   });
 
   it("VerifyOtpBodyDto ≡ verifyOtpSchema", async () => {
     const email = "user@example.com";
-    await expectParity(verifyOtpSchema, VerifyOtpBodyDto, {
+    await expectDto(VerifyOtpBodyDto, {
       valid: { email, otp: "123456" },
       emailMissing: { otp: "123456" },
       emailInvalid: { email: "user", otp: "123456" },
@@ -77,7 +70,7 @@ describe("signup request DTOs match the Joi schemas", () => {
   });
 
   it("CompleteSignupBodyDto ≡ completeSignupSchema", async () => {
-    await expectParity(completeSignupSchema, CompleteSignupBodyDto, {
+    await expectDto(CompleteSignupBodyDto, {
       valid: VALID_COMPLETE,
       validPaddedEmail: complete({ email: "  User@Example.COM " }),
       validDateOfBirthTimestamp: complete({ dateOfBirth: 800000000000 }),
@@ -147,6 +140,6 @@ describe("signup request DTOs match the Joi schemas", () => {
   });
 
   it("CheckEmailParamsDto ≡ checkEmailSchema", async () => {
-    await expectParity(checkEmailSchema, CheckEmailParamsDto, emailCases);
+    await expectDto(CheckEmailParamsDto, emailCases);
   });
 });

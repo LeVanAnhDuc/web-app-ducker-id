@@ -4,19 +4,15 @@ import {
   UnlockVerifyBodyDto
 } from "@/modules/unlock-account/dtos/requests";
 // validators
-import {
-  unlockRequestSchema,
-  unlockVerifySchema
-} from "@/validators/schemas/unlock-account";
 // others
-import { expectParity } from "@test/helpers/validation-parity";
+import { expectDto } from "@test/helpers/dto-cases";
 
 const EMAIL = "user@example.com";
 const TEMP_PASSWORD = "a".repeat(12);
 
 describe("unlock-account request DTOs match the Joi schemas", () => {
   it("UnlockRequestBodyDto ≡ unlockRequestSchema", async () => {
-    await expectParity(unlockRequestSchema, UnlockRequestBodyDto, {
+    await expectDto(UnlockRequestBodyDto, {
       valid: { email: EMAIL },
       paddedUpperCase: { email: "  User@Example.COM  " },
       missing: {},
@@ -29,7 +25,7 @@ describe("unlock-account request DTOs match the Joi schemas", () => {
   });
 
   it("UnlockVerifyBodyDto ≡ unlockVerifySchema", async () => {
-    await expectParity(unlockVerifySchema, UnlockVerifyBodyDto, {
+    await expectDto(UnlockVerifyBodyDto, {
       valid: { email: EMAIL, tempPassword: TEMP_PASSWORD },
       paddedTempPasswordKept: {
         email: EMAIL,

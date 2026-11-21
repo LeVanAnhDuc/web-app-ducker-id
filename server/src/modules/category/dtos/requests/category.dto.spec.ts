@@ -7,15 +7,8 @@ import {
   UpdateCategoryBodyDto
 } from "@/modules/category/dtos/requests";
 // validators
-import {
-  categoryIdParamSchema,
-  createCategoryBodySchema,
-  deleteCategoryBodySchema,
-  moveCategoryBodySchema,
-  updateCategoryBodySchema
-} from "@/validators/schemas/category";
 // others
-import { expectParity } from "@test/helpers/validation-parity";
+import { expectDto } from "@test/helpers/dto-cases";
 
 const ID = "64b2f0c2f1a2b3c4d5e6f7a1";
 const ID2 = "64b2f0c2f1a2b3c4d5e6f7a2";
@@ -24,7 +17,7 @@ const named = (en: unknown, vi: unknown = "Nội dung") => ({ name: { en, vi } }
 
 describe("category request DTOs match the Joi schemas", () => {
   it("CreateCategoryBodyDto ≡ createCategoryBodySchema", async () => {
-    await expectParity(createCategoryBodySchema, CreateCategoryBodyDto, {
+    await expectDto(CreateCategoryBodyDto, {
       valid: named("Content"),
       // Zero-width characters dropped, NBSP and runs folded, then trimmed.
       normalised: named("  Content\u200B ", "Nội\u00A0 dung"),
@@ -67,7 +60,7 @@ describe("category request DTOs match the Joi schemas", () => {
   });
 
   it("UpdateCategoryBodyDto ≡ updateCategoryBodySchema", async () => {
-    await expectParity(updateCategoryBodySchema, UpdateCategoryBodyDto, {
+    await expectDto(UpdateCategoryBodyDto, {
       both: named(" Tools ", " Công cụ "),
       viOnly: { name: { vi: " Công cụ " } },
       enOnly: { name: { en: "Tools" } },
@@ -93,7 +86,7 @@ describe("category request DTOs match the Joi schemas", () => {
   });
 
   it("MoveCategoryBodyDto ≡ moveCategoryBodySchema", async () => {
-    await expectParity(moveCategoryBodySchema, MoveCategoryBodyDto, {
+    await expectDto(MoveCategoryBodyDto, {
       up: { direction: "up" },
       down: { direction: "down" },
       unknownStripped: { direction: "up", steps: 2 },
@@ -108,7 +101,7 @@ describe("category request DTOs match the Joi schemas", () => {
   });
 
   it("DeleteCategoryBodyDto ≡ deleteCategoryBodySchema", async () => {
-    await expectParity(deleteCategoryBodySchema, DeleteCategoryBodyDto, {
+    await expectDto(DeleteCategoryBodyDto, {
       // A DELETE usually has no body: the list defaults to empty.
       undefinedBody: undefined,
       emptyBody: {},
@@ -158,7 +151,7 @@ describe("category request DTOs match the Joi schemas", () => {
   });
 
   it("CategoryIdParamsDto ≡ categoryIdParamSchema", async () => {
-    await expectParity(categoryIdParamSchema, CategoryIdParamsDto, {
+    await expectDto(CategoryIdParamsDto, {
       valid: { id: ID },
       validUpperCase: { id: ID.toUpperCase() },
       missing: {},

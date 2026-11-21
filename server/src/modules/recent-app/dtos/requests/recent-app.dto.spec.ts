@@ -9,19 +9,14 @@ import {
 import { RECENT_APP_STATS } from "@/modules/recent-app/constants";
 // validators
 import { SEARCH_MAX_LENGTH } from "@/validators/constants";
-import {
-  listRecentAppsQuerySchema,
-  recentAppIdParamSchema,
-  recentAppsStatsQuerySchema
-} from "@/validators/schemas/recent-app";
 // others
-import { expectParity } from "@test/helpers/validation-parity";
+import { expectDto } from "@test/helpers/dto-cases";
 
 const APP_ID = "507f1f77bcf86cd799439011";
 
 describe("recent-app request DTOs match the Joi schemas", () => {
   it("RecentAppIdParamsDto ≡ recentAppIdParamSchema", async () => {
-    await expectParity(recentAppIdParamSchema, RecentAppIdParamsDto, {
+    await expectDto(RecentAppIdParamsDto, {
       valid: { appId: APP_ID },
       unknownStripped: { appId: APP_ID, extra: "x" },
       missing: {},
@@ -33,7 +28,7 @@ describe("recent-app request DTOs match the Joi schemas", () => {
   });
 
   it("ListRecentAppsQueryDto ≡ listRecentAppsQuerySchema", async () => {
-    await expectParity(listRecentAppsQuerySchema, ListRecentAppsQueryDto, {
+    await expectDto(ListRecentAppsQueryDto, {
       empty: {},
       // No sortOrder on this list: Joi stripped it, as must the DTO.
       unknownStripped: { sortOrder: "asc", foo: "x" },
@@ -57,7 +52,7 @@ describe("recent-app request DTOs match the Joi schemas", () => {
   });
 
   it("RecentAppsStatsQueryDto ≡ recentAppsStatsQuerySchema", async () => {
-    await expectParity(recentAppsStatsQuerySchema, RecentAppsStatsQueryDto, {
+    await expectDto(RecentAppsStatsQueryDto, {
       empty: {},
       unknownStripped: { page: "2", foo: "x" },
       limitConverted: { limit: "3" },

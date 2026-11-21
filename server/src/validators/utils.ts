@@ -1,15 +1,10 @@
 // libs
-import Joi from "joi";
 import { Types } from "mongoose";
 // common
 import { BadRequestError } from "@/exceptions";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
-import {
-  EMAIL_FORMAT_PATTERN,
-  EMAIL_VALIDATION,
-  OBJECTID_PATTERN
-} from "./constants";
+import { EMAIL_FORMAT_PATTERN, EMAIL_VALIDATION } from "./constants";
 
 export const validateEmail = (email: string): void => {
   if (!email || typeof email !== "string") {
@@ -128,22 +123,11 @@ export const isSupportedTimeZone = (value: string): boolean => {
     supported = false;
   }
 
-  // Bounded by the Joi string limit upstream; one entry per distinct zone the
+  // Bounded by the DTO's MaxLength upstream; one entry per distinct zone the
   // clients actually send.
   if (timeZoneCache.size < 1000) timeZoneCache.set(value, supported);
   return supported;
 };
-
-export const objectIdSchema = (namespace: string, key: string) =>
-  Joi.string()
-    .pattern(OBJECTID_PATTERN)
-    .required()
-    .messages({
-      "string.base": `${namespace}:validation.${key}.invalid`,
-      "string.empty": `${namespace}:validation.${key}.invalid`,
-      "any.required": `${namespace}:validation.${key}.invalid`,
-      "string.pattern.base": `${namespace}:validation.${key}.invalid`
-    });
 
 // Joi's own ISO 8601 pattern (joi/lib/common.js): validator.js's `isISO8601`
 // accepts and refuses different strings, and Joi's verdict is the contract.

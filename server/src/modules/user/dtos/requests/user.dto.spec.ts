@@ -6,14 +6,8 @@ import {
   UpdateProfileBodyDto
 } from "@/modules/user/dtos/requests";
 // validators
-import {
-  adminUserIdParamsSchema,
-  adminUsersQuerySchema,
-  getPublicProfileSchema,
-  updateProfileSchema
-} from "@/validators/schemas/user";
 // others
-import { expectParity } from "@test/helpers/validation-parity";
+import { expectDto } from "@test/helpers/dto-cases";
 
 // Fixed dates rather than "N years ago": the snapshots must not move with the
 // clock. The age-boundary cases sit years away from either bound.
@@ -33,7 +27,7 @@ const idCases = {
 
 describe("user request DTOs match the Joi schemas", () => {
   it("UpdateProfileBodyDto ≡ updateProfileSchema", async () => {
-    await expectParity(updateProfileSchema, UpdateProfileBodyDto, {
+    await expectDto(UpdateProfileBodyDto, {
       emptyBody: {},
       unknownStripped: { role: "admin" },
       allFields: {
@@ -88,15 +82,15 @@ describe("user request DTOs match the Joi schemas", () => {
   });
 
   it("PublicProfileParamsDto ≡ getPublicProfileSchema", async () => {
-    await expectParity(getPublicProfileSchema, PublicProfileParamsDto, idCases);
+    await expectDto(PublicProfileParamsDto, idCases);
   });
 
   it("AdminUserIdParamsDto ≡ adminUserIdParamsSchema", async () => {
-    await expectParity(adminUserIdParamsSchema, AdminUserIdParamsDto, idCases);
+    await expectDto(AdminUserIdParamsDto, idCases);
   });
 
   it("AdminUsersQueryDto ≡ adminUsersQuerySchema", async () => {
-    await expectParity(adminUsersQuerySchema, AdminUsersQueryDto, {
+    await expectDto(AdminUsersQueryDto, {
       empty: {},
       allFields: {
         page: "2",

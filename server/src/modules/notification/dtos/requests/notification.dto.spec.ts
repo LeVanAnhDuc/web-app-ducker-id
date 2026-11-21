@@ -6,18 +6,14 @@ import {
   NotificationListQueryDto
 } from "@/modules/notification/dtos/requests";
 // validators
-import {
-  notificationIdParamSchema,
-  notificationListQuerySchema
-} from "@/validators/schemas/notification";
 // others
-import { expectParity } from "@test/helpers/validation-parity";
+import { expectDto } from "@test/helpers/dto-cases";
 
 const ID = "507f1f77bcf86cd799439011";
 
 describe("notification request DTOs match the Joi schemas", () => {
   it("NotificationListQueryDto ≡ notificationListQuerySchema", async () => {
-    await expectParity(notificationListQuerySchema, NotificationListQueryDto, {
+    await expectDto(NotificationListQueryDto, {
       empty: {},
       unknownStripped: { foo: "x", sortBy: "createdAt" },
       allFields: {
@@ -54,7 +50,7 @@ describe("notification request DTOs match the Joi schemas", () => {
   });
 
   it("NotificationIdParamsDto ≡ notificationIdParamSchema", async () => {
-    await expectParity(notificationIdParamSchema, NotificationIdParamsDto, {
+    await expectDto(NotificationIdParamsDto, {
       valid: { id: ID },
       unknownStripped: { id: ID, extra: "x" },
       missing: {},
