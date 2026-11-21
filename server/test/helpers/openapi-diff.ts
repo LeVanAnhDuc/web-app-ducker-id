@@ -41,11 +41,36 @@ const operations = (paths: OpenAPIV3.PathsObject): Map<string, Operation> =>
     )
   );
 
-const parameterKeys = (op: Operation): Map<string, string> =>
+const PARAMETER_ATTRIBUTES = ["enum", "pattern", "format", "default"] as const;
+
+/** What is compared per parameter, as `attribute -> JSON text`. */
+const parameterAttributes = (param: Parameter): Map<string, string> => {
+  const schema = (param.schema ?? {}) as Schema;
+  const attributes = new Map<string, string>([
+    ["required", String(Boolean(param.required))]
+  ]);
+  for (const name of PARAMETER_ATTRIBUTES) {
+    attributes.set(
+      name,
+      schema[name] === undefined ? "none" : JSON.stringify(schema[name])
+    );
+  }
+  return attributes;
+};
+
+const parameterKeys = (op: Operation): Map<string, Map<string, string>> =>
   new Map(
     ((op.parameters ?? []) as Parameter[]).map((param) => [
       `${param.in} ${param.name}`,
-      `required=${Boolean(param.required)}`
+      parameterAttributes(param)
+    ])
+  );
+
+const propertyTypes = (schema: Schema): Map<string, string> =>
+  new Map(
+    Object.entries(schema.properties ?? {}).map(([name, prop]) => [
+      name,
+      String((prop as Schema).type ?? "none")
     ])
   );
 
@@ -87,12 +112,16 @@ const compareOperation = (
       (d) => `${key}: ${d}`
     )
   );
-  for (const [name, required] of handParams) {
+  for (const [name, attributes] of handParams) {
     const other = genParams.get(name);
-    if (other !== undefined && other !== required) {
-      diffs.push(
-        `${key}: parameter ${name} is ${required} in hand-written, ${other} in generated`
-      );
+    if (!other) continue;
+    for (const [attribute, value] of attributes) {
+      const generatedValue = other.get(attribute);
+      if (generatedValue !== value) {
+        diffs.push(
+          `${key}: parameter ${name} ${attribute} is ${value} in hand-written, ${generatedValue} in generated`
+        );
+      }
     }
   }
 
@@ -110,6 +139,16 @@ const compareOperation = (
         Object.keys(genBody.properties ?? {})
       ).map((d) => `${key}: ${d}`)
     );
+    const handTypes = propertyTypes(handBody);
+    const genTypes = propertyTypes(genBody);
+    for (const [name, type] of handTypes) {
+      const other = genTypes.get(name);
+      if (other !== undefined && other !== type) {
+        diffs.push(
+          `${key}: request property ${name} type is ${type} in hand-written, ${other} in generated`
+        );
+      }
+    }
     const handRequired = [...(handBody.required ?? [])].sort().join(",");
     const genRequired = [...(genBody.required ?? [])].sort().join(",");
     if (handRequired !== genRequired) {
@@ -137,9 +176,13 @@ const compareOperation = (
 
 /**
  * What differs between two sets of operations, one sentence each: which
- * method and path exist, parameter names with `in` and `required`, request
- * body property names and the required set, the response status set, and
- * `security`. Both sides must have their `$ref`s resolved (`resolveRefs`).
+ * method and path exist; per parameter its name, `in`, `required` and the
+ * schema's `enum`, `pattern`, `format` and `default`; the request body's
+ * property names, each property's `type`, and the required set; the response
+ * status set; and `security`. It does NOT compare response bodies (their
+ * shapes are asserted by the DTO specs and the response-schema check), nor
+ * descriptions, examples, min/max or tags. Both sides must have their `$ref`s
+ * resolved (`resolveRefs`).
  */
 export const diffOperations = (
   handWritten: OpenAPIV3.PathsObject,

@@ -6,7 +6,7 @@ import { ExposeDate, ExposeId, ExposeOrNull, toDto } from "@/common/dto";
 // others
 import { ApiProperty, assertApiPropertyUsage } from "../api-property";
 import { jsonSchemaOptions } from "../converters";
-import { Paginated } from "../paginated";
+import { Listed, Paginated } from "../paginated";
 
 const schemaOf = (Dto: Function) =>
   targetConstructorToSchema(Dto, jsonSchemaOptions) as {
@@ -119,6 +119,21 @@ describe("ApiProperty", () => {
   });
 });
 
+describe("ApiProperty enum", () => {
+  it("replaces a reflected $ref Object with a string enum", () => {
+    type Mode = "a" | "b";
+    class WithEnum {
+      @ApiProperty({ enum: ["a", "b"], nullable: true })
+      mode!: Mode | null;
+    }
+    expect(schemaOf(WithEnum).properties.mode).toEqual({
+      type: "string",
+      enum: ["a", "b"],
+      nullable: true
+    });
+  });
+});
+
 describe("Paginated", () => {
   it("returns one cached <Dto>Page class with items: Dto[] and meta: PageMeta", () => {
     class PagedItemDto {
@@ -139,6 +154,29 @@ describe("Paginated", () => {
         meta: { $ref: "#/components/schemas/PageMeta" }
       },
       required: ["items", "meta"]
+    });
+  });
+});
+
+describe("Listed", () => {
+  it("returns one cached <Dto>List class with items: Dto[] and no meta", () => {
+    class ListedItemDto {
+      @ApiProperty()
+      label!: string;
+    }
+    const List = Listed(ListedItemDto);
+
+    expect(Listed(ListedItemDto)).toBe(List);
+    expect(List.name).toBe("ListedItemDtoList");
+    expect(schemaOf(List)).toEqual({
+      type: "object",
+      properties: {
+        items: {
+          type: "array",
+          items: { $ref: "#/components/schemas/ListedItemDto" }
+        }
+      },
+      required: ["items"]
     });
   });
 });

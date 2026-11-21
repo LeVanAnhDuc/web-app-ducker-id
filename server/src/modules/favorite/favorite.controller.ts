@@ -5,10 +5,11 @@ import { OpenAPI } from "routing-controllers-openapi";
 // types
 import type { FavoriteService } from "./services";
 // common
-import { ApiErrors } from "@/common/openapi";
+import { ApiErrors, Listed } from "@/common/openapi";
 import { Auth, Respond, ValidParams, ValidQuery } from "@/common/routing";
+// modules
+import { UserAppDto } from "@/modules/web-app/dtos";
 // others
-import { FavoriteListDto } from "./dtos";
 import { FavoriteAppIdParamsDto, ListFavoritesQueryDto } from "./dtos/requests";
 
 @JsonController("/users/me/favorites")
@@ -23,7 +24,7 @@ export class FavoriteController {
     description:
       "Only apps the caller may still open. Not paginated: the list is the caller's own pins."
   })
-  @Respond({ message: "favorite:success.list", type: FavoriteListDto })
+  @Respond({ message: "favorite:success.list", type: Listed(UserAppDto) })
   list(@ValidQuery(ListFavoritesQueryDto) query: ListFavoritesQueryDto) {
     return this.service.list(query);
   }

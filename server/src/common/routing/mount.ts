@@ -332,13 +332,14 @@ export const findDisallowedRoutingImports = (source: string): string[] =>
   findDisallowedImports(source, "routing-controllers", ALLOWED_ROUTING_IMPORTS);
 
 // A module documents its routes with `@OpenAPI({ tags | summary, description })`
-// and the three helpers of `@/common/openapi`; `@Respond({ type })` owns the
+// and the four helpers of `@/common/openapi`; `@Respond({ type })` owns the
 // responses, so `ResponseSchema` (a second source) is refused. The rest of
 // `@/common/openapi` (the bridge, converters) belongs to the builder.
 const ALLOWED_OPENAPI_IMPORTS = new Set(["OpenAPI"]);
 const ALLOWED_COMMON_OPENAPI_IMPORTS = new Set([
   "ApiErrors",
   "ApiProperty",
+  "Listed",
   "Paginated"
 ]);
 const NONE = new Set<string>();
@@ -346,7 +347,7 @@ const NONE = new Set<string>();
 /**
  * What a module file may not take for its OpenAPI documentation: any name
  * from routing-controllers-openapi but `OpenAPI`, from `@/common/openapi` but
- * `ApiErrors` / `ApiProperty` / `Paginated` (or anything from a file below it),
+ * `ApiErrors` / `ApiProperty` / `Listed` / `Paginated` (or anything from a file below it),
  * and anything at all from class-validator-jsonschema.
  */
 export const findDisallowedOpenApiImports = (source: string): string[] => [

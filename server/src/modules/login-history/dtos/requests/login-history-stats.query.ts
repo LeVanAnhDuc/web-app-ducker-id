@@ -1,5 +1,7 @@
 // libs
 import { IsNotEmpty, IsOptional, IsString, MaxLength } from "class-validator";
+// common
+import { ApiProperty } from "@/common/openapi";
 // modules
 import { LOGIN_HISTORY_STATS_RANGES } from "@/modules/login-history/constants";
 // validators
@@ -10,9 +12,17 @@ import { IsSupportedTimeZone, OneOf } from "@/validators/decorators";
 const TIMEZONE_MAX_LENGTH = 64;
 
 export class LoginHistoryStatsQueryDto {
+  @ApiProperty({
+    example: "7d",
+    description: "How far back to count (default 7d)"
+  })
   @OneOf(LOGIN_HISTORY_STATS_RANGES, "validation:range.invalid")
   range?: string;
 
+  @ApiProperty({
+    example: "Asia/Ho_Chi_Minh",
+    description: "IANA time zone the days are bucketed in"
+  })
   // One key for every failure, as Joi mapped each rule to it.
   @IsSupportedTimeZone({ message: "validation:timezone.invalid" })
   @MaxLength(TIMEZONE_MAX_LENGTH, { message: "validation:timezone.invalid" })

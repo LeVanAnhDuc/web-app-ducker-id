@@ -119,17 +119,22 @@ const classSchema = (type: ClassType): SchemaObject | ReferenceObject =>
     : { $ref: REF + type.name };
 
 // The object form is merged into the schema reflected from `design:type`; a
-// class, `items` or a schema function replace it, because reflection turns
-// `Dto[]` into `$ref Array` and a type-only import into `$ref Object`.
+// class, `items`, `enum` or a schema function replace it, because reflection
+// turns `Dto[]` into `$ref Array` and a union alias imported as a type (an
+// enum-like `LoginMethod`) into `$ref Object`.
 const toJsonSchema = ({ options, schema }: Declared) => {
   const { type, ...rest } = options;
-  if (!schema && !isClassType(type) && !options.items) return options;
+  if (!schema && !isClassType(type) && !options.items && !options.enum) {
+    return options;
+  }
 
   const base: SchemaObject | ReferenceObject = schema
     ? schema()
     : isClassType(type)
       ? classSchema(type)
-      : ({ type: type ?? "array" } as SchemaObject);
+      : ({
+          type: type ?? (options.items ? "array" : "string")
+        } as SchemaObject);
   if (Object.keys(rest).length === 0) return () => base;
   // OpenAPI 3.0 ignores the siblings of a $ref; allOf keeps them.
   return "$ref" in base

@@ -34,7 +34,12 @@ import { diffOperations, resolveRefs } from "@test/helpers/openapi-diff";
  * drift checks below cover exactly these; Task 6 of
  * docs/specs/openapi-annotations/plan.md drops the list and covers every route.
  */
-export const GENERATED_MODULES: string[] = ["favorite"];
+export const GENERATED_MODULES: string[] = [
+  "favorite",
+  "recent-app",
+  "notification",
+  "login-history"
+];
 
 /**
  * Differences from the frozen hand-written operations
@@ -42,10 +47,57 @@ export const GENERATED_MODULES: string[] = ["favorite"];
  */
 const ACCEPTED_DIFFS: Record<string, string[]> = {
   favorite: [
+    // `sort` defaults to recent in the service (`favorite.list`), not on the DTO, so no schema default is generated; the description says it.
+    'GET /users/me/favorites: parameter query sort default is "recent" in hand-written, none in generated',
     // authGuard can answer 403 AUTH_PASSWORD_CHANGE_REQUIRED (a temporary-password session); the hand-written docs never listed it.
     "GET /users/me/favorites: response status 403 only in generated",
     "POST /users/me/favorites/{appId}: response status 403 only in generated",
     "DELETE /users/me/favorites/{appId}: response status 403 only in generated"
+  ],
+  "recent-app": [
+    // [400] The API answers a validation failure with 400 VALIDATION_ERROR; nothing in recent-app can throw 422 (grep of the module and the exceptions), so the hand-written 422 was wrong and is dropped.
+    // [403] authGuard can answer 403 AUTH_PASSWORD_CHANGE_REQUIRED (a temporary-password session); the hand-written docs never listed it.
+    // [stats] The route exists (RecentAppController.stats) and the launcher uses it; the hand-written docs left it out.
+    "GET /users/me/recent-apps: response status 422 only in hand-written", // [400]
+    "GET /users/me/recent-apps: response status 400 only in generated", // [400]
+    "GET /users/me/recent-apps: response status 403 only in generated", // [403]
+    "DELETE /users/me/recent-apps: response status 403 only in generated", // [403]
+    "POST /users/me/recent-apps/{appId}: response status 422 only in hand-written", // [400]
+    "POST /users/me/recent-apps/{appId}: response status 400 only in generated", // [400]
+    "POST /users/me/recent-apps/{appId}: response status 403 only in generated", // [403]
+    "DELETE /users/me/recent-apps/{appId}: response status 422 only in hand-written", // [400]
+    "DELETE /users/me/recent-apps/{appId}: response status 400 only in generated", // [400]
+    "DELETE /users/me/recent-apps/{appId}: response status 403 only in generated", // [403]
+    "POST /users/me/recent-apps/{appId}/restore: response status 422 only in hand-written", // [400]
+    "POST /users/me/recent-apps/{appId}/restore: response status 400 only in generated", // [400]
+    "POST /users/me/recent-apps/{appId}/restore: response status 403 only in generated", // [403]
+    "GET /users/me/recent-apps/stats: only in generated" // [stats]
+  ],
+  notification: [
+    // [default] page, limit and sortOrder are defaulted in the service (`resolvePaging`), not on the DTO, so no schema default is generated.
+    // [403] authGuard can answer 403 AUTH_PASSWORD_CHANGE_REQUIRED (a temporary-password session); the hand-written docs never listed it.
+    "GET /notifications: parameter query page default is 1 in hand-written, none in generated", // [default]
+    "GET /notifications: parameter query limit default is 20 in hand-written, none in generated", // [default]
+    'GET /notifications: parameter query sortOrder default is "desc" in hand-written, none in generated', // [default]
+    "GET /notifications: response status 403 only in generated", // [403]
+    "GET /notifications/unread-count: response status 403 only in generated", // [403]
+    "PATCH /notifications/{id}/read: response status 403 only in generated", // [403]
+    "PATCH /notifications/read-all: response status 403 only in generated" // [403]
+  ],
+  "login-history": [
+    // [default] page and limit are defaulted in the service (`resolvePaging`), not on the DTO, so no schema default is generated.
+    // [date] The validator accepts any ISO 8601 string and keeps it as sent, so the schema is a plain string; the hand-written `format: date` was narrower than the validator.
+    // [403] authGuard can answer 403 AUTH_PASSWORD_CHANGE_REQUIRED (a temporary-password session); the hand-written docs never listed it on the user routes (the admin routes already did).
+    "GET /login-history: parameter query page default is 1 in hand-written, none in generated", // [default]
+    "GET /login-history: parameter query limit default is 20 in hand-written, none in generated", // [default]
+    'GET /login-history: parameter query fromDate format is "date" in hand-written, none in generated', // [date]
+    'GET /login-history: parameter query toDate format is "date" in hand-written, none in generated', // [date]
+    "GET /login-history: response status 403 only in generated", // [403]
+    "GET /login-history/stats: response status 403 only in generated", // [403]
+    "GET /admin/login-history: parameter query page default is 1 in hand-written, none in generated", // [default]
+    "GET /admin/login-history: parameter query limit default is 20 in hand-written, none in generated", // [default]
+    'GET /admin/login-history: parameter query fromDate format is "date" in hand-written, none in generated', // [date]
+    'GET /admin/login-history: parameter query toDate format is "date" in hand-written, none in generated' // [date]
   ]
 };
 
@@ -344,11 +396,17 @@ describe("buildOpenApiSpec", () => {
           )
         ) as OpenAPIV3.PathsObject;
         const prefixes = Object.keys(frozen);
+        // A fixture that froze nothing, or paths nothing generates, would
+        // make an empty diff mean nothing.
+        expect(
+          operationsOf({ paths: frozen } as OpenAPIV3.Document).length
+        ).toBeGreaterThan(0);
         const generatedPaths = Object.fromEntries(
           Object.entries(document.paths).filter(([path]) =>
             prefixes.some((p) => path === p || path.startsWith(`${p}/`))
           )
         );
+        expect(Object.keys(generatedPaths).length).toBeGreaterThan(0);
         expect(
           diffOperations(frozen, resolveRefs(generatedPaths, document))
         ).toEqual(ACCEPTED_DIFFS[module] ?? []);

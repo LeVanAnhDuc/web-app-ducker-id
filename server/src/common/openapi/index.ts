@@ -12,4 +12,4 @@ export {
   SCHEMA_REF_PREFIX
 } from "./converters";
 export { normalizePathKeys } from "./normalize-path-keys";
-export { Paginated } from "./paginated";
+export { Listed, Paginated } from "./paginated";

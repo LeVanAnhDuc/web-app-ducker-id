@@ -1,5 +1,7 @@
 // libs
 import { IsInt, IsOptional, Max, Min } from "class-validator";
+// common
+import { ApiProperty } from "@/common/openapi";
 // modules
 import { RECENT_APP_STATS } from "@/modules/recent-app/constants";
 // validators
@@ -7,6 +9,7 @@ import { ToInt } from "@/validators/decorators";
 
 // `limit` caps the top-apps list, not a page, so its ceiling is the stats one.
 export class RecentAppsStatsQueryDto {
+  @ApiProperty({ example: 5, description: "How many top apps to return" })
   @Max(RECENT_APP_STATS.TOP_APPS_MAX_LIMIT, {
     message: "validation:limit.invalid"
   })

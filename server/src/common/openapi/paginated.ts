@@ -27,3 +27,25 @@ export const Paginated = <T>(Dto: new () => T): Page<T> => {
   pages.set(Dto, DtoPage);
   return DtoPage;
 };
+
+type Items<T> = new () => { items: T[] };
+
+const lists = new Map<Function, Items<unknown>>();
+
+/**
+ * The response DTO of an unpaged list of `Dto`: a class named `<Dto>List`
+ * with `items: Dto[]` and no `meta`. Cached per `Dto`, like `Paginated`.
+ */
+export const Listed = <T>(Dto: new () => T): Items<T> => {
+  const cached = lists.get(Dto);
+  if (cached) return cached as Items<T>;
+
+  class DtoList {
+    items!: T[];
+  }
+  Object.defineProperty(DtoList, "name", { value: `${Dto.name}List` });
+  ApiProperty({ type: [Dto] })(DtoList.prototype, "items");
+
+  lists.set(Dto, DtoList);
+  return DtoList;
+};

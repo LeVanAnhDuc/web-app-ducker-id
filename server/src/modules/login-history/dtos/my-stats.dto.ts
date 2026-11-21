@@ -4,6 +4,8 @@ import type {
   LoginMethod,
   LoginStatsAggregationResult
 } from "@/modules/login-history/types";
+// common
+import { ApiProperty } from "@/common/openapi";
 // modules
 import {
   DEVICE_TYPES,
@@ -13,35 +15,102 @@ import {
 // others
 import { addDays, toZonedDay } from "@/utils/date/zoned-day";
 
-export interface LoginStatsDayDto {
+// A count per key, as a `Record` literal: reflection cannot see inside it.
+const countsSchema = (keys: string[], description: string) => () => ({
+  type: "object" as const,
+  description,
+  properties: Object.fromEntries(
+    keys.map((key) => [key, { type: "integer" as const }])
+  )
+});
+
+/** Plain data: `toMyLoginStatsDto` builds object literals typed as these classes. */
+export class LoginStatsDayDto {
   /** Local calendar day, `YYYY-MM-DD`. */
-  date: string;
-  total: number;
-  successful: number;
-  failed: number;
+  @ApiProperty({
+    type: "string",
+    example: "2026-10-15",
+    description: "Local calendar day, `YYYY-MM-DD`"
+  })
+  date!: string;
+
+  @ApiProperty({ type: "integer", example: 3 })
+  total!: number;
+
+  @ApiProperty({ type: "integer", example: 2 })
+  successful!: number;
+
+  @ApiProperty({ type: "integer", example: 1 })
+  failed!: number;
 }
 
-export interface LoginStatsAppDto {
-  webAppId: string;
-  clientName: string | null;
-  count: number;
+export class LoginStatsAppDto {
+  @ApiProperty({ type: "string", example: "507f1f77bcf86cd799439011" })
+  webAppId!: string;
+
+  @ApiProperty({ type: "string", nullable: true, example: "Satellite Monitor" })
+  clientName!: string | null;
+
+  @ApiProperty({ type: "integer", example: 4 })
+  count!: number;
 }
 
-export interface MyLoginStatsDto {
-  total: number;
-  successful: number;
-  failed: number;
-  byMethod: Record<LoginMethod, number>;
-  byDevice: Record<DeviceType, number>;
-  byDay: LoginStatsDayDto[];
-  byApp: LoginStatsAppDto[];
-  anomalies: number;
-  range: {
-    from: string;
-    to: string;
-    days: number;
-    timezone: string;
-  };
+export class LoginStatsRangeDto {
+  @ApiProperty({
+    type: "string",
+    format: "date-time",
+    example: "2026-10-09T00:00:00.000Z"
+  })
+  from!: string;
+
+  @ApiProperty({
+    type: "string",
+    format: "date-time",
+    example: "2026-10-15T23:59:59.999Z"
+  })
+  to!: string;
+
+  @ApiProperty({ type: "integer", example: 7 })
+  days!: number;
+
+  @ApiProperty({ type: "string", example: "Asia/Ho_Chi_Minh" })
+  timezone!: string;
+}
+
+export class MyLoginStatsDto {
+  @ApiProperty({ type: "integer", example: 12 })
+  total!: number;
+
+  @ApiProperty({ type: "integer", example: 10 })
+  successful!: number;
+
+  @ApiProperty({ type: "integer", example: 2 })
+  failed!: number;
+
+  @ApiProperty(
+    countsSchema(Object.values(LOGIN_METHODS), "Sign-ins per login method")
+  )
+  byMethod!: Record<LoginMethod, number>;
+
+  @ApiProperty(
+    countsSchema(Object.values(DEVICE_TYPES), "Sign-ins per device type")
+  )
+  byDevice!: Record<DeviceType, number>;
+
+  @ApiProperty({
+    type: [LoginStatsDayDto],
+    description: "Every day in the range, in order, zero-filled"
+  })
+  byDay!: LoginStatsDayDto[];
+
+  @ApiProperty({ type: [LoginStatsAppDto] })
+  byApp!: LoginStatsAppDto[];
+
+  @ApiProperty({ type: "integer", example: 1 })
+  anomalies!: number;
+
+  @ApiProperty({ type: LoginStatsRangeDto })
+  range!: LoginStatsRangeDto;
 }
 
 export interface LoginStatsDtoRange {

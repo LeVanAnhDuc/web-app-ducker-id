@@ -41,18 +41,6 @@ import {
   entitlementPaths
 } from "@/modules/entitlement/swagger";
 import {
-  recentAppSwaggerSchemas,
-  recentAppPaths
-} from "@/modules/recent-app/swagger";
-import {
-  notificationSwaggerSchemas,
-  notificationPaths
-} from "@/modules/notification/swagger";
-import {
-  loginHistorySwaggerSchemas,
-  loginHistoryPaths
-} from "@/modules/login-history/swagger";
-import {
   unlockAccountSwaggerSchemas,
   unlockAccountPaths
 } from "@/modules/unlock-account/swagger";
@@ -75,9 +63,6 @@ const allSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   ...webAppSwaggerSchemas,
   ...categorySwaggerSchemas,
   ...entitlementSwaggerSchemas,
-  ...recentAppSwaggerSchemas,
-  ...notificationSwaggerSchemas,
-  ...loginHistorySwaggerSchemas,
   ...unlockAccountSwaggerSchemas
 };
 
@@ -93,9 +78,6 @@ const allPaths: OpenAPIV3.PathsObject = {
   ...webAppPaths,
   ...categoryPaths,
   ...entitlementPaths,
-  ...recentAppPaths,
-  ...notificationPaths,
-  ...loginHistoryPaths,
   ...unlockAccountPaths
 };
 

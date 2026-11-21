@@ -463,11 +463,11 @@ describe("routing-controllers imports in modules", () => {
 const JSON_SCHEMA_LIB = ["class-validator", "jsonschema"].join("-");
 
 describe("OpenAPI imports", () => {
-  it("allows a module only OpenAPI, ApiErrors, ApiProperty and Paginated", () => {
+  it("allows a module only OpenAPI, ApiErrors, ApiProperty, Paginated and Listed", () => {
     const fixture = [
       `import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";`,
       `import type { OpenAPIParam } from "routing-controllers-openapi";`,
-      `import { ApiErrors, ApiProperty, Paginated, routeOperation } from "@/common/openapi";`,
+      `import { ApiErrors, ApiProperty, Listed, Paginated, routeOperation } from "@/common/openapi";`,
       `import { isRequestDto } from "@/common/openapi/api-property";`,
       `import { JSONSchema } from "${JSON_SCHEMA_LIB}";`,
       `import "${JSON_SCHEMA_LIB}/build/defaultConverters";`
