@@ -7,6 +7,7 @@ import type { Server } from "http";
 import type { AddressInfo } from "net";
 import type { RequestHandler } from "express";
 import type { RateLimiters } from "@/middlewares/common/rate-limiter.middleware";
+import type { LogoutService } from "@/modules/logout/services";
 import type { LoginService } from "@/modules/login/services/login";
 import type { SessionService } from "@/modules/session/services";
 import type { TokenService } from "@/modules/token/services";
@@ -17,6 +18,7 @@ import {
   handleNotFound
 } from "@/middlewares/filters/error.filter";
 // modules
+import { LogoutController } from "@/modules/logout/logout.controller";
 import { LoginController } from "@/modules/login/login.controller";
 import { TokenController } from "@/modules/token/token.controller";
 import { REFRESH_TOKEN } from "@/modules/token/constants";
@@ -24,6 +26,12 @@ import { REFRESH_TOKEN } from "@/modules/token/constants";
 import { i18nMiddleware } from "@/i18n";
 import { RequestContext } from "@/utils/request-context";
 import { mountControllers } from "../mount";
+
+// A plain function, not a jest.fn: resetMocks would clear a jest.fn's result.
+jest.mock("@/modules/token/helpers", () => ({
+  ...jest.requireActual("@/modules/token/helpers"),
+  verifyAccessToken: () => ({ sub: "user-1", authId: "auth-1" })
+}));
 
 const passThrough: RequestHandler = (_req, _res, next) => next();
 const rl = Object.fromEntries(
@@ -33,6 +41,7 @@ const rl = Object.fromEntries(
 const passwordLogin = jest.fn();
 const startSession = jest.fn();
 const refreshAccessToken = jest.fn();
+const logout = jest.fn();
 
 let server: Server;
 let origin: string;
@@ -50,7 +59,8 @@ beforeAll(async () => {
         { passwordLogin } as unknown as LoginService,
         { start: startSession } as unknown as SessionService
       ),
-      new TokenController({ refreshAccessToken } as unknown as TokenService)
+      new TokenController({ refreshAccessToken } as unknown as TokenService),
+      new LogoutController({ logout } as unknown as LogoutService)
     ],
     rl
   );
@@ -104,5 +114,23 @@ describe("auth routes over HTTP", () => {
 
     expect(res.status).toBe(StatusCodes.OK);
     expect(refreshAccessToken).toHaveBeenCalledWith("refresh-x");
+  });
+
+  it("POST /auth/logout answers 204 with no body and clears the refresh cookie", async () => {
+    logout.mockResolvedValue(undefined);
+
+    const res = await fetch(`${origin}/api/v1/auth/logout`, {
+      method: "POST",
+      headers: {
+        authorization: "Bearer any",
+        cookie: `${REFRESH_TOKEN}=refresh-x`
+      }
+    });
+
+    expect(res.status).toBe(StatusCodes.NO_CONTENT);
+    expect(await res.text()).toBe("");
+    const cookie = res.headers.get("set-cookie") ?? "";
+    expect(cookie).toContain(`${REFRESH_TOKEN}=;`);
+    expect(cookie).toContain("Expires=Thu, 01 Jan 1970");
   });
 });

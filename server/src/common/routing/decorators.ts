@@ -50,7 +50,7 @@ export const RateLimit =
     recordRateLimits(target.constructor, String(method), names);
   };
 
-/** Status (200 unless stated) and success message key, as `handle()` took. */
+/** Status (200 unless stated) and success message key, as the old `handle()` took. */
 export const Respond =
   (options: RespondOptions = {}): MethodOnlyDecorator =>
   (target, method) => {

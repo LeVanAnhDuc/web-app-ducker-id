@@ -30,6 +30,7 @@ export class ChangePasswordController {
   @RateLimit("changePasswordByIpAndUser")
   @Respond({ message: "changePassword:success.passwordChanged" })
   async changePassword(
+    // Declared only to register the body pipe; the service reads req.body.
     @ValidBody(ChangePasswordBodyDto) _body: ChangePasswordBodyDto,
     @Req() req: ChangePasswordRequest,
     @Res() res: Response

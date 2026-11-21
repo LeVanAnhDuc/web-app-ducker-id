@@ -36,8 +36,8 @@ type Row = [
   action: string
 ];
 
-// Appendix A of docs/specs/routing-controllers/plan.md, migrated modules
-// only. Each task that migrates a module adds its rows here.
+// Appendix A of docs/specs/routing-controllers/plan.md: all 63 routes. A route
+// with no middleware has chain "" here (Appendix A shows it as a dash).
 const EXPECTED: Row[] = [
   [
     "POST",
@@ -288,6 +288,110 @@ const EXPECTED: Row[] = [
     "getHistoryDetail"
   ],
   [
+    "GET",
+    "/api/v1/notifications/unread-count",
+    "auth",
+    "OK",
+    "notification:success.unreadCount",
+    "unreadCount"
+  ],
+  [
+    "PATCH",
+    "/api/v1/notifications/read-all",
+    "auth",
+    "OK",
+    "notification:success.markAllRead",
+    "markAllRead"
+  ],
+  [
+    "GET",
+    "/api/v1/notifications",
+    "auth > query:NotificationListQueryDto",
+    "OK",
+    "notification:success.list",
+    "list"
+  ],
+  [
+    "PATCH",
+    "/api/v1/notifications/:id/read",
+    "auth > params:NotificationIdParamsDto",
+    "OK",
+    "notification:success.markRead",
+    "markRead"
+  ],
+  [
+    "GET",
+    "/api/v1/users/me/favorites",
+    "auth > query:ListFavoritesQueryDto",
+    "OK",
+    "favorite:success.list",
+    "list"
+  ],
+  [
+    "POST",
+    "/api/v1/users/me/favorites/:appId",
+    "auth > params:FavoriteAppIdParamsDto",
+    "CREATED",
+    "favorite:success.add",
+    "add"
+  ],
+  [
+    "DELETE",
+    "/api/v1/users/me/favorites/:appId",
+    "auth > params:FavoriteAppIdParamsDto",
+    "NO_CONTENT",
+    "—",
+    "remove"
+  ],
+  [
+    "GET",
+    "/api/v1/users/me/recent-apps",
+    "auth > query:ListRecentAppsQueryDto",
+    "OK",
+    "recentApp:success.list",
+    "list"
+  ],
+  [
+    "GET",
+    "/api/v1/users/me/recent-apps/stats",
+    "auth > query:RecentAppsStatsQueryDto",
+    "OK",
+    "recentApp:success.stats",
+    "stats"
+  ],
+  [
+    "DELETE",
+    "/api/v1/users/me/recent-apps",
+    "auth",
+    "NO_CONTENT",
+    "—",
+    "clear"
+  ],
+  [
+    "POST",
+    "/api/v1/users/me/recent-apps/:appId",
+    "auth > rl:recordRecentAppByUser > params:RecentAppIdParamsDto",
+    "NO_CONTENT",
+    "—",
+    "record"
+  ],
+  [
+    "DELETE",
+    "/api/v1/users/me/recent-apps/:appId",
+    "auth > params:RecentAppIdParamsDto",
+    "NO_CONTENT",
+    "—",
+    "hide"
+  ],
+  [
+    "POST",
+    "/api/v1/users/me/recent-apps/:appId/restore",
+    "auth > params:RecentAppIdParamsDto",
+    "NO_CONTENT",
+    "—",
+    "restore"
+  ],
+  [
     "POST",
     "/api/v1/contact/submit",
     "rl:contactByIp > optionalAuth > body:SubmitContactBodyDto",
@@ -438,110 +542,6 @@ const EXPECTED: Row[] = [
     "OK",
     "entitlement:success.update",
     "updateMatrix"
-  ],
-  [
-    "GET",
-    "/api/v1/notifications/unread-count",
-    "auth",
-    "OK",
-    "notification:success.unreadCount",
-    "unreadCount"
-  ],
-  [
-    "PATCH",
-    "/api/v1/notifications/read-all",
-    "auth",
-    "OK",
-    "notification:success.markAllRead",
-    "markAllRead"
-  ],
-  [
-    "GET",
-    "/api/v1/notifications",
-    "auth > query:NotificationListQueryDto",
-    "OK",
-    "notification:success.list",
-    "list"
-  ],
-  [
-    "PATCH",
-    "/api/v1/notifications/:id/read",
-    "auth > params:NotificationIdParamsDto",
-    "OK",
-    "notification:success.markRead",
-    "markRead"
-  ],
-  [
-    "GET",
-    "/api/v1/users/me/recent-apps",
-    "auth > query:ListRecentAppsQueryDto",
-    "OK",
-    "recentApp:success.list",
-    "list"
-  ],
-  [
-    "GET",
-    "/api/v1/users/me/recent-apps/stats",
-    "auth > query:RecentAppsStatsQueryDto",
-    "OK",
-    "recentApp:success.stats",
-    "stats"
-  ],
-  [
-    "DELETE",
-    "/api/v1/users/me/recent-apps",
-    "auth",
-    "NO_CONTENT",
-    "—",
-    "clear"
-  ],
-  [
-    "POST",
-    "/api/v1/users/me/recent-apps/:appId",
-    "auth > rl:recordRecentAppByUser > params:RecentAppIdParamsDto",
-    "NO_CONTENT",
-    "—",
-    "record"
-  ],
-  [
-    "DELETE",
-    "/api/v1/users/me/recent-apps/:appId",
-    "auth > params:RecentAppIdParamsDto",
-    "NO_CONTENT",
-    "—",
-    "hide"
-  ],
-  [
-    "POST",
-    "/api/v1/users/me/recent-apps/:appId/restore",
-    "auth > params:RecentAppIdParamsDto",
-    "NO_CONTENT",
-    "—",
-    "restore"
-  ],
-  [
-    "GET",
-    "/api/v1/users/me/favorites",
-    "auth > query:ListFavoritesQueryDto",
-    "OK",
-    "favorite:success.list",
-    "list"
-  ],
-  [
-    "POST",
-    "/api/v1/users/me/favorites/:appId",
-    "auth > params:FavoriteAppIdParamsDto",
-    "CREATED",
-    "favorite:success.add",
-    "add"
-  ],
-  [
-    "DELETE",
-    "/api/v1/users/me/favorites/:appId",
-    "auth > params:FavoriteAppIdParamsDto",
-    "NO_CONTENT",
-    "—",
-    "remove"
   ]
 ];
 
@@ -549,7 +549,7 @@ const EXPECTED: Row[] = [
 const rl = {} as unknown as RateLimiters;
 
 describe("route manifest", () => {
-  it("matches Appendix A for the migrated modules", () => {
+  it("matches Appendix A for every module", () => {
     const notificationDispatcher = {} as NotificationDispatcher;
     const redis = {} as RedisClientType;
     const authService = {} as AuthenticationService;
@@ -637,6 +637,9 @@ describe("route manifest", () => {
       userAdminController,
       loginHistoryController,
       loginHistoryAdminController,
+      notificationController,
+      favoriteController,
+      recentAppController,
       contactController,
       adminContactsController,
       myContactsController,
@@ -644,10 +647,7 @@ describe("route manifest", () => {
       webAppController,
       categoryAdminController,
       categoryController,
-      entitlementAdminController,
-      notificationController,
-      recentAppController,
-      favoriteController
+      entitlementAdminController
     ];
     const rows = describeRoutes(controllers, rl).map(
       ({ method, path, chain, status, message, action }): Row => [
@@ -660,7 +660,37 @@ describe("route manifest", () => {
       ]
     );
 
+    expect(rows).toHaveLength(63);
     expect(rows).toEqual(EXPECTED);
+
+    // Route precedence is controller order: it must stay the order the
+    // hand-assembled routers were mounted in.
+    expect(
+      controllers.map((controller) => controller.constructor.name)
+    ).toEqual([
+      "SignupController",
+      "LoginController",
+      "LogoutController",
+      "TokenController",
+      "UnlockAccountController",
+      "ForgotPasswordController",
+      "ChangePasswordController",
+      "UserController",
+      "UserAdminController",
+      "LoginHistoryController",
+      "LoginHistoryAdminController",
+      "NotificationController",
+      "FavoriteController",
+      "RecentAppController",
+      "ContactController",
+      "AdminContactsController",
+      "MyContactsController",
+      "WebAppAdminController",
+      "WebAppController",
+      "CategoryAdminController",
+      "CategoryController",
+      "EntitlementAdminController"
+    ]);
   });
 
   it("GET /users/me is registered before GET /users/:id", () => {

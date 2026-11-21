@@ -35,15 +35,14 @@ export interface ModuleDeps {
 
 export interface ModuleRouters {
   oauthRouter: Router;
-  apiRouters: Router[];
-  /** Annotated controllers, in `apiRouters` order; both coexist until every module has moved. */
+  /** Annotated controllers in route-precedence order: a literal route goes before a parametric one that would shadow it. */
   controllers: object[];
   rateLimiters: RateLimiters;
 }
 
 /**
  * Calls every module factory in dependency order — a module is built only
- * after the services it takes exist — and returns their routers unmounted.
+ * after the services it takes exist — and returns the OAuth router and the controllers, unmounted.
  */
 export const createModules = ({
   redis: redisClient,
@@ -152,8 +151,6 @@ export const createModules = ({
 
   return {
     oauthRouter,
-    // Every /api/v1 module is an annotated controller now; Task 6 drops this.
-    apiRouters: [],
     controllers: [
       signupController,
       loginController,
@@ -166,6 +163,9 @@ export const createModules = ({
       userAdminController,
       loginHistoryController,
       loginHistoryAdminController,
+      notificationController,
+      favoriteController,
+      recentAppController,
       contactController,
       adminContactsController,
       myContactsController,
@@ -173,10 +173,7 @@ export const createModules = ({
       webAppController,
       categoryAdminController,
       categoryController,
-      entitlementAdminController,
-      notificationController,
-      recentAppController,
-      favoriteController
+      entitlementAdminController
     ],
     rateLimiters: rateLimiter
   };
