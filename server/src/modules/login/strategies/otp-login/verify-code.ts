@@ -1,7 +1,7 @@
 // types
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { Request } from "express";
-import type { OtpVerifyBody } from "../../types";
+import type { OtpVerifyBodyDto } from "../../dtos/requests";
 import type { LoginResponseDto } from "../../dtos";
 import type { OtpLoginStrategyDeps } from "./deps";
 // common
@@ -45,7 +45,7 @@ const handleInvalidOtp = async (
 
 export const verifyCode = async (
   deps: OtpLoginStrategyDeps,
-  body: OtpVerifyBody,
+  body: OtpVerifyBodyDto,
   req: Request
 ): Promise<LoginResponseDto> => {
   const { email, otp } = body;

@@ -1,12 +1,12 @@
 // types
 import type { Request } from "express";
 import type {
-  PasswordLoginBody,
-  OtpSendBody,
-  OtpVerifyBody,
-  MagicLinkSendBody,
-  MagicLinkVerifyBody
-} from "../../types";
+  LoginBodyDto,
+  OtpSendBodyDto,
+  OtpVerifyBodyDto,
+  MagicLinkSendBodyDto,
+  MagicLinkVerifyBodyDto
+} from "../../dtos/requests";
 import type { FailedAttemptsRepository } from "../../repositories/failed-attempts.repository";
 import type {
   LoginResponseDto,
@@ -29,30 +29,27 @@ export class LoginService {
     private readonly failedAttemptsRepo: FailedAttemptsRepository
   ) {}
 
-  passwordLogin(
-    body: PasswordLoginBody,
-    req: Request
-  ): Promise<LoginResponseDto> {
+  passwordLogin(body: LoginBodyDto, req: Request): Promise<LoginResponseDto> {
     return this.passwordStrategy.authenticate(body, req);
   }
 
-  sendOtp(body: OtpSendBody, req: Request): Promise<OtpSendDto> {
+  sendOtp(body: OtpSendBodyDto, req: Request): Promise<OtpSendDto> {
     return this.otpStrategy.sendCode(body, req);
   }
 
-  verifyOtp(body: OtpVerifyBody, req: Request): Promise<LoginResponseDto> {
+  verifyOtp(body: OtpVerifyBodyDto, req: Request): Promise<LoginResponseDto> {
     return this.otpStrategy.verifyCode(body, req);
   }
 
   sendMagicLink(
-    body: MagicLinkSendBody,
+    body: MagicLinkSendBodyDto,
     req: Request
   ): Promise<MagicLinkSendDto> {
     return this.magicLinkStrategy.sendLink(body, req);
   }
 
   verifyMagicLink(
-    body: MagicLinkVerifyBody,
+    body: MagicLinkVerifyBodyDto,
     req: Request
   ): Promise<LoginResponseDto> {
     return this.magicLinkStrategy.verifyLink(body, req);

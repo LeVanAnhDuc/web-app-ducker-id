@@ -109,10 +109,10 @@ test(
     expect((await api.auth.sendSignupOtp(email)).status()).toBe(200);
 
     const cases: [string, string][] = [
-      ["12345", "string.length"], // 5 — min − 1
-      ["1234567", "string.length"], // 7 — max + 1
-      ["12a456", "string.pattern.base"], // 6, not all digits
-      ["", "string.empty"]
+      ["12345", "isLength"], // 5 — min − 1
+      ["1234567", "isLength"], // 7 — max + 1
+      ["12a456", "matches"], // 6, not all digits
+      ["", "isNotEmpty"]
     ];
     for (const [otp, reason] of cases) {
       const res = await api.auth.verifySignupOtp(email, otp);
@@ -288,15 +288,15 @@ test(
     const email = throwawayEmail("auth-su-pw");
     const tail128 = "Aa1@" + "x".repeat(124);
     const cases: [string, string | null][] = [
-      ["Abcd@12", "string.min"], // 7 chars — min − 1
+      ["Abcd@12", "minLength"], // 7 chars — min − 1
       ["Abcd@123", null], // 8 chars — min
       [tail128, null], // 128 chars — max
-      [tail128 + "x", "string.max"], // 129 chars — max + 1
-      ["abcd@1234", "string.pattern.base"], // no upper-case
-      ["ABCD@1234", "string.pattern.base"], // no lower-case
-      ["Abcd@efgh", "string.pattern.base"], // no digit
-      ["Abcd12345", "string.pattern.base"], // no special
-      ["Abcd#1234", "string.pattern.base"] // '#' is not an allowed special
+      [tail128 + "x", "maxLength"], // 129 chars — max + 1
+      ["abcd@1234", "matches"], // no upper-case
+      ["ABCD@1234", "matches"], // no lower-case
+      ["Abcd@efgh", "matches"], // no digit
+      ["Abcd12345", "matches"], // no special
+      ["Abcd#1234", "matches"] // '#' is not an allowed special
     ];
     for (const [password, reason] of cases) {
       const res = await api.auth.completeSignup(
@@ -335,16 +335,16 @@ test(
     };
 
     const invalid: [Record<string, unknown>, string, string][] = [
-      [{ fullName: "A" }, "fullName", "string.min"],
-      [{ fullName: "John3" }, "fullName", "string.pattern.base"],
-      [{ gender: "unknown" }, "gender", "any.only"],
-      [{ dateOfBirth: yearsAgo(13, 2) }, "dateOfBirth", "date.max"], // 12 y
-      [{ dateOfBirth: yearsAgo(121) }, "dateOfBirth", "date.min"],
-      [{ confirmPassword: "Signup@124" }, "confirmPassword", "any.only"],
-      [{ acceptTerms: false }, "acceptTerms", "any.only"],
-      [{ acceptTerms: "true" }, "acceptTerms", "boolean.base"],
-      [{ acceptTerms: undefined }, "acceptTerms", "any.required"],
-      [{ sessionToken: "abc" }, "sessionToken", "string.length"]
+      [{ fullName: "A" }, "fullName", "minLength"],
+      [{ fullName: "John3" }, "fullName", "matches"],
+      [{ gender: "unknown" }, "gender", "isIn"],
+      [{ dateOfBirth: yearsAgo(13, 2) }, "dateOfBirth", "isDateOfBirthNotTooYoung"], // 12 y
+      [{ dateOfBirth: yearsAgo(121) }, "dateOfBirth", "isDateOfBirthNotTooOld"],
+      [{ confirmPassword: "Signup@124" }, "confirmPassword", "matchesProperty"],
+      [{ acceptTerms: false }, "acceptTerms", "equals"],
+      [{ acceptTerms: "true" }, "acceptTerms", "isBoolean"],
+      [{ acceptTerms: undefined }, "acceptTerms", "isDefined"],
+      [{ sessionToken: "abc" }, "sessionToken", "isLength"]
     ];
     for (const [override, field, reason] of invalid) {
       const res = await api.auth.completeSignup(

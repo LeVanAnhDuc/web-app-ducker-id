@@ -1,46 +1,35 @@
 // types
 import type { Request } from "express";
-
-export interface FPOtpSendBody {
-  email: string;
-}
+import type {
+  MagicLinkSendBodyDto,
+  MagicLinkVerifyBodyDto,
+  OtpSendBodyDto,
+  OtpVerifyBodyDto,
+  ResetPasswordBodyDto
+} from "../dtos/requests";
 
 export type FPOtpSendRequest = Request<
   Record<string, never>,
   unknown,
-  FPOtpSendBody
+  OtpSendBodyDto
 >;
-
-export interface FPOtpVerifyBody {
-  email: string;
-  otp: string;
-}
 
 export type FPOtpVerifyRequest = Request<
   Record<string, never>,
   unknown,
-  FPOtpVerifyBody
+  OtpVerifyBodyDto
 >;
-
-export interface FPMagicLinkSendBody {
-  email: string;
-}
 
 export type FPMagicLinkSendRequest = Request<
   Record<string, never>,
   unknown,
-  FPMagicLinkSendBody
+  MagicLinkSendBodyDto
 >;
-
-export interface FPMagicLinkVerifyBody {
-  email: string;
-  token: string;
-}
 
 export type FPMagicLinkVerifyRequest = Request<
   Record<string, never>,
   unknown,
-  FPMagicLinkVerifyBody
+  MagicLinkVerifyBodyDto
 >;
 
 export interface FPVerifyResponse {
@@ -48,16 +37,10 @@ export interface FPVerifyResponse {
   resetToken: string;
 }
 
-export interface FPResetPasswordBody {
-  email: string;
-  resetToken: string;
-  newPassword: string;
-}
-
 export type FPResetPasswordRequest = Request<
   Record<string, never>,
   unknown,
-  FPResetPasswordBody
+  ResetPasswordBodyDto
 >;
 
 export interface FPResetPasswordResponse {

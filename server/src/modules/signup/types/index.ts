@@ -1,52 +1,31 @@
 // types
 import type { Request } from "express";
-import type { Gender } from "@/modules/user/types";
-
-export interface SendOtpBody {
-  email: string;
-}
-
-export interface VerifyOtpBody {
-  email: string;
-  otp: string;
-}
-
-export interface ResendOtpBody {
-  email: string;
-}
-
-export interface CompleteSignupBody {
-  email: string;
-  sessionToken: string;
-  fullName: string;
-  gender: Gender;
-  dateOfBirth: string;
-  password: string;
-  confirmPassword: string;
-  acceptTerms: boolean;
-}
-
-export interface CheckEmailParams {
-  email: string;
-  [key: string]: string;
-}
+import type {
+  CheckEmailParamsDto,
+  CompleteSignupBodyDto,
+  ResendOtpBodyDto,
+  SendOtpBodyDto,
+  VerifyOtpBodyDto
+} from "../dtos/requests";
 
 export interface SendOtpRequest extends Omit<Request, "body"> {
-  body: SendOtpBody;
+  body: SendOtpBodyDto;
 }
 
 export interface VerifyOtpRequest extends Omit<Request, "body"> {
-  body: VerifyOtpBody;
+  body: VerifyOtpBodyDto;
 }
 
 export interface ResendOtpRequest extends Omit<Request, "body"> {
-  body: ResendOtpBody;
+  body: ResendOtpBodyDto;
 }
 
 export interface CompleteSignupRequest extends Omit<Request, "body"> {
-  body: CompleteSignupBody;
+  body: CompleteSignupBodyDto;
 }
 
+// The index signature keeps the handler assignable to Express's own, whose
+// params are a string dictionary.
 export interface CheckEmailRequest extends Omit<Request, "params"> {
-  params: CheckEmailParams;
+  params: CheckEmailParamsDto & Record<string, string>;
 }

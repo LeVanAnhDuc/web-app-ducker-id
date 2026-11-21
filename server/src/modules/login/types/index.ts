@@ -1,45 +1,29 @@
 // types
 import type { Request } from "express";
-
-export interface PasswordLoginBody {
-  email: string;
-  password: string;
-}
+import type {
+  LoginBodyDto,
+  MagicLinkSendBodyDto,
+  MagicLinkVerifyBodyDto,
+  OtpSendBodyDto,
+  OtpVerifyBodyDto
+} from "../dtos/requests";
 
 export interface PasswordLoginRequest extends Omit<Request, "body"> {
-  body: PasswordLoginBody;
-}
-
-export interface OtpSendBody {
-  email: string;
-}
-
-export interface OtpVerifyBody {
-  email: string;
-  otp: string;
+  body: LoginBodyDto;
 }
 
 export interface OtpSendRequest extends Omit<Request, "body"> {
-  body: OtpSendBody;
+  body: OtpSendBodyDto;
 }
 
 export interface OtpVerifyRequest extends Omit<Request, "body"> {
-  body: OtpVerifyBody;
-}
-
-export interface MagicLinkSendBody {
-  email: string;
-}
-
-export interface MagicLinkVerifyBody {
-  email: string;
-  token: string;
+  body: OtpVerifyBodyDto;
 }
 
 export interface MagicLinkSendRequest extends Omit<Request, "body"> {
-  body: MagicLinkSendBody;
+  body: MagicLinkSendBodyDto;
 }
 
 export interface MagicLinkVerifyRequest extends Omit<Request, "body"> {
-  body: MagicLinkVerifyBody;
+  body: MagicLinkVerifyBodyDto;
 }

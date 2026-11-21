@@ -1,6 +1,9 @@
 // types
 import type { Request } from "express";
-import type { MagicLinkSendBody, MagicLinkVerifyBody } from "../../types";
+import type {
+  MagicLinkSendBodyDto,
+  MagicLinkVerifyBodyDto
+} from "../../dtos/requests";
 import type { LoginResponseDto, MagicLinkSendDto } from "../../dtos";
 import type { MagicLinkLoginStrategyDeps } from "./deps";
 // others
@@ -12,13 +15,16 @@ export class MagicLinkLoginStrategy {
   constructor(private readonly deps: MagicLinkLoginStrategyDeps) {}
 
   @LogMethod({ name: "Magic link send" })
-  sendLink(body: MagicLinkSendBody, req: Request): Promise<MagicLinkSendDto> {
+  sendLink(
+    body: MagicLinkSendBodyDto,
+    req: Request
+  ): Promise<MagicLinkSendDto> {
     return sendLink(this.deps, body, req);
   }
 
   @LogMethod({ name: "Magic link verification" })
   verifyLink(
-    body: MagicLinkVerifyBody,
+    body: MagicLinkVerifyBodyDto,
     req: Request
   ): Promise<LoginResponseDto> {
     return verifyLink(this.deps, body, req);

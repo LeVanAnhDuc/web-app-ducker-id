@@ -51,8 +51,10 @@ const body = {
   password: "Str0ng@Pass",
   fullName: "Test User",
   gender: "male",
-  dateOfBirth: "1998-04-21",
-  sessionToken: "session-token"
+  dateOfBirth: new Date("1998-04-21"),
+  sessionToken: "session-token",
+  confirmPassword: "Str0ng@Pass",
+  acceptTerms: true
 } as Parameters<SignupService["completeSignup"]>[0];
 
 const setup = () => {

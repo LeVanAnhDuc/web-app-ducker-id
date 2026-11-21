@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 // types
 import type { Schema } from "mongoose";
 import type { Gender } from "@/modules/user/types";
-import type { CompleteSignupBody } from "../types";
+import type { CompleteSignupBodyDto } from "../dtos/requests";
 import type { CompleteSignupDto } from "../dtos";
 import type { SignupServiceDeps } from "./deps";
 // common
@@ -33,7 +33,7 @@ const createUserAccount = async (
   password: string,
   fullName: string,
   gender: Gender,
-  dateOfBirth: string
+  dateOfBirth: Date
 ): Promise<{
   authId: Schema.Types.ObjectId;
   userId: Schema.Types.ObjectId;
@@ -59,7 +59,7 @@ const createUserAccount = async (
           email,
           fullName,
           gender,
-          dateOfBirth: new Date(dateOfBirth)
+          dateOfBirth
         },
         session
       );
@@ -95,7 +95,7 @@ const createUserAccount = async (
 
 export const completeSignup = async (
   deps: SignupServiceDeps,
-  body: CompleteSignupBody
+  body: CompleteSignupBodyDto
 ): Promise<CompleteSignupDto> => {
   const { email, password, fullName, gender, dateOfBirth, sessionToken } = body;
 

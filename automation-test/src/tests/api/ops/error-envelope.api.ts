@@ -52,12 +52,12 @@ test(
         expect.arrayContaining([
           {
             field: "email",
-            reason: "string.email",
+            reason: "isEmail",
             message: server[lang].validation.email.invalid
           },
           {
             field: "password",
-            reason: "any.required",
+            reason: "isDefined",
             message: server[lang].validation.password.required
           }
         ])

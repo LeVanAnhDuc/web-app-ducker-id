@@ -1,6 +1,7 @@
 // libs
 import {
   IsBoolean,
+  IsDate,
   IsInt,
   IsOptional,
   IsString,
@@ -18,6 +19,7 @@ import {
   Lowercase,
   MatchesProperty,
   ToBoolean,
+  ToDate,
   ToInt,
   Trim
 } from "@/validators/decorators";
@@ -32,6 +34,12 @@ class IntDto {
   @IsInt({ message: "validation:page.invalid" })
   @ToInt()
   page!: number;
+}
+
+class DateDto {
+  @IsDate({ message: "validation:dateOfBirth.invalid" })
+  @ToDate()
+  date!: Date;
 }
 
 class TrimmedDto {
@@ -151,6 +159,35 @@ describe("ToInt", () => {
 
       expect(failures).toEqual([
         { field: "page", reason: "isInt", key: "validation:page.invalid" }
+      ]);
+    }
+  );
+});
+
+describe("ToDate", () => {
+  it.each([
+    ["1995-05-15", "1995-05-15T00:00:00.000Z"],
+    ["1995-05-15T10:30:00.000Z", "1995-05-15T10:30:00.000Z"],
+    [800000000000, "1995-05-09T06:13:20.000Z"],
+    ["800000000000", "1995-05-09T06:13:20.000Z"]
+  ])("converts %p as Joi's date() does", async (date, expected) => {
+    const { value, failures } = await validateDto(DateDto, { date });
+
+    expect(failures).toEqual([]);
+    expect(value.date).toEqual(new Date(expected));
+  });
+
+  it.each(["", "   ", "not-a-date", true, Number.NaN])(
+    "leaves %p for @IsDate to reject",
+    async (date) => {
+      const { failures } = await validateDto(DateDto, { date });
+
+      expect(failures).toEqual([
+        {
+          field: "date",
+          reason: "isDate",
+          key: "validation:dateOfBirth.invalid"
+        }
       ]);
     }
   );

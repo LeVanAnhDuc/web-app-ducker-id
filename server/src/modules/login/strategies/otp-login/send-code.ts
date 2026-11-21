@@ -1,6 +1,6 @@
 // types
 import type { Request } from "express";
-import type { OtpSendBody } from "../../types";
+import type { OtpSendBodyDto } from "../../dtos/requests";
 import type { OtpSendDto } from "../../dtos";
 import type { OtpLoginStrategyDeps } from "./deps";
 // common
@@ -16,7 +16,7 @@ import { LOGIN_OTP_CONFIG } from "../../constants";
 
 export const sendCode = async (
   deps: OtpLoginStrategyDeps,
-  body: OtpSendBody,
+  body: OtpSendBodyDto,
   req: Request
 ): Promise<OtpSendDto> => {
   const { email } = body;

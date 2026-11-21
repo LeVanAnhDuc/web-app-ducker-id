@@ -6,14 +6,14 @@ import type { RateLimiterMiddleware } from "@/middlewares";
 import type { SignupController } from "./signup.controller";
 // common
 import { handle } from "@/common/responses";
-// validators
+// modules
 import {
-  sendOtpSchema,
-  resendOtpSchema,
-  verifyOtpSchema,
-  completeSignupSchema,
-  checkEmailSchema
-} from "@/validators/schemas/signup";
+  SendOtpBodyDto,
+  ResendOtpBodyDto,
+  VerifyOtpBodyDto,
+  CompleteSignupBodyDto,
+  CheckEmailParamsDto
+} from "@/modules/signup/dtos/requests";
 // others
 import { bodyPipe, paramsPipe } from "@/middlewares";
 
@@ -28,13 +28,13 @@ export const createSignupRoutes = (
     "/send-otp",
     rl.signupOtpByIp,
     rl.signupOtpByEmail,
-    bodyPipe(sendOtpSchema),
+    bodyPipe(SendOtpBodyDto),
     handle(controller.sendOtp, { message: "signup:success.otpSent" })
   );
 
   signup.post(
     "/verify-otp",
-    bodyPipe(verifyOtpSchema),
+    bodyPipe(VerifyOtpBodyDto),
     handle(controller.verifyOtp, { message: "signup:success.otpVerified" })
   );
 
@@ -42,13 +42,13 @@ export const createSignupRoutes = (
     "/resend-otp",
     rl.signupOtpByIp,
     rl.signupOtpByEmail,
-    bodyPipe(resendOtpSchema),
+    bodyPipe(ResendOtpBodyDto),
     handle(controller.resendOtp, { message: "signup:success.otpResent" })
   );
 
   signup.post(
     "/complete",
-    bodyPipe(completeSignupSchema),
+    bodyPipe(CompleteSignupBodyDto),
     handle(controller.completeSignup, {
       status: StatusCodes.CREATED,
       message: "signup:success.signupCompleted"
@@ -58,7 +58,7 @@ export const createSignupRoutes = (
   signup.get(
     "/check-email/:email",
     rl.checkEmailByIp,
-    paramsPipe(checkEmailSchema),
+    paramsPipe(CheckEmailParamsDto),
     handle(controller.checkEmail)
   );
 

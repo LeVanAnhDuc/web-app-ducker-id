@@ -148,7 +148,7 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/auth.md
 - **Bước:**
   1. `POST /verify-otp` với `12345`, `1234567`, `12a456`, `""`, `000000`.
 - **Mong đợi:** bốn giá trị đầu → 400 `VALIDATION_ERROR` trên `otp`
-  (`string.length` / `string.pattern.base` / `string.empty`); `000000` qua
+  (`isLength` / `matches` / `isNotEmpty`); `000000` qua
   validation và thất bại với `SIGNUP_OTP_INVALID`.
 - **Automated:** `tests/api/auth/signup.api.ts`
 
@@ -231,8 +231,8 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/auth.md
 - **Bước:**
   1. `POST /complete` (session giả) chỉ thay đổi `password` /
      `confirmPassword`.
-- **Mong đợi:** 7 → `string.min`, 129 → `string.max`, mỗi lỗi về loại ký tự →
-  `string.pattern.base` (400 `VALIDATION_ERROR` trên `password`); 8 và 128 qua
+- **Mong đợi:** 7 → `minLength`, 129 → `maxLength`, mỗi lỗi về loại ký tự →
+  `matches` (400 `VALIDATION_ERROR` trên `password`); 8 và 128 qua
   validation (`SIGNUP_SESSION_INVALID`).
 - **Automated:** `tests/api/auth/signup.api.ts`
 
@@ -247,7 +247,7 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/auth.md
 - **Bước:**
   1. `POST /complete` (session giả) mỗi lần đổi một field.
 - **Mong đợi:** mỗi giá trị không hợp lệ → 400 `VALIDATION_ERROR` chỉ đúng field
-  và rule Joi; `fullName: "Al"` với ngày sinh của người 14 tuổi qua
+  và constraint (`reason`); `fullName: "Al"` với ngày sinh của người 14 tuổi qua
   validation.
 - **Automated:** `tests/api/auth/signup.api.ts`
 
@@ -474,8 +474,8 @@ HttpOnly; SameSite=Lax; Path=/` và một `sid` HttpOnly.
 - **Bước:**
   1. Send, plant một token; verify với các token sai định dạng, một token sai,
      token đúng, rồi token đúng lần nữa.
-- **Mong đợi:** sai định dạng → 400 trên `token` (`string.length` /
-  `string.pattern.base` / `string.empty`); sai → 401
+- **Mong đợi:** sai định dạng → 400 trên `token` (`isLength` /
+  `matches` / `isNotEmpty`); sai → 401
   `LOGIN_MAGIC_LINK_INVALID` và link thật vẫn dùng được; đúng → 200 kèm
   refresh cookie HttpOnly; replay → 401 "Invalid or expired magic link".
 - **Automated:** `tests/api/auth/magic-link.api.ts`
@@ -769,8 +769,8 @@ not-a-jwt`.
 - **Tiền điều kiện:** một tài khoản dùng một lần
 - **Bước:**
   1. `POST /auth/login/otp/verify` với `12345`, `1234567`, `12a456`, `""`, rồi `000000`.
-- **Mong đợi:** bốn giá trị đầu → 400 `VALIDATION_ERROR` trên `otp` (`string.length` / `string.pattern.base` /
-  `string.empty`); `000000` qua validation và thất bại với 401 `LOGIN_OTP_INVALID`.
+- **Mong đợi:** bốn giá trị đầu → 400 `VALIDATION_ERROR` trên `otp` (`isLength` / `matches` /
+  `isNotEmpty`); `000000` qua validation và thất bại với 401 `LOGIN_OTP_INVALID`.
 - **Automated:** `tests/api/auth/login-otp.api.ts`
 
 ### TC-AUTH-062 — Login code sends are capped at three per code lifetime

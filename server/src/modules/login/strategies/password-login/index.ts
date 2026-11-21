@@ -3,7 +3,7 @@ import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { UserDocument } from "@/modules/user/types";
 import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 import type { Request } from "express";
-import type { PasswordLoginBody } from "../../types";
+import type { LoginBodyDto } from "../../dtos/requests";
 import type { FailedAttemptsRepository } from "../../repositories/failed-attempts.repository";
 import type { LoginResponseDto } from "../../dtos";
 import type {
@@ -43,7 +43,7 @@ export class PasswordLoginStrategy {
 
   @LogMethod({ name: "Password login" })
   async authenticate(
-    body: PasswordLoginBody,
+    body: LoginBodyDto,
     req: Request
   ): Promise<LoginResponseDto> {
     const { email, password } = body;

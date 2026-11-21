@@ -1,23 +1,99 @@
-// libs
-import j2s from "joi-to-swagger";
 // types
 import type { OpenAPIV3 } from "openapi-types";
+// modules
+import {
+  FORGOT_PASSWORD_MAGIC_LINK_CONFIG,
+  FORGOT_PASSWORD_RESET_TOKEN_CONFIG
+} from "@/modules/forgot-password/constants";
 // validators
 import {
-  fpOtpSendSchema,
-  fpOtpVerifySchema,
-  fpMagicLinkSendSchema,
-  fpMagicLinkVerifySchema,
-  fpResetPasswordSchema
-} from "@/validators/schemas/forgot-password";
+  EMAIL_VALIDATION,
+  NUMERIC_OTP_PATTERN,
+  OTP_VALIDATION,
+  PASSWORD_STRENGTH_PATTERN,
+  PASSWORD_VALIDATION
+} from "@/validators/constants";
 
-const { swagger: FPOtpSendRequestSchema } = j2s(fpOtpSendSchema);
-const { swagger: FPOtpVerifyRequestSchema } = j2s(fpOtpVerifySchema);
-const { swagger: FPMagicLinkSendRequestSchema } = j2s(fpMagicLinkSendSchema);
-const { swagger: FPMagicLinkVerifyRequestSchema } = j2s(
-  fpMagicLinkVerifySchema
-);
-const { swagger: FPResetPasswordRequestSchema } = j2s(fpResetPasswordSchema);
+const emailField: OpenAPIV3.SchemaObject = {
+  type: "string",
+  format: "email",
+  minLength: EMAIL_VALIDATION.MIN_LENGTH,
+  maxLength: EMAIL_VALIDATION.MAX_LENGTH,
+  example: "user@example.com"
+};
+
+const otpField: OpenAPIV3.SchemaObject = {
+  type: "string",
+  minLength: OTP_VALIDATION.LENGTH,
+  maxLength: OTP_VALIDATION.LENGTH,
+  pattern: NUMERIC_OTP_PATTERN.source,
+  example: "123456"
+};
+
+const passwordField: OpenAPIV3.SchemaObject = {
+  type: "string",
+  minLength: PASSWORD_VALIDATION.MIN_LENGTH,
+  maxLength: PASSWORD_VALIDATION.MAX_LENGTH,
+  pattern: PASSWORD_STRENGTH_PATTERN.source
+};
+
+const tokenField: OpenAPIV3.SchemaObject = {
+  type: "string",
+  minLength: FORGOT_PASSWORD_MAGIC_LINK_CONFIG.TOKEN_LENGTH * 2,
+  maxLength: FORGOT_PASSWORD_MAGIC_LINK_CONFIG.TOKEN_LENGTH * 2,
+  pattern: "^[a-f0-9]+$"
+};
+
+const resetTokenField: OpenAPIV3.SchemaObject = {
+  type: "string",
+  minLength: FORGOT_PASSWORD_RESET_TOKEN_CONFIG.TOKEN_LENGTH * 2,
+  maxLength: FORGOT_PASSWORD_RESET_TOKEN_CONFIG.TOKEN_LENGTH * 2,
+  pattern: "^[a-f0-9]+$"
+};
+
+const FPOtpSendRequestSchema: OpenAPIV3.SchemaObject = {
+  type: "object",
+  required: ["email"],
+  properties: {
+    email: emailField
+  }
+};
+
+const FPOtpVerifyRequestSchema: OpenAPIV3.SchemaObject = {
+  type: "object",
+  required: ["email", "otp"],
+  properties: {
+    email: emailField,
+    otp: otpField
+  }
+};
+
+const FPMagicLinkSendRequestSchema: OpenAPIV3.SchemaObject = {
+  type: "object",
+  required: ["email"],
+  properties: {
+    email: emailField
+  }
+};
+
+const FPMagicLinkVerifyRequestSchema: OpenAPIV3.SchemaObject = {
+  type: "object",
+  required: ["email", "token"],
+  properties: {
+    email: emailField,
+    token: tokenField
+  }
+};
+
+const FPResetPasswordRequestSchema: OpenAPIV3.SchemaObject = {
+  type: "object",
+  required: ["email", "resetToken", "newPassword"],
+  properties: {
+    email: emailField,
+    resetToken: resetTokenField,
+    newPassword: passwordField
+  }
+};
 
 const FPSendResponseSchema: OpenAPIV3.SchemaObject = {
   type: "object",
@@ -68,14 +144,11 @@ export const forgotPasswordSwaggerSchemas: Record<
   string,
   OpenAPIV3.SchemaObject
 > = {
-  FPOtpSendRequest: FPOtpSendRequestSchema as OpenAPIV3.SchemaObject,
-  FPOtpVerifyRequest: FPOtpVerifyRequestSchema as OpenAPIV3.SchemaObject,
-  FPMagicLinkSendRequest:
-    FPMagicLinkSendRequestSchema as OpenAPIV3.SchemaObject,
-  FPMagicLinkVerifyRequest:
-    FPMagicLinkVerifyRequestSchema as OpenAPIV3.SchemaObject,
-  FPResetPasswordRequest:
-    FPResetPasswordRequestSchema as OpenAPIV3.SchemaObject,
+  FPOtpSendRequest: FPOtpSendRequestSchema,
+  FPOtpVerifyRequest: FPOtpVerifyRequestSchema,
+  FPMagicLinkSendRequest: FPMagicLinkSendRequestSchema,
+  FPMagicLinkVerifyRequest: FPMagicLinkVerifyRequestSchema,
+  FPResetPasswordRequest: FPResetPasswordRequestSchema,
   FPSendResponse: FPSendResponseSchema,
   FPVerifyResponse: FPVerifyResponseSchema,
   FPResetPasswordResponse: FPResetPasswordResponseSchema

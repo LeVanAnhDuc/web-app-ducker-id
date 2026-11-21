@@ -1,6 +1,6 @@
 // types
 import type { Request } from "express";
-import type { MagicLinkSendBody } from "../../types";
+import type { MagicLinkSendBodyDto } from "../../dtos/requests";
 import type { MagicLinkSendDto } from "../../dtos";
 import type { MagicLinkLoginStrategyDeps } from "./deps";
 // dtos
@@ -14,7 +14,7 @@ import { MAGIC_LINK_CONFIG } from "../../constants";
 
 export const sendLink = async (
   deps: MagicLinkLoginStrategyDeps,
-  body: MagicLinkSendBody,
+  body: MagicLinkSendBodyDto,
   req: Request
 ): Promise<MagicLinkSendDto> => {
   const { email } = body;

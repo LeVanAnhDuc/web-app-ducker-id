@@ -5,8 +5,8 @@ import type { RateLimiterMiddleware } from "@/middlewares";
 import type { ChangePasswordController } from "./change-password.controller";
 // common
 import { handle } from "@/common/responses";
-// validators
-import { changePasswordSchema } from "@/validators/schemas/change-password";
+// modules
+import { ChangePasswordBodyDto } from "@/modules/change-password/dtos/requests";
 // middlewares
 import { passwordChangeAuthGuard, bodyPipe } from "@/middlewares";
 // others
@@ -22,7 +22,7 @@ export const createChangePasswordRoutes = (
     // The one way out of a temporary-password session — it must accept one.
     passwordChangeAuthGuard,
     rl.changePasswordByIpAndUser,
-    bodyPipe(changePasswordSchema),
+    bodyPipe(ChangePasswordBodyDto),
     handle(controller.changePassword, {
       message: "changePassword:success.passwordChanged"
     })

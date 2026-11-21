@@ -1,0 +1,1541 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`signup request DTOs match the Joi schemas CheckEmailParamsDto ≡ checkEmailSchema: empty 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": CheckEmailParamsDto {
+    "email": "",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CheckEmailParamsDto ≡ checkEmailSchema: missing 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CheckEmailParamsDto {},
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CheckEmailParamsDto ≡ checkEmailSchema: notAnEmail 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.invalid",
+      "reason": "isEmail",
+    },
+  ],
+  "value": CheckEmailParamsDto {
+    "email": "user",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CheckEmailParamsDto ≡ checkEmailSchema: null 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CheckEmailParamsDto {
+    "email": null,
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CheckEmailParamsDto ≡ checkEmailSchema: paddedUpperCase 1`] = `
+{
+  "failures": [],
+  "value": CheckEmailParamsDto {
+    "email": "user@example.com",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CheckEmailParamsDto ≡ checkEmailSchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": CheckEmailParamsDto {
+    "email": "user@example.com",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CheckEmailParamsDto ≡ checkEmailSchema: valid 1`] = `
+{
+  "failures": [],
+  "value": CheckEmailParamsDto {
+    "email": "user@example.com",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CheckEmailParamsDto ≡ checkEmailSchema: wrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": CheckEmailParamsDto {
+    "email": 123,
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: acceptTermsFalse 1`] = `
+{
+  "failures": [
+    {
+      "field": "acceptTerms",
+      "key": "signup:errors.acceptTermsRequired",
+      "reason": "equals",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": false,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: acceptTermsMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "acceptTerms",
+      "key": "signup:errors.acceptTermsRequired",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: acceptTermsNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "acceptTerms",
+      "key": "signup:errors.acceptTermsRequired",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": null,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: acceptTermsNumber 1`] = `
+{
+  "failures": [
+    {
+      "field": "acceptTerms",
+      "key": "signup:errors.acceptTermsRequired",
+      "reason": "isBoolean",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": 1,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: acceptTermsStringTrue 1`] = `
+{
+  "failures": [
+    {
+      "field": "acceptTerms",
+      "key": "signup:errors.acceptTermsRequired",
+      "reason": "isBoolean",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": "true",
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: confirmPasswordEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "confirmPassword",
+      "key": "signup:errors.passwordMismatch",
+      "reason": "matchesProperty",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: confirmPasswordMismatch 1`] = `
+{
+  "failures": [
+    {
+      "field": "confirmPassword",
+      "key": "signup:errors.passwordMismatch",
+      "reason": "matchesProperty",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret2!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: confirmPasswordMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "confirmPassword",
+      "key": "signup:errors.confirmPasswordRequired",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: confirmPasswordNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "confirmPassword",
+      "key": "signup:errors.passwordMismatch",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": null,
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: confirmPasswordWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "confirmPassword",
+      "key": "signup:errors.passwordMismatch",
+      "reason": "matchesProperty",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": 123,
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: dateOfBirthEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "dateOfBirth",
+      "key": "validation:dateOfBirth.invalid",
+      "reason": "isDate",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": "",
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: dateOfBirthMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "dateOfBirth",
+      "key": "validation:dateOfBirth.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: dateOfBirthNotADate 1`] = `
+{
+  "failures": [
+    {
+      "field": "dateOfBirth",
+      "key": "validation:dateOfBirth.invalid",
+      "reason": "isDate",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": "not-a-date",
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: dateOfBirthNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "dateOfBirth",
+      "key": "validation:dateOfBirth.invalid",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": null,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: dateOfBirthTooOld 1`] = `
+{
+  "failures": [
+    {
+      "field": "dateOfBirth",
+      "key": "validation:dateOfBirth.tooOld",
+      "reason": "isDateOfBirthNotTooOld",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1900-01-01T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: dateOfBirthTooYoung 1`] = `
+{
+  "failures": [
+    {
+      "field": "dateOfBirth",
+      "key": "validation:dateOfBirth.tooYoung",
+      "reason": "isDateOfBirthNotTooYoung",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 2025-01-01T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: dateOfBirthWhitespace 1`] = `
+{
+  "failures": [
+    {
+      "field": "dateOfBirth",
+      "key": "validation:dateOfBirth.invalid",
+      "reason": "isDate",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": "   ",
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: dateOfBirthWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "dateOfBirth",
+      "key": "validation:dateOfBirth.invalid",
+      "reason": "isDate",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": true,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: emailInvalid 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.invalid",
+      "reason": "isEmail",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: emailMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: empty 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isDefined",
+    },
+    {
+      "field": "password",
+      "key": "validation:password.required",
+      "reason": "isDefined",
+    },
+    {
+      "field": "confirmPassword",
+      "key": "signup:errors.confirmPasswordRequired",
+      "reason": "isDefined",
+    },
+    {
+      "field": "sessionToken",
+      "key": "signup:errors.sessionTokenRequired",
+      "reason": "isDefined",
+    },
+    {
+      "field": "acceptTerms",
+      "key": "signup:errors.acceptTermsRequired",
+      "reason": "isDefined",
+    },
+    {
+      "field": "fullName",
+      "key": "validation:fullName.required",
+      "reason": "isDefined",
+    },
+    {
+      "field": "gender",
+      "key": "validation:gender.required",
+      "reason": "isDefined",
+    },
+    {
+      "field": "dateOfBirth",
+      "key": "validation:dateOfBirth.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CompleteSignupBodyDto {},
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: fullNameEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "fullName",
+      "key": "validation:fullName.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: fullNameMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "fullName",
+      "key": "validation:fullName.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: fullNamePatternBreak 1`] = `
+{
+  "failures": [
+    {
+      "field": "fullName",
+      "key": "validation:fullName.invalid",
+      "reason": "matches",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "John3",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: fullNameTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "fullName",
+      "key": "validation:fullName.maxLength",
+      "reason": "maxLength",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: fullNameTooShort 1`] = `
+{
+  "failures": [
+    {
+      "field": "fullName",
+      "key": "validation:fullName.minLength",
+      "reason": "minLength",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: fullNameWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "fullName",
+      "key": "validation:fullName.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": 123,
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: genderEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "gender",
+      "key": "validation:gender.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: genderMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "gender",
+      "key": "validation:gender.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: genderUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "gender",
+      "key": "validation:gender.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "unknown",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: genderWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "gender",
+      "key": "validation:gender.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": 1,
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: passwordEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "password",
+      "key": "validation:password.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: passwordMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "password",
+      "key": "validation:password.required",
+      "reason": "isDefined",
+    },
+    {
+      "field": "confirmPassword",
+      "key": "signup:errors.passwordMismatch",
+      "reason": "matchesProperty",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: passwordPatternBreak 1`] = `
+{
+  "failures": [
+    {
+      "field": "password",
+      "key": "validation:password.pattern",
+      "reason": "matches",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "secretpassword",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "secretpassword",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: passwordTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "password",
+      "key": "validation:password.maxLength",
+      "reason": "maxLength",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: passwordTooShort 1`] = `
+{
+  "failures": [
+    {
+      "field": "password",
+      "key": "validation:password.minLength",
+      "reason": "minLength",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Se1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Se1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: passwordWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "password",
+      "key": "validation:password.required",
+      "reason": "isString",
+    },
+    {
+      "field": "confirmPassword",
+      "key": "signup:errors.passwordMismatch",
+      "reason": "matchesProperty",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": 12345678,
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: sessionTokenEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "sessionToken",
+      "key": "signup:errors.sessionTokenRequired",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: sessionTokenMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "sessionToken",
+      "key": "signup:errors.sessionTokenRequired",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: sessionTokenNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "sessionToken",
+      "key": "signup:errors.sessionTokenRequired",
+      "reason": "isDefined",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": null,
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: sessionTokenTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "sessionToken",
+      "key": "signup:errors.sessionTokenInvalid",
+      "reason": "isLength",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: sessionTokenTooShort 1`] = `
+{
+  "failures": [
+    {
+      "field": "sessionToken",
+      "key": "signup:errors.sessionTokenInvalid",
+      "reason": "isLength",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: sessionTokenWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "sessionToken",
+      "key": "signup:errors.sessionTokenInvalid",
+      "reason": "isString",
+    },
+  ],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": 123,
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: valid 1`] = `
+{
+  "failures": [],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: validDateOfBirthIsoDateTime 1`] = `
+{
+  "failures": [],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T10:30:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: validDateOfBirthNumericString 1`] = `
+{
+  "failures": [],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-09T06:13:20.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: validDateOfBirthTimestamp 1`] = `
+{
+  "failures": [],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-09T06:13:20.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas CompleteSignupBodyDto ≡ completeSignupSchema: validPaddedEmail 1`] = `
+{
+  "failures": [],
+  "value": CompleteSignupBodyDto {
+    "acceptTerms": true,
+    "confirmPassword": "Secret1!",
+    "dateOfBirth": 1995-05-15T00:00:00.000Z,
+    "email": "user@example.com",
+    "fullName": "Nguyễn Văn A",
+    "gender": "male",
+    "password": "Secret1!",
+    "sessionToken": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas ResendOtpBodyDto ≡ resendOtpSchema: empty 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": ResendOtpBodyDto {
+    "email": "",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas ResendOtpBodyDto ≡ resendOtpSchema: missing 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": ResendOtpBodyDto {},
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas ResendOtpBodyDto ≡ resendOtpSchema: notAnEmail 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.invalid",
+      "reason": "isEmail",
+    },
+  ],
+  "value": ResendOtpBodyDto {
+    "email": "user",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas ResendOtpBodyDto ≡ resendOtpSchema: null 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": ResendOtpBodyDto {
+    "email": null,
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas ResendOtpBodyDto ≡ resendOtpSchema: paddedUpperCase 1`] = `
+{
+  "failures": [],
+  "value": ResendOtpBodyDto {
+    "email": "user@example.com",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas ResendOtpBodyDto ≡ resendOtpSchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": ResendOtpBodyDto {
+    "email": "user@example.com",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas ResendOtpBodyDto ≡ resendOtpSchema: valid 1`] = `
+{
+  "failures": [],
+  "value": ResendOtpBodyDto {
+    "email": "user@example.com",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas ResendOtpBodyDto ≡ resendOtpSchema: wrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": ResendOtpBodyDto {
+    "email": 123,
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas SendOtpBodyDto ≡ sendOtpSchema: empty 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": SendOtpBodyDto {
+    "email": "",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas SendOtpBodyDto ≡ sendOtpSchema: missing 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": SendOtpBodyDto {},
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas SendOtpBodyDto ≡ sendOtpSchema: notAnEmail 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.invalid",
+      "reason": "isEmail",
+    },
+  ],
+  "value": SendOtpBodyDto {
+    "email": "user",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas SendOtpBodyDto ≡ sendOtpSchema: null 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": SendOtpBodyDto {
+    "email": null,
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas SendOtpBodyDto ≡ sendOtpSchema: paddedUpperCase 1`] = `
+{
+  "failures": [],
+  "value": SendOtpBodyDto {
+    "email": "user@example.com",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas SendOtpBodyDto ≡ sendOtpSchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": SendOtpBodyDto {
+    "email": "user@example.com",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas SendOtpBodyDto ≡ sendOtpSchema: valid 1`] = `
+{
+  "failures": [],
+  "value": SendOtpBodyDto {
+    "email": "user@example.com",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas SendOtpBodyDto ≡ sendOtpSchema: wrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": SendOtpBodyDto {
+    "email": 123,
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas VerifyOtpBodyDto ≡ verifyOtpSchema: bothMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isDefined",
+    },
+    {
+      "field": "otp",
+      "key": "validation:otp.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": VerifyOtpBodyDto {},
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas VerifyOtpBodyDto ≡ verifyOtpSchema: emailInvalid 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.invalid",
+      "reason": "isEmail",
+    },
+  ],
+  "value": VerifyOtpBodyDto {
+    "email": "user",
+    "otp": "123456",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas VerifyOtpBodyDto ≡ verifyOtpSchema: emailMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "email",
+      "key": "validation:email.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": VerifyOtpBodyDto {
+    "otp": "123456",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas VerifyOtpBodyDto ≡ verifyOtpSchema: otpEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "otp",
+      "key": "validation:otp.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": VerifyOtpBodyDto {
+    "email": "user@example.com",
+    "otp": "",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas VerifyOtpBodyDto ≡ verifyOtpSchema: otpMissing 1`] = `
+{
+  "failures": [
+    {
+      "field": "otp",
+      "key": "validation:otp.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": VerifyOtpBodyDto {
+    "email": "user@example.com",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas VerifyOtpBodyDto ≡ verifyOtpSchema: otpNotDigits 1`] = `
+{
+  "failures": [
+    {
+      "field": "otp",
+      "key": "validation:otp.digitsOnly",
+      "reason": "matches",
+    },
+  ],
+  "value": VerifyOtpBodyDto {
+    "email": "user@example.com",
+    "otp": "12a456",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas VerifyOtpBodyDto ≡ verifyOtpSchema: otpNull 1`] = `
+{
+  "failures": [
+    {
+      "field": "otp",
+      "key": "validation:otp.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": VerifyOtpBodyDto {
+    "email": "user@example.com",
+    "otp": null,
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas VerifyOtpBodyDto ≡ verifyOtpSchema: otpTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "otp",
+      "key": "validation:otp.length",
+      "reason": "isLength",
+    },
+  ],
+  "value": VerifyOtpBodyDto {
+    "email": "user@example.com",
+    "otp": "1234567",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas VerifyOtpBodyDto ≡ verifyOtpSchema: otpTooShort 1`] = `
+{
+  "failures": [
+    {
+      "field": "otp",
+      "key": "validation:otp.length",
+      "reason": "isLength",
+    },
+  ],
+  "value": VerifyOtpBodyDto {
+    "email": "user@example.com",
+    "otp": "12345",
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas VerifyOtpBodyDto ≡ verifyOtpSchema: otpWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "otp",
+      "key": "validation:otp.required",
+      "reason": "isString",
+    },
+  ],
+  "value": VerifyOtpBodyDto {
+    "email": "user@example.com",
+    "otp": 123456,
+  },
+}
+`;
+
+exports[`signup request DTOs match the Joi schemas VerifyOtpBodyDto ≡ verifyOtpSchema: valid 1`] = `
+{
+  "failures": [],
+  "value": VerifyOtpBodyDto {
+    "email": "user@example.com",
+    "otp": "123456",
+  },
+}
+`;

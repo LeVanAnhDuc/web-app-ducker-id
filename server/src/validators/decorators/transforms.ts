@@ -33,3 +33,20 @@ export const ToBoolean = (): PropertyDecorator =>
     if (value === "false") return false;
     return value;
   });
+
+const NUMERIC_STRING = /^[+-]?\d+(\.\d+)?$/;
+
+// Converts what Joi's `date()` converts: a timestamp (number or numeric
+// string) or any other string `new Date` can parse. Blank strings stay text,
+// which Joi refuses too.
+export const ToDate = (): PropertyDecorator =>
+  Transform(({ value }: { value: unknown }) => {
+    let input: number | string;
+    if (typeof value === "number") input = value;
+    else if (typeof value === "string" && value.trim() !== "")
+      input = NUMERIC_STRING.test(value) ? parseFloat(value) : value;
+    else return value;
+
+    const date = new Date(input);
+    return Number.isNaN(date.getTime()) ? value : date;
+  });

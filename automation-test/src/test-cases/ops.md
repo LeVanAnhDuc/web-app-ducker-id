@@ -105,8 +105,8 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/ops.md
 - **Bước:**
   1. `POST /api/v1/auth/login` với `{ email: "not-an-email" }` bằng en, rồi vi.
 - **Mong đợi:** 400 `code: VALIDATION_ERROR`; message `Validation failed` /
-  `Dữ liệu không hợp lệ`; `errors[]` có `email` (`string.email`) và
-  `password` (`any.required`) kèm message đã dịch.
+  `Dữ liệu không hợp lệ`; `errors[]` có `email` (`isEmail`) và
+  `password` (`isDefined`) kèm message đã dịch.
 - **Automated:** `tests/api/ops/error-envelope.api.ts`
 
 ### TC-OPS-009 — A protected endpoint without a token answers 401, translated
