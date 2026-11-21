@@ -2,7 +2,9 @@
 import type { UserAppsQueryDto } from "../dtos/requests";
 import type { PaginatedResult } from "@/common/pagination";
 import type { UserAppDto } from "../dtos";
-import type { WebAppServiceDeps } from "./deps";
+import type { FavoriteRepository } from "@/modules/favorite/repository/favorite.repository";
+import type { AccessPolicy } from "@/modules/entitlement/services/access-policy";
+import type { WebAppRepository } from "../repository/web-app.repository";
 // dtos
 import { toUserAppDto } from "../dtos";
 // others
@@ -13,7 +15,11 @@ import { buildAccessFilter } from "@/modules/entitlement/entitlement.helper";
 import { RequestContext } from "@/utils/request-context";
 
 export const listUserApps = async (
-  deps: WebAppServiceDeps,
+  deps: {
+    webAppRepo: WebAppRepository;
+    favoriteRepo: FavoriteRepository;
+    accessPolicy: AccessPolicy;
+  },
   query: UserAppsQueryDto,
   role?: string
 ): Promise<PaginatedResult<UserAppDto>> => {

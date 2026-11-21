@@ -15,7 +15,6 @@ import type { AuthenticationService } from "@/modules/authentication/services";
 import type { UserService } from "@/modules/user/services";
 import type { OtpSignupRepository } from "../../repositories/otp-signup.repository";
 import type { SessionSignupRepository } from "../../repositories/session-signup.repository";
-import type { SignupServiceDeps } from "../deps";
 // common
 import {
   BadRequestError,
@@ -78,23 +77,22 @@ const setup = () => {
     clear: jest.fn().mockResolvedValue(undefined)
   } as unknown as jest.Mocked<SessionSignupRepository>;
 
-  const deps = {
+  const service = new SignupService(
     authService,
     userService,
     otpSignupRepo,
     sessionSignupRepo,
-    emailDispatcher: { send: jest.fn() },
-    emailAvailableGuard: new EmailAvailableGuard(userService),
-    cooldownGuard: {}
-  } as unknown as SignupServiceDeps;
+    { send: jest.fn() } as never,
+    new EmailAvailableGuard(userService),
+    {} as never
+  );
 
   return {
-    deps,
     authService,
     userService,
     otpSignupRepo,
     sessionSignupRepo,
-    service: new SignupService(deps)
+    service
   };
 };
 

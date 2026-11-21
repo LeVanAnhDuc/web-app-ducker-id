@@ -28,7 +28,7 @@ export const createOAuthModule = (
   const oauthRepo = new RedisOAuthRepository(redisClient);
   const webAppRepo = new MongoWebAppRepository();
 
-  const service = new OAuthService({
+  const service = new OAuthService(
     oauthRepo,
     webAppRepo,
     sessionService,
@@ -37,7 +37,7 @@ export const createOAuthModule = (
     loginHistoryService,
     recentAppService,
     accessPolicy
-  });
+  );
 
   const controller = new OAuthController(service);
 

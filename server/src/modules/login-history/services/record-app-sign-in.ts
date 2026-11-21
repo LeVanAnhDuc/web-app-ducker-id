@@ -2,7 +2,7 @@
 import type { Schema } from "mongoose";
 import type { Request } from "express";
 import type { LoginEventApp } from "../types";
-import type { LoginHistoryServiceDeps } from "./deps";
+import type { LoginHistoryRepository } from "../repository/login-history.repository";
 // modules
 import {
   LOGIN_STATUSES,
@@ -17,7 +17,7 @@ import { logLoginAttempt } from "./shared/log-login-attempt";
  * from an existing session.
  */
 export const recordAppSignIn = (
-  deps: LoginHistoryServiceDeps,
+  loginHistoryRepo: LoginHistoryRepository,
   {
     userId,
     usernameAttempted,
@@ -30,7 +30,7 @@ export const recordAppSignIn = (
     req: Request;
   }
 ): void => {
-  void logLoginAttempt(deps.loginHistoryRepo, {
+  void logLoginAttempt(loginHistoryRepo, {
     userId: userId.toString(),
     usernameAttempted,
     status: LOGIN_STATUSES.SUCCESS,

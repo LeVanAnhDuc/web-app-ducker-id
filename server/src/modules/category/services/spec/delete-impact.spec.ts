@@ -16,7 +16,10 @@ describe("CategoryService.deleteImpact", () => {
       { _id: "a1", displayName: "Shorten Link" }
     ]);
 
-    const result = await new CategoryService(deps).deleteImpact(CATEGORY_ID);
+    const result = await new CategoryService(
+      deps.categoryRepo,
+      deps.webAppRepo
+    ).deleteImpact(CATEGORY_ID);
 
     expect(result).toEqual({
       total: 4,
@@ -29,7 +32,9 @@ describe("CategoryService.deleteImpact", () => {
     categoryRepo.findById.mockResolvedValue(null);
 
     await expect(
-      new CategoryService(deps).deleteImpact(CATEGORY_ID)
+      new CategoryService(deps.categoryRepo, deps.webAppRepo).deleteImpact(
+        CATEGORY_ID
+      )
     ).rejects.toBeInstanceOf(NotFoundError);
   });
 });

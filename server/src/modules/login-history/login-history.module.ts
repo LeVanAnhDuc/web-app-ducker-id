@@ -13,10 +13,10 @@ export const createLoginHistoryModule = (
   notificationDispatcher: NotificationDispatcher
 ) => {
   const loginHistoryRepo = new MongoLoginHistoryRepository();
-  const loginHistoryService = new LoginHistoryService({
+  const loginHistoryService = new LoginHistoryService(
     loginHistoryRepo,
     notificationDispatcher
-  });
+  );
   const loginHistoryController = new LoginHistoryController(
     loginHistoryService
   );

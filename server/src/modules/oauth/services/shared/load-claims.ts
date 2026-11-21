@@ -1,14 +1,18 @@
 // libs
 import { StatusCodes } from "http-status-codes";
 // types
-import type { OAuthServiceDeps } from "../deps";
+import type { AuthenticationService } from "@/modules/authentication/services";
+import type { UserService } from "@/modules/user/services";
 // common
 import { OAuthError } from "@/exceptions";
 // others
 import { OAUTH_ERRORS } from "../../constants";
 
 export const loadClaims = async (
-  deps: OAuthServiceDeps,
+  deps: {
+    authService: AuthenticationService;
+    userService: UserService;
+  },
   authId: string,
   userId: string
 ): Promise<Record<string, unknown>> => {

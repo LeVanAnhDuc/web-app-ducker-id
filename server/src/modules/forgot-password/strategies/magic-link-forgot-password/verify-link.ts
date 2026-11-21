@@ -1,7 +1,10 @@
 // types
 import type { FPMagicLinkVerifyRequest } from "../../types";
 import type { VerifyMagicLinkResponseDto } from "../../dtos";
-import type { MagicLinkForgotPasswordStrategyDeps } from "./deps";
+import type { MagicLinkForgotPasswordRepository } from "../../repositories/magic-link-forgot-password.repository";
+import type { ResetTokenRepository } from "../../repositories/reset-token.repository";
+import type { AuthExistsGuard } from "../../guards";
+import type { ForgotPasswordAuditService } from "../../services/forgot-password-audit";
 // common
 import { UnauthorizedError } from "@/exceptions";
 // dtos
@@ -12,7 +15,12 @@ import { Logger } from "@/libs/logger";
 import { withRetry } from "@/utils/resilience/retry";
 
 export const verifyLink = async (
-  deps: MagicLinkForgotPasswordStrategyDeps,
+  deps: {
+    magicLinkRepo: MagicLinkForgotPasswordRepository;
+    resetTokenRepo: ResetTokenRepository;
+    authExistsGuard: AuthExistsGuard;
+    audit: ForgotPasswordAuditService;
+  },
   req: FPMagicLinkVerifyRequest
 ): Promise<VerifyMagicLinkResponseDto> => {
   const { email, token } = req.body;

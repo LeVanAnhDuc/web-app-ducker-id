@@ -105,18 +105,16 @@ const setup = ({
     findByUser: jest.fn().mockResolvedValue(overrides)
   };
 
-  const service = new OAuthService({
+  const service = new OAuthService(
     oauthRepo,
     webAppRepo,
     sessionService,
-    authService: {} as AuthenticationService,
+    {} as AuthenticationService,
     userService,
     loginHistoryService,
     recentAppService,
-    accessPolicy: new AccessPolicy(
-      entitlementRepo as unknown as EntitlementRepository
-    )
-  });
+    new AccessPolicy(entitlementRepo as unknown as EntitlementRepository)
+  );
 
   return {
     service,

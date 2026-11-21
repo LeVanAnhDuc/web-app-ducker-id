@@ -2,7 +2,6 @@
 import type { WebAppDocument } from "@/modules/web-app/types";
 import type { OAuthRepository } from "../../repository/oauth.repository";
 import type { TokenRequestBody } from "../../types";
-import type { OAuthServiceDeps } from "../deps";
 // common
 import { OAuthError } from "@/exceptions";
 // others
@@ -33,7 +32,9 @@ const setup = () => {
     } as unknown as WebAppDocument)
   };
 
-  const deps = { oauthRepo, webAppRepo } as unknown as OAuthServiceDeps;
+  const deps = { oauthRepo, webAppRepo } as unknown as Parameters<
+    typeof exchangeToken
+  >[0];
   return { deps, oauthRepo };
 };
 

@@ -13,10 +13,10 @@ import {
 
 export const createCategoryModule = (rateLimiter: RateLimiters) => {
   const categoryRepository = new MongoCategoryRepository();
-  const service = new CategoryService({
-    categoryRepo: categoryRepository,
-    webAppRepo: new MongoWebAppRepository()
-  });
+  const service = new CategoryService(
+    categoryRepository,
+    new MongoWebAppRepository()
+  );
   const controller = new CategoryController(service);
 
   return {

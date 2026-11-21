@@ -27,19 +27,17 @@ export const createTokenModule = (
     redisClient
   );
 
-  const tokenService = new TokenService({
+  const tokenService = new TokenService(
     authService,
     userService,
     revokedRefreshTokenRepo,
-    refreshTokenPresentGuard: new RefreshTokenPresentGuard(),
-    refreshTokenValidGuard: new RefreshTokenValidGuard(),
-    refreshTokenNotRevokedGuard: new RefreshTokenNotRevokedGuard(
-      revokedRefreshTokenRepo
-    ),
-    authActiveGuard: new AuthActiveGuard(),
-    passwordNotChangedGuard: new PasswordNotChangedGuard(),
-    userExistsGuard: new UserExistsGuard()
-  });
+    new RefreshTokenPresentGuard(),
+    new RefreshTokenValidGuard(),
+    new RefreshTokenNotRevokedGuard(revokedRefreshTokenRepo),
+    new AuthActiveGuard(),
+    new PasswordNotChangedGuard(),
+    new UserExistsGuard()
+  );
   const tokenController = new TokenController(tokenService);
 
   return {

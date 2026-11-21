@@ -1,6 +1,7 @@
 // types
 import type { SetUserActiveResult } from "@/modules/user/types";
-import type { UserServiceDeps } from "./deps";
+import type { AuthenticationService } from "@/modules/authentication/services";
+import type { UserRepository } from "../repository/user.repository";
 // common
 import { ForbiddenError, NotFoundError } from "@/exceptions";
 // validators
@@ -12,7 +13,7 @@ import { ERROR_CODES } from "@/constants/error-code";
 import { RequestContext } from "@/utils/request-context";
 
 export const setUserActive = async (
-  deps: UserServiceDeps,
+  deps: { userRepo: UserRepository; authService: AuthenticationService },
   id: string,
   isActive: boolean
 ): Promise<SetUserActiveResult> => {

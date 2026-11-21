@@ -2,7 +2,7 @@
 import type { AdminUsersFilter } from "@/modules/user/types";
 import type { AdminUsersQueryDto } from "../dtos/requests";
 import type { PageMeta } from "@/common/pagination";
-import type { UserServiceDeps } from "./deps";
+import type { UserRepository } from "../repository/user.repository";
 // common
 import { toDto } from "@/common/dto";
 import { resolvePaging, toPageMeta } from "@/common/pagination";
@@ -10,7 +10,7 @@ import { resolvePaging, toPageMeta } from "@/common/pagination";
 import { AdminUserDto } from "../dtos";
 
 export const getAdminUsers = async (
-  deps: UserServiceDeps,
+  userRepo: UserRepository,
   query: AdminUsersQueryDto
 ): Promise<{ items: AdminUserDto[]; meta: PageMeta }> => {
   const { page, limit, skip, sort } = resolvePaging(query);
@@ -22,7 +22,7 @@ export const getAdminUsers = async (
     ...(status ? { isActive: status === "active" } : {})
   };
 
-  const { data, total } = await deps.userRepo.findAdminUsers(filter, {
+  const { data, total } = await userRepo.findAdminUsers(filter, {
     skip,
     limit,
     sort

@@ -1,10 +1,10 @@
 // types
 import type { CreateUserData, UserRecord } from "@/modules/user/types";
 import type { ClientSession } from "mongoose";
-import type { UserServiceDeps } from "./deps";
+import type { UserRepository } from "../repository/user.repository";
 
 export const createProfile = async (
-  deps: UserServiceDeps,
+  userRepo: UserRepository,
   data: CreateUserData,
   session?: ClientSession
-): Promise<UserRecord> => deps.userRepo.createProfile(data, session);
+): Promise<UserRecord> => userRepo.createProfile(data, session);

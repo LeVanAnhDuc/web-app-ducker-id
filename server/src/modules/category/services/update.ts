@@ -1,7 +1,8 @@
 // types
 import type { CategoryName } from "../types";
 import type { UpdateCategoryBodyDto } from "../dtos/requests";
-import type { CategoryServiceDeps } from "./deps";
+import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
+import type { CategoryRepository } from "../repository/category.repository";
 // common
 import { toDto } from "@/common/dto";
 import { ConflictRequestError, NotFoundError } from "@/exceptions";
@@ -18,7 +19,7 @@ const notFound = () =>
   });
 
 export const update = async (
-  deps: CategoryServiceDeps,
+  deps: { categoryRepo: CategoryRepository; webAppRepo: WebAppRepository },
   id: string,
   body: UpdateCategoryBodyDto
 ): Promise<AdminCategoryDto> => {
@@ -41,7 +42,7 @@ export const update = async (
 
   const updated = await withSlugRetry(async () => {
     const slug = enChanged
-      ? await generateSlug(deps, name.en, id)
+      ? await generateSlug(deps.categoryRepo, name.en, id)
       : existing.slug;
     return deps.categoryRepo.updateById(id, { slug, name });
   });

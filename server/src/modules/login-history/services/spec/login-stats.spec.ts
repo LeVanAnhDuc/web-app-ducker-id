@@ -35,10 +35,10 @@ const makeRepo = (
   };
   return {
     repo,
-    service: new LoginHistoryService({
-      loginHistoryRepo: repo as unknown as LoginHistoryRepository,
-      notificationDispatcher: createNotificationDispatcherMock()
-    })
+    service: new LoginHistoryService(
+      repo as unknown as LoginHistoryRepository,
+      createNotificationDispatcherMock()
+    )
   };
 };
 

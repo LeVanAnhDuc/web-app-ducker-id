@@ -1,8 +1,10 @@
 // types
 import type { FPOtpVerifyRequest } from "../../types";
 import type { VerifyOtpResponseDto } from "../../dtos";
-import type { AuthExistsGuard } from "../../guards";
-import type { OtpForgotPasswordStrategyDeps } from "./deps";
+import type { OtpForgotPasswordRepository } from "../../repositories/otp-forgot-password.repository";
+import type { ResetTokenRepository } from "../../repositories/reset-token.repository";
+import type { OtpLockoutGuard, AuthExistsGuard } from "../../guards";
+import type { ForgotPasswordAuditService } from "../../services/forgot-password-audit";
 // common
 import { BadRequestError, UnauthorizedError } from "@/exceptions";
 // dtos
@@ -15,7 +17,10 @@ import { FORGOT_PASSWORD_OTP_CONFIG } from "../../constants";
 
 /** Chạm Redis nên không phải helper; chỉ `verifyCode` dùng tới. */
 const handleInvalidOtp = async (
-  deps: OtpForgotPasswordStrategyDeps,
+  deps: {
+    otpRepo: OtpForgotPasswordRepository;
+    audit: ForgotPasswordAuditService;
+  },
   email: string,
   auth: Awaited<ReturnType<AuthExistsGuard["assert"]>>["auth"],
   req: FPOtpVerifyRequest
@@ -43,7 +48,13 @@ const handleInvalidOtp = async (
 };
 
 export const verifyCode = async (
-  deps: OtpForgotPasswordStrategyDeps,
+  deps: {
+    otpRepo: OtpForgotPasswordRepository;
+    resetTokenRepo: ResetTokenRepository;
+    lockoutGuard: OtpLockoutGuard;
+    authExistsGuard: AuthExistsGuard;
+    audit: ForgotPasswordAuditService;
+  },
   req: FPOtpVerifyRequest
 ): Promise<VerifyOtpResponseDto> => {
   const { email, otp } = req.body;
@@ -53,7 +64,13 @@ export const verifyCode = async (
   const { auth } = await deps.authExistsGuard.assert(email);
 
   const isValid = await deps.otpRepo.verify(email, otp);
-  if (!isValid) await handleInvalidOtp(deps, email, auth, req);
+  if (!isValid)
+    await handleInvalidOtp(
+      { otpRepo: deps.otpRepo, audit: deps.audit },
+      email,
+      auth,
+      req
+    );
 
   const resetToken = await deps.resetTokenRepo.createAndStore(email);
 

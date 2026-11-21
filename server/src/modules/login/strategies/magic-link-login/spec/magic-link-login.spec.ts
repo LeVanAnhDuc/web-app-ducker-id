@@ -69,17 +69,17 @@ describe("MagicLinkLoginStrategy", () => {
     audit = createLoginAuditServiceMock();
     completion = createLoginCompletionServiceMock();
 
-    strategy = new MagicLinkLoginStrategy({
-      accountExistsGuard: accountExists,
-      accountActiveGuard: accountActive,
-      emailVerifiedGuard: emailVerified,
-      passwordLockoutGuard: passwordLockout,
-      magicLinkCooldownGuard: cooldown,
-      magicLinkLoginRepo: magicLinkRepo,
+    strategy = new MagicLinkLoginStrategy(
+      accountExists,
+      accountActive,
+      emailVerified,
+      passwordLockout,
+      cooldown,
+      magicLinkRepo,
       emailDispatcher,
       audit,
       completion
-    });
+    );
 
     mockedWithRetry.mockImplementation(() => Promise.resolve());
   });

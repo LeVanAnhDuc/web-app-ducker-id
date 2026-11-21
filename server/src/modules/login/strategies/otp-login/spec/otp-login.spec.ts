@@ -74,18 +74,18 @@ describe("OtpLoginStrategy", () => {
     audit = createLoginAuditServiceMock();
     completion = createLoginCompletionServiceMock();
 
-    strategy = new OtpLoginStrategy({
-      accountExistsGuard: accountExists,
-      accountActiveGuard: accountActive,
-      emailVerifiedGuard: emailVerified,
-      passwordLockoutGuard: passwordLockout,
-      otpLockoutGuard: otpLockout,
-      otpCooldownGuard: otpCooldown,
-      otpLoginRepo: otpRepo,
+    strategy = new OtpLoginStrategy(
+      accountExists,
+      accountActive,
+      emailVerified,
+      passwordLockout,
+      otpLockout,
+      otpCooldown,
+      otpRepo,
       emailDispatcher,
       audit,
       completion
-    });
+    );
 
     mockedWithRetry.mockImplementation(() => Promise.resolve());
   });

@@ -16,12 +16,12 @@ export const createUserModule = (
   notificationDispatcher: NotificationDispatcher
 ) => {
   const userRepo = new MongoUserRepository();
-  const userService = new UserService({
+  const userService = new UserService(
     userRepo,
     authService,
     emailDispatcher,
     notificationDispatcher
-  });
+  );
   const userController = new UserController(userService);
 
   return {

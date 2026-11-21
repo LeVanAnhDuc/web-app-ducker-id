@@ -19,13 +19,13 @@ export const createWebAppModule = (
 ) => {
   const webAppRepo = new MongoWebAppRepository();
   const favoriteRepo = new MongoFavoriteRepository();
-  const service = new WebAppService({
+  const service = new WebAppService(
     webAppRepo,
     categoryRepo,
     favoriteRepo,
     accessPolicy,
     notificationDispatcher
-  });
+  );
   const controller = new WebAppController(service);
 
   return {

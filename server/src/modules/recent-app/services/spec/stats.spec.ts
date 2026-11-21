@@ -66,14 +66,14 @@ const makeDeps = () => {
   const favoriteRepo = {
     findFavoritedAppIds: jest.fn().mockResolvedValue(new Set<string>())
   };
-  const service = new RecentAppService({
-    recentAppRepo: recentAppRepo as unknown as RecentAppRepository,
-    webAppRepo: webAppRepo as unknown as WebAppRepository,
-    favoriteRepo: favoriteRepo as unknown as FavoriteRepository,
-    accessPolicy: new AccessPolicy({
+  const service = new RecentAppService(
+    recentAppRepo as unknown as RecentAppRepository,
+    webAppRepo as unknown as WebAppRepository,
+    favoriteRepo as unknown as FavoriteRepository,
+    new AccessPolicy({
       findByUser: jest.fn().mockResolvedValue([])
     } as unknown as EntitlementRepository)
-  });
+  );
   return { recentAppRepo, webAppRepo, service };
 };
 

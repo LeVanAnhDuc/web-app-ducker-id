@@ -22,7 +22,10 @@ describe("CategoryService.create", () => {
       ...categoryDoc(CATEGORY_ID, input.name.en, input.slug, input.sortOrder),
       name: input.name
     }));
-    return { ...ctx, service: new CategoryService(ctx.deps) };
+    return {
+      ...ctx,
+      service: new CategoryService(ctx.deps.categoryRepo, ctx.deps.webAppRepo)
+    };
   };
 
   it("derives the slug from name.en and appends after the last category", async () => {

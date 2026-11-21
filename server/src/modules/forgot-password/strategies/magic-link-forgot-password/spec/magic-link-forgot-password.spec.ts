@@ -5,7 +5,6 @@ import type {
 } from "../../../types";
 import type { MagicLinkForgotPasswordRepository } from "../../../repositories/magic-link-forgot-password.repository";
 import type { ResetTokenRepository } from "../../../repositories/reset-token.repository";
-import type { MagicLinkForgotPasswordStrategyDeps } from "../deps";
 // common
 import { BadRequestError, UnauthorizedError } from "@/exceptions";
 // others
@@ -61,23 +60,21 @@ const setup = () => {
   const emailDispatcher = createEmailDispatcherMock();
   const historyService = createLoginHistoryServiceMock();
 
-  const deps = {
-    magicLinkRepo,
-    resetTokenRepo,
-    emailDispatcher,
-    cooldownGuard: new MagicLinkCooldownGuard(magicLinkRepo),
-    resendLimitGuard: new MagicLinkResendLimitGuard(magicLinkRepo),
-    authExistsGuard: new AuthExistsGuard(userService as never),
-    audit: new ForgotPasswordAuditService(historyService)
-  } as unknown as MagicLinkForgotPasswordStrategyDeps;
-
   return {
     magicLinkRepo,
     resetTokenRepo,
     userService,
     emailDispatcher,
     historyService,
-    strategy: new MagicLinkForgotPasswordStrategy(deps)
+    strategy: new MagicLinkForgotPasswordStrategy(
+      magicLinkRepo,
+      resetTokenRepo,
+      emailDispatcher,
+      new MagicLinkCooldownGuard(magicLinkRepo),
+      new MagicLinkResendLimitGuard(magicLinkRepo),
+      new AuthExistsGuard(userService as never),
+      new ForgotPasswordAuditService(historyService)
+    )
   };
 };
 

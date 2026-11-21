@@ -2,7 +2,10 @@
 import type { PaginatedResult } from "@/common/pagination";
 import type { RecentAppDto } from "../types";
 import type { ListRecentAppsQueryDto } from "../dtos/requests";
-import type { RecentAppServiceDeps } from "./deps";
+import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
+import type { FavoriteRepository } from "@/modules/favorite/repository/favorite.repository";
+import type { AccessPolicy } from "@/modules/entitlement/services/access-policy";
+import type { RecentAppRepository } from "../repository/recent-app.repository";
 // common
 import { resolvePaging, toPageMeta } from "@/common/pagination";
 // dtos
@@ -18,7 +21,12 @@ import { RequestContext } from "@/utils/request-context";
  * back short because an app was deactivated or did not match the search.
  */
 export const list = async (
-  deps: RecentAppServiceDeps,
+  deps: {
+    recentAppRepo: RecentAppRepository;
+    webAppRepo: WebAppRepository;
+    favoriteRepo: FavoriteRepository;
+    accessPolicy: AccessPolicy;
+  },
   query: ListRecentAppsQueryDto
 ): Promise<PaginatedResult<RecentAppDto>> => {
   const userId = RequestContext.requireUserId();
