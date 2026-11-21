@@ -1,20 +1,27 @@
+// libs
+import { JsonController, Post, Req, Res } from "routing-controllers";
 // types
 import type { Request, Response } from "express";
-import type {
-  PasswordLoginRequest,
-  OtpSendRequest,
-  OtpVerifyRequest,
-  MagicLinkSendRequest,
-  MagicLinkVerifyRequest
-} from "./types";
 import type { LoginService } from "./services/login";
 import type { SessionService } from "@/modules/session/services";
+// common
+import { RateLimit, Respond, ValidBody } from "@/common/routing";
 // modules
-import { REFRESH_TOKEN_COOKIE_OPTIONS } from "@/modules/token/constants";
-import { REFRESH_TOKEN } from "@/modules/token/constants";
+import {
+  REFRESH_TOKEN,
+  REFRESH_TOKEN_COOKIE_OPTIONS
+} from "@/modules/token/constants";
 // others
 import { RequestContext } from "@/utils/request-context";
+import {
+  LoginBodyDto,
+  MagicLinkSendBodyDto,
+  MagicLinkVerifyBodyDto,
+  OtpSendBodyDto,
+  OtpVerifyBodyDto
+} from "./dtos/requests";
 
+@JsonController("/auth/login")
 export class LoginController {
   constructor(
     private readonly service: LoginService,
@@ -28,7 +35,7 @@ export class LoginController {
    *
    * Danh tính lấy từ RequestContext do LoginCompletionService đặt vào.
    */
-  private startSession = async (req: Request, res: Response): Promise<void> => {
+  private async startSession(req: Request, res: Response): Promise<void> {
     const identity = RequestContext.getUser();
     if (!identity) return;
 
@@ -39,10 +46,17 @@ export class LoginController {
       req,
       res
     });
-  };
+  }
 
-  login = async (req: PasswordLoginRequest, res: Response) => {
-    const data = await this.service.passwordLogin(req.body, req);
+  @Post("/")
+  @RateLimit("loginByIp")
+  @Respond({ message: "login:success.loginSuccessful" })
+  async login(
+    @ValidBody(LoginBodyDto) body: LoginBodyDto,
+    @Req() req: Request,
+    @Res() res: Response
+  ) {
+    const data = await this.service.passwordLogin(body, req);
     const { refreshToken, ...responseData } = data;
 
     if (refreshToken) {
@@ -52,12 +66,27 @@ export class LoginController {
     await this.startSession(req, res);
 
     return responseData;
-  };
+  }
 
-  sendOtp = async (req: OtpSendRequest) => this.service.sendOtp(req.body, req);
+  @Post("/otp/send")
+  @RateLimit("loginOtpByIp", "loginOtpByEmail")
+  @Respond({ message: "login:success.otpSent" })
+  sendOtp(
+    @ValidBody(OtpSendBodyDto) body: OtpSendBodyDto,
+    @Req() req: Request
+  ) {
+    return this.service.sendOtp(body, req);
+  }
 
-  verifyOtp = async (req: OtpVerifyRequest, res: Response) => {
-    const data = await this.service.verifyOtp(req.body, req);
+  @Post("/otp/verify")
+  @RateLimit("loginByIp")
+  @Respond({ message: "login:success.loginSuccessful" })
+  async verifyOtp(
+    @ValidBody(OtpVerifyBodyDto) body: OtpVerifyBodyDto,
+    @Req() req: Request,
+    @Res() res: Response
+  ) {
+    const data = await this.service.verifyOtp(body, req);
     const { refreshToken, ...responseData } = data;
 
     if (refreshToken) {
@@ -67,13 +96,27 @@ export class LoginController {
     await this.startSession(req, res);
 
     return responseData;
-  };
+  }
 
-  sendMagicLink = async (req: MagicLinkSendRequest) =>
-    this.service.sendMagicLink(req.body, req);
+  @Post("/magic-link/send")
+  @RateLimit("magicLinkByIp", "magicLinkByEmail")
+  @Respond({ message: "login:success.magicLinkSent" })
+  sendMagicLink(
+    @ValidBody(MagicLinkSendBodyDto) body: MagicLinkSendBodyDto,
+    @Req() req: Request
+  ) {
+    return this.service.sendMagicLink(body, req);
+  }
 
-  verifyMagicLink = async (req: MagicLinkVerifyRequest, res: Response) => {
-    const data = await this.service.verifyMagicLink(req.body, req);
+  @Post("/magic-link/verify")
+  @RateLimit("loginByIp")
+  @Respond({ message: "login:success.loginSuccessful" })
+  async verifyMagicLink(
+    @ValidBody(MagicLinkVerifyBodyDto) body: MagicLinkVerifyBodyDto,
+    @Req() req: Request,
+    @Res() res: Response
+  ) {
+    const data = await this.service.verifyMagicLink(body, req);
     const { refreshToken, ...responseData } = data;
 
     if (refreshToken) {
@@ -83,5 +126,5 @@ export class LoginController {
     await this.startSession(req, res);
 
     return responseData;
-  };
+  }
 }

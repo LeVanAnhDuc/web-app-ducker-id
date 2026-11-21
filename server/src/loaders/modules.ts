@@ -66,56 +66,51 @@ export const createModules = ({
     loginHistoryAdminController
   } = createLoginHistoryModule(notificationDispatcher);
 
-  const { loginRouter, loginService } = createLoginModule(
+  const { loginController, loginService } = createLoginModule(
     redisClient,
     userService,
     loginHistoryService,
     emailDispatcher,
-    rateLimiter,
     sessionService,
     notificationDispatcher
   );
 
-  const { signupRouter } = createSignupModule(
+  const { signupController } = createSignupModule(
     redisClient,
     authService,
     userService,
-    emailDispatcher,
-    rateLimiter
+    emailDispatcher
   );
 
-  const { tokenRouter, tokenService } = createTokenModule(
+  const { tokenController, tokenService } = createTokenModule(
     redisClient,
     authService,
     userService
   );
-  const { logoutRouter } = createLogoutModule(sessionService, tokenService);
+  const { logoutController } = createLogoutModule(sessionService, tokenService);
 
-  const { unlockAccountRouter } = createUnlockAccountModule(
+  const { unlockAccountController } = createUnlockAccountModule(
     redisClient,
     authService,
     userService,
     loginHistoryService,
     loginService,
-    emailDispatcher,
-    rateLimiter
+    emailDispatcher
   );
 
-  const { forgotPasswordRouter } = createForgotPasswordModule(
+  const { forgotPasswordController } = createForgotPasswordModule(
     redisClient,
     authService,
     userService,
     loginHistoryService,
-    emailDispatcher,
-    rateLimiter
+    emailDispatcher
   );
 
-  const { changePasswordRouter } = createChangePasswordModule(
+  const { changePasswordController } = createChangePasswordModule(
     authService,
     userService,
     emailDispatcher,
-    notificationDispatcher,
-    rateLimiter
+    notificationDispatcher
   );
 
   const { contactController, adminContactsController, myContactsController } =
@@ -157,16 +152,16 @@ export const createModules = ({
 
   return {
     oauthRouter,
-    apiRouters: [
-      signupRouter,
-      loginRouter,
-      logoutRouter,
-      tokenRouter,
-      unlockAccountRouter,
-      forgotPasswordRouter,
-      changePasswordRouter
-    ],
+    // Every /api/v1 module is an annotated controller now; Task 6 drops this.
+    apiRouters: [],
     controllers: [
+      signupController,
+      loginController,
+      logoutController,
+      tokenController,
+      unlockAccountController,
+      forgotPasswordController,
+      changePasswordController,
       userController,
       userAdminController,
       loginHistoryController,

@@ -16,7 +16,6 @@ import {
 // others
 import { TokenService } from "./services";
 import { TokenController } from "./token.controller";
-import { createTokenRoutes } from "./token.routes";
 
 export const createTokenModule = (
   redisClient: RedisClientType,
@@ -40,10 +39,8 @@ export const createTokenModule = (
     passwordNotChangedGuard: new PasswordNotChangedGuard(),
     userExistsGuard: new UserExistsGuard()
   });
-  const tokenController = new TokenController(tokenService);
-
   return {
-    tokenRouter: createTokenRoutes(tokenController),
+    tokenController: new TokenController(tokenService),
     tokenService
   };
 };

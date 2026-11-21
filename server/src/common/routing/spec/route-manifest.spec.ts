@@ -3,7 +3,18 @@ import type { RateLimiters } from "@/middlewares/common/rate-limiter.middleware"
 import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { AuthenticationService } from "@/modules/authentication/services";
+import type { RedisClientType } from "redis";
+import type { UserService } from "@/modules/user/services";
+import type { LoginHistoryService } from "@/modules/login-history/services";
+import type { SessionService } from "@/modules/session/services";
 // modules
+import { createSignupModule } from "@/modules/signup/signup.module";
+import { createLoginModule } from "@/modules/login/login.module";
+import { createLogoutModule } from "@/modules/logout/logout.module";
+import { createTokenModule } from "@/modules/token/token.module";
+import { createUnlockAccountModule } from "@/modules/unlock-account/unlock-account.module";
+import { createForgotPasswordModule } from "@/modules/forgot-password/forgot-password.module";
+import { createChangePasswordModule } from "@/modules/change-password/change-password.module";
 import { createCategoryModule } from "@/modules/category/category.module";
 import { createContactAdminModule } from "@/modules/contact-admin/contact-admin.module";
 import { createEntitlementModule } from "@/modules/entitlement/entitlement.module";
@@ -28,6 +39,166 @@ type Row = [
 // Appendix A of docs/specs/routing-controllers/plan.md, migrated modules
 // only. Each task that migrates a module adds its rows here.
 const EXPECTED: Row[] = [
+  [
+    "POST",
+    "/api/v1/auth/signup/send-otp",
+    "rl:signupOtpByIp > rl:signupOtpByEmail > body:SendOtpBodyDto",
+    "OK",
+    "signup:success.otpSent",
+    "sendOtp"
+  ],
+  [
+    "POST",
+    "/api/v1/auth/signup/verify-otp",
+    "body:VerifyOtpBodyDto",
+    "OK",
+    "signup:success.otpVerified",
+    "verifyOtp"
+  ],
+  [
+    "POST",
+    "/api/v1/auth/signup/resend-otp",
+    "rl:signupOtpByIp > rl:signupOtpByEmail > body:ResendOtpBodyDto",
+    "OK",
+    "signup:success.otpResent",
+    "resendOtp"
+  ],
+  [
+    "POST",
+    "/api/v1/auth/signup/complete",
+    "body:CompleteSignupBodyDto",
+    "CREATED",
+    "signup:success.signupCompleted",
+    "completeSignup"
+  ],
+  [
+    "GET",
+    "/api/v1/auth/signup/check-email/:email",
+    "rl:checkEmailByIp > params:CheckEmailParamsDto",
+    "OK",
+    "—",
+    "checkEmail"
+  ],
+  [
+    "POST",
+    "/api/v1/auth/login",
+    "rl:loginByIp > body:LoginBodyDto",
+    "OK",
+    "login:success.loginSuccessful",
+    "login"
+  ],
+  [
+    "POST",
+    "/api/v1/auth/login/otp/send",
+    "rl:loginOtpByIp > rl:loginOtpByEmail > body:OtpSendBodyDto",
+    "OK",
+    "login:success.otpSent",
+    "sendOtp"
+  ],
+  [
+    "POST",
+    "/api/v1/auth/login/otp/verify",
+    "rl:loginByIp > body:OtpVerifyBodyDto",
+    "OK",
+    "login:success.loginSuccessful",
+    "verifyOtp"
+  ],
+  [
+    "POST",
+    "/api/v1/auth/login/magic-link/send",
+    "rl:magicLinkByIp > rl:magicLinkByEmail > body:MagicLinkSendBodyDto",
+    "OK",
+    "login:success.magicLinkSent",
+    "sendMagicLink"
+  ],
+  [
+    "POST",
+    "/api/v1/auth/login/magic-link/verify",
+    "rl:loginByIp > body:MagicLinkVerifyBodyDto",
+    "OK",
+    "login:success.loginSuccessful",
+    "verifyMagicLink"
+  ],
+  [
+    "POST",
+    "/api/v1/auth/logout",
+    "passwordChangeAuth",
+    "NO_CONTENT",
+    "—",
+    "logout"
+  ],
+  [
+    "POST",
+    "/api/v1/auth/token/refresh",
+    "",
+    "OK",
+    "login:success.tokenRefreshed",
+    "refreshToken"
+  ],
+  [
+    "POST",
+    "/api/v1/auth/unlock/request",
+    "body:UnlockRequestBodyDto",
+    "OK",
+    "unlockAccount:success.unlockEmailSent",
+    "unlockRequest"
+  ],
+  [
+    "POST",
+    "/api/v1/auth/unlock/verify",
+    "rl:loginByIp > body:UnlockVerifyBodyDto",
+    "OK",
+    "unlockAccount:success.accountUnlocked",
+    "unlockVerify"
+  ],
+  [
+    "POST",
+    "/api/v1/auth/forgot-password/otp/send",
+    "rl:forgotPasswordOtpByIp > rl:forgotPasswordOtpByEmail > body:OtpSendBodyDto",
+    "OK",
+    "forgotPassword:success.otpSent",
+    "sendOtp"
+  ],
+  [
+    "POST",
+    "/api/v1/auth/forgot-password/otp/verify",
+    "rl:forgotPasswordOtpByIp > body:OtpVerifyBodyDto",
+    "OK",
+    "forgotPassword:success.otpVerified",
+    "verifyOtp"
+  ],
+  [
+    "POST",
+    "/api/v1/auth/forgot-password/magic-link/send",
+    "rl:forgotPasswordMagicLinkByIp > rl:forgotPasswordMagicLinkByEmail > body:MagicLinkSendBodyDto",
+    "OK",
+    "forgotPassword:success.magicLinkSent",
+    "sendMagicLink"
+  ],
+  [
+    "POST",
+    "/api/v1/auth/forgot-password/magic-link/verify",
+    "rl:forgotPasswordMagicLinkByIp > body:MagicLinkVerifyBodyDto",
+    "OK",
+    "forgotPassword:success.magicLinkVerified",
+    "verifyMagicLink"
+  ],
+  [
+    "POST",
+    "/api/v1/auth/forgot-password/reset",
+    "rl:forgotPasswordResetByIp > body:ResetPasswordBodyDto",
+    "OK",
+    "forgotPassword:success.passwordReset",
+    "resetPassword"
+  ],
+  [
+    "PATCH",
+    "/api/v1/auth/change-password",
+    "passwordChangeAuth > rl:changePasswordByIpAndUser > body:ChangePasswordBodyDto",
+    "OK",
+    "changePassword:success.passwordChanged",
+    "changePassword"
+  ],
   [
     "GET",
     "/api/v1/users/me",
@@ -380,6 +551,55 @@ const rl = {} as unknown as RateLimiters;
 describe("route manifest", () => {
   it("matches Appendix A for the migrated modules", () => {
     const notificationDispatcher = {} as NotificationDispatcher;
+    const redis = {} as RedisClientType;
+    const authService = {} as AuthenticationService;
+    const userService = {} as UserService;
+    const loginHistoryService = {} as LoginHistoryService;
+    const emailDispatcher = {} as EmailDispatcher;
+    const { signupController } = createSignupModule(
+      redis,
+      authService,
+      userService,
+      emailDispatcher
+    );
+    const { loginController, loginService } = createLoginModule(
+      redis,
+      userService,
+      loginHistoryService,
+      emailDispatcher,
+      {} as SessionService,
+      notificationDispatcher
+    );
+    const { tokenController, tokenService } = createTokenModule(
+      redis,
+      authService,
+      userService
+    );
+    const { logoutController } = createLogoutModule(
+      {} as SessionService,
+      tokenService
+    );
+    const { unlockAccountController } = createUnlockAccountModule(
+      redis,
+      authService,
+      userService,
+      loginHistoryService,
+      loginService,
+      emailDispatcher
+    );
+    const { forgotPasswordController } = createForgotPasswordModule(
+      redis,
+      authService,
+      userService,
+      loginHistoryService,
+      emailDispatcher
+    );
+    const { changePasswordController } = createChangePasswordModule(
+      authService,
+      userService,
+      emailDispatcher,
+      notificationDispatcher
+    );
     const { userController, userAdminController } = createUserModule(
       {} as AuthenticationService,
       {} as EmailDispatcher,
@@ -406,6 +626,13 @@ describe("route manifest", () => {
       accessPolicy
     );
     const controllers = [
+      signupController,
+      loginController,
+      logoutController,
+      tokenController,
+      unlockAccountController,
+      forgotPasswordController,
+      changePasswordController,
       userController,
       userAdminController,
       loginHistoryController,

@@ -1,14 +1,13 @@
 // types
 import type { Response } from "express";
 import type { SignupService } from "./services";
-import type { CompleteSignupRequest } from "./types";
 // modules
 import {
   REFRESH_TOKEN,
   REFRESH_TOKEN_COOKIE_OPTIONS
 } from "@/modules/token/constants";
 // others
-import { makeMockRequest } from "@test/helpers/request.helper";
+import { CompleteSignupBodyDto } from "./dtos/requests";
 import { SignupController } from "./signup.controller";
 
 const createResponseMock = () => {
@@ -34,13 +33,10 @@ describe("SignupController.completeSignup", () => {
       })
     } as unknown as jest.Mocked<SignupService>;
     const controller = new SignupController(service);
-    const req = makeMockRequest();
-    (req as unknown as { originalUrl: string }).originalUrl =
-      "/api/v1/auth/signup/complete";
     const res = createResponseMock();
 
     const data = await controller.completeSignup(
-      req as unknown as CompleteSignupRequest,
+      new CompleteSignupBodyDto(),
       res as unknown as Response
     );
 

@@ -93,6 +93,14 @@ class FixtureController {
     return res;
   }
 
+  // Writes the response itself but returns something other than `res`.
+  @Get("/raw-returning-data")
+  @Respond({ message: "favorite:success.list" })
+  rawReturningData(@Res() res: Response) {
+    res.status(StatusCodes.ACCEPTED).json({ raw: true });
+    return { wrapped: true };
+  }
+
   @Get("/boom")
   boom() {
     throw new Error("boom");
@@ -230,6 +238,17 @@ describe("mountControllers", () => {
     expect((await json(res)).message).toBe(
       "Lấy danh sách ứng dụng yêu thích thành công."
     );
+  });
+
+  it("never sends twice when an @Res action wrote the response and returned data", async () => {
+    const res = await call("/api/v1/fixtures/raw-returning-data");
+
+    expect(res.status).toBe(StatusCodes.ACCEPTED);
+    expect(await json(res)).toEqual({ raw: true });
+    // A second send would throw ERR_HTTP_HEADERS_SENT into the error filter.
+    await new Promise((resolve) => setImmediate(resolve));
+    expect(Logger.error).not.toHaveBeenCalled();
+    expect(fellThrough).toEqual([]);
   });
 
   it("leaves a response written through @Res untouched", async () => {
