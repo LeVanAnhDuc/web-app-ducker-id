@@ -33,16 +33,12 @@ const idToString = (value: unknown): string | null =>
 /**
  * An ObjectId as its hex string, `null` when absent. A bare `@Expose()` must
  * never carry an ObjectId: class-transformer walks it as an object and returns
- * its internals. `from` reads another key, e.g. `@ExposeId("_id") id`.
+ * its internals — an array of ObjectIds too, so map one with `ExposeFrom`:
+ * `@ExposeFrom<Doc>((doc) => doc.categoryIds.map(String))`.
+ * `from` reads another key, e.g. `@ExposeId("_id") id`.
  */
 export const ExposeId = (from?: string): PropertyDecorator =>
   exposeWith((src, key) => idToString(src[from ?? key]));
-
-/** An array of ObjectIds as hex strings; an absent array becomes `[]`. */
-export const ExposeIds = (from?: string): PropertyDecorator =>
-  exposeWith((src, key) =>
-    ((src[from ?? key] as unknown[] | undefined) ?? []).map(String)
-  );
 
 /** A Date as an ISO 8601 string, `null` when absent. */
 export const ExposeDate = (from?: string): PropertyDecorator =>
