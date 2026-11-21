@@ -22,9 +22,9 @@ export class CompleteSignupUserDto {
 }
 
 /**
- * Plain data: `toCompleteSignupDto` builds an object literal typed as this
- * class. The service hands back all four tokens; the controller moves the
- * refresh token into its HttpOnly cookie, so only `AccessTokensDto` is sent.
+ * What the route sends. The service returns a `CompleteSignupResult`, whose
+ * tokens still hold the refresh token; the controller moves that into its
+ * HttpOnly cookie, so only `AccessTokensDto` is sent.
  */
 export class CompleteSignupDto {
   @ApiProperty({ type: "boolean", example: true })
@@ -38,8 +38,13 @@ export class CompleteSignupDto {
     description:
       "The refresh token is not here: it is set as an HttpOnly cookie"
   })
-  tokens!: AuthTokensResponse;
+  tokens!: AccessTokensDto;
 }
+
+/** The service's result: `CompleteSignupDto` before the refresh token is moved out. */
+export type CompleteSignupResult = Omit<CompleteSignupDto, "tokens"> & {
+  tokens: AuthTokensResponse;
+};
 
 export const toCompleteSignupDto = (
   account: {
@@ -49,7 +54,7 @@ export const toCompleteSignupDto = (
     fullName: string;
   },
   tokens: AuthTokensResponse
-): CompleteSignupDto => ({
+): CompleteSignupResult => ({
   success: true,
   user: {
     id: account.userId.toString(),

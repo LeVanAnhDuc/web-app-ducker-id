@@ -44,7 +44,7 @@ export class UnlockAccountController {
   @OpenAPI({
     summary: "Unlock and sign in with the temporary password",
     description:
-      "Unlocks the account and signs in. Sets the refresh token as an HttpOnly cookie; the body carries only the access and ID tokens. The session is a temporary-password one: every route but change-password and logout answers 403 `AUTH_PASSWORD_CHANGE_REQUIRED` until the password is changed. 401 `UNLOCK_INVALID_TEMP_PASSWORD` / `UNLOCK_AUTH_NOT_FOUND`; 429 shares the sign-in per-IP limit."
+      "Unlocks the account and signs in. Sets the refresh token as an HttpOnly cookie; the body carries only the access and ID tokens. The session is a temporary-password one: every route but change-password and logout answers 403 `AUTH_PASSWORD_CHANGE_REQUIRED` until the password is changed. 401 `UNLOCK_INVALID_TEMP_PASSWORD` / `UNLOCK_AUTH_NOT_FOUND`."
   })
   @ApiErrors(401)
   @RateLimit("loginByIp")

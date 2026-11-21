@@ -9,7 +9,7 @@ import type {
 } from "../dtos/requests";
 import type {
   CheckEmailDto,
-  CompleteSignupDto,
+  CompleteSignupResult,
   ResendOtpDto,
   SendOtpDto,
   VerifyOtpDto
@@ -79,7 +79,7 @@ export class SignupService {
   }
 
   @LogMethod({ name: "CompleteSignup" })
-  completeSignup(body: CompleteSignupBodyDto): Promise<CompleteSignupDto> {
+  completeSignup(body: CompleteSignupBodyDto): Promise<CompleteSignupResult> {
     return completeSignup(
       {
         authService: this.authService,

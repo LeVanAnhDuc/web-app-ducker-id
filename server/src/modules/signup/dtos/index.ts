@@ -8,6 +8,7 @@ export {
   CompleteSignupDto,
   CompleteSignupUserDto
 } from "./complete-signup.dto";
+export type { CompleteSignupResult } from "./complete-signup.dto";
 export { toCompleteSignupDto } from "./complete-signup.dto";
 export { CheckEmailDto } from "./check-email.dto";
 export { toCheckEmailDto } from "./check-email.dto";

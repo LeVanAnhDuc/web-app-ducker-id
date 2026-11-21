@@ -28,8 +28,8 @@ export class AccessTokensDto {
 
   @ApiProperty({
     type: "integer",
-    example: 900,
-    description: "Access token lifetime in seconds"
+    example: 28800000,
+    description: "Access token lifetime in milliseconds"
   })
   expiresIn!: number;
 }

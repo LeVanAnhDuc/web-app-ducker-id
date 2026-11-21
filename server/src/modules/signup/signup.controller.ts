@@ -92,7 +92,7 @@ export class SignupController {
   async completeSignup(
     @ValidBody(CompleteSignupBodyDto) body: CompleteSignupBodyDto,
     @Res() res: Response
-  ) {
+  ): Promise<CompleteSignupDto> {
     const {
       tokens: { refreshToken, ...tokens },
       ...account

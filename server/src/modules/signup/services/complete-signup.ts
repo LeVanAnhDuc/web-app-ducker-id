@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 import type { Schema } from "mongoose";
 import type { Gender } from "@/modules/user/types";
 import type { CompleteSignupBodyDto } from "../dtos/requests";
-import type { CompleteSignupDto } from "../dtos";
+import type { CompleteSignupResult } from "../dtos";
 import type { AuthenticationService } from "@/modules/authentication/services";
 import type { UserService } from "@/modules/user/services";
 import type { OtpSignupRepository } from "../repositories/otp-signup.repository";
@@ -109,7 +109,7 @@ export const completeSignup = async (
     emailAvailableGuard: EmailAvailableGuard;
   },
   body: CompleteSignupBodyDto
-): Promise<CompleteSignupDto> => {
+): Promise<CompleteSignupResult> => {
   const { email, password, fullName, gender, dateOfBirth, sessionToken } = body;
 
   const isValid = await deps.sessionSignupRepo.verify(email, sessionToken);
