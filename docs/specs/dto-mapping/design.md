@@ -97,3 +97,10 @@ export function toDto<T>(Dto, source: object): T;   // also accepts an array
 - Swagger generation from DTOs (`class-validator-jsonschema`) — postponed by the owner.
 - Request DTOs, validation, routing.
 - Inlining the value-only factories into services — churn without a gain.
+
+## Amendment — 2026-11-21, after #46
+
+`ExposeIds` was removed. Its only consumer was `AdminAppDto.categoryIds`, and a decorator with one
+consumer is the same YAGNI case as the `update…` helper above. That field now reads
+`@ExposeFrom<WebAppDocument>((doc) => doc.categoryIds.map(String))`; the ObjectId trap (trap 1) applies
+to every element of an array, so an array of ids always goes through `ExposeFrom` with `.map(String)`.

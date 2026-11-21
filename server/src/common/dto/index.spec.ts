@@ -6,7 +6,6 @@ import {
   ExposeDate,
   ExposeFrom,
   ExposeId,
-  ExposeIds,
   ExposeOrNull,
   toDto
 } from "@/common/dto";
@@ -24,7 +23,8 @@ class SampleDto {
   @ExposeId() _id!: string;
   @ExposeId("_id") id!: string;
   @ExposeId() ownerId!: string | null;
-  @ExposeIds() tagIds!: string[];
+  // An array of ObjectIds: bare @Expose would walk each one as an object.
+  @ExposeFrom((src) => (src.tagIds as unknown[]).map(String)) tagIds!: string[];
   @Expose() title!: string;
   @ExposeOrNull() note!: string | null;
   @ExposeDate() createdAt!: string;

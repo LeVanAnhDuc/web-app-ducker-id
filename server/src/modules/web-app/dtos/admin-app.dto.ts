@@ -7,7 +7,6 @@ import {
   ExposeDate,
   ExposeFrom,
   ExposeId,
-  ExposeIds,
   ExposeOrNull,
   toDto
 } from "@/common/dto";
@@ -22,7 +21,10 @@ export class AdminAppDto {
   @ExposeOrNull() description!: string | null;
   @ExposeOrNull() iconUrl!: string | null;
   @Expose() homeUrl!: string;
-  @ExposeIds() categoryIds!: string[];
+  // Ids, not category objects: the admin form reads and writes ids, and the
+  // admin screen already holds the category list to resolve names from.
+  @ExposeFrom<WebAppDocument>((doc) => doc.categoryIds.map(String))
+  categoryIds!: string[];
   @ExposeFrom<WebAppDocument>((doc) => WEB_APP_STATUS_PUBLIC[doc.status])
   status!: WebAppStatusPublic;
   @Expose() requiredRoles!: AuthenticationRole[];
