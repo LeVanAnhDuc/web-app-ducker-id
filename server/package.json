@@ -39,6 +39,7 @@
     "@react-email/render": "^2.0.4",
     "bcrypt": "^5.1.1",
     "bullmq": "^5.73.5",
+    "cockatiel": "^3.2.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^16.4.5",
