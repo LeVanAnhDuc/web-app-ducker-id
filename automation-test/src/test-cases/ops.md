@@ -173,17 +173,17 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/ops.md
   `Strict-Transport-Security` có `max-age`, có `Content-Security-Policy`, và không có `X-Powered-By`.
 - **Automated:** `tests/api/ops/headers.api.ts`
 
-### TC-OPS-014 — Every response carries an X-Request-Id, echoing a caller's id up to 128 characters
+### TC-OPS-014 — Every response carries a server-minted X-Request-Id, ignoring the caller's
 
 - **Requirement:** REQ-OPS-05
 - **Layer:** api · **Priority:** P2 · **Vai trò:** guest
-- **Kỹ thuật:** giá trị biên (độ dài id 128 / 129), phân vùng tương đương (không gửi id)
+- **Kỹ thuật:** phân vùng tương đương (không gửi id / gửi id), bảo mật (caller không chọn được id trong log)
 - **Tiền điều kiện:** không có
 - **Bước:**
   1. `GET /health/all` hai lần không kèm `X-Request-Id`.
-  2. Gửi lại với `X-Request-Id` dài 128 ký tự, rồi 129 ký tự.
-- **Mong đợi:** bước 1: mỗi response có một UUID v4 khác nhau; 128 ký tự được trả lại nguyên văn; 129 ký tự bị thay
-  bằng UUID mới.
+  2. Gửi lại với `X-Request-Id: caller-chosen-id`.
+- **Mong đợi:** bước 1: mỗi response có một UUID v4 khác nhau; bước 2: response mang một UUID v4 mới, không phải
+  `caller-chosen-id`.
 - **Automated:** `tests/api/ops/headers.api.ts`
 
 ### TC-OPS-015 — CORS answers only the configured origins, with credentials

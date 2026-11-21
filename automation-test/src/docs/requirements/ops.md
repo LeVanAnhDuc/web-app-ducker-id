@@ -5,7 +5,7 @@
 - **REQ-OPS-03** Mọi lỗi API dùng envelope `{ code, message, timestamp, path }`, dịch theo locale của từng request.
 - **REQ-OPS-04** Mọi response của API mang security header của Helmet (`X-Content-Type-Options: nosniff`,
   `X-Frame-Options: SAMEORIGIN`, HSTS, CSP) và không có `X-Powered-By`.
-- **REQ-OPS-05** Mọi response mang `X-Request-Id`: id do caller gửi (≤ 128 ký tự) được trả lại nguyên văn, thiếu hoặc
-  dài hơn thì server sinh UUID mới cho từng request.
+- **REQ-OPS-05** Mọi response mang `X-Request-Id` là một UUID do server sinh mới cho từng request; `X-Request-Id` do
+  caller gửi lên bị bỏ qua.
 - **REQ-OPS-06** CORS chỉ trả `Access-Control-Allow-Origin` cho các origin trong `CORS_ORIGINS` của server, kèm
   `Access-Control-Allow-Credentials: true`; origin khác không được phép.
