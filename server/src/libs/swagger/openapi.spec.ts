@@ -1,5 +1,5 @@
 // libs
-import { readdirSync } from "fs";
+import { readdirSync, readFileSync } from "fs";
 import { join } from "path";
 import express from "express";
 import { IsDefined, IsString } from "class-validator";
@@ -27,13 +27,27 @@ import { createModules } from "@/loaders/modules";
 import { RequestContext } from "@/utils/request-context";
 import { mountHttp } from "@/loaders/http";
 import { buildOpenApiSpec } from "./openapi";
+import { diffOperations, resolveRefs } from "@test/helpers/openapi-diff";
 
 /**
  * Modules whose `/api/v1` routes are documented from their controllers. The
  * drift checks below cover exactly these; Task 6 of
  * docs/specs/openapi-annotations/plan.md drops the list and covers every route.
  */
-export const GENERATED_MODULES: string[] = [];
+export const GENERATED_MODULES: string[] = ["favorite"];
+
+/**
+ * Differences from the frozen hand-written operations
+ * (`test/fixtures/openapi/<module>.json`) that are corrections, not drift.
+ */
+const ACCEPTED_DIFFS: Record<string, string[]> = {
+  favorite: [
+    // authGuard can answer 403 AUTH_PASSWORD_CHANGE_REQUIRED (a temporary-password session); the hand-written docs never listed it.
+    "GET /users/me/favorites: response status 403 only in generated",
+    "POST /users/me/favorites/{appId}: response status 403 only in generated",
+    "DELETE /users/me/favorites/{appId}: response status 403 only in generated"
+  ]
+};
 
 // The factories only construct objects, so stub connections are enough.
 const stubDeps = () => ({
@@ -319,6 +333,27 @@ describe("buildOpenApiSpec", () => {
         generated.map((c) => c.name).sort()
       );
     });
+
+    it.each(GENERATED_MODULES)(
+      "%s: generated operations match the hand-written ones",
+      (module) => {
+        const frozen = JSON.parse(
+          readFileSync(
+            join(__dirname, `../../../test/fixtures/openapi/${module}.json`),
+            "utf8"
+          )
+        ) as OpenAPIV3.PathsObject;
+        const prefixes = Object.keys(frozen);
+        const generatedPaths = Object.fromEntries(
+          Object.entries(document.paths).filter(([path]) =>
+            prefixes.some((p) => path === p || path.startsWith(`${p}/`))
+          )
+        );
+        expect(
+          diffOperations(frozen, resolveRefs(generatedPaths, document))
+        ).toEqual(ACCEPTED_DIFFS[module] ?? []);
+      }
+    );
 
     it("has one operation per action, each with a summary, status, security and derived errors (checks 1, 2, 4)", () => {
       expect(driftProblems(document, generated)).toEqual([]);

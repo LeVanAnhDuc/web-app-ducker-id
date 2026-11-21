@@ -1,1 +1,0 @@
-export { favoritePaths } from "./paths";

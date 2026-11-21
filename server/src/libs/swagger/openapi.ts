@@ -52,7 +52,6 @@ import {
   loginHistorySwaggerSchemas,
   loginHistoryPaths
 } from "@/modules/login-history/swagger";
-import { favoritePaths } from "@/modules/favorite/swagger";
 import {
   unlockAccountSwaggerSchemas,
   unlockAccountPaths
@@ -97,7 +96,6 @@ const allPaths: OpenAPIV3.PathsObject = {
   ...recentAppPaths,
   ...notificationPaths,
   ...loginHistoryPaths,
-  ...favoritePaths,
   ...unlockAccountPaths
 };
 
