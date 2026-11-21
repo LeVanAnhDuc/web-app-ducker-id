@@ -1,0 +1,404 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`recent-app request DTOs match the Joi schemas ListRecentAppsQueryDto ≡ listRecentAppsQuerySchema: allFields 1`] = `
+{
+  "failures": [],
+  "value": ListRecentAppsQueryDto {
+    "limit": 20,
+    "page": 2,
+    "search": "mail",
+  },
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas ListRecentAppsQueryDto ≡ listRecentAppsQuerySchema: empty 1`] = `
+{
+  "failures": [],
+  "value": ListRecentAppsQueryDto {},
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas ListRecentAppsQueryDto ≡ listRecentAppsQuerySchema: limitMax 1`] = `
+{
+  "failures": [],
+  "value": ListRecentAppsQueryDto {
+    "limit": 100,
+  },
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas ListRecentAppsQueryDto ≡ listRecentAppsQuerySchema: limitTooLarge 1`] = `
+{
+  "failures": [
+    {
+      "field": "limit",
+      "key": "validation:limit.invalid",
+      "reason": "max",
+    },
+  ],
+  "value": ListRecentAppsQueryDto {
+    "limit": 101,
+  },
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas ListRecentAppsQueryDto ≡ listRecentAppsQuerySchema: limitZero 1`] = `
+{
+  "failures": [
+    {
+      "field": "limit",
+      "key": "validation:limit.invalid",
+      "reason": "min",
+    },
+  ],
+  "value": ListRecentAppsQueryDto {
+    "limit": 0,
+  },
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas ListRecentAppsQueryDto ≡ listRecentAppsQuerySchema: pageEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "isInt",
+    },
+  ],
+  "value": ListRecentAppsQueryDto {
+    "page": "",
+  },
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas ListRecentAppsQueryDto ≡ listRecentAppsQuerySchema: pageFraction 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "isInt",
+    },
+  ],
+  "value": ListRecentAppsQueryDto {
+    "page": 1.5,
+  },
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas ListRecentAppsQueryDto ≡ listRecentAppsQuerySchema: pageNotNumber 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "isInt",
+    },
+  ],
+  "value": ListRecentAppsQueryDto {
+    "page": "abc",
+  },
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas ListRecentAppsQueryDto ≡ listRecentAppsQuerySchema: pageZero 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "min",
+    },
+  ],
+  "value": ListRecentAppsQueryDto {
+    "page": 0,
+  },
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas ListRecentAppsQueryDto ≡ listRecentAppsQuerySchema: searchAtMaxPadded 1`] = `
+{
+  "failures": [],
+  "value": ListRecentAppsQueryDto {
+    "search": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas ListRecentAppsQueryDto ≡ listRecentAppsQuerySchema: searchEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": ListRecentAppsQueryDto {
+    "search": "",
+  },
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas ListRecentAppsQueryDto ≡ listRecentAppsQuerySchema: searchPadded 1`] = `
+{
+  "failures": [],
+  "value": ListRecentAppsQueryDto {
+    "search": "mail",
+  },
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas ListRecentAppsQueryDto ≡ listRecentAppsQuerySchema: searchTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "maxLength",
+    },
+  ],
+  "value": ListRecentAppsQueryDto {
+    "search": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas ListRecentAppsQueryDto ≡ listRecentAppsQuerySchema: searchWhitespaceOnly 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": ListRecentAppsQueryDto {
+    "search": "",
+  },
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas ListRecentAppsQueryDto ≡ listRecentAppsQuerySchema: searchWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "search",
+      "key": "validation:search.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": ListRecentAppsQueryDto {
+    "search": [
+      "a",
+      "b",
+    ],
+  },
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas ListRecentAppsQueryDto ≡ listRecentAppsQuerySchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": ListRecentAppsQueryDto {},
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas RecentAppIdParamsDto ≡ recentAppIdParamSchema: empty 1`] = `
+{
+  "failures": [
+    {
+      "field": "appId",
+      "key": "recentApp:validation.appId.required",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": RecentAppIdParamsDto {
+    "appId": "",
+  },
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas RecentAppIdParamsDto ≡ recentAppIdParamSchema: missing 1`] = `
+{
+  "failures": [
+    {
+      "field": "appId",
+      "key": "recentApp:validation.appId.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": RecentAppIdParamsDto {},
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas RecentAppIdParamsDto ≡ recentAppIdParamSchema: notHex 1`] = `
+{
+  "failures": [
+    {
+      "field": "appId",
+      "key": "recentApp:validation.appId.invalid",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": RecentAppIdParamsDto {
+    "appId": "507f1f77bcf86cd79943901z",
+  },
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas RecentAppIdParamsDto ≡ recentAppIdParamSchema: null 1`] = `
+{
+  "failures": [
+    {
+      "field": "appId",
+      "key": "recentApp:validation.appId.required",
+      "reason": "isDefined",
+    },
+  ],
+  "value": RecentAppIdParamsDto {
+    "appId": null,
+  },
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas RecentAppIdParamsDto ≡ recentAppIdParamSchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": RecentAppIdParamsDto {
+    "appId": "507f1f77bcf86cd799439011",
+  },
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas RecentAppIdParamsDto ≡ recentAppIdParamSchema: valid 1`] = `
+{
+  "failures": [],
+  "value": RecentAppIdParamsDto {
+    "appId": "507f1f77bcf86cd799439011",
+  },
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas RecentAppIdParamsDto ≡ recentAppIdParamSchema: wrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "appId",
+      "key": "recentApp:validation.appId.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": RecentAppIdParamsDto {
+    "appId": 123,
+  },
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas RecentAppsStatsQueryDto ≡ recentAppsStatsQuerySchema: empty 1`] = `
+{
+  "failures": [],
+  "value": RecentAppsStatsQueryDto {},
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas RecentAppsStatsQueryDto ≡ recentAppsStatsQuerySchema: limitConverted 1`] = `
+{
+  "failures": [],
+  "value": RecentAppsStatsQueryDto {
+    "limit": 3,
+  },
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas RecentAppsStatsQueryDto ≡ recentAppsStatsQuerySchema: limitEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "limit",
+      "key": "validation:limit.invalid",
+      "reason": "isInt",
+    },
+  ],
+  "value": RecentAppsStatsQueryDto {
+    "limit": "",
+  },
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas RecentAppsStatsQueryDto ≡ recentAppsStatsQuerySchema: limitFraction 1`] = `
+{
+  "failures": [
+    {
+      "field": "limit",
+      "key": "validation:limit.invalid",
+      "reason": "isInt",
+    },
+  ],
+  "value": RecentAppsStatsQueryDto {
+    "limit": 2.5,
+  },
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas RecentAppsStatsQueryDto ≡ recentAppsStatsQuerySchema: limitMax 1`] = `
+{
+  "failures": [],
+  "value": RecentAppsStatsQueryDto {
+    "limit": 10,
+  },
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas RecentAppsStatsQueryDto ≡ recentAppsStatsQuerySchema: limitNotNumber 1`] = `
+{
+  "failures": [
+    {
+      "field": "limit",
+      "key": "validation:limit.invalid",
+      "reason": "isInt",
+    },
+  ],
+  "value": RecentAppsStatsQueryDto {
+    "limit": "many",
+  },
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas RecentAppsStatsQueryDto ≡ recentAppsStatsQuerySchema: limitTooLarge 1`] = `
+{
+  "failures": [
+    {
+      "field": "limit",
+      "key": "validation:limit.invalid",
+      "reason": "max",
+    },
+  ],
+  "value": RecentAppsStatsQueryDto {
+    "limit": 11,
+  },
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas RecentAppsStatsQueryDto ≡ recentAppsStatsQuerySchema: limitZero 1`] = `
+{
+  "failures": [
+    {
+      "field": "limit",
+      "key": "validation:limit.invalid",
+      "reason": "min",
+    },
+  ],
+  "value": RecentAppsStatsQueryDto {
+    "limit": 0,
+  },
+}
+`;
+
+exports[`recent-app request DTOs match the Joi schemas RecentAppsStatsQueryDto ≡ recentAppsStatsQuerySchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": RecentAppsStatsQueryDto {},
+}
+`;

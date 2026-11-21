@@ -1,6 +1,6 @@
 // types
 import type { RecentAppsStatsDto } from "../dtos";
-import type { RecentAppsStatsQuery } from "../types";
+import type { RecentAppsStatsQueryDto } from "../dtos/requests";
 import type { RecentAppServiceDeps } from "./deps";
 // dtos
 import { toRecentAppsStatsDto } from "../dtos";
@@ -16,7 +16,7 @@ import { RequestContext } from "@/utils/request-context";
  */
 export const stats = async (
   deps: RecentAppServiceDeps,
-  query: RecentAppsStatsQuery = {}
+  query: RecentAppsStatsQueryDto = {}
 ): Promise<RecentAppsStatsDto> => {
   const userId = RequestContext.requireUserId();
   const role = RequestContext.getUser()?.roles;

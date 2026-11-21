@@ -1,6 +1,6 @@
 // libs
 import { Exclude } from "class-transformer";
-import { registerDecorator } from "class-validator";
+import { registerDecorator, ValidateIf } from "class-validator";
 // types
 import type { ValidationArguments, ValidationOptions } from "class-validator";
 // modules
@@ -94,6 +94,13 @@ export const IsObjectId = (
     (value) => typeof value === "string" && OBJECTID_PATTERN.test(value),
     { ...options, message: key }
   );
+
+/**
+ * Skips a missing field only. `@IsOptional()` also skips `null`, which Joi
+ * refuses on a body field unless `.allow(null)` says otherwise.
+ */
+export const UnlessMissing = (): PropertyDecorator =>
+  ValidateIf((_object, value) => value !== undefined);
 
 export const MatchesProperty = (
   property: string,

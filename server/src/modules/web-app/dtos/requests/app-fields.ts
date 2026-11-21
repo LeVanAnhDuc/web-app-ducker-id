@@ -27,7 +27,8 @@ import {
   IsObjectId,
   Lowercase,
   Trim,
-  TrimEach
+  TrimEach,
+  UnlessMissing
 } from "@/validators/decorators";
 
 const STATUS_VALUES = Object.values(WEB_APP_STATUS_PUBLIC);
@@ -47,10 +48,6 @@ const MAX_REDIRECT_URIS = 20;
 // Rules are listed in reverse of the Joi chain, as class-validator reports the
 // bottom-most failing one. Where Joi shipped English (a wrong type, a blank
 // optional value) the field's nearest key stands in.
-
-/** Skips a missing field only: Joi refuses `null` on every app field. */
-export const UnlessMissing = (): PropertyDecorator =>
-  ValidateIf((_object, value) => value !== undefined);
 
 export const NameRules = (): PropertyDecorator =>
   composeDecorators(

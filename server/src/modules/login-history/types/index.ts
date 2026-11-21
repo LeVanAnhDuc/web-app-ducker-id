@@ -12,8 +12,12 @@ import type {
   LOGIN_HISTORY_SORT_BY_ADMIN,
   LOGIN_ANOMALY_REASONS
 } from "@/modules/login-history/constants";
-// common
-import type { SortOrder } from "@/common/sort";
+import type {
+  LoginHistoryAdminQueryDto,
+  LoginHistoryIdParamsDto,
+  LoginHistoryQueryDto,
+  LoginHistoryStatsQueryDto
+} from "../dtos/requests";
 
 export type LoginMethod = (typeof LOGIN_METHODS)[keyof typeof LOGIN_METHODS];
 
@@ -25,48 +29,18 @@ export type LoginHistorySortByUser =
 export type LoginHistorySortByAdmin =
   (typeof LOGIN_HISTORY_SORT_BY_ADMIN)[number];
 
-export interface PaginationParams {
-  page: number;
-  limit: number;
-}
-
-export interface LoginHistoryQuery extends Partial<PaginationParams> {
-  status?: LoginStatus;
-  method?: LoginMethod;
-  deviceType?: DeviceType;
-  clientType?: ClientType;
-  country?: string;
-  city?: string;
-  os?: string;
-  browser?: string;
-  fromDate?: string;
-  toDate?: string;
-  source?: LoginSource;
-  webAppId?: string;
-  interactive?: boolean;
-  sortBy?: LoginHistorySortByUser;
-  sortOrder?: SortOrder;
-}
-
-export interface LoginHistoryAdminQuery extends Omit<
-  LoginHistoryQuery,
-  "sortBy"
-> {
-  userId?: string;
-  ip?: string;
-  sortBy?: LoginHistorySortByAdmin;
-}
-
+// The index signature keeps the handlers assignable to Express's own, whose
+// query and params are string dictionaries.
 export interface MyHistoryRequest extends Omit<Request, "query"> {
-  query: LoginHistoryQuery;
+  query: LoginHistoryQueryDto & Request["query"];
 }
 
 export interface AllHistoryRequest extends Omit<Request, "query"> {
-  query: LoginHistoryAdminQuery;
+  query: LoginHistoryAdminQueryDto & Request["query"];
 }
 
 export interface HistoryIdParamRequest extends Omit<Request, "params"> {
-  params: { id: string };
+  params: LoginHistoryIdParamsDto & Record<string, string>;
 }
 
 export type LoginStatus = (typeof LOGIN_STATUSES)[keyof typeof LOGIN_STATUSES];
@@ -221,11 +195,6 @@ export interface LoginStatsRange {
   topAppsLimit: number;
 }
 
-export interface LoginStatsQuery {
-  range?: string;
-  tz?: string;
-}
-
 export interface MyStatsRequest extends Omit<Request, "query"> {
-  query: LoginStatsQuery;
+  query: LoginHistoryStatsQueryDto & Request["query"];
 }

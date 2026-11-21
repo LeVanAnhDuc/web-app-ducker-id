@@ -341,7 +341,7 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/favorites.md
 - **Tiền điều kiện:** không có
 - **Bước:**
   1. GET với `search` 200 ký tự; 201 ký tự; 200 ký tự kèm một dấu cách mỗi đầu.
-- **Mong đợi:** 200; 400 `VALIDATION_ERROR` với đúng một lỗi `search` / `string.max`; 200 (trim trước khi đếm).
+- **Mong đợi:** 200; 400 `VALIDATION_ERROR` với đúng một lỗi `search` / `maxLength`; 200 (trim trước khi đếm).
 - **Automated:** `tests/api/favorites/favorites.api.ts`
 
 ### TC-FAVORITES-034 — Search ignores case and surrounding spaces and combines with the category

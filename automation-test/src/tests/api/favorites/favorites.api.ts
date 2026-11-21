@@ -306,7 +306,7 @@ test(
     const error = await errorOf(overMax);
     expect(error.code).toBe("VALIDATION_ERROR");
     expect(error.errors?.map((e) => [e.field, e.reason])).toEqual([
-      ["search", "string.max"]
+      ["search", "maxLength"]
     ]);
 
     // Surrounding whitespace is trimmed before the length check.

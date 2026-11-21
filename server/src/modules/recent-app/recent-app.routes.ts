@@ -6,13 +6,12 @@ import type { RateLimiterMiddleware } from "@/middlewares";
 import type { RecentAppController } from "./recent-app.controller";
 // common
 import { handle } from "@/common/responses";
-// validators
-import {
-  listRecentAppsQuerySchema,
-  recentAppIdParamSchema,
-  recentAppsStatsQuerySchema
-} from "@/validators/schemas/recent-app";
 // others
+import {
+  ListRecentAppsQueryDto,
+  RecentAppIdParamsDto,
+  RecentAppsStatsQueryDto
+} from "./dtos/requests";
 import { authGuard, paramsPipe, queryPipe } from "@/middlewares";
 
 export const createRecentAppUserRoutes = (
@@ -26,13 +25,13 @@ export const createRecentAppUserRoutes = (
 
   recentApps.get(
     "/",
-    queryPipe(listRecentAppsQuerySchema),
+    queryPipe(ListRecentAppsQueryDto),
     handle(controller.list, { message: "recentApp:success.list" })
   );
   // Before "/:appId" so the literal segment is not read as an app id.
   recentApps.get(
     "/stats",
-    queryPipe(recentAppsStatsQuerySchema),
+    queryPipe(RecentAppsStatsQueryDto),
     handle(controller.stats, { message: "recentApp:success.stats" })
   );
   recentApps.delete(
@@ -42,17 +41,17 @@ export const createRecentAppUserRoutes = (
   recentApps.post(
     "/:appId",
     rl.recordRecentAppByUser,
-    paramsPipe(recentAppIdParamSchema),
+    paramsPipe(RecentAppIdParamsDto),
     handle(controller.record, { status: StatusCodes.NO_CONTENT })
   );
   recentApps.delete(
     "/:appId",
-    paramsPipe(recentAppIdParamSchema),
+    paramsPipe(RecentAppIdParamsDto),
     handle(controller.hide, { status: StatusCodes.NO_CONTENT })
   );
   recentApps.post(
     "/:appId/restore",
-    paramsPipe(recentAppIdParamSchema),
+    paramsPipe(RecentAppIdParamsDto),
     handle(controller.restore, { status: StatusCodes.NO_CONTENT })
   );
 

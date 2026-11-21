@@ -164,17 +164,34 @@ describe("ToBoolean", () => {
     );
   });
 
-  it("leaves anything else for @IsBoolean to reject", async () => {
-    const { failures } = await validateDto(BooleanDto, { flag: "maybe" });
+  it.each([
+    ["TRUE", true],
+    ["False", false],
+    ["fAlSe", false]
+  ])(
+    "maps %p case-insensitively, as Joi's boolean() does",
+    async (flag, expected) => {
+      const { value, failures } = await validateDto(BooleanDto, { flag });
 
-    expect(failures).toEqual([
-      {
-        field: "flag",
-        reason: "isBoolean",
-        key: "validation:interactive.invalid"
-      }
-    ]);
-  });
+      expect(failures).toEqual([]);
+      expect(value.flag).toBe(expected);
+    }
+  );
+
+  it.each(["maybe", " true", "", "1"])(
+    "leaves %p for @IsBoolean to reject",
+    async (flag) => {
+      const { failures } = await validateDto(BooleanDto, { flag });
+
+      expect(failures).toEqual([
+        {
+          field: "flag",
+          reason: "isBoolean",
+          key: "validation:interactive.invalid"
+        }
+      ]);
+    }
+  );
 });
 
 describe("ToInt", () => {

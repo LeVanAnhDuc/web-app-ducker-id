@@ -1,6 +1,6 @@
 // types
 import type { PaginatedResult } from "@/common/pagination";
-import type { NotificationListQuery } from "@/modules/notification/types";
+import type { NotificationListQueryDto } from "../dtos/requests";
 import type { NotificationItemDto } from "../dtos";
 import type { NotificationRepository } from "../repository/notification.repository";
 // others
@@ -13,7 +13,7 @@ export class NotificationService {
   constructor(private readonly repo: NotificationRepository) {}
 
   list(
-    query: NotificationListQuery
+    query: NotificationListQueryDto
   ): Promise<PaginatedResult<NotificationItemDto>> {
     return list(this.repo, query);
   }

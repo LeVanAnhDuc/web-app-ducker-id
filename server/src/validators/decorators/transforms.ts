@@ -39,10 +39,14 @@ export const ToInt = (): PropertyDecorator =>
   });
 
 // Not `enableImplicitConversion`: that runs `Boolean("false")`, which is true.
+// Case-insensitive like Joi's `boolean()` ("TRUE", "False"), but untrimmed:
+// Joi refused " true" too.
 export const ToBoolean = (): PropertyDecorator =>
   Transform(({ value }: { value: unknown }) => {
-    if (value === "true") return true;
-    if (value === "false") return false;
+    if (typeof value !== "string") return value;
+    const normalised = value.toLowerCase();
+    if (normalised === "true") return true;
+    if (normalised === "false") return false;
     return value;
   });
 

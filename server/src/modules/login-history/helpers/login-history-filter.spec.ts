@@ -1,16 +1,18 @@
 // types
-import type { LoginHistoryAdminQuery } from "@/modules/login-history/types";
+import type { LoginHistoryAdminQueryDto } from "@/modules/login-history/dtos/requests";
+// modules
+import { LoginHistoryQueryDto } from "@/modules/login-history/dtos/requests";
 // helpers
 import { buildLoginHistoryFilter } from "./index";
 // validators
-import { loginHistoryQuerySchema } from "@/validators/schemas/login-history";
+import { validateDto } from "@/validators/validate-dto";
 
 const USER = "507f1f77bcf86cd799439011";
 
 describe("buildLoginHistoryFilter date bounds", () => {
   it("covers the whole day when toDate carries no time", () => {
     const filter = buildLoginHistoryFilter(
-      { toDate: "2026-10-04" } as LoginHistoryAdminQuery,
+      { toDate: "2026-10-04" } as LoginHistoryAdminQueryDto,
       USER
     );
 
@@ -22,7 +24,7 @@ describe("buildLoginHistoryFilter date bounds", () => {
 
   it("keeps a full timestamp exactly as sent", () => {
     const filter = buildLoginHistoryFilter(
-      { toDate: "2026-10-04T08:30:00.000Z" } as LoginHistoryAdminQuery,
+      { toDate: "2026-10-04T08:30:00.000Z" } as LoginHistoryAdminQueryDto,
       USER
     );
 
@@ -31,7 +33,7 @@ describe("buildLoginHistoryFilter date bounds", () => {
 
   it("leaves fromDate at the start of its day", () => {
     const filter = buildLoginHistoryFilter(
-      { fromDate: "2026-10-04" } as LoginHistoryAdminQuery,
+      { fromDate: "2026-10-04" } as LoginHistoryAdminQueryDto,
       USER
     );
 
@@ -43,7 +45,7 @@ describe("buildLoginHistoryFilter date bounds", () => {
       {
         fromDate: "2026-10-04",
         toDate: "2026-10-04"
-      } as LoginHistoryAdminQuery,
+      } as LoginHistoryAdminQueryDto,
       USER
     );
 
@@ -54,22 +56,24 @@ describe("buildLoginHistoryFilter date bounds", () => {
   it("scopes to the signed-in user and ignores a userId from the query", () => {
     const other = "507f1f77bcf86cd799439099";
     const filter = buildLoginHistoryFilter(
-      { userId: other } as LoginHistoryAdminQuery,
+      { userId: other } as LoginHistoryAdminQueryDto,
       USER
     );
 
     expect(filter.userId).toBe(USER);
   });
 
-  it("survives validation: the query pipe must not rewrite a plain date", () => {
-    // Joi's isoDate() normalises "2026-10-04" to "2026-10-04T00:00:00.000Z"
-    // unless .raw() is set, and the filter then cannot tell a whole day from
-    // its first millisecond. This is the shape the route actually receives.
-    const { value } = loginHistoryQuerySchema.validate({
+  it("survives validation: the query pipe must not rewrite a plain date", async () => {
+    // Normalising "2026-10-04" to "2026-10-04T00:00:00.000Z" (as Joi's
+    // isoDate() did without .raw()) would leave the filter unable to tell a
+    // whole day from its first millisecond. This is the shape the route
+    // actually receives.
+    const { value, failures } = await validateDto(LoginHistoryQueryDto, {
       fromDate: "2026-10-04",
       toDate: "2026-10-04"
     });
 
+    expect(failures).toEqual([]);
     expect(value.toDate).toBe("2026-10-04");
 
     const filter = buildLoginHistoryFilter(value, USER);

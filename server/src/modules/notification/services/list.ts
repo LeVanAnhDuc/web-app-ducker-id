@@ -1,5 +1,5 @@
 // types
-import type { NotificationListQuery } from "@/modules/notification/types";
+import type { NotificationListQueryDto } from "../dtos/requests";
 import type { NotificationItemDto } from "../dtos";
 import type { NotificationRepository } from "../repository/notification.repository";
 import type { PaginatedResult } from "@/common/pagination";
@@ -13,7 +13,7 @@ import { buildNotificationFilter } from "../helpers";
 
 export const list = async (
   repo: NotificationRepository,
-  query: NotificationListQuery
+  query: NotificationListQueryDto
 ): Promise<PaginatedResult<NotificationItemDto>> => {
   const userId = RequestContext.requireUserId();
   const { page, limit, skip, sort } = resolvePaging(query);

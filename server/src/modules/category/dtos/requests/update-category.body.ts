@@ -6,8 +6,10 @@ import {
   registerDecorator,
   ValidateNested
 } from "class-validator";
+// validators
+import { UnlessMissing } from "@/validators/decorators";
 // others
-import { NameEnRules, NameViRules, UnlessMissing } from "./category-name";
+import { NameEnRules, NameViRules } from "./category-name";
 
 export class UpdateCategoryNameDto {
   @NameEnRules()

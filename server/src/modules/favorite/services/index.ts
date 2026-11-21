@@ -1,6 +1,6 @@
 // types
 import type { UserAppDto } from "@/modules/web-app/dtos";
-import type { ListFavoritesQuery } from "../types";
+import type { ListFavoritesQueryDto } from "../dtos/requests";
 import type { FavoriteServiceDeps } from "./deps";
 // others
 import { add } from "./add";
@@ -18,7 +18,7 @@ export class FavoriteService {
     return remove(this.deps, appId);
   }
 
-  list(query: ListFavoritesQuery): Promise<{ items: UserAppDto[] }> {
+  list(query: ListFavoritesQueryDto): Promise<{ items: UserAppDto[] }> {
     return list(this.deps, query);
   }
 }

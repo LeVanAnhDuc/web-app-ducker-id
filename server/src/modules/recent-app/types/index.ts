@@ -2,6 +2,11 @@
 import type { Request } from "express";
 import type { Schema } from "mongoose";
 import type { UserAppDto } from "@/modules/web-app/dtos";
+import type {
+  ListRecentAppsQueryDto,
+  RecentAppIdParamsDto,
+  RecentAppsStatsQueryDto
+} from "../dtos/requests";
 
 export interface UserAppUsageDocument {
   _id: Schema.Types.ObjectId;
@@ -25,28 +30,16 @@ export interface RecentAppDto extends UserAppDto {
   useCount: number;
 }
 
-export interface ListRecentAppsQuery {
-  search?: string;
-  page?: number;
-  limit?: number;
-}
-
-export interface RecentAppIdParams {
-  appId: string;
-}
-
+// The index signature keeps the handlers assignable to Express's own, whose
+// query and params are string dictionaries.
 export interface RecentAppIdRequest extends Omit<Request, "params"> {
-  params: { appId: string };
+  params: RecentAppIdParamsDto & Record<string, string>;
 }
 
 export interface ListRecentAppsRequest extends Omit<Request, "query"> {
-  query: ListRecentAppsQuery;
-}
-
-export interface RecentAppsStatsQuery {
-  limit?: number;
+  query: ListRecentAppsQueryDto & Request["query"];
 }
 
 export interface RecentAppsStatsRequest extends Omit<Request, "query"> {
-  query: RecentAppsStatsQuery;
+  query: RecentAppsStatsQueryDto & Request["query"];
 }

@@ -1,0 +1,1882 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: allFields 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryAdminQueryDto {
+    "fromDate": "2026-10-01T00:00:00Z",
+    "interactive": true,
+    "ip": "10.0.0.1",
+    "limit": 20,
+    "page": 1,
+    "sortBy": "usernameAttempted",
+    "sortOrder": "asc",
+    "status": "failed",
+    "toDate": "2026-10-04",
+    "userId": "507f1f77bcf86cd799439011",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: browserPadded 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryAdminQueryDto {
+    "browser": "Chrome",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: browserTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "browser",
+      "key": "validation:search.invalid",
+      "reason": "maxLength",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "browser": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: cityTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "city",
+      "key": "validation:search.invalid",
+      "reason": "maxLength",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "city": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: cityWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "city",
+      "key": "validation:search.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "city": [
+      "Hanoi",
+    ],
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: clientTypeUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "clientType",
+      "key": "validation:clientType.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "clientType": "DESKTOP_APP",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: clientTypeValid 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryAdminQueryDto {
+    "clientType": "WEB",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: countryAtMaxPadded 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryAdminQueryDto {
+    "country": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: countryEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "country",
+      "key": "validation:search.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "country": "",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: countryPadded 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryAdminQueryDto {
+    "country": "Vietnam",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: countryTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "country",
+      "key": "validation:search.invalid",
+      "reason": "maxLength",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "country": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: countryWhitespaceOnly 1`] = `
+{
+  "failures": [
+    {
+      "field": "country",
+      "key": "validation:search.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "country": "",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: deviceTypeLowerCase 1`] = `
+{
+  "failures": [
+    {
+      "field": "deviceType",
+      "key": "validation:deviceType.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "deviceType": "mobile",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: deviceTypeValid 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryAdminQueryDto {
+    "deviceType": "MOBILE",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: empty 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryAdminQueryDto {},
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: fromDateDateOnly 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryAdminQueryDto {
+    "fromDate": "2026-10-04",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: fromDateEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "fromDate",
+      "key": "validation:fromDate.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "fromDate": "",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: fromDateNotIso 1`] = `
+{
+  "failures": [
+    {
+      "field": "fromDate",
+      "key": "validation:fromDate.invalid",
+      "reason": "isIsoDateString",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "fromDate": "yesterday",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: fromDateTimestamp 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryAdminQueryDto {
+    "fromDate": "2026-10-04T08:30:00+07:00",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: fromDateWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "fromDate",
+      "key": "validation:fromDate.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "fromDate": [
+      "2026-10-04",
+    ],
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: interactiveEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "interactive",
+      "key": "validation:interactive.invalid",
+      "reason": "isBoolean",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "interactive": "",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: interactiveFalse 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryAdminQueryDto {
+    "interactive": false,
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: interactiveMixedCase 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryAdminQueryDto {
+    "interactive": false,
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: interactiveNotBoolean 1`] = `
+{
+  "failures": [
+    {
+      "field": "interactive",
+      "key": "validation:interactive.invalid",
+      "reason": "isBoolean",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "interactive": "maybe",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: interactiveTrue 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryAdminQueryDto {
+    "interactive": true,
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: interactiveUpperCase 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryAdminQueryDto {
+    "interactive": true,
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: interactiveWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "interactive",
+      "key": "validation:interactive.invalid",
+      "reason": "isBoolean",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "interactive": [
+      "true",
+    ],
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: ipEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "ip",
+      "key": "validation:search.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "ip": "",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: ipPadded 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryAdminQueryDto {
+    "ip": "10.0.0.1",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: ipTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "ip",
+      "key": "validation:search.invalid",
+      "reason": "maxLength",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "ip": "111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: limitTooLarge 1`] = `
+{
+  "failures": [
+    {
+      "field": "limit",
+      "key": "validation:limit.invalid",
+      "reason": "max",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "limit": 101,
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: methodUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "method",
+      "key": "validation:method.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "method": "sms",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: methodValid 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryAdminQueryDto {
+    "method": "magic-link",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: osEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "os",
+      "key": "validation:search.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "os": "",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: osPadded 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryAdminQueryDto {
+    "os": "macOS",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: pageConverted 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryAdminQueryDto {
+    "limit": 50,
+    "page": 3,
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: pageNotNumber 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "isInt",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "page": "abc",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: pageZero 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "min",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "page": 0,
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: rangeFromInvalid 1`] = `
+{
+  "failures": [
+    {
+      "field": "fromDate",
+      "key": "validation:fromDate.invalid",
+      "reason": "isIsoDateString",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "fromDate": "bad",
+    "toDate": "2026-10-04",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: rangeInverted 1`] = `
+{
+  "failures": [
+    {
+      "field": "",
+      "key": "validation:dateRange.invalid",
+      "reason": "isOnOrAfter",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "fromDate": "2026-10-05",
+    "toDate": "2026-10-04",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: rangeInvertedByOffset 1`] = `
+{
+  "failures": [
+    {
+      "field": "",
+      "key": "validation:dateRange.invalid",
+      "reason": "isOnOrAfter",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "fromDate": "2026-10-04T00:00:00Z",
+    "toDate": "2026-10-04T05:00:00+07:00",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: rangeSameDay 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryAdminQueryDto {
+    "fromDate": "2026-10-04",
+    "toDate": "2026-10-04",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: rangeToInvalid 1`] = `
+{
+  "failures": [
+    {
+      "field": "toDate",
+      "key": "validation:toDate.invalid",
+      "reason": "isIsoDateString",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "fromDate": "2026-10-05",
+    "toDate": "bad",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: sortByCreatedAt 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryAdminQueryDto {
+    "sortBy": "createdAt",
+    "sortOrder": "asc",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: sortByEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "sortBy",
+      "key": "validation:sortBy.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "sortBy": "",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: sortByIp 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryAdminQueryDto {
+    "sortBy": "ip",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: sortByUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "sortBy",
+      "key": "validation:sortBy.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "sortBy": "browser",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: sortByUsernameAttempted 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryAdminQueryDto {
+    "sortBy": "usernameAttempted",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: sortOrderUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "sortOrder",
+      "key": "validation:sortOrder.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "sortOrder": "up",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: sourceUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "source",
+      "key": "validation:source.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "source": "saml",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: sourceValid 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryAdminQueryDto {
+    "source": "oauth",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: statusEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "validation:status.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "status": "",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: statusUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "validation:status.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "status": "pending",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: statusValid 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryAdminQueryDto {
+    "status": "failed",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: statusWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "validation:status.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "status": [
+      "failed",
+    ],
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: toDateDateOnly 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryAdminQueryDto {
+    "toDate": "2026-10-04",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: toDateEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "toDate",
+      "key": "validation:toDate.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "toDate": "",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: toDateNotIso 1`] = `
+{
+  "failures": [
+    {
+      "field": "toDate",
+      "key": "validation:toDate.invalid",
+      "reason": "isIsoDateString",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "toDate": "04/10/2026",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryAdminQueryDto {},
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: userIdEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "userId",
+      "key": "validation:userId.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "userId": "",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: userIdNotHex 1`] = `
+{
+  "failures": [
+    {
+      "field": "userId",
+      "key": "validation:userId.invalid",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "userId": "nope",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: userIdValid 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryAdminQueryDto {
+    "userId": "507f1f77bcf86cd799439011",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: webAppIdEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "webAppId",
+      "key": "validation:webAppId.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "webAppId": "",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: webAppIdNotHex 1`] = `
+{
+  "failures": [
+    {
+      "field": "webAppId",
+      "key": "validation:webAppId.invalid",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": LoginHistoryAdminQueryDto {
+    "webAppId": "nope",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryAdminQueryDto ≡ loginHistoryAdminQuerySchema: webAppIdValid 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryAdminQueryDto {
+    "webAppId": "507f1f77bcf86cd799439011",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryIdParamsDto ≡ loginHistoryIdParamSchema: empty 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "loginHistory:errors.invalidId",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": LoginHistoryIdParamsDto {
+    "id": "",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryIdParamsDto ≡ loginHistoryIdParamSchema: missing 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "loginHistory:errors.invalidId",
+      "reason": "isDefined",
+    },
+  ],
+  "value": LoginHistoryIdParamsDto {},
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryIdParamsDto ≡ loginHistoryIdParamSchema: notHex 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "loginHistory:errors.invalidId",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": LoginHistoryIdParamsDto {
+    "id": "507f1f77bcf86cd79943901z",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryIdParamsDto ≡ loginHistoryIdParamSchema: null 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "loginHistory:errors.invalidId",
+      "reason": "isDefined",
+    },
+  ],
+  "value": LoginHistoryIdParamsDto {
+    "id": null,
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryIdParamsDto ≡ loginHistoryIdParamSchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryIdParamsDto {
+    "id": "507f1f77bcf86cd799439011",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryIdParamsDto ≡ loginHistoryIdParamSchema: valid 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryIdParamsDto {
+    "id": "507f1f77bcf86cd799439011",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryIdParamsDto ≡ loginHistoryIdParamSchema: wrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "id",
+      "key": "loginHistory:errors.invalidId",
+      "reason": "isString",
+    },
+  ],
+  "value": LoginHistoryIdParamsDto {
+    "id": 123,
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: allFields 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryQueryDto {
+    "browser": "Chrome",
+    "city": "Hanoi",
+    "clientType": "WEB",
+    "country": "VN",
+    "deviceType": "DESKTOP",
+    "fromDate": "2026-10-01",
+    "interactive": false,
+    "limit": 20,
+    "method": "password",
+    "os": "Windows",
+    "page": 1,
+    "sortBy": "country",
+    "sortOrder": "desc",
+    "source": "idp",
+    "status": "success",
+    "toDate": "2026-10-04",
+    "webAppId": "507f1f77bcf86cd799439011",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: browserPadded 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryQueryDto {
+    "browser": "Chrome",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: browserTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "browser",
+      "key": "validation:search.invalid",
+      "reason": "maxLength",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "browser": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: cityTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "city",
+      "key": "validation:search.invalid",
+      "reason": "maxLength",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "city": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: cityWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "city",
+      "key": "validation:search.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "city": [
+      "Hanoi",
+    ],
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: clientTypeUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "clientType",
+      "key": "validation:clientType.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "clientType": "DESKTOP_APP",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: clientTypeValid 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryQueryDto {
+    "clientType": "WEB",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: countryAtMaxPadded 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryQueryDto {
+    "country": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: countryEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "country",
+      "key": "validation:search.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "country": "",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: countryPadded 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryQueryDto {
+    "country": "Vietnam",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: countryTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "country",
+      "key": "validation:search.invalid",
+      "reason": "maxLength",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "country": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: countryWhitespaceOnly 1`] = `
+{
+  "failures": [
+    {
+      "field": "country",
+      "key": "validation:search.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "country": "",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: deviceTypeLowerCase 1`] = `
+{
+  "failures": [
+    {
+      "field": "deviceType",
+      "key": "validation:deviceType.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "deviceType": "mobile",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: deviceTypeValid 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryQueryDto {
+    "deviceType": "MOBILE",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: empty 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryQueryDto {},
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: fromDateDateOnly 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryQueryDto {
+    "fromDate": "2026-10-04",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: fromDateEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "fromDate",
+      "key": "validation:fromDate.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "fromDate": "",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: fromDateNotIso 1`] = `
+{
+  "failures": [
+    {
+      "field": "fromDate",
+      "key": "validation:fromDate.invalid",
+      "reason": "isIsoDateString",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "fromDate": "yesterday",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: fromDateTimestamp 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryQueryDto {
+    "fromDate": "2026-10-04T08:30:00+07:00",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: fromDateWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "fromDate",
+      "key": "validation:fromDate.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "fromDate": [
+      "2026-10-04",
+    ],
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: interactiveEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "interactive",
+      "key": "validation:interactive.invalid",
+      "reason": "isBoolean",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "interactive": "",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: interactiveFalse 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryQueryDto {
+    "interactive": false,
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: interactiveMixedCase 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryQueryDto {
+    "interactive": false,
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: interactiveNotBoolean 1`] = `
+{
+  "failures": [
+    {
+      "field": "interactive",
+      "key": "validation:interactive.invalid",
+      "reason": "isBoolean",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "interactive": "maybe",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: interactiveTrue 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryQueryDto {
+    "interactive": true,
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: interactiveUpperCase 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryQueryDto {
+    "interactive": true,
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: interactiveWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "interactive",
+      "key": "validation:interactive.invalid",
+      "reason": "isBoolean",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "interactive": [
+      "true",
+    ],
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: ipStripped 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryQueryDto {},
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: limitTooLarge 1`] = `
+{
+  "failures": [
+    {
+      "field": "limit",
+      "key": "validation:limit.invalid",
+      "reason": "max",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "limit": 101,
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: methodUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "method",
+      "key": "validation:method.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "method": "sms",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: methodValid 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryQueryDto {
+    "method": "magic-link",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: osEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "os",
+      "key": "validation:search.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "os": "",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: osPadded 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryQueryDto {
+    "os": "macOS",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: pageConverted 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryQueryDto {
+    "limit": 50,
+    "page": 3,
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: pageNotNumber 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "isInt",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "page": "abc",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: pageZero 1`] = `
+{
+  "failures": [
+    {
+      "field": "page",
+      "key": "validation:page.invalid",
+      "reason": "min",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "page": 0,
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: rangeFromInvalid 1`] = `
+{
+  "failures": [
+    {
+      "field": "fromDate",
+      "key": "validation:fromDate.invalid",
+      "reason": "isIsoDateString",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "fromDate": "bad",
+    "toDate": "2026-10-04",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: rangeInverted 1`] = `
+{
+  "failures": [
+    {
+      "field": "",
+      "key": "validation:dateRange.invalid",
+      "reason": "isOnOrAfter",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "fromDate": "2026-10-05",
+    "toDate": "2026-10-04",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: rangeInvertedByOffset 1`] = `
+{
+  "failures": [
+    {
+      "field": "",
+      "key": "validation:dateRange.invalid",
+      "reason": "isOnOrAfter",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "fromDate": "2026-10-04T00:00:00Z",
+    "toDate": "2026-10-04T05:00:00+07:00",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: rangeSameDay 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryQueryDto {
+    "fromDate": "2026-10-04",
+    "toDate": "2026-10-04",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: rangeToInvalid 1`] = `
+{
+  "failures": [
+    {
+      "field": "toDate",
+      "key": "validation:toDate.invalid",
+      "reason": "isIsoDateString",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "fromDate": "2026-10-05",
+    "toDate": "bad",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: sortByAdminOnly 1`] = `
+{
+  "failures": [
+    {
+      "field": "sortBy",
+      "key": "validation:sortBy.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "sortBy": "ip",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: sortByCreatedAt 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryQueryDto {
+    "sortBy": "createdAt",
+    "sortOrder": "asc",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: sortByEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "sortBy",
+      "key": "validation:sortBy.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "sortBy": "",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: sortByUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "sortBy",
+      "key": "validation:sortBy.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "sortBy": "browser",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: sortOrderUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "sortOrder",
+      "key": "validation:sortOrder.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "sortOrder": "up",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: sourceUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "source",
+      "key": "validation:source.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "source": "saml",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: sourceValid 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryQueryDto {
+    "source": "oauth",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: statusEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "validation:status.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "status": "",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: statusUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "validation:status.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "status": "pending",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: statusValid 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryQueryDto {
+    "status": "failed",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: statusWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "status",
+      "key": "validation:status.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "status": [
+      "failed",
+    ],
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: toDateDateOnly 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryQueryDto {
+    "toDate": "2026-10-04",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: toDateEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "toDate",
+      "key": "validation:toDate.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "toDate": "",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: toDateNotIso 1`] = `
+{
+  "failures": [
+    {
+      "field": "toDate",
+      "key": "validation:toDate.invalid",
+      "reason": "isIsoDateString",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "toDate": "04/10/2026",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryQueryDto {},
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: userIdStripped 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryQueryDto {},
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: webAppIdEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "webAppId",
+      "key": "validation:webAppId.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "webAppId": "",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: webAppIdNotHex 1`] = `
+{
+  "failures": [
+    {
+      "field": "webAppId",
+      "key": "validation:webAppId.invalid",
+      "reason": "isObjectId",
+    },
+  ],
+  "value": LoginHistoryQueryDto {
+    "webAppId": "nope",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryQueryDto ≡ loginHistoryQuerySchema: webAppIdValid 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryQueryDto {
+    "webAppId": "507f1f77bcf86cd799439011",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryStatsQueryDto ≡ loginHistoryStatsQuerySchema: allFields 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryStatsQueryDto {
+    "range": "30d",
+    "tz": "Asia/Saigon",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryStatsQueryDto ≡ loginHistoryStatsQuerySchema: empty 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryStatsQueryDto {},
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryStatsQueryDto ≡ loginHistoryStatsQuerySchema: rangeEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "range",
+      "key": "validation:range.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": LoginHistoryStatsQueryDto {
+    "range": "",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryStatsQueryDto ≡ loginHistoryStatsQuerySchema: rangeUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "range",
+      "key": "validation:range.invalid",
+      "reason": "isIn",
+    },
+  ],
+  "value": LoginHistoryStatsQueryDto {
+    "range": "365d",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryStatsQueryDto ≡ loginHistoryStatsQuerySchema: rangeValid 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryStatsQueryDto {
+    "range": "90d",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryStatsQueryDto ≡ loginHistoryStatsQuerySchema: rangeWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "range",
+      "key": "validation:range.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": LoginHistoryStatsQueryDto {
+    "range": [
+      "7d",
+    ],
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryStatsQueryDto ≡ loginHistoryStatsQuerySchema: tzCanonical 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryStatsQueryDto {
+    "tz": "Asia/Ho_Chi_Minh",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryStatsQueryDto ≡ loginHistoryStatsQuerySchema: tzEmpty 1`] = `
+{
+  "failures": [
+    {
+      "field": "tz",
+      "key": "validation:timezone.invalid",
+      "reason": "isNotEmpty",
+    },
+  ],
+  "value": LoginHistoryStatsQueryDto {
+    "tz": "",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryStatsQueryDto ≡ loginHistoryStatsQuerySchema: tzLink 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryStatsQueryDto {
+    "tz": "Asia/Saigon",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryStatsQueryDto ≡ loginHistoryStatsQuerySchema: tzPathLike 1`] = `
+{
+  "failures": [
+    {
+      "field": "tz",
+      "key": "validation:timezone.invalid",
+      "reason": "isSupportedTimeZone",
+    },
+  ],
+  "value": LoginHistoryStatsQueryDto {
+    "tz": "../../etc",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryStatsQueryDto ≡ loginHistoryStatsQuerySchema: tzTooLong 1`] = `
+{
+  "failures": [
+    {
+      "field": "tz",
+      "key": "validation:timezone.invalid",
+      "reason": "maxLength",
+    },
+  ],
+  "value": LoginHistoryStatsQueryDto {
+    "tz": "Asia/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryStatsQueryDto ≡ loginHistoryStatsQuerySchema: tzUnknown 1`] = `
+{
+  "failures": [
+    {
+      "field": "tz",
+      "key": "validation:timezone.invalid",
+      "reason": "isSupportedTimeZone",
+    },
+  ],
+  "value": LoginHistoryStatsQueryDto {
+    "tz": "Mars/Base",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryStatsQueryDto ≡ loginHistoryStatsQuerySchema: tzUtc 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryStatsQueryDto {
+    "tz": "UTC",
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryStatsQueryDto ≡ loginHistoryStatsQuerySchema: tzWrongType 1`] = `
+{
+  "failures": [
+    {
+      "field": "tz",
+      "key": "validation:timezone.invalid",
+      "reason": "isString",
+    },
+  ],
+  "value": LoginHistoryStatsQueryDto {
+    "tz": [
+      "UTC",
+    ],
+  },
+}
+`;
+
+exports[`login-history request DTOs match the Joi schemas LoginHistoryStatsQueryDto ≡ loginHistoryStatsQuerySchema: unknownStripped 1`] = `
+{
+  "failures": [],
+  "value": LoginHistoryStatsQueryDto {},
+}
+`;

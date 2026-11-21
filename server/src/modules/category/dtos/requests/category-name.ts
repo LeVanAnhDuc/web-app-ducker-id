@@ -4,8 +4,7 @@ import {
   IsNotEmpty,
   IsString,
   MaxLength,
-  registerDecorator,
-  ValidateIf
+  registerDecorator
 } from "class-validator";
 // modules
 import {
@@ -61,7 +60,3 @@ export const NameEnRules = (): PropertyDecorator =>
   );
 
 export const NameViRules = (): PropertyDecorator => nameRules("nameVi");
-
-/** Skips a missing name only: Joi refuses `null`. */
-export const UnlessMissing = (): PropertyDecorator =>
-  ValidateIf((_object, value) => value !== undefined);

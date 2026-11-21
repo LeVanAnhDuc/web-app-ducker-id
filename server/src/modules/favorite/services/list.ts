@@ -1,6 +1,6 @@
 // types
 import type { UserAppDto } from "@/modules/web-app/dtos";
-import type { ListFavoritesQuery } from "../types";
+import type { ListFavoritesQueryDto } from "../dtos/requests";
 import type { FavoriteServiceDeps } from "./deps";
 // dtos
 import { toFavoriteAppDto } from "../dtos";
@@ -11,7 +11,7 @@ import { RequestContext } from "@/utils/request-context";
 
 export const list = async (
   deps: FavoriteServiceDeps,
-  query: ListFavoritesQuery
+  query: ListFavoritesQueryDto
 ): Promise<{ items: UserAppDto[] }> => {
   const userId = RequestContext.requireUserId();
   const role = RequestContext.getUser()?.roles;

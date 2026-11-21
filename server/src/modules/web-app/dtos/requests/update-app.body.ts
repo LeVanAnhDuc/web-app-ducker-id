@@ -5,7 +5,7 @@ import type {
   WebAppStatusPublic
 } from "@/modules/web-app/types";
 // validators
-import { IsNotEmptyBody } from "@/validators/decorators";
+import { IsNotEmptyBody, UnlessMissing } from "@/validators/decorators";
 // others
 import {
   CategoryIdsRules,
@@ -18,8 +18,7 @@ import {
   RedirectUrisRules,
   RequiredRolesRules,
   StatusRules,
-  TokenEndpointAuthMethodRules,
-  UnlessMissing
+  TokenEndpointAuthMethodRules
 } from "./app-fields";
 
 // A PATCH: the create rules with every field optional, and at least one of

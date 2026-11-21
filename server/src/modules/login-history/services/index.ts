@@ -2,14 +2,12 @@
 import type { PaginatedResult } from "@/common/pagination";
 import type { Schema } from "mongoose";
 import type { Request } from "express";
+import type { LoginEventApp, LoginFailReason, LoginMethod } from "../types";
 import type {
-  LoginEventApp,
-  LoginFailReason,
-  LoginHistoryAdminQuery,
-  LoginHistoryQuery,
-  LoginMethod,
-  LoginStatsQuery
-} from "../types";
+  LoginHistoryAdminQueryDto,
+  LoginHistoryQueryDto,
+  LoginHistoryStatsQueryDto
+} from "../dtos/requests";
 import type {
   AllHistoryItemDto,
   HistoryDetailItemDto,
@@ -68,17 +66,17 @@ export class LoginHistoryService {
   }
 
   getMyLoginHistory(
-    query: LoginHistoryQuery
+    query: LoginHistoryQueryDto
   ): Promise<PaginatedResult<MyHistoryItemDto>> {
     return getMyLoginHistory(this.deps, query);
   }
 
-  getMyLoginStats(query: LoginStatsQuery): Promise<MyLoginStatsDto> {
+  getMyLoginStats(query: LoginHistoryStatsQueryDto): Promise<MyLoginStatsDto> {
     return getMyLoginStats(this.deps, query);
   }
 
   getAllLoginHistory(
-    query: LoginHistoryAdminQuery
+    query: LoginHistoryAdminQueryDto
   ): Promise<PaginatedResult<AllHistoryItemDto>> {
     return getAllLoginHistory(this.deps, query);
   }
