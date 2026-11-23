@@ -14,7 +14,6 @@ import type {
 } from "@/modules/user/types";
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { PaginationOptions } from "@/types/common";
-import type { ClientSession } from "mongoose";
 import type { UserRepository } from "../user.repository";
 // models
 import UserModel from "@/models/user";
@@ -25,22 +24,16 @@ import { escapeRegex } from "@/utils/string/escape-regex";
 
 @Repository()
 export class MongoUserRepository implements UserRepository {
-  async createProfile(
-    data: CreateUserData,
-    session?: ClientSession
-  ): Promise<UserRecord> {
-    const [user] = await UserModel.create(
-      [
-        {
-          authId: data.authId,
-          email: data.email,
-          fullName: data.fullName,
-          gender: data.gender,
-          dateOfBirth: data.dateOfBirth
-        }
-      ],
-      { session }
-    );
+  async createProfile(data: CreateUserData): Promise<UserRecord> {
+    const [user] = await UserModel.create([
+      {
+        authId: data.authId,
+        email: data.email,
+        fullName: data.fullName,
+        gender: data.gender,
+        dateOfBirth: data.dateOfBirth
+      }
+    ]);
 
     return { _id: user._id, email: user.email, fullName: user.fullName };
   }

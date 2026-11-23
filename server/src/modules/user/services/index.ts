@@ -9,7 +9,6 @@ import type {
   UserRecord,
   UserWithAuth
 } from "@/modules/user/types";
-import type { ClientSession } from "mongoose";
 import type { AdminUserDto, MyProfileDto, PublicProfileDto } from "../dtos";
 import type { AdminUsersQueryDto } from "../dtos/requests";
 import type { AuthenticationService } from "@/modules/authentication/services";
@@ -48,11 +47,8 @@ export class UserService {
     return getPublicProfile(this.userRepo, userId);
   }
 
-  createProfile(
-    data: CreateUserData,
-    session?: ClientSession
-  ): Promise<UserRecord> {
-    return createProfile(this.userRepo, data, session);
+  createProfile(data: CreateUserData): Promise<UserRecord> {
+    return createProfile(this.userRepo, data);
   }
 
   emailExists(email: string): Promise<boolean> {

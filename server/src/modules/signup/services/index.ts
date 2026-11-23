@@ -18,10 +18,13 @@ import type { OtpSignupRepository } from "../repositories/otp-signup.repository"
 import type { SessionSignupRepository } from "../repositories/session-signup.repository";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { EmailAvailableGuard, CooldownGuard } from "../guards";
+import type { CreatedAccount, NewAccount } from "./complete-signup";
+// common
+import { Transactional } from "@/common/stereotypes";
 // others
 import { LogMethod } from "@/libs/logger";
 import { checkEmail } from "./check-email";
-import { completeSignup } from "./complete-signup";
+import { completeSignup, createUserAccount } from "./complete-signup";
 import { resendOtp } from "./resend-otp";
 import { sendOtp } from "./send-otp";
 import { verifyOtp } from "./verify-otp";
@@ -78,13 +81,20 @@ export class SignupService {
   completeSignup(body: CompleteSignupBodyDto): Promise<CompleteSignupDto> {
     return completeSignup(
       {
-        authService: this.authService,
-        userService: this.userService,
+        createUserAccount: (account) => this.createUserAccount(account),
         otpSignupRepo: this.otpSignupRepo,
         sessionSignupRepo: this.sessionSignupRepo,
         emailAvailableGuard: this.emailAvailableGuard
       },
       body
+    );
+  }
+
+  @Transactional()
+  private createUserAccount(account: NewAccount): Promise<CreatedAccount> {
+    return createUserAccount(
+      { authService: this.authService, userService: this.userService },
+      account
     );
   }
 

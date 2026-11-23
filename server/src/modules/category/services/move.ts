@@ -1,5 +1,3 @@
-// libs
-import mongoose from "mongoose";
 // types
 import type { CategoryMoveDirection } from "../types";
 import type { AdminCategoryDto } from "../dtos";
@@ -17,38 +15,31 @@ import { ERROR_CODES } from "@/constants/error-code";
  * concurrent creates can leave equal `sortOrder`s, and a swap between equals
  * changes nothing. Moving past either end is a no-op, not an error — another
  * tab may already have moved the row there.
+ *
+ * Runs in the transaction `CategoryService.move` opens (`@Transactional()`).
  */
 export const move = async (
   categoryRepo: CategoryRepository,
   id: string,
   direction: CategoryMoveDirection
 ): Promise<AdminCategoryDto[]> => {
-  const session = await mongoose.startSession();
-
-  try {
-    await session.withTransaction(async () => {
-      const ordered = (await categoryRepo.findAll(session)).map((doc) =>
-        doc._id.toString()
-      );
-      const from = ordered.indexOf(id);
-      if (from === -1) {
-        throw new NotFoundError({
-          key: "category:errors.notFound",
-          code: ERROR_CODES.CATEGORY_NOT_FOUND
-        });
-      }
-
-      const to =
-        direction === CATEGORY_MOVE_DIRECTIONS.UP ? from - 1 : from + 1;
-      if (to >= 0 && to < ordered.length) {
-        [ordered[from], ordered[to]] = [ordered[to], ordered[from]];
-      }
-
-      await categoryRepo.setSortOrders(ordered, session);
+  const ordered = (await categoryRepo.findAll()).map((doc) =>
+    doc._id.toString()
+  );
+  const from = ordered.indexOf(id);
+  if (from === -1) {
+    throw new NotFoundError({
+      key: "category:errors.notFound",
+      code: ERROR_CODES.CATEGORY_NOT_FOUND
     });
-  } finally {
-    await session.endSession();
   }
+
+  const to = direction === CATEGORY_MOVE_DIRECTIONS.UP ? from - 1 : from + 1;
+  if (to >= 0 && to < ordered.length) {
+    [ordered[from], ordered[to]] = [ordered[to], ordered[from]];
+  }
+
+  await categoryRepo.setSortOrders(ordered);
 
   return list(categoryRepo);
 };

@@ -11,13 +11,9 @@ import type {
   UserRole
 } from "@/modules/user/types";
 import type { PaginationOptions } from "@/types/common";
-import type { ClientSession } from "mongoose";
 
 export interface UserRepository {
-  createProfile(
-    data: CreateUserData,
-    session?: ClientSession
-  ): Promise<UserRecord>;
+  createProfile(data: CreateUserData): Promise<UserRecord>;
   findById(userId: string): Promise<UserDocument | null>;
   findByAuthId(authId: string): Promise<{
     _id: UserDocument["_id"];

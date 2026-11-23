@@ -1,7 +1,4 @@
-// libs
-import mongoose from "mongoose";
 // types
-import type { ClientSession } from "mongoose";
 import type { CategoryReassignment } from "../types";
 import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
 import type { CategoryRepository } from "../repository/category.repository";
@@ -17,8 +14,7 @@ import { ERROR_CODES } from "@/constants/error-code";
 const assertTargetsValid = async (
   categoryRepo: CategoryRepository,
   id: string,
-  reassignments: CategoryReassignment[],
-  session: ClientSession
+  reassignments: CategoryReassignment[]
 ): Promise<void> => {
   const appIds = new Set(reassignments.map((r) => r.appId));
   const targets = [...new Set(reassignments.map((r) => r.categoryId))];
@@ -26,7 +22,7 @@ const assertTargetsValid = async (
     appIds.size === reassignments.length &&
     !targets.includes(id) &&
     (targets.length === 0 ||
-      (await categoryRepo.countByIds(targets, session)) === targets.length);
+      (await categoryRepo.countByIds(targets)) === targets.length);
   if (!valid) {
     throw new BadRequestError({
       key: "category:errors.reassignInvalid",
@@ -37,18 +33,17 @@ const assertTargetsValid = async (
 
 /**
  * The client sends one target per orphan it was shown. The orphan set is read
- * again inside the transaction: if it no longer matches — an app gained or lost
+ * again inside the transaction (`CategoryService.remove`, `@Transactional()`): if it no longer matches — an app gained or lost
  * a category since the dialog opened, or an `appId` is not an orphan of this
  * category at all — nothing is written and the client reloads the impact.
  */
 const assertCoversOrphans = async (
   webAppRepo: WebAppRepository,
   id: string,
-  reassignments: CategoryReassignment[],
-  session: ClientSession
+  reassignments: CategoryReassignment[]
 ): Promise<void> => {
   const orphanIds = new Set(
-    (await webAppRepo.findOrphansOf(id, session)).map((app) => app._id)
+    (await webAppRepo.findOrphansOf(id)).map((app) => app._id)
   );
 
   if (orphanIds.size > 0 && reassignments.length === 0) {
@@ -74,26 +69,18 @@ export const remove = async (
   id: string,
   reassignments: CategoryReassignment[]
 ): Promise<void> => {
-  const session = await mongoose.startSession();
-
-  try {
-    await session.withTransaction(async () => {
-      const category = await deps.categoryRepo.findById(id, session);
-      if (!category) {
-        throw new NotFoundError({
-          key: "category:errors.notFound",
-          code: ERROR_CODES.CATEGORY_NOT_FOUND
-        });
-      }
-
-      await assertTargetsValid(deps.categoryRepo, id, reassignments, session);
-      await assertCoversOrphans(deps.webAppRepo, id, reassignments, session);
-
-      await deps.webAppRepo.reassignOrphans(id, reassignments, session);
-      await deps.webAppRepo.pullCategory(id, session);
-      await deps.categoryRepo.deleteById(id, session);
+  const category = await deps.categoryRepo.findById(id);
+  if (!category) {
+    throw new NotFoundError({
+      key: "category:errors.notFound",
+      code: ERROR_CODES.CATEGORY_NOT_FOUND
     });
-  } finally {
-    await session.endSession();
   }
+
+  await assertTargetsValid(deps.categoryRepo, id, reassignments);
+  await assertCoversOrphans(deps.webAppRepo, id, reassignments);
+
+  await deps.webAppRepo.reassignOrphans(id, reassignments);
+  await deps.webAppRepo.pullCategory(id);
+  await deps.categoryRepo.deleteById(id);
 };

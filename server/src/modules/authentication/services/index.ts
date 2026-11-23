@@ -4,7 +4,6 @@ import type {
   AuthenticationRecord,
   CreateAuthenticationData
 } from "@/modules/authentication/types";
-import type { ClientSession } from "mongoose";
 import type { AuthenticationRepository } from "../repository/authentication.repository";
 // others
 import { adminResetPassword } from "./admin-reset-password";
@@ -27,19 +26,12 @@ export class AuthenticationService {
     return findById(this.authRepo, authId);
   }
 
-  create(
-    data: CreateAuthenticationData,
-    session?: ClientSession
-  ): Promise<AuthenticationRecord> {
-    return create(this.authRepo, data, session);
+  create(data: CreateAuthenticationData): Promise<AuthenticationRecord> {
+    return create(this.authRepo, data);
   }
 
-  updatePassword(
-    authId: string,
-    hashedPassword: string,
-    session?: ClientSession
-  ): Promise<number> {
-    return updatePassword(this.authRepo, authId, hashedPassword, session);
+  updatePassword(authId: string, hashedPassword: string): Promise<number> {
+    return updatePassword(this.authRepo, authId, hashedPassword);
   }
 
   requirePasswordChange(authId: string): Promise<void> {

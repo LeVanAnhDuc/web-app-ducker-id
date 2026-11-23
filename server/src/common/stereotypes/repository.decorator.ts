@@ -5,7 +5,8 @@ import { Logger } from "@/libs/logger";
 import {
   isDuplicateKeyError,
   isMongooseCastError,
-  isMongooseValidationError
+  isMongooseValidationError,
+  isRetryableTransactionError
 } from "@/utils/mongo-errors";
 
 type RepositoryClass = { name: string; prototype: object };
@@ -16,7 +17,8 @@ const isPromiseLike = (value: unknown): value is PromiseLike<unknown> =>
 /**
  * Logs a failed operation, then rethrows what `handleError` already knows how
  * to answer — an `AppError`, a duplicate key (409), a Mongoose validation or
- * cast error (400) — and turns anything else into a `DatabaseError` (500).
+ * cast error (400) — and what a `@Transactional()` retry loop must see with its
+ * label intact, and turns anything else into a `DatabaseError` (500).
  */
 const runDatabaseOperation = async <T>(
   operation: string,
@@ -31,7 +33,8 @@ const runDatabaseOperation = async <T>(
       error instanceof AppError ||
       isDuplicateKeyError(error) ||
       isMongooseValidationError(error) ||
-      isMongooseCastError(error)
+      isMongooseCastError(error) ||
+      isRetryableTransactionError(error)
     ) {
       throw error;
     }

@@ -11,6 +11,8 @@ import type {
 } from "../dtos";
 import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
 import type { CategoryRepository } from "../repository/category.repository";
+// common
+import { Transactional } from "@/common/stereotypes";
 // others
 import { create } from "./create";
 import { deleteImpact } from "./delete-impact";
@@ -46,6 +48,7 @@ export class CategoryService {
     );
   }
 
+  @Transactional()
   move(
     id: string,
     direction: CategoryMoveDirection
@@ -60,6 +63,7 @@ export class CategoryService {
     );
   }
 
+  @Transactional()
   remove(id: string, reassignments: CategoryReassignment[]): Promise<void> {
     return remove(
       { categoryRepo: this.categoryRepo, webAppRepo: this.webAppRepo },

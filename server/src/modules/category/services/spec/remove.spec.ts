@@ -1,13 +1,3 @@
-// libs
-const endSession = jest.fn();
-const withTransaction = jest.fn();
-const startSession = jest.fn();
-
-jest.mock("mongoose", () => ({
-  __esModule: true,
-  default: { startSession }
-}));
-
 // service
 import { CategoryService } from "../";
 // common
@@ -24,8 +14,11 @@ import {
   categoryDoc,
   makeDeps
 } from "./make-deps";
+import {
+  inTransaction,
+  mockTransactions
+} from "@test/helpers/transaction.helper";
 
-const session = { withTransaction, endSession };
 const APP_A = "64b2f0c2f1a2b3c4d5e6f701";
 const APP_B = "64b2f0c2f1a2b3c4d5e6f702";
 
@@ -54,10 +47,14 @@ describe("CategoryService.remove", () => {
     expect(ctx.categoryRepo.deleteById).not.toHaveBeenCalled();
   };
 
+  let transaction: jest.SpyInstance;
+
   beforeEach(() => {
-    endSession.mockResolvedValue(undefined);
-    withTransaction.mockImplementation((fn: () => unknown) => fn());
-    startSession.mockResolvedValue(session);
+    ({ transaction } = mockTransactions());
+  });
+
+  afterEach(() => {
+    transaction.mockRestore();
   });
 
   it("deletes straight away when no app is orphaned", async () => {
@@ -67,17 +64,28 @@ describe("CategoryService.remove", () => {
 
     expect(ctx.webAppRepo.reassignOrphans).toHaveBeenCalledWith(
       CATEGORY_ID,
-      [],
-      session
+      []
     );
-    expect(ctx.webAppRepo.pullCategory).toHaveBeenCalledWith(
-      CATEGORY_ID,
-      session
-    );
-    expect(ctx.categoryRepo.deleteById).toHaveBeenCalledWith(
-      CATEGORY_ID,
-      session
-    );
+    expect(ctx.webAppRepo.pullCategory).toHaveBeenCalledWith(CATEGORY_ID);
+    expect(ctx.categoryRepo.deleteById).toHaveBeenCalledWith(CATEGORY_ID);
+  });
+
+  it("reads and writes inside one transaction", async () => {
+    const ctx = setup();
+    const seen: boolean[] = [];
+    const record = async () => {
+      seen.push(inTransaction());
+    };
+    ctx.webAppRepo.pullCategory.mockImplementation(record);
+    ctx.categoryRepo.deleteById.mockImplementation(async () => {
+      await record();
+      return true;
+    });
+
+    await ctx.service.remove(CATEGORY_ID, []);
+
+    expect(transaction).toHaveBeenCalledTimes(1);
+    expect(seen).toEqual([true, true]);
   });
 
   it("reassigns orphans to different targets, then pulls and deletes", async () => {
@@ -91,8 +99,7 @@ describe("CategoryService.remove", () => {
 
     expect(ctx.webAppRepo.reassignOrphans).toHaveBeenCalledWith(
       CATEGORY_ID,
-      reassignments,
-      session
+      reassignments
     );
     const order = [
       ctx.webAppRepo.reassignOrphans.mock.invocationCallOrder[0],
@@ -175,13 +182,13 @@ describe("CategoryService.remove", () => {
     expectNothingWritten(ctx);
   });
 
-  it("404s for an unknown category and still ends the session", async () => {
+  it("404s for an unknown category and writes nothing", async () => {
     const ctx = setup();
     ctx.categoryRepo.findById.mockResolvedValue(null);
 
     await expect(ctx.service.remove(CATEGORY_ID, [])).rejects.toBeInstanceOf(
       NotFoundError
     );
-    expect(endSession).toHaveBeenCalled();
+    expectNothingWritten(ctx);
   });
 });

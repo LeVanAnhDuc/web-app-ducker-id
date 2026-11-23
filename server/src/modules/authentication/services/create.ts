@@ -3,18 +3,16 @@ import type {
   AuthenticationRecord,
   CreateAuthenticationData
 } from "@/modules/authentication/types";
-import type { ClientSession } from "mongoose";
 import type { AuthenticationRepository } from "../repository/authentication.repository";
 // others
 import { Logger } from "@/libs/logger";
 
 export const create = async (
   authRepo: AuthenticationRepository,
-  data: CreateAuthenticationData,
-  session?: ClientSession
+  data: CreateAuthenticationData
 ): Promise<AuthenticationRecord> => {
   try {
-    const record = await authRepo.create(data, session);
+    const record = await authRepo.create(data);
     Logger.info("New authentication record created", {
       authId: record._id.toString()
     });
