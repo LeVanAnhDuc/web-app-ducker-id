@@ -93,21 +93,11 @@ export class UserService {
   }
 
   async emailExists(email: string): Promise<boolean> {
-    try {
-      return await this.userRepo.emailExists(email);
-    } catch (error) {
-      Logger.error("Failed to check email existence", { email, error });
-      throw error;
-    }
+    return await this.userRepo.emailExists(email);
   }
 
   async findByEmailWithAuth(email: string): Promise<UserWithAuth | null> {
-    try {
-      return await this.userRepo.findByEmailWithAuth(email);
-    } catch (error) {
-      Logger.error("Failed to find auth by email", { email, error });
-      throw error;
-    }
+    return await this.userRepo.findByEmailWithAuth(email);
   }
 
   async findByAuthId(authId: string): Promise<{
@@ -116,12 +106,7 @@ export class UserService {
     fullName: string;
     avatar?: string | null;
   } | null> {
-    try {
-      return await this.userRepo.findByAuthId(authId);
-    } catch (error) {
-      Logger.error("Failed to find user by auth ID", { authId, error });
-      throw error;
-    }
+    return await this.userRepo.findByAuthId(authId);
   }
 
   async getAdminUsers(
