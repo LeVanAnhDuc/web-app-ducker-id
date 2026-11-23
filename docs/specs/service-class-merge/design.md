@@ -43,13 +43,15 @@ Two more reasons now:
 - **Batch 1** (this change): `favorite`, `notification`, `session`, `token`, `authentication`,
   `contact-admin`, `recent-app` — service folders under ~300 lines. Together with `change-password` and
   `logout` (already a single class), they become `<name>.service.ts`.
-- **Batch 2**: `user`, `category`, `web-app`, `unlock-account`, `forgot-password`, `entitlement`,
-  `login-history`.
+- **Batch 2**: `user` (becomes `user.service.ts`), `category`, `web-app`, `login-history`,
+  `forgot-password`, `entitlement`. `unlock-account` is unchanged: both of its methods pass ~60 lines.
+  Kept method files: `category/remove.ts`, `category/update.ts`, `web-app/update-app.ts`,
+  `login-history/record-successful-login.ts`, `login-history/get-my-login-stats.ts`,
+  `entitlement-admin/update-matrix.ts`.
 - **Stay split** (long methods, the rule keeps their files): `oauth`, `signup`, `login`. Each still
   follows the rule for its short methods.
 
-`CLAUDE.md` describes the rule once batch 1 lands; until batch 2 lands it names the modules that
-still use the old layout.
+`CLAUDE.md` describes the rule and lists where each module stands.
 
 ## Testing
 

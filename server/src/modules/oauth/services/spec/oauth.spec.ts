@@ -2,7 +2,7 @@
 import type { WebAppDocument } from "@/modules/web-app/types";
 import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
-import type { UserService } from "@/modules/user/services";
+import type { UserService } from "@/modules/user/user.service";
 import type { SessionService } from "@/modules/session/session.service";
 import type { RecentAppService } from "@/modules/recent-app/recent-app.service";
 import type { SessionRecord } from "@/modules/session/types";

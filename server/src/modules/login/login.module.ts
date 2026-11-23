@@ -1,6 +1,6 @@
 // types
 import type { RedisClientType } from "redis";
-import type { UserService } from "@/modules/user/services";
+import type { UserService } from "@/modules/user/user.service";
 import type { LoginHistoryService } from "@/modules/login-history/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { SessionService } from "@/modules/session/session.service";

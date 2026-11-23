@@ -2,7 +2,7 @@
 import { StatusCodes } from "http-status-codes";
 // types
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
-import type { UserService } from "@/modules/user/services";
+import type { UserService } from "@/modules/user/user.service";
 // common
 import { OAuthError } from "@/exceptions";
 // others

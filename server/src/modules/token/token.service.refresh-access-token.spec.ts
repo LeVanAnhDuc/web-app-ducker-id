@@ -3,7 +3,7 @@ jest.mock("@/modules/authentication/helpers");
 // types
 import type { AuthenticationDocument } from "@/modules/authentication/types";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
-import type { UserService } from "@/modules/user/services";
+import type { UserService } from "@/modules/user/user.service";
 import type { RefreshTokenValidGuard } from "./guards";
 import type { RevokedRefreshTokenRepository } from "./repository/revoked-refresh-token.repository";
 // common

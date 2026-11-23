@@ -5,7 +5,7 @@ jest.mock("@/utils/crypto/bcrypt");
 jest.mock("@/utils/crypto/temp-password");
 
 // types
-import type { UserRepository } from "../../repository/user.repository";
+import type { UserRepository } from "./repository/user.repository";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 // common
 import { ForbiddenError, NotFoundError } from "@/exceptions";
@@ -17,7 +17,7 @@ import { hashValue } from "@/utils/crypto/bcrypt";
 import { generateTempPassword } from "@/utils/crypto/temp-password";
 import { createEmailDispatcherMock } from "@test/mocks/email-dispatcher.mock";
 import { createNotificationDispatcherMock } from "@test/mocks/notification-dispatcher.mock";
-import { UserService } from "../";
+import { UserService } from "./user.service";
 
 const mockedHash = hashValue as jest.MockedFunction<typeof hashValue>;
 const mockedGenerateTempPassword = generateTempPassword as jest.MockedFunction<

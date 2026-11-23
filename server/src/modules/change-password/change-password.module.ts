@@ -1,6 +1,6 @@
 // types
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
-import type { UserService } from "@/modules/user/services";
+import type { UserService } from "@/modules/user/user.service";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 // guards

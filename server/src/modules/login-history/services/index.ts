@@ -7,23 +7,32 @@ import type {
   LoginHistoryQueryDto,
   LoginHistoryStatsQueryDto
 } from "../dtos/requests";
-import type {
-  AllHistoryItemDto,
-  HistoryDetailItemDto,
-  MyHistoryItemDto,
-  MyLoginStatsDto
-} from "../dtos";
+import type { MyLoginStatsDto } from "../dtos";
 import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 import type { LoginHistoryRepository } from "../repository/login-history.repository";
+// common
+import { toDto } from "@/common/dto";
+import { resolvePaging, toPageMeta } from "@/common/pagination";
+import { NotFoundError } from "@/exceptions";
+// modules
+import {
+  LOGIN_STATUSES,
+  LOGIN_METHODS,
+  LOGIN_FAIL_REASONS
+} from "@/modules/login-history/constants";
+// dtos
+import {
+  AllHistoryItemDto,
+  HistoryDetailItemDto,
+  MyHistoryItemDto
+} from "../dtos";
 // others
-import { getAllLoginHistory } from "./get-all-login-history";
-import { getLoginHistoryDetail } from "./get-login-history-detail";
-import { getMyLoginHistory } from "./get-my-login-history";
+import { ERROR_CODES } from "@/constants/error-code";
+import { RequestContext } from "@/utils/request-context";
+import { buildLoginHistoryFilter } from "../helpers";
 import { getMyLoginStats } from "./get-my-login-stats";
-import { recordAppSignIn } from "./record-app-sign-in";
-import { recordAppSignInDenied } from "./record-app-sign-in-denied";
-import { recordFailedLogin } from "./record-failed-login";
 import { recordSuccessfulLogin } from "./record-successful-login";
+import { logLoginAttempt } from "./shared/log-login-attempt";
 
 export class LoginHistoryService {
   constructor(
@@ -45,48 +54,125 @@ export class LoginHistoryService {
     );
   }
 
-  recordFailedLogin(params: {
+  recordFailedLogin({
+    userId,
+    usernameAttempted,
+    loginMethod,
+    failReason
+  }: {
     userId?: Schema.Types.ObjectId | string | null;
     usernameAttempted: string;
     loginMethod: LoginMethod;
     failReason: LoginFailReason;
   }): void {
-    recordFailedLogin(this.loginHistoryRepo, params);
+    void logLoginAttempt(this.loginHistoryRepo, {
+      userId: userId ? userId.toString() : null,
+      usernameAttempted,
+      status: LOGIN_STATUSES.FAILED,
+      failReason,
+      loginMethod,
+      client: RequestContext.getClient()
+    });
   }
 
-  recordAppSignIn(params: {
+  /**
+   * The IdP handed an authorization code to a satellite app. `interactive`
+   * says whether the user had just logged in for it or the code came silently
+   * from an existing session.
+   */
+  recordAppSignIn({
+    userId,
+    usernameAttempted,
+    app
+  }: {
     userId: Schema.Types.ObjectId | string;
     usernameAttempted: string;
     app: LoginEventApp;
   }): void {
-    recordAppSignIn(this.loginHistoryRepo, params);
+    void logLoginAttempt(this.loginHistoryRepo, {
+      userId: userId.toString(),
+      usernameAttempted,
+      status: LOGIN_STATUSES.SUCCESS,
+      loginMethod: LOGIN_METHODS.SSO,
+      app,
+      client: RequestContext.getClient()
+    });
   }
 
-  recordAppSignInDenied(params: {
+  recordAppSignInDenied({
+    userId,
+    usernameAttempted,
+    app
+  }: {
     userId: Schema.Types.ObjectId | string;
     usernameAttempted: string;
     app: LoginEventApp;
   }): void {
-    recordAppSignInDenied(this.loginHistoryRepo, params);
+    void logLoginAttempt(this.loginHistoryRepo, {
+      userId: userId.toString(),
+      usernameAttempted,
+      status: LOGIN_STATUSES.FAILED,
+      failReason: LOGIN_FAIL_REASONS.NOT_ENTITLED,
+      loginMethod: LOGIN_METHODS.SSO,
+      app,
+      client: RequestContext.getClient()
+    });
   }
 
-  getMyLoginHistory(
+  async getMyLoginHistory(
     query: LoginHistoryQueryDto
   ): Promise<PaginatedResult<MyHistoryItemDto>> {
-    return getMyLoginHistory(this.loginHistoryRepo, query);
+    const userId = RequestContext.requireAuthId();
+    const { page, limit, skip, sort } = resolvePaging(query);
+
+    const filter = buildLoginHistoryFilter(
+      query as LoginHistoryAdminQueryDto,
+      userId
+    );
+    const { data, total } = await this.loginHistoryRepo.findByUser(filter, {
+      skip,
+      limit,
+      sort
+    });
+
+    return {
+      items: toDto(MyHistoryItemDto, data),
+      meta: toPageMeta(total, page, limit)
+    };
   }
 
   getMyLoginStats(query: LoginHistoryStatsQueryDto): Promise<MyLoginStatsDto> {
     return getMyLoginStats(this.loginHistoryRepo, query);
   }
 
-  getAllLoginHistory(
+  async getAllLoginHistory(
     query: LoginHistoryAdminQueryDto
   ): Promise<PaginatedResult<AllHistoryItemDto>> {
-    return getAllLoginHistory(this.loginHistoryRepo, query);
+    const { page, limit, skip, sort } = resolvePaging(query);
+
+    const filter = buildLoginHistoryFilter(query);
+    const { data, total } = await this.loginHistoryRepo.findAll(filter, {
+      skip,
+      limit,
+      sort
+    });
+
+    return {
+      items: toDto(AllHistoryItemDto, data),
+      meta: toPageMeta(total, page, limit)
+    };
   }
 
-  getLoginHistoryDetail(id: string): Promise<HistoryDetailItemDto> {
-    return getLoginHistoryDetail(this.loginHistoryRepo, id);
+  async getLoginHistoryDetail(id: string): Promise<HistoryDetailItemDto> {
+    const doc = await this.loginHistoryRepo.findById(id);
+
+    if (!doc) {
+      throw new NotFoundError({
+        key: "loginHistory:errors.notFound",
+        code: ERROR_CODES.LOGIN_HISTORY_NOT_FOUND
+      });
+    }
+
+    return toDto(HistoryDetailItemDto, doc);
   }
 }

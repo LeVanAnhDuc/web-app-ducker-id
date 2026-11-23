@@ -1,7 +1,7 @@
 // types
 import type { RefreshTokenDto } from "./dtos";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
-import type { UserService } from "@/modules/user/services";
+import type { UserService } from "@/modules/user/user.service";
 import type { RevokedRefreshTokenRepository } from "./repository/revoked-refresh-token.repository";
 import type {
   RefreshTokenPresentGuard,

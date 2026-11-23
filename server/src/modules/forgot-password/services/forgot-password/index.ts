@@ -19,14 +19,15 @@ import type { OtpForgotPasswordStrategy } from "../../strategies/otp-forgot-pass
 import type { MagicLinkForgotPasswordStrategy } from "../../strategies/magic-link-forgot-password";
 import type { AuthExistsGuard, ResetTokenValidGuard } from "../../guards";
 import type { ForgotPasswordAuditService } from "../forgot-password-audit";
+// dtos
+import { toResetPasswordResponseDto } from "../../dtos";
 // others
 import { LogMethod } from "@/libs/logger";
-import { resetPassword } from "./reset-password";
+import { hashValue } from "@/utils/crypto/bcrypt";
 
 /**
  * Bốn method đầu chỉ dispatch sang strategy — strategy mới là nơi giữ logic
- * của từng use case nên không tách thêm file method cho chúng. Chỉ
- * `resetPassword` có logic riêng và được tách ra file.
+ * của từng use case. `resetPassword` là method duy nhất có logic riêng.
  */
 export class ForgotPasswordService {
   constructor(
@@ -58,16 +59,22 @@ export class ForgotPasswordService {
   }
 
   @LogMethod({ name: "Forgot password reset" })
-  resetPassword(body: ResetPasswordBodyDto): Promise<ResetPasswordResponseDto> {
-    return resetPassword(
-      {
-        authService: this.authService,
-        resetTokenRepo: this.resetTokenRepo,
-        authExistsGuard: this.authExistsGuard,
-        resetTokenValidGuard: this.resetTokenValidGuard,
-        audit: this.audit
-      },
-      body
-    );
+  async resetPassword(
+    body: ResetPasswordBodyDto
+  ): Promise<ResetPasswordResponseDto> {
+    const { email, resetToken, newPassword } = body;
+
+    await this.resetTokenValidGuard.assert(email, resetToken);
+
+    const { auth } = await this.authExistsGuard.assert(email);
+
+    const hashedPassword = hashValue(newPassword);
+    await this.authService.updatePassword(auth._id.toString(), hashedPassword);
+
+    await this.resetTokenRepo.clear(email);
+
+    this.audit.recordPasswordReset({ email, auth });
+
+    return toResetPasswordResponseDto();
   }
 }

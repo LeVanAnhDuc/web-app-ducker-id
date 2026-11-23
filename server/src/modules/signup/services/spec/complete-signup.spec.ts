@@ -3,7 +3,7 @@ jest.mock("@/utils/crypto/bcrypt");
 
 // types
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
-import type { UserService } from "@/modules/user/services";
+import type { UserService } from "@/modules/user/user.service";
 import type { OtpSignupRepository } from "../../repositories/otp-signup.repository";
 import type { SessionSignupRepository } from "../../repositories/session-signup.repository";
 // common
