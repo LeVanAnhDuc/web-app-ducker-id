@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import { JsonController, Post, Req, Res } from "routing-controllers";
 // types
 import type { Request, Response } from "express";
-import type { LogoutService } from "./services";
+import type { LogoutService } from "./logout.service";
 // common
 import { PasswordChangeAuth, Respond } from "@/common/routing";
 // modules

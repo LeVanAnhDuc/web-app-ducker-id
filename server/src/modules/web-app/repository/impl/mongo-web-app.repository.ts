@@ -1,7 +1,7 @@
 // libs
 import { Types } from "mongoose";
 // types
-import type { ClientSession, FilterQuery } from "mongoose";
+import type { FilterQuery } from "mongoose";
 import type {
   WebAppDocument,
   WebAppCreateInput,
@@ -165,14 +165,10 @@ export class MongoWebAppRepository implements WebAppRepository {
     }).exec();
   }
 
-  async findOrphansOf(
-    categoryId: string,
-    session?: ClientSession
-  ): Promise<OrphanApp[]> {
+  async findOrphansOf(categoryId: string): Promise<OrphanApp[]> {
     const docs = await WebAppModel.find(onlyCategory(categoryId))
       .sort({ displayName: 1 })
       .select("displayName")
-      .session(session ?? null)
       .lean<Pick<WebAppDocument, "_id" | "displayName">[]>()
       .exec();
     return docs.map((doc) => ({
@@ -183,8 +179,7 @@ export class MongoWebAppRepository implements WebAppRepository {
 
   async reassignOrphans(
     categoryId: string,
-    reassignments: CategoryReassignment[],
-    session: ClientSession
+    reassignments: CategoryReassignment[]
   ): Promise<void> {
     if (reassignments.length === 0) return;
     await WebAppModel.bulkWrite(
@@ -198,20 +193,15 @@ export class MongoWebAppRepository implements WebAppRepository {
             $set: { categoryIds: [new Types.ObjectId(targetId)] }
           }
         }
-      })),
-      { session }
+      }))
     );
   }
 
-  async pullCategory(
-    categoryId: string,
-    session: ClientSession
-  ): Promise<void> {
+  async pullCategory(categoryId: string): Promise<void> {
     const id = new Types.ObjectId(categoryId);
     await WebAppModel.updateMany(
       { categoryIds: id },
-      { $pull: { categoryIds: id } },
-      { session }
+      { $pull: { categoryIds: id } }
     ).exec();
   }
 }

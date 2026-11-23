@@ -2,7 +2,7 @@
 import { JsonController, Patch, Res } from "routing-controllers";
 // types
 import type { Response } from "express";
-import type { ChangePasswordService } from "./services";
+import type { ChangePasswordService } from "./change-password.service";
 // common
 import {
   PasswordChangeAuth,

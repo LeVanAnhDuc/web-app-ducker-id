@@ -1,10 +1,10 @@
 // types
 import type { WebAppDocument } from "@/modules/web-app/types";
 import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
-import type { AuthenticationService } from "@/modules/authentication/services";
-import type { UserService } from "@/modules/user/services";
-import type { SessionService } from "@/modules/session/services";
-import type { RecentAppService } from "@/modules/recent-app/services";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { UserService } from "@/modules/user/user.service";
+import type { SessionService } from "@/modules/session/session.service";
+import type { RecentAppService } from "@/modules/recent-app/recent-app.service";
 import type { SessionRecord } from "@/modules/session/types";
 import type { OAuthRepository } from "../../repository/oauth.repository";
 import type { AuthorizeParams } from "../../types";

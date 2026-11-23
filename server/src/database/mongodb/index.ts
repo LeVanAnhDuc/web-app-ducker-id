@@ -5,6 +5,10 @@ import config from "@/constants/env";
 import { Logger } from "@/libs/logger";
 
 export const connectMongo = async (): Promise<void> => {
+  // @Transactional() relies on it: every operation started inside a
+  // transaction picks the session up instead of being passed one.
+  mongoose.set("transactionAsyncLocalStorage", true);
+
   mongoose.connection.on("disconnected", () =>
     Logger.warn("MongoDB disconnected")
   );

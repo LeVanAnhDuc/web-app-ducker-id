@@ -1,7 +1,6 @@
 // libs
 import { Types } from "mongoose";
 // types
-import type { ClientSession } from "mongoose";
 import type {
   CategoryCreateInput,
   CategoryUpdateInput,
@@ -36,10 +35,9 @@ const rethrowNameTaken = (err: unknown): never => {
 
 @Repository()
 export class MongoCategoryRepository implements CategoryRepository {
-  async findAll(session?: ClientSession): Promise<WebAppCategoryDocument[]> {
+  async findAll(): Promise<WebAppCategoryDocument[]> {
     return WebAppCategoryModel.find()
       .sort(DISPLAY_ORDER)
-      .session(session ?? null)
       .lean<WebAppCategoryDocument[]>()
       .exec();
   }
@@ -61,12 +59,8 @@ export class MongoCategoryRepository implements CategoryRepository {
     ]).exec();
   }
 
-  async findById(
-    id: string,
-    session?: ClientSession
-  ): Promise<WebAppCategoryDocument | null> {
+  async findById(id: string): Promise<WebAppCategoryDocument | null> {
     return WebAppCategoryModel.findById(id)
-      .session(session ?? null)
       .lean<WebAppCategoryDocument>()
       .exec();
   }
@@ -103,12 +97,10 @@ export class MongoCategoryRepository implements CategoryRepository {
     return last?.sortOrder ?? -1;
   }
 
-  async countByIds(ids: string[], session?: ClientSession): Promise<number> {
+  async countByIds(ids: string[]): Promise<number> {
     return WebAppCategoryModel.countDocuments({
       _id: { $in: ids.map((id) => new Types.ObjectId(id)) }
-    })
-      .session(session ?? null)
-      .exec();
+    }).exec();
   }
 
   async create(data: CategoryCreateInput): Promise<WebAppCategoryDocument> {
@@ -137,26 +129,21 @@ export class MongoCategoryRepository implements CategoryRepository {
     }
   }
 
-  async setSortOrders(
-    orderedIds: string[],
-    session: ClientSession
-  ): Promise<void> {
+  async setSortOrders(orderedIds: string[]): Promise<void> {
     await WebAppCategoryModel.bulkWrite(
       orderedIds.map((id, index) => ({
         updateOne: {
           filter: { _id: new Types.ObjectId(id) },
           update: { $set: { sortOrder: index } }
         }
-      })),
-      { session }
+      }))
     );
   }
 
-  async deleteById(id: string, session: ClientSession): Promise<boolean> {
-    const result = await WebAppCategoryModel.deleteOne(
-      { _id: new Types.ObjectId(id) },
-      { session }
-    ).exec();
+  async deleteById(id: string): Promise<boolean> {
+    const result = await WebAppCategoryModel.deleteOne({
+      _id: new Types.ObjectId(id)
+    }).exec();
     return result.deletedCount === 1;
   }
 }

@@ -1,13 +1,3 @@
-// libs
-const endSession = jest.fn();
-const withTransaction = jest.fn();
-const startSession = jest.fn();
-
-jest.mock("mongoose", () => ({
-  __esModule: true,
-  default: { startSession }
-}));
-
 // service
 import { CategoryService } from "../";
 // common
@@ -20,8 +10,10 @@ import {
   categoryDoc,
   makeDeps
 } from "./make-deps";
-
-const session = { withTransaction, endSession };
+import {
+  inTransaction,
+  mockTransactions
+} from "@test/helpers/transaction.helper";
 
 describe("CategoryService.move", () => {
   const setup = () => {
@@ -38,10 +30,14 @@ describe("CategoryService.move", () => {
     };
   };
 
+  let transaction: jest.SpyInstance;
+
   beforeEach(() => {
-    endSession.mockResolvedValue(undefined);
-    withTransaction.mockImplementation((fn: () => unknown) => fn());
-    startSession.mockResolvedValue(session);
+    ({ transaction } = mockTransactions());
+  });
+
+  afterEach(() => {
+    transaction.mockRestore();
   });
 
   it("swaps with the previous row and renumbers every row", async () => {
@@ -49,10 +45,11 @@ describe("CategoryService.move", () => {
 
     await service.move(CATEGORY_ID, "up");
 
-    expect(categoryRepo.setSortOrders).toHaveBeenCalledWith(
-      [CATEGORY_ID, OTHER_ID, THIRD_ID],
-      session
-    );
+    expect(categoryRepo.setSortOrders).toHaveBeenCalledWith([
+      CATEGORY_ID,
+      OTHER_ID,
+      THIRD_ID
+    ]);
   });
 
   it("swaps with the next row", async () => {
@@ -84,20 +81,31 @@ describe("CategoryService.move", () => {
       { ...categoryDoc(CATEGORY_ID, "B", "b", 0), appCount: 1 }
     ]);
 
+    const seen: boolean[] = [];
+    categoryRepo.findAll.mockImplementation(async () => {
+      seen.push(inTransaction());
+      return [
+        categoryDoc(OTHER_ID, "A", "a", 0),
+        categoryDoc(CATEGORY_ID, "B", "b", 0)
+      ];
+    });
+    categoryRepo.setSortOrders.mockImplementation(async () => {
+      seen.push(inTransaction());
+    });
+
     const result = await service.move(CATEGORY_ID, "up");
 
-    expect(categoryRepo.findAll).toHaveBeenCalledWith(session);
+    expect(transaction).toHaveBeenCalledTimes(1);
+    expect(seen).toEqual([true, true]);
     expect(result.map((c) => c._id)).toEqual([CATEGORY_ID]);
-    expect(endSession).toHaveBeenCalled();
   });
 
-  it("404s for an id that is not in the list and ends the session", async () => {
+  it("404s for an id that is not in the list and writes nothing", async () => {
     const { service, categoryRepo } = setup();
 
     await expect(
       service.move("64b2f0c2f1a2b3c4d5e6f7ff", "up")
     ).rejects.toBeInstanceOf(NotFoundError);
     expect(categoryRepo.setSortOrders).not.toHaveBeenCalled();
-    expect(endSession).toHaveBeenCalled();
   });
 });

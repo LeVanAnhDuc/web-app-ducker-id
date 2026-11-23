@@ -1,21 +1,15 @@
-// libs
-import mongoose from "mongoose";
 // types
 import type { Schema } from "mongoose";
 import type { Gender } from "@/modules/user/types";
 import type { CompleteSignupBodyDto } from "../dtos/requests";
 import type { CompleteSignupDto } from "../dtos";
-import type { AuthenticationService } from "@/modules/authentication/services";
-import type { UserService } from "@/modules/user/services";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { UserService } from "@/modules/user/user.service";
 import type { OtpSignupRepository } from "../repositories/otp-signup.repository";
 import type { SessionSignupRepository } from "../repositories/session-signup.repository";
 import type { EmailAvailableGuard } from "../guards";
 // common
-import {
-  BadRequestError,
-  ConflictRequestError,
-  InternalServerError
-} from "@/exceptions";
+import { BadRequestError, ConflictRequestError } from "@/exceptions";
 // modules
 import { generateAuthTokensResponse } from "@/modules/authentication/helpers";
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
@@ -27,65 +21,58 @@ import { Logger } from "@/libs/logger";
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { isDuplicateKeyError, getDuplicatedField } from "@/utils/mongo-errors";
 
-/**
- * Không phải helper: hàm này mở transaction Mongo. Nó sống ở đây vì chỉ
- * `completeSignup` dùng tới — trước kia là private method của `SignupService`.
- */
-const createUserAccount = async (
-  deps: {
-    authService: AuthenticationService;
-    userService: UserService;
-  },
-  email: string,
-  password: string,
-  fullName: string,
-  gender: Gender,
-  dateOfBirth: Date
-): Promise<{
+export interface NewAccount {
+  email: string;
+  password: string;
+  fullName: string;
+  gender: Gender;
+  dateOfBirth: Date;
+}
+
+export interface CreatedAccount {
   authId: Schema.Types.ObjectId;
   userId: Schema.Types.ObjectId;
   email: string;
   fullName: string;
-}> => {
-  const session = await mongoose.startSession();
+}
 
+/**
+ * The auth record and the profile are written together or not at all:
+ * `SignupService.createUserAccount` runs this under `@Transactional()`. Only
+ * these two writes belong in the transaction — `withTransaction` may re-run
+ * the callback, and the Redis cleanup in `completeSignup` must not repeat.
+ */
+export const createUserAccount = async (
+  deps: {
+    authService: AuthenticationService;
+    userService: UserService;
+  },
+  { email, password, fullName, gender, dateOfBirth }: NewAccount
+): Promise<CreatedAccount> => {
   try {
-    const result = await session.withTransaction(async () => {
-      const hashedPassword = hashValue(password);
+    const hashedPassword = hashValue(password);
 
-      const auth = await deps.authService.create({ hashedPassword }, session);
+    const auth = await deps.authService.create({ hashedPassword });
 
-      Logger.debug("Auth record created", {
-        email,
-        authId: auth._id.toString()
-      });
-
-      const user = await deps.userService.createProfile(
-        {
-          authId: auth._id,
-          email,
-          fullName,
-          gender,
-          dateOfBirth
-        },
-        session
-      );
-
-      Logger.info("User profile created", {
-        userId: user._id.toString(),
-        authId: auth._id.toString()
-      });
-
-      return { authId: auth._id, userId: user._id, email, fullName };
+    Logger.debug("Auth record created", {
+      email,
+      authId: auth._id.toString()
     });
 
-    if (!result) {
-      throw new InternalServerError({
-        message: "Signup transaction was aborted"
-      });
-    }
+    const user = await deps.userService.createProfile({
+      authId: auth._id,
+      email,
+      fullName,
+      gender,
+      dateOfBirth
+    });
 
-    return result;
+    Logger.info("User profile created", {
+      userId: user._id.toString(),
+      authId: auth._id.toString()
+    });
+
+    return { authId: auth._id, userId: user._id, email, fullName };
   } catch (err) {
     if (isDuplicateKeyError(err) && getDuplicatedField(err) === "email") {
       Logger.warn("Signup email duplicate key (race condition)", { email });
@@ -95,15 +82,12 @@ const createUserAccount = async (
       });
     }
     throw err;
-  } finally {
-    await session.endSession();
   }
 };
 
 export const completeSignup = async (
   deps: {
-    authService: AuthenticationService;
-    userService: UserService;
+    createUserAccount: (account: NewAccount) => Promise<CreatedAccount>;
     otpSignupRepo: OtpSignupRepository;
     sessionSignupRepo: SessionSignupRepository;
     emailAvailableGuard: EmailAvailableGuard;
@@ -124,14 +108,13 @@ export const completeSignup = async (
 
   await deps.emailAvailableGuard.assert(email);
 
-  const account = await createUserAccount(
-    deps,
+  const account = await deps.createUserAccount({
     email,
     password,
     fullName,
     gender,
     dateOfBirth
-  );
+  });
 
   const tokens = generateAuthTokensResponse({
     userId: account.userId.toString(),

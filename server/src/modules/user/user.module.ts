@@ -1,10 +1,10 @@
 // types
-import type { AuthenticationService } from "@/modules/authentication/services";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 // others
 import { MongoUserRepository } from "./repository/impl/mongo-user.repository";
-import { UserService } from "./services";
+import { UserService } from "./user.service";
 import { UserAdminController } from "./user-admin.controller";
 import { UserController } from "./user.controller";
 

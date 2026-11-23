@@ -1,8 +1,8 @@
 // types
-import type { SessionService } from "@/modules/session/services";
-import type { TokenService } from "@/modules/token/services";
+import type { SessionService } from "@/modules/session/session.service";
+import type { TokenService } from "@/modules/token/token.service";
 // others
-import { LogoutService } from "./services";
+import { LogoutService } from "./logout.service";
 import { LogoutController } from "./logout.controller";
 
 export const createLogoutModule = (

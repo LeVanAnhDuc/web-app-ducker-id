@@ -1,7 +1,7 @@
 // types
 import type { OAuthQuery } from "../types";
 import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
-import type { SessionService } from "@/modules/session/services";
+import type { SessionService } from "@/modules/session/session.service";
 // others
 import { buildRedirectUrl } from "../helpers";
 

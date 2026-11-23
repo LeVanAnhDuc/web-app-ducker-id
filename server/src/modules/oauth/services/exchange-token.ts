@@ -4,8 +4,8 @@ import { StatusCodes } from "http-status-codes";
 import type { WebAppDocument } from "@/modules/web-app/types";
 import type { TokenRequestBody, TokenResponse } from "../types";
 import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
-import type { AuthenticationService } from "@/modules/authentication/services";
-import type { UserService } from "@/modules/user/services";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { UserService } from "@/modules/user/user.service";
 import type { OAuthRepository } from "../repository/oauth.repository";
 // common
 import { OAuthError } from "@/exceptions";

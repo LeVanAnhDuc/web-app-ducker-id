@@ -3,7 +3,7 @@ import { JsonController, Post, Res } from "routing-controllers";
 // types
 import type { Response } from "express";
 import type { LoginService } from "./services/login";
-import type { SessionService } from "@/modules/session/services";
+import type { SessionService } from "@/modules/session/session.service";
 // common
 import { RateLimit, Respond, ValidBody } from "@/common/routing";
 // modules

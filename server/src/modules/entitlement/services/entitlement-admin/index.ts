@@ -6,7 +6,8 @@ import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repo
 import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 import type { EntitlementRepository } from "../../repository/entitlement.repository";
 // others
-import { getMatrix } from "./get-matrix";
+import { buildMatrix } from "./shared/build-matrix";
+import { resolveUsers } from "./shared/resolve-users";
 import { updateMatrix } from "./update-matrix";
 
 export class EntitlementAdminService {
@@ -20,14 +21,10 @@ export class EntitlementAdminService {
     private readonly notificationDispatcher: NotificationDispatcher
   ) {}
 
-  getMatrix(userIds: string[]): Promise<EntitlementMatrixDto> {
-    return getMatrix(
-      {
-        entitlementRepo: this.entitlementRepo,
-        userRepo: this.userRepo,
-        webAppRepo: this.webAppRepo
-      },
-      userIds
+  async getMatrix(userIds: string[]): Promise<EntitlementMatrixDto> {
+    return buildMatrix(
+      { entitlementRepo: this.entitlementRepo, webAppRepo: this.webAppRepo },
+      await resolveUsers(this.userRepo, userIds)
     );
   }
 

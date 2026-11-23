@@ -1,7 +1,7 @@
 // libs
 import { Get, JsonController, Patch, Post } from "routing-controllers";
 // types
-import type { UserService } from "./services";
+import type { UserService } from "./user.service";
 // common
 import {
   Admin,

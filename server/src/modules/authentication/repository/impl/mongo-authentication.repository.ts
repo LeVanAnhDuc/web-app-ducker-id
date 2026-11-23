@@ -4,7 +4,6 @@ import type {
   AuthenticationRecord,
   CreateAuthenticationData
 } from "@/modules/authentication/types";
-import type { ClientSession } from "mongoose";
 import type { AuthenticationRepository } from "../authentication.repository";
 // models
 import AuthenticationModel from "@/models/authentication";
@@ -21,21 +20,15 @@ export class MongoAuthenticationRepository implements AuthenticationRepository {
       .exec();
   }
 
-  async create(
-    data: CreateAuthenticationData,
-    session?: ClientSession
-  ): Promise<AuthenticationRecord> {
-    const [authentication] = await AuthenticationModel.create(
-      [
-        {
-          password: data.hashedPassword,
-          verifiedEmail: true,
-          roles: AUTHENTICATION_ROLES.USER,
-          isActive: true
-        }
-      ],
-      { session }
-    );
+  async create(data: CreateAuthenticationData): Promise<AuthenticationRecord> {
+    const [authentication] = await AuthenticationModel.create([
+      {
+        password: data.hashedPassword,
+        verifiedEmail: true,
+        roles: AUTHENTICATION_ROLES.USER,
+        isActive: true
+      }
+    ]);
 
     return {
       _id: authentication._id,
@@ -51,8 +44,7 @@ export class MongoAuthenticationRepository implements AuthenticationRepository {
 
   async updatePassword(
     authId: string,
-    hashedPassword: string,
-    session?: ClientSession
+    hashedPassword: string
   ): Promise<number> {
     // Bump tokenVersion so every prior refresh token (older version) is
     // revoked; return it so the caller stamps the fresh tokens with it.
@@ -64,7 +56,7 @@ export class MongoAuthenticationRepository implements AuthenticationRepository {
         mustChangePassword: false,
         $inc: { tokenVersion: 1 }
       },
-      { new: true, session }
+      { new: true }
     )
       .lean<AuthenticationDocument>()
       .exec();

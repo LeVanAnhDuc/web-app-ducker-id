@@ -1,7 +1,7 @@
 // libs
 import { Get, JsonController } from "routing-controllers";
 // types
-import type { ContactAdminService } from "./services";
+import type { ContactAdminService } from "./contact-admin.service";
 // common
 import { Auth, PathVariable, RequestParam, Respond } from "@/common/routing";
 // validators

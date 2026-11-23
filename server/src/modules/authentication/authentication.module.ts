@@ -1,6 +1,6 @@
 // others
 import { MongoAuthenticationRepository } from "./repository/impl/mongo-authentication.repository";
-import { AuthenticationService } from "./services";
+import { AuthenticationService } from "./authentication.service";
 
 export const createAuthenticationModule = () => {
   const authRepo = new MongoAuthenticationRepository();

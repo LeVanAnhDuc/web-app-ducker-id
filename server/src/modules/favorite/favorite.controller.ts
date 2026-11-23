@@ -2,7 +2,7 @@
 import { StatusCodes } from "http-status-codes";
 import { Delete, Get, JsonController, Post } from "routing-controllers";
 // types
-import type { FavoriteService } from "./services";
+import type { FavoriteService } from "./favorite.service";
 // common
 import { Auth, PathVariable, RequestParam, Respond } from "@/common/routing";
 // validators

@@ -1,7 +1,7 @@
 // types
 import type { RedisClientType } from "redis";
-import type { AuthenticationService } from "@/modules/authentication/services";
-import type { UserService } from "@/modules/user/services";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { UserService } from "@/modules/user/user.service";
 // repositories
 import { RedisRevokedRefreshTokenRepository } from "./repository/impl/redis-revoked-refresh-token.repository";
 // guards
@@ -14,7 +14,7 @@ import {
   UserExistsGuard
 } from "./guards";
 // others
-import { TokenService } from "./services";
+import { TokenService } from "./token.service";
 import { TokenController } from "./token.controller";
 
 export const createTokenModule = (

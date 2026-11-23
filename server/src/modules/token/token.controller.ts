@@ -2,7 +2,7 @@
 import { JsonController, Post, Req } from "routing-controllers";
 // types
 import type { Request } from "express";
-import type { TokenService } from "./services";
+import type { TokenService } from "./token.service";
 // common
 import { Respond } from "@/common/routing";
 

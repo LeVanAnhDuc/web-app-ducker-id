@@ -1,7 +1,7 @@
 // libs
 import { Get, JsonController, Patch } from "routing-controllers";
 // types
-import type { ContactAdminService } from "./services";
+import type { ContactAdminService } from "./contact-admin.service";
 // common
 import {
   Admin,

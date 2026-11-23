@@ -1,5 +1,5 @@
 // types
-import type { ClientSession, FilterQuery } from "mongoose";
+import type { FilterQuery } from "mongoose";
 import type {
   WebAppDocument,
   WebAppCreateInput,
@@ -34,17 +34,13 @@ export interface WebAppRepository {
   /** Every app referencing the category, active or not. */
   countByCategory(categoryId: string): Promise<number>;
   /** Apps whose only category is `categoryId`. */
-  findOrphansOf(
-    categoryId: string,
-    session?: ClientSession
-  ): Promise<OrphanApp[]>;
+  findOrphansOf(categoryId: string): Promise<OrphanApp[]>;
   /** Moves each orphan to its target; an app that is no longer an orphan is skipped. */
   reassignOrphans(
     categoryId: string,
-    reassignments: CategoryReassignment[],
-    session: ClientSession
+    reassignments: CategoryReassignment[]
   ): Promise<void>;
-  pullCategory(categoryId: string, session: ClientSession): Promise<void>;
+  pullCategory(categoryId: string): Promise<void>;
   /**
    * Stamps `announcedAt` only if it is still unset. Returns whether this call
    * did it — exactly one caller wins, however many race.

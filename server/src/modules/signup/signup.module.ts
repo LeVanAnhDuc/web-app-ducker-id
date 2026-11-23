@@ -1,7 +1,7 @@
 // types
 import type { RedisClientType } from "redis";
-import type { AuthenticationService } from "@/modules/authentication/services";
-import type { UserService } from "@/modules/user/services";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { UserService } from "@/modules/user/user.service";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 // repositories
 import { RedisOtpSignupRepository } from "./repositories/impl/redis-otp-signup.repository";

@@ -28,6 +28,12 @@ class SampleRepository {
     throw Object.assign(new Error("E11000 duplicate key"), { code: 11000 });
   }
 
+  async failsWithWriteConflict(): Promise<never> {
+    throw Object.assign(new Error("WriteConflict"), {
+      hasErrorLabel: (label: string) => label === "TransientTransactionError"
+    });
+  }
+
   buildFilter(id: string): { id: string } {
     return { id };
   }
@@ -76,6 +82,13 @@ describe("@Repository()", () => {
     await expect(repo.failsWithDuplicateKey()).rejects.toMatchObject({
       code: 11000
     });
+  });
+
+  it("lets a transient transaction error through so withTransaction can retry", async () => {
+    const error = await repo.failsWithWriteConflict().catch((e: unknown) => e);
+
+    expect(error).not.toBeInstanceOf(DatabaseError);
+    expect((error as Error).message).toBe("WriteConflict");
   });
 
   it("leaves a synchronous method alone", () => {
