@@ -14,6 +14,8 @@ import type { PaginationOptions } from "@/types/common";
 import type { LoginHistoryRepository } from "../login-history.repository";
 // models
 import LoginHistoryModel from "@/models/login-history";
+// common
+import { Repository } from "@/common/stereotypes";
 // modules
 import {
   LOGIN_METHODS,
@@ -21,195 +23,183 @@ import {
   LOGIN_STATUSES
 } from "@/modules/login-history/constants";
 // others
-import { asyncDatabaseHandler } from "@/utils/async-handler";
 import { escapeRegex } from "@/utils/string/escape-regex";
 
 const WEB_APP_POPULATE = { path: "webAppId", select: "displayName iconUrl" };
 
+@Repository()
 export class MongoLoginHistoryRepository implements LoginHistoryRepository {
   async create(data: CreateLoginHistoryData): Promise<LoginHistoryDocument> {
-    return asyncDatabaseHandler("create", async () => {
-      const doc = await LoginHistoryModel.create(data);
-      return doc as unknown as LoginHistoryDocument;
-    });
+    const doc = await LoginHistoryModel.create(data);
+    return doc as unknown as LoginHistoryDocument;
   }
 
   async findSignInTraits(userId: string, since: Date): Promise<SignInTraits> {
-    return asyncDatabaseHandler("findSignInTraits", async () => {
-      const [row] = await LoginHistoryModel.aggregate<{
-        devices: string[];
-        countries: string[];
-      }>([
-        {
-          $match: {
-            userId: new Types.ObjectId(userId),
-            status: LOGIN_STATUSES.SUCCESS,
-            source: LOGIN_SOURCES.IDP,
-            createdAt: { $gte: since }
-          }
-        },
-        {
-          $group: {
-            _id: null,
-            devices: {
-              $addToSet: {
-                $concat: ["$browser", "|", "$os", "|", "$deviceType"]
-              }
-            },
-            countries: { $addToSet: "$country" }
-          }
+    const [row] = await LoginHistoryModel.aggregate<{
+      devices: string[];
+      countries: string[];
+    }>([
+      {
+        $match: {
+          userId: new Types.ObjectId(userId),
+          status: LOGIN_STATUSES.SUCCESS,
+          source: LOGIN_SOURCES.IDP,
+          createdAt: { $gte: since }
         }
-      ]).exec();
+      },
+      {
+        $group: {
+          _id: null,
+          devices: {
+            $addToSet: {
+              $concat: ["$browser", "|", "$os", "|", "$deviceType"]
+            }
+          },
+          countries: { $addToSet: "$country" }
+        }
+      }
+    ]).exec();
 
-      return row
-        ? { hasHistory: true, devices: row.devices, countries: row.countries }
-        : { hasHistory: false, devices: [], countries: [] };
-    });
+    return row
+      ? { hasHistory: true, devices: row.devices, countries: row.countries }
+      : { hasHistory: false, devices: [], countries: [] };
   }
 
   async findById(id: string): Promise<LoginHistoryDocument | null> {
-    return asyncDatabaseHandler("findById", async () => {
-      const doc = await LoginHistoryModel.findById(id)
-        .populate(WEB_APP_POPULATE)
-        .lean()
-        .exec();
-      return doc as unknown as LoginHistoryDocument | null;
-    });
+    const doc = await LoginHistoryModel.findById(id)
+      .populate(WEB_APP_POPULATE)
+      .lean()
+      .exec();
+    return doc as unknown as LoginHistoryDocument | null;
   }
 
   async findByUser(
     filter: LoginHistoryFilter,
     options: PaginationOptions
   ): Promise<{ data: LoginHistoryDocument[]; total: number }> {
-    return asyncDatabaseHandler("findByUser", async () => {
-      const mongoFilter = this.toMongoFilter(filter);
-      const [data, total] = await Promise.all([
-        LoginHistoryModel.find(mongoFilter)
-          .skip(options.skip)
-          .limit(options.limit)
-          .sort(options.sort)
-          .populate(WEB_APP_POPULATE)
-          .lean()
-          .exec(),
-        LoginHistoryModel.countDocuments(mongoFilter).exec()
-      ]);
+    const mongoFilter = this.toMongoFilter(filter);
+    const [data, total] = await Promise.all([
+      LoginHistoryModel.find(mongoFilter)
+        .skip(options.skip)
+        .limit(options.limit)
+        .sort(options.sort)
+        .populate(WEB_APP_POPULATE)
+        .lean()
+        .exec(),
+      LoginHistoryModel.countDocuments(mongoFilter).exec()
+    ]);
 
-      return { data: data as unknown as LoginHistoryDocument[], total };
-    });
+    return { data: data as unknown as LoginHistoryDocument[], total };
   }
 
   async findAll(
     filter: LoginHistoryFilter,
     options: PaginationOptions
   ): Promise<{ data: LoginHistoryDocument[]; total: number }> {
-    return asyncDatabaseHandler("findAll", async () => {
-      const mongoFilter = this.toMongoFilter(filter);
-      const [data, total] = await Promise.all([
-        LoginHistoryModel.find(mongoFilter)
-          .skip(options.skip)
-          .limit(options.limit)
-          .sort(options.sort)
-          .populate(WEB_APP_POPULATE)
-          .lean()
-          .exec(),
-        LoginHistoryModel.countDocuments(mongoFilter).exec()
-      ]);
+    const mongoFilter = this.toMongoFilter(filter);
+    const [data, total] = await Promise.all([
+      LoginHistoryModel.find(mongoFilter)
+        .skip(options.skip)
+        .limit(options.limit)
+        .sort(options.sort)
+        .populate(WEB_APP_POPULATE)
+        .lean()
+        .exec(),
+      LoginHistoryModel.countDocuments(mongoFilter).exec()
+    ]);
 
-      return { data: data as unknown as LoginHistoryDocument[], total };
-    });
+    return { data: data as unknown as LoginHistoryDocument[], total };
   }
 
   async aggregateMyStats(
     range: LoginStatsRange
   ): Promise<LoginStatsAggregationResult> {
-    return asyncDatabaseHandler("aggregateMyStats", async () => {
-      // Stats count logins; a silent SSO into an app is not one. The filter
-      // sits inside each facet rather than in the root $match so that byApp,
-      // which wants exactly those rows, can still reach them.
-      const excludeSso = { $match: { method: { $ne: LOGIN_METHODS.SSO } } };
-      const countStatus = (status: string) => ({
-        $sum: { $cond: [{ $eq: ["$status", status] }, 1, 0] }
-      });
-
-      const [result] =
-        await LoginHistoryModel.aggregate<LoginStatsAggregationResult>([
-          {
-            $match: {
-              userId: new Types.ObjectId(range.userId),
-              createdAt: { $gte: range.from, $lte: range.to }
-            }
-          },
-          {
-            $facet: {
-              total: [excludeSso, { $count: "count" }],
-              byStatus: [
-                excludeSso,
-                { $group: { _id: "$status", count: { $sum: 1 } } }
-              ],
-              byMethod: [
-                excludeSso,
-                { $group: { _id: "$method", count: { $sum: 1 } } }
-              ],
-              byDevice: [
-                excludeSso,
-                { $group: { _id: "$deviceType", count: { $sum: 1 } } }
-              ],
-              // Keyed by the local calendar day, not by UTC: a login at 00:30
-              // in Hanoi belongs to that day, not to the one before it.
-              byDay: [
-                excludeSso,
-                {
-                  $group: {
-                    _id: {
-                      $dateToString: {
-                        date: "$createdAt",
-                        format: "%Y-%m-%d",
-                        timezone: range.timezone
-                      }
-                    },
-                    total: { $sum: 1 },
-                    successful: countStatus(LOGIN_STATUSES.SUCCESS),
-                    failed: countStatus(LOGIN_STATUSES.FAILED)
-                  }
-                },
-                { $sort: { _id: 1 } }
-              ],
-              // The mirror image: only the SSO rows, which is what "signed in
-              // to which app" means. clientName is the snapshot taken at
-              // sign-in, so a renamed or deleted app still reads correctly.
-              byApp: [
-                {
-                  $match: {
-                    method: LOGIN_METHODS.SSO,
-                    webAppId: { $ne: null }
-                  }
-                },
-                {
-                  $group: {
-                    _id: { webAppId: "$webAppId", clientName: "$clientName" },
-                    count: { $sum: 1 }
-                  }
-                },
-                { $sort: { count: -1, "_id.clientName": 1 } },
-                { $limit: range.topAppsLimit }
-              ],
-              anomalies: [{ $match: { isAnomaly: true } }, { $count: "count" }]
-            }
-          }
-        ]).exec();
-
-      return (
-        result ?? {
-          total: [],
-          byStatus: [],
-          byMethod: [],
-          byDevice: [],
-          byDay: [],
-          byApp: [],
-          anomalies: []
-        }
-      );
+    // Stats count logins; a silent SSO into an app is not one. The filter
+    // sits inside each facet rather than in the root $match so that byApp,
+    // which wants exactly those rows, can still reach them.
+    const excludeSso = { $match: { method: { $ne: LOGIN_METHODS.SSO } } };
+    const countStatus = (status: string) => ({
+      $sum: { $cond: [{ $eq: ["$status", status] }, 1, 0] }
     });
+
+    const [result] =
+      await LoginHistoryModel.aggregate<LoginStatsAggregationResult>([
+        {
+          $match: {
+            userId: new Types.ObjectId(range.userId),
+            createdAt: { $gte: range.from, $lte: range.to }
+          }
+        },
+        {
+          $facet: {
+            total: [excludeSso, { $count: "count" }],
+            byStatus: [
+              excludeSso,
+              { $group: { _id: "$status", count: { $sum: 1 } } }
+            ],
+            byMethod: [
+              excludeSso,
+              { $group: { _id: "$method", count: { $sum: 1 } } }
+            ],
+            byDevice: [
+              excludeSso,
+              { $group: { _id: "$deviceType", count: { $sum: 1 } } }
+            ],
+            // Keyed by the local calendar day, not by UTC: a login at 00:30
+            // in Hanoi belongs to that day, not to the one before it.
+            byDay: [
+              excludeSso,
+              {
+                $group: {
+                  _id: {
+                    $dateToString: {
+                      date: "$createdAt",
+                      format: "%Y-%m-%d",
+                      timezone: range.timezone
+                    }
+                  },
+                  total: { $sum: 1 },
+                  successful: countStatus(LOGIN_STATUSES.SUCCESS),
+                  failed: countStatus(LOGIN_STATUSES.FAILED)
+                }
+              },
+              { $sort: { _id: 1 } }
+            ],
+            // The mirror image: only the SSO rows, which is what "signed in
+            // to which app" means. clientName is the snapshot taken at
+            // sign-in, so a renamed or deleted app still reads correctly.
+            byApp: [
+              {
+                $match: {
+                  method: LOGIN_METHODS.SSO,
+                  webAppId: { $ne: null }
+                }
+              },
+              {
+                $group: {
+                  _id: { webAppId: "$webAppId", clientName: "$clientName" },
+                  count: { $sum: 1 }
+                }
+              },
+              { $sort: { count: -1, "_id.clientName": 1 } },
+              { $limit: range.topAppsLimit }
+            ],
+            anomalies: [{ $match: { isAnomaly: true } }, { $count: "count" }]
+          }
+        }
+      ]).exec();
+
+    return (
+      result ?? {
+        total: [],
+        byStatus: [],
+        byMethod: [],
+        byDevice: [],
+        byDay: [],
+        byApp: [],
+        anomalies: []
+      }
+    );
   }
 
   private toMongoFilter(
