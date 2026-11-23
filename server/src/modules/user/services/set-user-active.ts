@@ -4,8 +4,6 @@ import type { AuthenticationService } from "@/modules/authentication/services";
 import type { UserRepository } from "../repository/user.repository";
 // common
 import { ForbiddenError, NotFoundError } from "@/exceptions";
-// validators
-import { validateObjectId } from "@/validators/utils";
 // modules
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 // others
@@ -17,8 +15,6 @@ export const setUserActive = async (
   id: string,
   isActive: boolean
 ): Promise<SetUserActiveResult> => {
-  validateObjectId(id, "id");
-
   const target = await deps.userRepo.findAuthIdById(id);
   if (!target) {
     throw new NotFoundError({

@@ -1,8 +1,6 @@
 // types
 import type { ClientSession } from "mongoose";
 import type { AuthenticationRepository } from "../repository/authentication.repository";
-// validators
-import { validateObjectId, validateRequiredString } from "@/validators/utils";
 // others
 import { Logger } from "@/libs/logger";
 
@@ -12,9 +10,6 @@ export const updatePassword = async (
   hashedPassword: string,
   session?: ClientSession
 ): Promise<number> => {
-  validateObjectId(authId, "authId");
-  validateRequiredString(hashedPassword, "hashedPassword");
-
   try {
     const tokenVersion = await authRepo.updatePassword(
       authId,

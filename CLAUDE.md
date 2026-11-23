@@ -63,7 +63,7 @@ cd automation-test && pnpm test src/tests/api/oidc/token.api.ts
 cd automation-test && pnpm test -g "@TC-AUTH-014"
 ```
 
-Jest picks up `src/**/*.spec.ts` plus `test/integration/**` and `test/e2e/**`; factories, helpers and mocks live in `server/test/`. Service tests sit in `services/spec/`, repository tests in `repository/spec/`. Current suite: **136 suites / 997 tests**, no database required.
+Jest picks up `src/**/*.spec.ts` plus `test/integration/**` and `test/e2e/**`; factories, helpers and mocks live in `server/test/`. Service tests sit in `services/spec/`, repository tests in `repository/spec/`. Current suite: **136 suites / 995 tests**, no database required.
 
 `jest.config.ts` sets `resetMocks: true`, which clears the *implementations* a `jest.mock` factory set up, not just the call history. A factory must therefore close over bare `jest.fn()`s and the implementations be rebuilt in `beforeEach`, or the mock works in the first test of a file and returns `undefined` in every one after it.
 

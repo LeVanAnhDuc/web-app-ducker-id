@@ -5,8 +5,6 @@ import type {
 } from "@/modules/authentication/types";
 import type { ClientSession } from "mongoose";
 import type { AuthenticationRepository } from "../repository/authentication.repository";
-// validators
-import { validateRequiredString } from "@/validators/utils";
 // others
 import { Logger } from "@/libs/logger";
 
@@ -15,8 +13,6 @@ export const create = async (
   data: CreateAuthenticationData,
   session?: ClientSession
 ): Promise<AuthenticationRecord> => {
-  validateRequiredString(data.hashedPassword, "hashedPassword");
-
   try {
     const record = await authRepo.create(data, session);
     Logger.info("New authentication record created", {
