@@ -22,7 +22,7 @@ import { clearRateLimits } from "@/utils/redis";
 // Support requests over HTTP (api/contact.client.ts):
 //   POST /contact/submit — public; attaches the owner when signed in
 //   GET  /contacts(/:id)  — the caller's own requests only
-// Validation boundaries and sanitising, the per-IP rate limit, paging,
+// Validation boundaries, markup kept as text, the per-IP rate limit, paging,
 // filters and sorting, isolation between users and authorisation.
 // Test cases: test-cases/support.md (TC-SUPPORT-040 … 052).
 //
@@ -301,10 +301,10 @@ test(
   }
 );
 
-test.describe("Length is counted after markup and whitespace are stripped", () => {
-  // The server strips tags and trims before it checks the 5 / 20 minimums
-  // (submit-contact.ts → sanitizeText + validateStringLength), so padding a
-  // short value with spaces or markup does not get it through.
+test.describe("Length is counted after surrounding whitespace is trimmed", () => {
+  // SubmitContactBodyDto trims subject and message before the 5 / 20 minimums
+  // run, so padding a short value with spaces does not get it through. Markup
+  // is plain text: it is kept and counts towards the length.
   for (const [label, body, status] of [
     [
       "subject of 4 characters padded with spaces",
@@ -312,20 +312,20 @@ test.describe("Length is counted after markup and whitespace are stripped", () =
       400
     ],
     [
-      "subject of 4 characters wrapped in a tag",
-      { subject: "<b>abcd</b>", message: SUPPORT_MESSAGE },
-      400
-    ],
-    [
-      "subject of 5 characters wrapped in a tag",
-      { subject: "<b>abcde</b>", message: SUPPORT_MESSAGE },
+      "subject of 5 characters padded with spaces",
+      { subject: "   abcde   ", message: SUPPORT_MESSAGE },
       201
     ],
     [
-      "message of 19 characters wrapped in a tag",
+      "subject of 4 characters wrapped in a tag",
+      { subject: "<b>abcd</b>", message: SUPPORT_MESSAGE },
+      201
+    ],
+    [
+      "message of 19 characters padded with spaces",
       {
-        subject: `${supportSubject("tag-msg")}`,
-        message: `<p>${"m".repeat(19)}</p>`
+        subject: `${supportSubject("pad-msg")}`,
+        message: `   ${"m".repeat(19)}   `
       },
       400
     ]
@@ -344,21 +344,24 @@ test.describe("Length is counted after markup and whitespace are stripped", () =
 });
 
 test(
-  "Markup is stripped before a request is stored",
+  "Markup is stored as text, exactly as sent",
   { tag: "@TC-SUPPORT-049" },
   async ({ guestApi }) => {
+    // Escaping is the renderer's job (React prints it as text); the server
+    // keeps what the sender typed instead of rewriting it.
     const markup = '<img src="x" onerror="alert(1)">';
     const subject = `${supportSubject("markup")} ${markup}`;
+    const message = `${SUPPORT_MESSAGE} ${markup}`;
     const res = await createApiClient(guestApi).contact.submit({
       subject,
-      message: `${SUPPORT_MESSAGE} ${markup}`
+      message
     });
     expect(res.status()).toBe(201);
     const data = await dataOf<SubmittedContact>(res);
     const stored = await findContact(data.id);
-    expect(stored?.subject).not.toContain("<img");
-    expect(stored?.message).not.toContain("<img");
-    expect(data.subject).not.toContain("<img");
+    expect(stored?.subject).toBe(subject);
+    expect(stored?.message).toBe(message);
+    expect(data.subject).toBe(subject);
   }
 );
 

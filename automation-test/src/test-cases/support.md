@@ -466,27 +466,29 @@ Bối cảnh, nguồn và dữ liệu test: ../docs/decisions/support.md
   low / medium / high và một `createdAt` hợp lệ.
 - **Automated:** `tests/api/support/contact.api.ts`
 
-### TC-SUPPORT-048 — Length is counted after markup and whitespace are stripped
+### TC-SUPPORT-048 — Length is counted after surrounding whitespace is trimmed
 
 - **Requirement:** REQ-SUPPORT-04
 - **Layer:** api · **Priority:** P1 · **Vai trò:** guest
-- **Kỹ thuật:** giá trị biên (BVA) (độ dài sau khi làm sạch 4 / 5), đoán lỗi (đệm khoảng trắng, bọc thẻ)
+- **Kỹ thuật:** giá trị biên (BVA) (độ dài sau khi trim 4 / 5, 19), đoán lỗi (đệm khoảng trắng, bọc thẻ)
 - **Tiền điều kiện:** không có
 - **Bước:**
-  1. POST với tiêu đề `"   abcd   "`, `<b>abcd</b>`, `<b>abcde</b>`; rồi nội dung `<p>` + 19 ký tự + `</p>`.
-- **Mong đợi:** 400 kèm `code` cho các giá trị còn 4 / 19 ký tự sau khi làm sạch; `<b>abcde</b>` (còn 5) → 201.
+  1. POST với tiêu đề `"   abcd   "`, `"   abcde   "`, `<b>abcd</b>`; rồi nội dung 19 ký tự đệm khoảng trắng hai đầu.
+- **Mong đợi:** 400 kèm `code` cho các giá trị còn 4 / 19 ký tự sau khi trim; `"   abcde   "` (còn 5) → 201;
+  `<b>abcd</b>` → 201 vì thẻ là văn bản và được tính vào độ dài.
 - **Automated:** `tests/api/support/contact.api.ts`
 
-### TC-SUPPORT-049 — Markup is stripped before a request is stored
+### TC-SUPPORT-049 — Markup is stored as text, exactly as sent
 
 - **Requirement:** REQ-SUPPORT-04
 - **Layer:** api · **Priority:** P1 · **Vai trò:** guest
-- **Kỹ thuật:** bảo mật (stored XSS)
+- **Kỹ thuật:** bảo mật (stored XSS — chặn ở đầu ra), toàn vẹn dữ liệu
 - **Tiền điều kiện:** không có
 - **Bước:**
   1. POST với tiêu đề và nội dung chứa `<img src="x" onerror="alert(1)">`; đọc document đã lưu.
-- **Mong đợi:** 201; tiêu đề và nội dung đã lưu (và trong response) không còn thẻ `<img`.
-- **Automated:** `tests/api/support/contact.api.ts` (từng là BUG-SUPPORT-02, đã sửa 2026-10-15: lưu bản đã làm sạch).
+- **Mong đợi:** 201; tiêu đề và nội dung đã lưu (và trong response) đúng bằng chuỗi đã gửi, kể cả thẻ `<img`. Client hiển
+  thị chúng dưới dạng chữ (React escape), không render thành thẻ.
+- **Automated:** `tests/api/support/contact.api.ts` (đổi kỳ vọng 2026-11-23, xem Q3 trong `docs/decisions/support.md`).
 
 ### TC-SUPPORT-050 — The body cannot set status, priority or owner
 

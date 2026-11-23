@@ -17,6 +17,8 @@ _(không có)_
   `sanitizedMessage` chỉ để gọi `validateStringLength`, rồi `contactRepo.create({ subject, message })` với giá trị thô —
   thẻ HTML nằm nguyên trong DB, trong response và trong mọi màn hình / email đọc lại nó.
 - **Đã sửa:** 2026-10-15, nhánh fix/open-bugs — `submit-contact.ts` lưu `sanitizedSubject` / `sanitizedMessage`; `sanitizeText` giải mã entity trước khi bỏ thẻ để `&lt;img&gt;` không thành thẻ thật.
+- **Kỳ vọng đổi:** 2026-11-23 — user chốt lại Q3: server lưu nguyên văn bản, chống XSS ở đầu ra (React escape);
+  `sanitizeText` đã bị xoá và TC-SUPPORT-049 nay kiểm điều ngược lại. Mục này giữ làm lịch sử.
 
 ### BUG-SUPPORT-01
 

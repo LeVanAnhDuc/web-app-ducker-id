@@ -12,8 +12,6 @@ import {
   NOTIFICATION_TYPES,
   PASSWORD_CHANGE_ACTORS
 } from "@/modules/notification/constants";
-// validators
-import { validateObjectId } from "@/validators/utils";
 // others
 import ENV from "@/constants/env";
 import { ERROR_CODES } from "@/constants/error-code";
@@ -32,8 +30,6 @@ export const adminResetPassword = async (
   },
   id: string
 ): Promise<AdminResetPasswordResult> => {
-  validateObjectId(id, "id");
-
   const target = await deps.userRepo.findAuthIdById(id);
   if (!target) {
     throw new NotFoundError({

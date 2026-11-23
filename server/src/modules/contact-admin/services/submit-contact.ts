@@ -3,9 +3,6 @@ import type { SubmitContactBodyDto } from "../dtos/requests";
 import type { ContactRepository } from "../repository/contact-admin.repository";
 // common
 import { toDto } from "@/common/dto";
-// validators
-import { sanitizeText, validateStringLength } from "@/validators/utils";
-import { CONTACT_CONFIG } from "@/validators/constants";
 // dtos
 import { SubmitContactResponseDto } from "../dtos";
 // others
@@ -19,30 +16,13 @@ export const submitContact = async (
 ): Promise<SubmitContactResponseDto> => {
   const { message, subject, email } = body;
 
-  const sanitizedSubject = sanitizeText(subject);
-  const sanitizedMessage = sanitizeText(message);
-
-  validateStringLength(
-    sanitizedSubject,
-    "subject",
-    CONTACT_CONFIG.SUBJECT_MIN_LENGTH,
-    CONTACT_CONFIG.SUBJECT_MAX_LENGTH
-  );
-  validateStringLength(
-    sanitizedMessage,
-    "message",
-    CONTACT_CONFIG.MESSAGE_MIN_LENGTH,
-    CONTACT_CONFIG.MESSAGE_MAX_LENGTH
-  );
-
   // MUST come from RequestContext (server-verified JWT), never from client body.
   const userId = RequestContext.getUserId() ?? null;
 
   const contact = await contactRepo.create({
     email,
-    // What was length-checked is what gets stored: never the raw markup.
-    subject: sanitizedSubject,
-    message: sanitizedMessage,
+    subject,
+    message,
     status: CONTACT_STATUSES.NEW,
     userId,
     ipAddress

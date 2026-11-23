@@ -1057,6 +1057,23 @@ exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto �
 }
 `;
 
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: messagePaddedTooShort 1`] = `
+{
+  "failures": [
+    {
+      "field": "message",
+      "key": "contactAdmin:errors.messageTooShort",
+      "reason": "minLength",
+    },
+  ],
+  "value": SubmitContactBodyDto {
+    "email": "user@example.com",
+    "message": "mmmmmmmmmmmmmmmmmmm",
+    "subject": "Cannot sign in",
+  },
+}
+`;
+
 exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: messageTooLong 1`] = `
 {
   "failures": [
@@ -1127,6 +1144,17 @@ exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto �
 }
 `;
 
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: subjectMarkupKept 1`] = `
+{
+  "failures": [],
+  "value": SubmitContactBodyDto {
+    "email": "user@example.com",
+    "message": "I keep getting an error when signing in.",
+    "subject": "<b>abcd</b>",
+  },
+}
+`;
+
 exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: subjectMissing 1`] = `
 {
   "failures": [
@@ -1156,6 +1184,34 @@ exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto �
     "email": "user@example.com",
     "message": "I keep getting an error when signing in.",
     "subject": null,
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: subjectPaddedTooShort 1`] = `
+{
+  "failures": [
+    {
+      "field": "subject",
+      "key": "contactAdmin:errors.subjectTooShort",
+      "reason": "minLength",
+    },
+  ],
+  "value": SubmitContactBodyDto {
+    "email": "user@example.com",
+    "message": "I keep getting an error when signing in.",
+    "subject": "abcd",
+  },
+}
+`;
+
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: subjectPaddedTrimmed 1`] = `
+{
+  "failures": [],
+  "value": SubmitContactBodyDto {
+    "email": "user@example.com",
+    "message": "I keep getting an error when signing in.",
+    "subject": "Cannot sign in",
   },
 }
 `;
@@ -1194,13 +1250,19 @@ exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto �
 }
 `;
 
-exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: subjectWhitespaceKept 1`] = `
+exports[`contact-admin request DTOs match the Joi schemas SubmitContactBodyDto ≡ submitContactSchema: subjectWhitespaceOnly 1`] = `
 {
-  "failures": [],
+  "failures": [
+    {
+      "field": "subject",
+      "key": "contactAdmin:errors.subjectRequired",
+      "reason": "isNotEmpty",
+    },
+  ],
   "value": SubmitContactBodyDto {
     "email": "user@example.com",
     "message": "I keep getting an error when signing in.",
-    "subject": "      ",
+    "subject": "",
   },
 }
 `;
