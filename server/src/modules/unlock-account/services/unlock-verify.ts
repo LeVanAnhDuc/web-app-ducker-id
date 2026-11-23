@@ -1,6 +1,6 @@
 // types
 import type { UnlockVerifyBodyDto } from "../dtos/requests";
-import type { AuthenticationService } from "@/modules/authentication/services";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { LoginHistoryService } from "@/modules/login-history/services";
 import type { LoginService } from "@/modules/login/services/login";
 import type { AuthExistsGuard, TempPasswordValidGuard } from "../guards";

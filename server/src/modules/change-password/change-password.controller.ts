@@ -3,7 +3,7 @@ import { JsonController, Patch, Res } from "routing-controllers";
 import { OpenAPI } from "routing-controllers-openapi";
 // types
 import type { Response } from "express";
-import type { ChangePasswordService } from "./services";
+import type { ChangePasswordService } from "./change-password.service";
 // common
 import {
   PasswordChangeAuth,

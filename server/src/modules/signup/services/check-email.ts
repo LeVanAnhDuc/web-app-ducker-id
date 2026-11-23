@@ -1,6 +1,6 @@
 // types
 import type { CheckEmailDto } from "../dtos";
-import type { UserService } from "@/modules/user/services";
+import type { UserService } from "@/modules/user/user.service";
 // dtos
 import { toCheckEmailDto } from "../dtos";
 

@@ -10,65 +10,58 @@ import type { PaginationOptions } from "@/types/common";
 import type { NotificationRepository } from "../notification.repository";
 // models
 import NotificationModel from "@/models/notification";
-// others
-import { asyncDatabaseHandler } from "@/utils/async-handler";
+// common
+import { Repository } from "@/common/stereotypes";
 
+@Repository()
 export class MongoNotificationRepository implements NotificationRepository {
   async findByUser(
     filter: NotificationFilter,
     options: PaginationOptions
   ): Promise<{ data: NotificationDocument[]; total: number }> {
-    return asyncDatabaseHandler("findByUser", async () => {
-      const mongoFilter = this.toMongoFilter(filter);
-      const [data, total] = await Promise.all([
-        NotificationModel.find(mongoFilter)
-          .skip(options.skip)
-          .limit(options.limit)
-          .sort(options.sort)
-          .lean()
-          .exec(),
-        NotificationModel.countDocuments(mongoFilter).exec()
-      ]);
+    const mongoFilter = this.toMongoFilter(filter);
+    const [data, total] = await Promise.all([
+      NotificationModel.find(mongoFilter)
+        .skip(options.skip)
+        .limit(options.limit)
+        .sort(options.sort)
+        .lean()
+        .exec(),
+      NotificationModel.countDocuments(mongoFilter).exec()
+    ]);
 
-      return { data: data as unknown as NotificationDocument[], total };
-    });
+    return { data: data as unknown as NotificationDocument[], total };
   }
 
   async countUnread(userId: string): Promise<number> {
-    return asyncDatabaseHandler("countUnread", async () =>
-      NotificationModel.countDocuments({
-        userId: new Types.ObjectId(userId),
-        isRead: false
-      }).exec()
-    );
+    return NotificationModel.countDocuments({
+      userId: new Types.ObjectId(userId),
+      isRead: false
+    }).exec();
   }
 
   async markRead(
     id: string,
     userId: string
   ): Promise<NotificationDocument | null> {
-    return asyncDatabaseHandler("markRead", async () => {
-      const doc = await NotificationModel.findOneAndUpdate(
-        { _id: new Types.ObjectId(id), userId: new Types.ObjectId(userId) },
-        { $set: { isRead: true, readAt: new Date() } },
-        { new: true }
-      )
-        .lean()
-        .exec();
+    const doc = await NotificationModel.findOneAndUpdate(
+      { _id: new Types.ObjectId(id), userId: new Types.ObjectId(userId) },
+      { $set: { isRead: true, readAt: new Date() } },
+      { new: true }
+    )
+      .lean()
+      .exec();
 
-      return (doc as unknown as NotificationDocument) ?? null;
-    });
+    return (doc as unknown as NotificationDocument) ?? null;
   }
 
   async markAllRead(userId: string): Promise<number> {
-    return asyncDatabaseHandler("markAllRead", async () => {
-      const res = await NotificationModel.updateMany(
-        { userId: new Types.ObjectId(userId), isRead: false },
-        { $set: { isRead: true, readAt: new Date() } }
-      ).exec();
+    const res = await NotificationModel.updateMany(
+      { userId: new Types.ObjectId(userId), isRead: false },
+      { $set: { isRead: true, readAt: new Date() } }
+    ).exec();
 
-      return res.modifiedCount;
-    });
+    return res.modifiedCount;
   }
 
   private toMongoFilter(

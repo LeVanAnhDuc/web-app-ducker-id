@@ -4,7 +4,7 @@ import { JsonController, Post, Req } from "routing-controllers";
 import { OpenAPI } from "routing-controllers-openapi";
 // types
 import type { Request } from "express";
-import type { ContactAdminService } from "./services";
+import type { ContactAdminService } from "./contact-admin.service";
 // common
 import { OptionalAuth, RateLimit, Respond, ValidBody } from "@/common/routing";
 // others

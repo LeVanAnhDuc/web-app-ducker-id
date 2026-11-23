@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import { Delete, Get, JsonController, Post } from "routing-controllers";
 import { OpenAPI } from "routing-controllers-openapi";
 // types
-import type { RecentAppService } from "./services";
+import type { RecentAppService } from "./recent-app.service";
 // common
 import { ApiErrors, ApiProperty, Paginated } from "@/common/openapi";
 import {

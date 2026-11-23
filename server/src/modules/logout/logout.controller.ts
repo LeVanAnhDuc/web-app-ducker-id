@@ -4,7 +4,7 @@ import { JsonController, Post, Req, Res } from "routing-controllers";
 import { OpenAPI } from "routing-controllers-openapi";
 // types
 import type { Request, Response } from "express";
-import type { LogoutService } from "./services";
+import type { LogoutService } from "./logout.service";
 // common
 import { PasswordChangeAuth, Respond } from "@/common/routing";
 // modules

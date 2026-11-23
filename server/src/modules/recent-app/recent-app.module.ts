@@ -5,7 +5,7 @@ import type { AccessPolicy } from "@/modules/entitlement/services/access-policy"
 import { MongoWebAppRepository } from "@/modules/web-app/repository/impl/mongo-web-app.repository";
 // others
 import { MongoRecentAppRepository } from "./repository/impl/mongo-recent-app.repository";
-import { RecentAppService } from "./services";
+import { RecentAppService } from "./recent-app.service";
 import { RecentAppController } from "./recent-app.controller";
 
 export const createRecentAppModule = (

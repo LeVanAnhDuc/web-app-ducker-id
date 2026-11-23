@@ -7,7 +7,7 @@ import type { AddressInfo } from "net";
 import type { RequestHandler } from "express";
 import type { RateLimiters } from "@/middlewares/common/rate-limiter.middleware";
 import type { CategoryService } from "@/modules/category/services";
-import type { UserService } from "@/modules/user/services";
+import type { UserService } from "@/modules/user/user.service";
 // common
 import { RATE_LIMITS } from "@/middlewares/common/rate-limiter.middleware";
 import {

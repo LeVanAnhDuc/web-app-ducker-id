@@ -1,6 +1,6 @@
 // others
 import { MongoNotificationRepository } from "./repository/impl/mongo-notification.repository";
-import { NotificationService } from "./services";
+import { NotificationService } from "./notification.service";
 import { NotificationController } from "./notification.controller";
 
 export const createNotificationModule = () => {

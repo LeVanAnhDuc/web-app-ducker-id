@@ -5,7 +5,7 @@ import type {
 } from "../dtos/requests";
 import type { UnlockRequestDto, UnlockVerifyDto } from "../dtos";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
-import type { AuthenticationService } from "@/modules/authentication/services";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { LoginHistoryService } from "@/modules/login-history/services";
 import type { LoginService } from "@/modules/login/services/login";
 import type { UnlockAccountRepository } from "../repository/unlock-account.repository";

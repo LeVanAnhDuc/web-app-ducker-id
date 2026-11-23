@@ -33,12 +33,13 @@ Các phân định rút ra từ header cũ của file test case:
   `/contacts/me` kèm ticket id và trạng thái, và trang chi tiết chỉ đọc (REQ-SUPPORT-01…03).
 - **Q2** Dòng 11 bị hoãn của `docs/specs/contact-ticket-id-display/e2e.md` (mã ticket trên màn hình thành công) được
   chứng minh bởi TC-SUPPORT-030.
-- **Q3** (tự quyết 2026-10-14, cần user duyệt): server tính `sanitizeText(subject/message)` (bỏ thẻ HTML, trim) chỉ để
-  kiểm độ dài rồi lưu **giá trị thô** (`submit-contact.ts`). Design `my-contacts` ghi "giữ sanitize + validate hiện có";
-  không rõ ý là lưu bản đã làm sạch hay chỉ kiểm độ dài → theo tài liệu: nội dung lưu xuống phải đã bỏ thẻ HTML; code hiện
-  tại lệch → BUG-SUPPORT-02 (TC-SUPPORT-049) (đã sửa 2026-10-15, fix/open-bugs) → REQ-SUPPORT-04.
-- **Q4** (tự quyết 2026-10-14, cần user duyệt): độ dài tối thiểu tính sau khi bỏ thẻ và khoảng trắng (code làm vậy, dữ kiện
-  server trong file này cũng ghi "sau khi sanitise") — coi là hành vi mong muốn → REQ-SUPPORT-04 (TC-SUPPORT-048).
+- **Q3** (user chốt 2026-11-23, thay quyết định tự đặt 2026-10-14): subject / message là văn bản thuần — server **không**
+  bỏ thẻ HTML, lưu đúng chuỗi đã gửi (đã trim). Chống XSS ở đầu ra: client hiển thị bằng React (`{contact.subject}`,
+  `{contact.message}`), tự escape; không có `dangerouslySetInnerHTML` hay email HTML nào dùng các trường này. Bỏ thẻ ở
+  đầu vào làm sai nội dung người dùng gửi (`a < b > c`, đoạn code) mà không bảo vệ được đầu ra nào khác. Trước đó (2026-10-14
+  → 2026-11-23) nội dung lưu xuống phải đã bỏ thẻ — BUG-SUPPORT-02 là theo kỳ vọng cũ đó → REQ-SUPPORT-04 (TC-SUPPORT-049).
+- **Q4** (user chốt 2026-11-23): độ dài tối thiểu / tối đa tính sau khi trim khoảng trắng đầu/cuối (`@Trim()` trên
+  `SubmitContactBodyDto`); thẻ HTML là văn bản nên được tính vào độ dài → REQ-SUPPORT-04 (TC-SUPPORT-048).
 - **Q5** (tự quyết 2026-10-14, cần user duyệt): body gửi kèm `status` / `priority` / `userId` bị Joi `stripUnknown` bỏ;
   yêu cầu mới luôn `new` + `medium`, chủ sở hữu lấy từ token (comment trong code: "MUST come from RequestContext, never
   from client body") — coi là hành vi mong muốn → REQ-SUPPORT-04 (TC-SUPPORT-050).
@@ -73,7 +74,7 @@ Các phân định rút ra từ header cũ của file test case:
 ## Dữ kiện server
 
 `POST /contact/submit` là public (`optionalAuthGuard`: token hợp lệ thì gắn `userId`, token hỏng thì bị từ chối), bị rate
-limit 5 lần mỗi IP mỗi 15 phút; subject 5…200 và message 20…5000 ký tự sau khi sanitise; email không bắt buộc.
+limit 5 lần mỗi IP mỗi 15 phút; subject 5…200 và message 20…5000 ký tự sau khi trim (thẻ HTML giữ nguyên, tính vào độ dài); email không bắt buộc.
 `GET /contacts` và `/contacts/:id` giới hạn theo chủ sở hữu — yêu cầu của user khác hoặc của guest trả 404, không bao giờ 403. Client: zod phản chiếu các luật độ dài; email của user đã đăng nhập là chỉ đọc, của guest thì được điền sẵn từ màn
 hình login; màn hình thành công hiện id dạng ShortId (`first 6 hex + "..."`).
 

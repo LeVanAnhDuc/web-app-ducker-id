@@ -1,26 +1,13 @@
 jest.mock("@/modules/authentication/helpers");
 jest.mock("@/utils/crypto/bcrypt");
 
-const endSession = jest.fn();
-const withTransaction = jest.fn();
-const startSession = jest.fn();
-
-jest.mock("mongoose", () => ({
-  __esModule: true,
-  default: { startSession }
-}));
-
 // types
-import type { AuthenticationService } from "@/modules/authentication/services";
-import type { UserService } from "@/modules/user/services";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
+import type { UserService } from "@/modules/user/user.service";
 import type { OtpSignupRepository } from "../../repositories/otp-signup.repository";
 import type { SessionSignupRepository } from "../../repositories/session-signup.repository";
 // common
-import {
-  BadRequestError,
-  ConflictRequestError,
-  InternalServerError
-} from "@/exceptions";
+import { BadRequestError, ConflictRequestError } from "@/exceptions";
 // modules
 import { generateAuthTokensResponse } from "@/modules/authentication/helpers";
 import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
@@ -28,6 +15,10 @@ import { AUTHENTICATION_ROLES } from "@/modules/authentication/constants";
 import { hashValue } from "@/utils/crypto/bcrypt";
 import { EmailAvailableGuard } from "../../guards";
 import { SignupService } from "../";
+import {
+  inTransaction,
+  mockTransactions
+} from "@test/helpers/transaction.helper";
 
 const mockedGenTokens = generateAuthTokensResponse as jest.MockedFunction<
   typeof generateAuthTokensResponse
@@ -97,15 +88,18 @@ const setup = () => {
 };
 
 describe("SignupService.completeSignup", () => {
+  let transaction: jest.SpyInstance;
+
   // `resetMocks: true` wipes implementations between tests, including the ones
-  // a jest.mock factory set up — so the mongoose stubs are rebuilt here.
+  // a jest.mock factory set up — so they are rebuilt here.
   beforeEach(() => {
     mockedGenTokens.mockReturnValue(TOKENS);
     mockedHash.mockReturnValue("hashed-password");
-    endSession.mockResolvedValue(undefined);
-    // Run the transaction body for real so the auth/user writes are exercised.
-    withTransaction.mockImplementation((fn: () => unknown) => fn());
-    startSession.mockResolvedValue({ withTransaction, endSession });
+    ({ transaction } = mockTransactions());
+  });
+
+  afterEach(() => {
+    transaction.mockRestore();
   });
 
   it("creates the account and returns tokens plus the new profile", async () => {
@@ -120,16 +114,40 @@ describe("SignupService.completeSignup", () => {
     });
   });
 
-  it("writes auth and profile inside one transaction session", async () => {
+  it("writes auth and profile inside one transaction", async () => {
     const { service, authService, userService } = setup();
+    const seen: boolean[] = [];
+    authService.create.mockImplementation(async () => {
+      seen.push(inTransaction());
+      return { _id: { toString: () => AUTH_ID } } as never;
+    });
+    userService.createProfile.mockImplementation(async () => {
+      seen.push(inTransaction());
+      return { _id: { toString: () => USER_ID } } as never;
+    });
 
     await service.completeSignup(body);
 
-    const session = (authService.create as jest.Mock).mock.calls[0][1];
-    expect(session).toBeDefined();
-    expect((userService.createProfile as jest.Mock).mock.calls[0][1]).toBe(
-      session
-    );
+    expect(transaction).toHaveBeenCalledTimes(1);
+    expect(seen).toEqual([true, true]);
+  });
+
+  it("keeps the session check and the Redis cleanup outside the transaction", async () => {
+    const { service, otpSignupRepo, sessionSignupRepo } = setup();
+    const seen: boolean[] = [];
+    const record = async () => {
+      seen.push(inTransaction());
+    };
+    sessionSignupRepo.verify.mockImplementation(async () => {
+      await record();
+      return true;
+    });
+    otpSignupRepo.cleanupOtpData.mockImplementation(record);
+    sessionSignupRepo.clear.mockImplementation(record);
+
+    await service.completeSignup(body);
+
+    expect(seen).toEqual([false, false, false]);
   });
 
   it("hashes the password and never passes the plaintext on", async () => {
@@ -138,10 +156,9 @@ describe("SignupService.completeSignup", () => {
     await service.completeSignup(body);
 
     expect(mockedHash).toHaveBeenCalledWith("Str0ng@Pass");
-    expect(authService.create).toHaveBeenCalledWith(
-      { hashedPassword: "hashed-password" },
-      expect.anything()
-    );
+    expect(authService.create).toHaveBeenCalledWith({
+      hashedPassword: "hashed-password"
+    });
   });
 
   it("stamps a brand-new account as role user, version 0, no forced change", async () => {
@@ -199,20 +216,12 @@ describe("SignupService.completeSignup", () => {
     );
   });
 
-  it("fails loudly when the transaction aborts without a result", async () => {
-    const { service } = setup();
-    withTransaction.mockResolvedValue(undefined);
-
-    await expect(service.completeSignup(body)).rejects.toThrow(
-      InternalServerError
-    );
-  });
-
-  it("always ends the mongo session, even when the write fails", async () => {
-    const { service, authService } = setup();
+  it("keeps the signup data when the write fails, so the user can retry", async () => {
+    const { service, authService, otpSignupRepo, sessionSignupRepo } = setup();
     authService.create.mockRejectedValue(new Error("mongo down"));
 
     await expect(service.completeSignup(body)).rejects.toThrow("mongo down");
-    expect(endSession).toHaveBeenCalled();
+    expect(otpSignupRepo.cleanupOtpData).not.toHaveBeenCalled();
+    expect(sessionSignupRepo.clear).not.toHaveBeenCalled();
   });
 });

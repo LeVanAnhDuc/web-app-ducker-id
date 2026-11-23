@@ -1,5 +1,5 @@
 // types
-import type { UserService } from "@/modules/user/services";
+import type { UserService } from "@/modules/user/user.service";
 import type { UserWithAuth } from "@/modules/user/types";
 import type { LoginAuditService } from "../services/login-audit";
 // common

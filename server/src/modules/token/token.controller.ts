@@ -3,7 +3,7 @@ import { JsonController, Post, Req } from "routing-controllers";
 import { OpenAPI } from "routing-controllers-openapi";
 // types
 import type { Request } from "express";
-import type { TokenService } from "./services";
+import type { TokenService } from "./token.service";
 // common
 import { ApiErrors } from "@/common/openapi";
 import { Respond } from "@/common/routing";

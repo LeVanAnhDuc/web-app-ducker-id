@@ -61,3 +61,22 @@ export function extractValidationErrors(
     return { field, reason, message };
   });
 }
+
+const RETRYABLE_TRANSACTION_LABELS = [
+  "TransientTransactionError",
+  "UnknownTransactionCommitResult"
+] as const;
+
+/**
+ * An error `withTransaction` retries (a write conflict, a commit whose outcome
+ * is unknown). The driver marks it with a label, so it must reach the retry
+ * loop as it is — wrapped, the label is gone and the retry never happens.
+ */
+export function isRetryableTransactionError(err: unknown): boolean {
+  const hasErrorLabel = (err as { hasErrorLabel?: unknown } | null)
+    ?.hasErrorLabel;
+  if (typeof hasErrorLabel !== "function") return false;
+  return RETRYABLE_TRANSACTION_LABELS.some((label) =>
+    (hasErrorLabel as (label: string) => boolean).call(err, label)
+  );
+}

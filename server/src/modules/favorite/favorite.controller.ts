@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import { Delete, Get, JsonController, Post } from "routing-controllers";
 import { OpenAPI } from "routing-controllers-openapi";
 // types
-import type { FavoriteService } from "./services";
+import type { FavoriteService } from "./favorite.service";
 // common
 import { ApiErrors, ApiProperty, Listed } from "@/common/openapi";
 import { Auth, PathVariable, RequestParam, Respond } from "@/common/routing";

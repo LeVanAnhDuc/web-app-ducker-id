@@ -2,7 +2,7 @@
 import { Get, JsonController, Patch } from "routing-controllers";
 import { OpenAPI } from "routing-controllers-openapi";
 // types
-import type { UserService } from "./services";
+import type { UserService } from "./user.service";
 // common
 import { ApiErrors, ApiProperty } from "@/common/openapi";
 import {

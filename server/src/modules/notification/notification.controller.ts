@@ -2,7 +2,7 @@
 import { Get, JsonController, Patch } from "routing-controllers";
 import { OpenAPI } from "routing-controllers-openapi";
 // types
-import type { NotificationService } from "./services";
+import type { NotificationService } from "./notification.service";
 // common
 import { ApiErrors, ApiProperty, Paginated } from "@/common/openapi";
 import { Auth, PathVariable, RequestParam, Respond } from "@/common/routing";

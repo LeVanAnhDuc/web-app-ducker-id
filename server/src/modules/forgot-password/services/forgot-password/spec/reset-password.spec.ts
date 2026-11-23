@@ -1,7 +1,7 @@
 jest.mock("@/utils/crypto/bcrypt");
 
 // types
-import type { AuthenticationService } from "@/modules/authentication/services";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { ResetPasswordBodyDto } from "../../../dtos/requests";
 import type { ResetTokenRepository } from "../../../repositories/reset-token.repository";
 // common

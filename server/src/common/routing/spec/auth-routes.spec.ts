@@ -7,10 +7,10 @@ import type { Server } from "http";
 import type { AddressInfo } from "net";
 import type { RequestHandler } from "express";
 import type { RateLimiters } from "@/middlewares/common/rate-limiter.middleware";
-import type { LogoutService } from "@/modules/logout/services";
+import type { LogoutService } from "@/modules/logout/logout.service";
 import type { LoginService } from "@/modules/login/services/login";
-import type { SessionService } from "@/modules/session/services";
-import type { TokenService } from "@/modules/token/services";
+import type { SessionService } from "@/modules/session/session.service";
+import type { TokenService } from "@/modules/token/token.service";
 // common
 import { RATE_LIMITS } from "@/middlewares/common/rate-limiter.middleware";
 import {
