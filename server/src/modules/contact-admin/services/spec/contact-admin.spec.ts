@@ -77,26 +77,19 @@ describe("ContactAdminService", () => {
         expect.objectContaining({ userId: null })
       );
     });
-    it("stores the subject and message with their markup stripped", async () => {
+    it("stores the subject and message exactly as validated, markup included", async () => {
       jest.spyOn(RequestContext, "getUserId").mockReturnValue(undefined);
       const { contactRepo, makeService } = makeDeps();
       contactRepo.create.mockResolvedValue(makeDoc());
       const svc = makeService();
-      const markup = '<img src="x" onerror="alert(1)">';
+      const subject = 'Cannot login <img src="x" onerror="alert(1)">';
+      const message =
+        "This is a long enough message &lt;script&gt;x&lt;/script&gt;";
 
-      await svc.submitContact(
-        {
-          subject: `  Cannot login ${markup}`,
-          message: `This is a long enough message &lt;script&gt;x&lt;/script&gt; ${markup}`
-        },
-        null
-      );
+      await svc.submitContact({ subject, message }, null);
 
       expect(contactRepo.create).toHaveBeenCalledWith(
-        expect.objectContaining({
-          subject: "Cannot login",
-          message: "This is a long enough message x"
-        })
+        expect.objectContaining({ subject, message })
       );
     });
 

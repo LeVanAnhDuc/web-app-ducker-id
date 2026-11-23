@@ -78,13 +78,17 @@ describe("contact-admin request DTOs match the Joi schemas", () => {
       subjectWrongType: submit({ subject: 12345 }),
       subjectTooShort: submit({ subject: "Hey" }),
       subjectTooLong: submit({ subject: "a".repeat(201) }),
-      subjectWhitespaceKept: submit({ subject: "      " }),
+      subjectWhitespaceOnly: submit({ subject: "      " }),
+      subjectPaddedTooShort: submit({ subject: "   abcd   " }),
+      subjectPaddedTrimmed: submit({ subject: "  Cannot sign in  " }),
+      subjectMarkupKept: submit({ subject: "<b>abcd</b>" }),
 
       messageMissing: submitWithout("message"),
       messageNull: submit({ message: null }),
       messageEmpty: submit({ message: "" }),
       messageWrongType: submit({ message: ["x"] }),
       messageTooShort: submit({ message: "Too short" }),
+      messagePaddedTooShort: submit({ message: `  ${"m".repeat(19)}  ` }),
       messageTooLong: submit({ message: "a".repeat(5001) })
     });
   });

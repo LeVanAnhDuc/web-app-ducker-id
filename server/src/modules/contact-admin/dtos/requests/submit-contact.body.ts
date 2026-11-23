@@ -11,6 +11,10 @@ import {
 import { CONTACT_CONFIG } from "@/validators/constants";
 import { AppEmailRules, Lowercase, Trim } from "@/validators/decorators";
 
+// Subject and message are plain text: they are trimmed, and their length is
+// checked on what is stored. Markup is kept as typed — the client renders it
+// as text, so it is escaped on output rather than stripped on input.
+//
 // Joi shipped English for a non-string subject or message; their nearest key
 // is `…Required`, as there is no `…Invalid` for either.
 export class SubmitContactBodyDto {
@@ -31,6 +35,7 @@ export class SubmitContactBodyDto {
   @IsNotEmpty({ message: "contactAdmin:errors.subjectRequired" })
   @IsString({ message: "contactAdmin:errors.subjectRequired" })
   @IsDefined({ message: "contactAdmin:errors.subjectRequired" })
+  @Trim()
   subject!: string;
 
   @MaxLength(CONTACT_CONFIG.MESSAGE_MAX_LENGTH, {
@@ -42,5 +47,6 @@ export class SubmitContactBodyDto {
   @IsNotEmpty({ message: "contactAdmin:errors.messageRequired" })
   @IsString({ message: "contactAdmin:errors.messageRequired" })
   @IsDefined({ message: "contactAdmin:errors.messageRequired" })
+  @Trim()
   message!: string;
 }

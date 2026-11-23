@@ -3,8 +3,9 @@
 - **REQ-SUPPORT-01** User đã đăng nhập hoặc guest gửi yêu cầu hỗ trợ từ support dialog.
 - **REQ-SUPPORT-02** `/contacts/me` liệt kê các yêu cầu user đã gửi, kèm ticket ID và trạng thái.
 - **REQ-SUPPORT-03** Một yêu cầu mở ra trang chi tiết chỉ đọc; yêu cầu của user khác thì không truy cập được.
-- **REQ-SUPPORT-04** Server kiểm và làm sạch một lần gửi: tiêu đề 5…200, nội dung 20…5000 ký tự tính **sau khi** bỏ thẻ
-  HTML và khoảng trắng đầu/cuối; email không bắt buộc, có thì phải hợp lệ; nội dung lưu xuống đã bỏ thẻ HTML. Yêu cầu mới
+- **REQ-SUPPORT-04** Server kiểm một lần gửi: tiêu đề 5…200, nội dung 20…5000 ký tự tính **sau khi** bỏ khoảng trắng
+  đầu/cuối; email không bắt buộc, có thì phải hợp lệ; tiêu đề và nội dung lưu đúng như đã gửi (đã trim) — thẻ HTML được giữ
+  nguyên như văn bản và client hiển thị nó dưới dạng chữ, không render. Yêu cầu mới
   luôn ở trạng thái `new`, độ ưu tiên `medium`, chủ sở hữu lấy từ phiên đăng nhập — body không đặt được các trường đó.
 - **REQ-SUPPORT-05** Gửi yêu cầu bị giới hạn 5 lần mỗi IP mỗi 15 phút (429 kèm `code`); khi gửi bị từ chối hoặc lỗi,
   dialog giữ nguyên nội dung đã nhập và đọc lý do qua `#announcer`.
