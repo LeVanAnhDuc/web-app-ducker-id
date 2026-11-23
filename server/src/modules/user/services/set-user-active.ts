@@ -1,6 +1,6 @@
 // types
 import type { SetUserActiveResult } from "@/modules/user/types";
-import type { AuthenticationService } from "@/modules/authentication/services";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { UserRepository } from "../repository/user.repository";
 // common
 import { ForbiddenError, NotFoundError } from "@/exceptions";

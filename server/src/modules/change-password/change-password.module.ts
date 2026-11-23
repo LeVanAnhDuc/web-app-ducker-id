@@ -1,12 +1,12 @@
 // types
-import type { AuthenticationService } from "@/modules/authentication/services";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { UserService } from "@/modules/user/services";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 // guards
 import { WrongCurrentPasswordGuard, SamePasswordGuard } from "./guards";
 // others
-import { ChangePasswordService } from "./services";
+import { ChangePasswordService } from "./change-password.service";
 import { ChangePasswordController } from "./change-password.controller";
 
 export const createChangePasswordModule = (

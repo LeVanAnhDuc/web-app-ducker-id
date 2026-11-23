@@ -1,7 +1,7 @@
 // libs
 import { Get, JsonController, Patch } from "routing-controllers";
 // types
-import type { NotificationService } from "./services";
+import type { NotificationService } from "./notification.service";
 // common
 import { Auth, PathVariable, RequestParam, Respond } from "@/common/routing";
 // validators

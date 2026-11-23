@@ -4,7 +4,7 @@ import type { AccessPolicy } from "@/modules/entitlement/services/access-policy"
 import { MongoFavoriteRepository } from "./repository/impl/mongo-favorite.repository";
 import { MongoWebAppRepository } from "@/modules/web-app/repository/impl/mongo-web-app.repository";
 import { AppFavoritableGuard } from "./guards";
-import { FavoriteService } from "./services";
+import { FavoriteService } from "./favorite.service";
 import { FavoriteController } from "./favorite.controller";
 
 export const createFavoriteModule = (accessPolicy: AccessPolicy) => {

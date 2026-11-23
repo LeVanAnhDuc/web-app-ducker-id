@@ -3,7 +3,7 @@ import { StatusCodes } from "http-status-codes";
 import { JsonController, Post, Req } from "routing-controllers";
 // types
 import type { Request } from "express";
-import type { ContactAdminService } from "./services";
+import type { ContactAdminService } from "./contact-admin.service";
 // common
 import { OptionalAuth, RateLimit, Respond, ValidBody } from "@/common/routing";
 // others

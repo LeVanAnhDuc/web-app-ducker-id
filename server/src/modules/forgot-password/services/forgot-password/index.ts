@@ -13,7 +13,7 @@ import type {
   VerifyMagicLinkResponseDto,
   ResetPasswordResponseDto
 } from "../../dtos";
-import type { AuthenticationService } from "@/modules/authentication/services";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { ResetTokenRepository } from "../../repositories/reset-token.repository";
 import type { OtpForgotPasswordStrategy } from "../../strategies/otp-forgot-password";
 import type { MagicLinkForgotPasswordStrategy } from "../../strategies/magic-link-forgot-password";

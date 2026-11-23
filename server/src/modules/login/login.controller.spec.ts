@@ -1,7 +1,7 @@
 // types
 import type { Response } from "express";
 import type { LoginService } from "./services/login";
-import type { SessionService } from "@/modules/session/services";
+import type { SessionService } from "@/modules/session/session.service";
 // modules
 import {
   SESSION_COOKIE,

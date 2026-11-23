@@ -2,7 +2,7 @@
 import { StatusCodes } from "http-status-codes";
 import { Delete, Get, JsonController, Post } from "routing-controllers";
 // types
-import type { RecentAppService } from "./services";
+import type { RecentAppService } from "./recent-app.service";
 // common
 import {
   Auth,

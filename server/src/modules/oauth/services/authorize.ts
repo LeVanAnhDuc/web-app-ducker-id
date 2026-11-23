@@ -9,9 +9,9 @@ import type {
 } from "../types";
 import type { WebAppRepository } from "@/modules/web-app/repository/web-app.repository";
 import type { UserService } from "@/modules/user/services";
-import type { SessionService } from "@/modules/session/services";
+import type { SessionService } from "@/modules/session/session.service";
 import type { LoginHistoryService } from "@/modules/login-history/services";
-import type { RecentAppService } from "@/modules/recent-app/services";
+import type { RecentAppService } from "@/modules/recent-app/recent-app.service";
 import type { AccessPolicy } from "@/modules/entitlement/services/access-policy";
 import type { OAuthRepository } from "../repository/oauth.repository";
 // common

@@ -1,7 +1,7 @@
 // types
 import type { ResetPasswordBodyDto } from "../../dtos/requests";
 import type { ResetPasswordResponseDto } from "../../dtos";
-import type { AuthenticationService } from "@/modules/authentication/services";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { ResetTokenRepository } from "../../repositories/reset-token.repository";
 import type { AuthExistsGuard, ResetTokenValidGuard } from "../../guards";
 import type { ForgotPasswordAuditService } from "../forgot-password-audit";

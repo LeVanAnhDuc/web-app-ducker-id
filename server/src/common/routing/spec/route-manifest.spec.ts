@@ -2,11 +2,11 @@
 import type { RateLimiters } from "@/middlewares/common/rate-limiter.middleware";
 import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
-import type { AuthenticationService } from "@/modules/authentication/services";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { RedisClientType } from "redis";
 import type { UserService } from "@/modules/user/services";
 import type { LoginHistoryService } from "@/modules/login-history/services";
-import type { SessionService } from "@/modules/session/services";
+import type { SessionService } from "@/modules/session/session.service";
 // modules
 import { createSignupModule } from "@/modules/signup/signup.module";
 import { createLoginModule } from "@/modules/login/login.module";

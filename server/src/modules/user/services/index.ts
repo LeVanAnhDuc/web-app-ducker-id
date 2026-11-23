@@ -11,7 +11,7 @@ import type {
 } from "@/modules/user/types";
 import type { AdminUserDto, MyProfileDto, PublicProfileDto } from "../dtos";
 import type { AdminUsersQueryDto } from "../dtos/requests";
-import type { AuthenticationService } from "@/modules/authentication/services";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { NotificationDispatcher } from "@/services/notification/notification.dispatcher";
 import type { UserRepository } from "../repository/user.repository";

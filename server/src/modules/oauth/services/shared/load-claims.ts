@@ -1,7 +1,7 @@
 // libs
 import { StatusCodes } from "http-status-codes";
 // types
-import type { AuthenticationService } from "@/modules/authentication/services";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { UserService } from "@/modules/user/services";
 // common
 import { OAuthError } from "@/exceptions";

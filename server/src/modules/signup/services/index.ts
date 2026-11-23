@@ -12,7 +12,7 @@ import type {
   SendOtpDto,
   VerifyOtpDto
 } from "../dtos";
-import type { AuthenticationService } from "@/modules/authentication/services";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { UserService } from "@/modules/user/services";
 import type { OtpSignupRepository } from "../repositories/otp-signup.repository";
 import type { SessionSignupRepository } from "../repositories/session-signup.repository";

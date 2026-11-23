@@ -3,7 +3,7 @@ import type { Schema } from "mongoose";
 import type { Gender } from "@/modules/user/types";
 import type { CompleteSignupBodyDto } from "../dtos/requests";
 import type { CompleteSignupDto } from "../dtos";
-import type { AuthenticationService } from "@/modules/authentication/services";
+import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { UserService } from "@/modules/user/services";
 import type { OtpSignupRepository } from "../repositories/otp-signup.repository";
 import type { SessionSignupRepository } from "../repositories/session-signup.repository";
