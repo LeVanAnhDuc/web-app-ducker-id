@@ -1,6 +1,6 @@
 // types
 import type { PaginatedResult } from "@/common/pagination";
-import type { RecentAppDto } from "./types";
+import type { RecentAppDto } from "./dtos";
 import type {
   ListRecentAppsQueryDto,
   RecentAppsStatsQueryDto

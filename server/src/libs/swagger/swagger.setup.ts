@@ -1,11 +1,19 @@
 // libs
 import swaggerUi from "swagger-ui-express";
 // types
-import type { Application } from "express";
-// others
-import { openApiSpec } from "./openapi";
+import type { Application, RequestHandler } from "express";
+import type { OpenAPIV3 } from "openapi-types";
 
-export const setupSwagger = (app: Application): void => {
+/**
+ * Serves `/api-docs` (Swagger UI) and `/api-docs.json`. The document is read
+ * through `getSpec` on every request: `mountHttp` mounts this before the
+ * controllers, so the stop step and the 404 never see these paths, and builds
+ * the document right after mounting them.
+ */
+export const setupSwagger = (
+  app: Application,
+  getSpec: () => OpenAPIV3.Document
+): void => {
   const customCss = `
     .swagger-ui .topbar { display: none }
 
@@ -58,24 +66,34 @@ export const setupSwagger = (app: Application): void => {
     }
   `;
 
-  app.use(
-    "/api-docs",
-    swaggerUi.serve as unknown as Parameters<Application["use"]>[1],
-    swaggerUi.setup(openApiSpec, {
-      explorer: true,
-      customCss,
-      customSiteTitle: "Ducker ID API Documentation",
-      swaggerOptions: {
-        persistAuthorization: true,
-        docExpansion: "list",
-        filter: true,
-        showRequestDuration: true
-      }
-    }) as unknown as Parameters<Application["use"]>[1]
-  );
+  const uiOptions = {
+    explorer: true,
+    customCss,
+    customSiteTitle: "Ducker ID API Documentation",
+    swaggerOptions: {
+      persistAuthorization: true,
+      docExpansion: "list",
+      filter: true,
+      showRequestDuration: true
+    }
+  };
+
+  // swagger-ui-express renders `req.swaggerDoc` when it is set, which is how
+  // a document that does not exist yet at mount time is served.
+  const attachSpec: RequestHandler = (req, _res, next) => {
+    (req as { swaggerDoc?: OpenAPIV3.Document }).swaggerDoc = getSpec();
+    next();
+  };
 
   app.get("/api-docs.json", (_req, res) => {
     res.setHeader("Content-Type", "application/json");
-    res.send(openApiSpec);
+    res.send(getSpec());
   });
+
+  app.use(
+    "/api-docs",
+    attachSpec,
+    swaggerUi.serveFiles(undefined, uiOptions) as unknown as RequestHandler[],
+    swaggerUi.setup(undefined, uiOptions) as unknown as RequestHandler
+  );
 };

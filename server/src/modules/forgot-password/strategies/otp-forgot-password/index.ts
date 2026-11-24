@@ -1,5 +1,8 @@
 // types
-import type { OtpSendBodyDto, OtpVerifyBodyDto } from "../../dtos/requests";
+import type {
+  ForgotPasswordOtpSendBodyDto,
+  ForgotPasswordOtpVerifyBodyDto
+} from "../../dtos/requests";
 import type { SendOtpResponseDto, VerifyOtpResponseDto } from "../../dtos";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { OtpForgotPasswordRepository } from "../../repositories/otp-forgot-password.repository";
@@ -29,7 +32,7 @@ export class OtpForgotPasswordStrategy {
   ) {}
 
   @LogMethod({ name: "Forgot password OTP send" })
-  sendCode(body: OtpSendBodyDto): Promise<SendOtpResponseDto> {
+  sendCode(body: ForgotPasswordOtpSendBodyDto): Promise<SendOtpResponseDto> {
     return sendCode(
       {
         otpRepo: this.otpRepo,
@@ -43,7 +46,9 @@ export class OtpForgotPasswordStrategy {
   }
 
   @LogMethod({ name: "Forgot password OTP verification" })
-  verifyCode(body: OtpVerifyBodyDto): Promise<VerifyOtpResponseDto> {
+  verifyCode(
+    body: ForgotPasswordOtpVerifyBodyDto
+  ): Promise<VerifyOtpResponseDto> {
     return verifyCode(
       {
         otpRepo: this.otpRepo,

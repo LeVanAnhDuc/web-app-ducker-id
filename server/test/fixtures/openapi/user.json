@@ -1,0 +1,2202 @@
+{
+  "/users/me": {
+    "get": {
+      "summary": "Get my profile",
+      "description": "Get the full profile of the currently authenticated user.\n\n**Authentication:**\n- Requires valid Bearer token (idToken)\n\n**Returns:**\n- All profile fields including email (from token), phone, address, dateOfBirth, gender, avatar (full URL)",
+      "tags": [
+        "User Profile"
+      ],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Profile retrieved successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-15T10:30:00.000Z"
+                      },
+                      "path": {
+                        "type": "string",
+                        "example": "/api/v1/auth/login"
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Operation successful"
+                      },
+                      "data": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "required": [
+                          "_id",
+                          "fullName",
+                          "email",
+                          "createdAt"
+                        ],
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "64f1b2c3d4e5f6a7b8c9d0e1",
+                            "description": "User ID (MongoDB ObjectId)"
+                          },
+                          "fullName": {
+                            "type": "string",
+                            "example": "Nguyen Van A"
+                          },
+                          "email": {
+                            "type": "string",
+                            "format": "email",
+                            "example": "user@example.com",
+                            "description": "Taken from authenticated token"
+                          },
+                          "phone": {
+                            "type": "string",
+                            "nullable": true,
+                            "example": "+84 912 345 678"
+                          },
+                          "avatar": {
+                            "type": "string",
+                            "nullable": true,
+                            "example": "http://localhost:3000/uploads/avatars/uuid.jpg",
+                            "description": "Full URL to avatar image, or null if not set"
+                          },
+                          "address": {
+                            "type": "string",
+                            "nullable": true,
+                            "example": "123 Le Loi, District 1, Ho Chi Minh City"
+                          },
+                          "dateOfBirth": {
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": true,
+                            "example": "1995-06-15T00:00:00.000Z"
+                          },
+                          "gender": {
+                            "type": "string",
+                            "nullable": true,
+                            "enum": [
+                              "male",
+                              "female",
+                              "other",
+                              "prefer_not_to_say",
+                              null
+                            ],
+                            "example": "male"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2026-01-01T00:00:00.000Z"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized - Invalid credentials",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Internal Server Error (e.g. database unreachable)",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "patch": {
+      "summary": "Update my profile",
+      "description": "Partially update the profile of the authenticated user. All fields are optional.\n\n**Authentication:**\n- Requires valid Bearer token (idToken)\n\n**Rate Limits:**\n- 10 requests per IP per 15 minutes\n\n**Behavior:**\n- Only the fields provided in the request body are updated\n- Unknown fields are silently ignored (e.g. sending `email` has no effect)\n- Sending an empty body `{}` returns 200 with no changes",
+      "tags": [
+        "User Profile"
+      ],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "description": "All fields are optional. Only provided fields are updated; null clears an optional field.",
+              "properties": {
+                "fullName": {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 100,
+                  "example": "Nguyen Van B",
+                  "description": "Trimmed. Letters, spaces, hyphens, apostrophes, and dots only"
+                },
+                "phone": {
+                  "type": "string",
+                  "nullable": true,
+                  "minLength": 1,
+                  "example": "+84 912 345 678",
+                  "description": "Cannot be an empty string; null clears it"
+                },
+                "address": {
+                  "type": "string",
+                  "nullable": true,
+                  "maxLength": 500,
+                  "example": "456 Nguyen Hue, District 1, Ho Chi Minh City"
+                },
+                "dateOfBirth": {
+                  "type": "string",
+                  "nullable": true,
+                  "format": "date",
+                  "example": "1995-06-15",
+                  "description": "ISO 8601 date. Age must be between 13 and 120 years, as at sign-up."
+                },
+                "gender": {
+                  "type": "string",
+                  "nullable": true,
+                  "enum": [
+                    "male",
+                    "female",
+                    "other",
+                    "prefer_not_to_say"
+                  ],
+                  "example": "male"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Profile updated successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-15T10:30:00.000Z"
+                      },
+                      "path": {
+                        "type": "string",
+                        "example": "/api/v1/auth/login"
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Operation successful"
+                      },
+                      "data": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "required": [
+                          "_id",
+                          "fullName",
+                          "email",
+                          "createdAt"
+                        ],
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "64f1b2c3d4e5f6a7b8c9d0e1",
+                            "description": "User ID (MongoDB ObjectId)"
+                          },
+                          "fullName": {
+                            "type": "string",
+                            "example": "Nguyen Van A"
+                          },
+                          "email": {
+                            "type": "string",
+                            "format": "email",
+                            "example": "user@example.com",
+                            "description": "Taken from authenticated token"
+                          },
+                          "phone": {
+                            "type": "string",
+                            "nullable": true,
+                            "example": "+84 912 345 678"
+                          },
+                          "avatar": {
+                            "type": "string",
+                            "nullable": true,
+                            "example": "http://localhost:3000/uploads/avatars/uuid.jpg",
+                            "description": "Full URL to avatar image, or null if not set"
+                          },
+                          "address": {
+                            "type": "string",
+                            "nullable": true,
+                            "example": "123 Le Loi, District 1, Ho Chi Minh City"
+                          },
+                          "dateOfBirth": {
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": true,
+                            "example": "1995-06-15T00:00:00.000Z"
+                          },
+                          "gender": {
+                            "type": "string",
+                            "nullable": true,
+                            "enum": [
+                              "male",
+                              "female",
+                              "other",
+                              "prefer_not_to_say",
+                              null
+                            ],
+                            "example": "male"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2026-01-01T00:00:00.000Z"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized - Invalid credentials",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "422": {
+          "description": "Validation failed - Invalid input data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "VALIDATION_ERROR"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Validation failed"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Too many requests - Rate limit exceeded",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "code": "TOO_MANY_REQUESTS",
+                "message": "Rate limit exceeded. Try again later.",
+                "timestamp": "2025-01-15T10:30:00.000Z",
+                "path": "/api/v1/auth/login"
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Internal Server Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/admin/users": {
+    "get": {
+      "summary": "List users (admin)",
+      "description": "List all registered users with optional filtering, search, and pagination.\n\n**Authentication:**\n- Requires valid Bearer token (admin role)\n\n**Filtering:**\n- `search` — case-insensitive keyword match on fullName or email\n- `role` — filter by role (`user` | `admin`)\n- `status` — filter by account status (`active` | `locked`)\n\n**Sorting:**\n- `sortBy` — field to sort on (`createdAt` | `fullName` | `lastLoginAt`), default `createdAt`\n- `sortOrder` — direction (`asc` | `desc`), default `desc`\n\n**Pagination:**\n- `page` — 1-based page number, default 1\n- `limit` — items per page (1–100), default 20",
+      "tags": [
+        "User Admin"
+      ],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "page",
+          "in": "query",
+          "required": false,
+          "description": "Page number (1-based)",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 1,
+            "example": 1
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "required": false,
+          "description": "Number of items per page (1–100)",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100,
+            "default": 20,
+            "example": 20
+          }
+        },
+        {
+          "name": "search",
+          "in": "query",
+          "required": false,
+          "description": "Case-insensitive keyword to match fullName or email",
+          "schema": {
+            "type": "string",
+            "example": "nguyen"
+          }
+        },
+        {
+          "name": "role",
+          "in": "query",
+          "required": false,
+          "description": "Filter by user role",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "user",
+              "admin"
+            ],
+            "example": "user"
+          }
+        },
+        {
+          "name": "status",
+          "in": "query",
+          "required": false,
+          "description": "Filter by account status",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "active",
+              "locked"
+            ],
+            "example": "active"
+          }
+        },
+        {
+          "name": "sortBy",
+          "in": "query",
+          "required": false,
+          "description": "Field to sort results by",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "createdAt",
+              "fullName",
+              "lastLoginAt"
+            ],
+            "default": "createdAt",
+            "example": "createdAt"
+          }
+        },
+        {
+          "name": "sortOrder",
+          "in": "query",
+          "required": false,
+          "description": "Sort direction",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "asc",
+              "desc"
+            ],
+            "default": "desc",
+            "example": "desc"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Users retrieved successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-15T10:30:00.000Z"
+                      },
+                      "path": {
+                        "type": "string",
+                        "example": "/api/v1/auth/login"
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Operation successful"
+                      },
+                      "data": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "required": [
+                          "items",
+                          "meta"
+                        ],
+                        "properties": {
+                          "items": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "required": [
+                                "_id",
+                                "fullName",
+                                "email",
+                                "role",
+                                "isActive",
+                                "createdAt"
+                              ],
+                              "properties": {
+                                "_id": {
+                                  "type": "string",
+                                  "example": "64f1b2c3d4e5f6a7b8c9d0e1",
+                                  "description": "User ID (MongoDB ObjectId)"
+                                },
+                                "fullName": {
+                                  "type": "string",
+                                  "example": "Nguyen Van A"
+                                },
+                                "email": {
+                                  "type": "string",
+                                  "format": "email",
+                                  "example": "user@example.com"
+                                },
+                                "avatar": {
+                                  "type": "string",
+                                  "nullable": true,
+                                  "example": "http://localhost:3000/uploads/avatars/uuid.jpg",
+                                  "description": "Full URL to avatar image, or null if not set"
+                                },
+                                "role": {
+                                  "type": "string",
+                                  "enum": [
+                                    "user",
+                                    "admin"
+                                  ],
+                                  "example": "user"
+                                },
+                                "isActive": {
+                                  "type": "boolean",
+                                  "example": true,
+                                  "description": "False when account is locked"
+                                },
+                                "lastLoginAt": {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "nullable": true,
+                                  "example": "2026-05-20T08:30:00.000Z",
+                                  "description": "ISO 8601 timestamp of last successful login, or null if never logged in"
+                                },
+                                "createdAt": {
+                                  "type": "string",
+                                  "format": "date-time",
+                                  "example": "2026-01-01T00:00:00.000Z"
+                                }
+                              }
+                            }
+                          },
+                          "meta": {
+                            "type": "object",
+                            "required": [
+                              "total",
+                              "page",
+                              "limit",
+                              "totalPages"
+                            ],
+                            "properties": {
+                              "total": {
+                                "type": "integer",
+                                "example": 120,
+                                "description": "Total number of matching users"
+                              },
+                              "page": {
+                                "type": "integer",
+                                "example": 1,
+                                "description": "Current page number (1-based)"
+                              },
+                              "limit": {
+                                "type": "integer",
+                                "example": 20,
+                                "description": "Number of items per page"
+                              },
+                              "totalPages": {
+                                "type": "integer",
+                                "example": 6,
+                                "description": "Total number of pages"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized - Invalid credentials",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Forbidden - Access denied",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/admin/users/{id}/lock": {
+    "patch": {
+      "summary": "Lock a user account (admin)",
+      "description": "Soft-lock a user account by setting `auth.isActive` to `false`. Blocks future\nlogin attempts and refresh token usage; does not affect any in-flight request.\n\n**Authentication:**\n- Requires valid Bearer token (admin role)\n\n**Rate Limits:**\n- 20 requests per IP+admin per 15 minutes\n\n**Behavior:**\n- Idempotent — locking an already-locked account returns 200 with no error\n- An admin cannot lock their own account (403 `ADMIN_CANNOT_LOCK_SELF`)\n- Locking another admin's account is allowed, unless they are the last remaining\n  active admin (403 `ADMIN_CANNOT_LOCK_LAST_ADMIN`) — prevents total admin lockout\n\n**Params:**\n- `id` must be a valid MongoDB ObjectId (24 hex characters)",
+      "tags": [
+        "User Admin"
+      ],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "MongoDB ObjectId of the target user",
+          "schema": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{24}$",
+            "example": "64f1b2c3d4e5f6a7b8c9d0e1"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "User locked successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-15T10:30:00.000Z"
+                      },
+                      "path": {
+                        "type": "string",
+                        "example": "/api/v1/auth/login"
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Operation successful"
+                      },
+                      "data": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "required": [
+                          "_id",
+                          "isActive"
+                        ],
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "64f1b2c3d4e5f6a7b8c9d0e1",
+                            "description": "User ID (MongoDB ObjectId)"
+                          },
+                          "isActive": {
+                            "type": "boolean",
+                            "example": false,
+                            "description": "False when the account is locked, true when active"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request — invalid ObjectId format",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized - Invalid credentials",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Forbidden — non-admin caller, admin attempting to lock their own account, or admin attempting to lock the last remaining active admin",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "code": "ADMIN_CANNOT_LOCK_SELF",
+                "message": "You cannot lock your own account",
+                "timestamp": "2026-01-01T00:00:00.000Z",
+                "path": "/api/v1/admin/users/64f1b2c3d4e5f6a7b8c9d0e1/lock"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not found - Resource does not exist",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Too many requests - Rate limit exceeded",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "code": "TOO_MANY_REQUESTS",
+                "message": "Rate limit exceeded. Try again later.",
+                "timestamp": "2025-01-15T10:30:00.000Z",
+                "path": "/api/v1/auth/login"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/admin/users/{id}/unlock": {
+    "patch": {
+      "summary": "Unlock a user account (admin)",
+      "description": "Re-activate a previously locked user account by setting `auth.isActive` to\n`true`.\n\n**Authentication:**\n- Requires valid Bearer token (admin role)\n\n**Rate Limits:**\n- 20 requests per IP+admin per 15 minutes\n\n**Behavior:**\n- Idempotent — unlocking an already-active account returns 200 with no error\n- An admin may unlock their own account\n\n**Params:**\n- `id` must be a valid MongoDB ObjectId (24 hex characters)",
+      "tags": [
+        "User Admin"
+      ],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "MongoDB ObjectId of the target user",
+          "schema": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{24}$",
+            "example": "64f1b2c3d4e5f6a7b8c9d0e1"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "User unlocked successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-15T10:30:00.000Z"
+                      },
+                      "path": {
+                        "type": "string",
+                        "example": "/api/v1/auth/login"
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Operation successful"
+                      },
+                      "data": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "required": [
+                          "_id",
+                          "isActive"
+                        ],
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "64f1b2c3d4e5f6a7b8c9d0e1",
+                            "description": "User ID (MongoDB ObjectId)"
+                          },
+                          "isActive": {
+                            "type": "boolean",
+                            "example": false,
+                            "description": "False when the account is locked, true when active"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request — invalid ObjectId format",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized - Invalid credentials",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Forbidden - Access denied",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not found - Resource does not exist",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Too many requests - Rate limit exceeded",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "code": "TOO_MANY_REQUESTS",
+                "message": "Rate limit exceeded. Try again later.",
+                "timestamp": "2025-01-15T10:30:00.000Z",
+                "path": "/api/v1/auth/login"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/admin/users/{id}/reset-password": {
+    "post": {
+      "summary": "Reset a user's password (admin)",
+      "description": "Admin-initiated password reset. Overwrites the target account's real password\nwith a freshly generated temporary password, which is emailed to the user.\nBumps `tokenVersion` (revokes all outstanding refresh tokens for that account)\nand sets `mustChangePassword` so the user is forced to set a new password on\ntheir next login.\n\n**Authentication:**\n- Requires valid Bearer token (admin role)\n\n**Rate Limits:**\n- 20 requests per IP+admin per 15 minutes\n\n**Behavior:**\n- The admin never sees the generated temporary password — it is only emailed\n  to the target user\n- An admin cannot reset their own password via this endpoint (403\n  `ADMIN_CANNOT_RESET_SELF`) — use the regular change-password flow instead\n- Resetting another admin's password is allowed\n- Response returns only `{ _id, email }` — never the password or its hash\n\n**Params:**\n- `id` must be a valid MongoDB ObjectId (24 hex characters)",
+      "tags": [
+        "User Admin"
+      ],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "MongoDB ObjectId of the target user",
+          "schema": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{24}$",
+            "example": "64f1b2c3d4e5f6a7b8c9d0e1"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Password reset successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-15T10:30:00.000Z"
+                      },
+                      "path": {
+                        "type": "string",
+                        "example": "/api/v1/auth/login"
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Operation successful"
+                      },
+                      "data": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "required": [
+                          "_id",
+                          "email"
+                        ],
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "64f1b2c3d4e5f6a7b8c9d0e1",
+                            "description": "User ID (MongoDB ObjectId)"
+                          },
+                          "email": {
+                            "type": "string",
+                            "format": "email",
+                            "example": "user@example.com",
+                            "description": "Email address the temporary password was sent to"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request — invalid ObjectId format",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized - Invalid credentials",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Forbidden — non-admin caller, or admin attempting to reset their own password",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "code": "ADMIN_CANNOT_RESET_SELF",
+                "message": "You cannot reset your own password here.",
+                "timestamp": "2026-01-01T00:00:00.000Z",
+                "path": "/api/v1/admin/users/64f1b2c3d4e5f6a7b8c9d0e1/reset-password"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not found - Resource does not exist",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Too many requests - Rate limit exceeded",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "code": "TOO_MANY_REQUESTS",
+                "message": "Rate limit exceeded. Try again later.",
+                "timestamp": "2025-01-15T10:30:00.000Z",
+                "path": "/api/v1/auth/login"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/users/{id}": {
+    "get": {
+      "summary": "Get public profile",
+      "description": "Get the public profile of any user by their ID. Does not require authentication.\n\n**Public fields only:**\n- `_id`, `fullName`, `avatar`, `gender`\n- Sensitive fields (email, phone, address, dateOfBirth) are never returned\n\n**Params:**\n- `id` must be a valid MongoDB ObjectId (24 hex characters)",
+      "tags": [
+        "User Profile"
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "description": "MongoDB ObjectId of the target user",
+          "schema": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{24}$",
+            "example": "64f1b2c3d4e5f6a7b8c9d0e1"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Public profile retrieved successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-15T10:30:00.000Z"
+                      },
+                      "path": {
+                        "type": "string",
+                        "example": "/api/v1/auth/login"
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Operation successful"
+                      },
+                      "data": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "required": [
+                          "_id",
+                          "fullName"
+                        ],
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "64f1b2c3d4e5f6a7b8c9d0e1"
+                          },
+                          "fullName": {
+                            "type": "string",
+                            "example": "Nguyen Van A"
+                          },
+                          "avatar": {
+                            "type": "string",
+                            "nullable": true,
+                            "example": "http://localhost:3000/uploads/avatars/uuid.jpg"
+                          },
+                          "gender": {
+                            "type": "string",
+                            "nullable": true,
+                            "enum": [
+                              "male",
+                              "female",
+                              "other",
+                              "prefer_not_to_say",
+                              null
+                            ],
+                            "example": "female"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad Request — invalid ObjectId format",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "code": "BAD_REQUEST",
+                "message": "Invalid user ID format",
+                "timestamp": "2026-01-01T00:00:00.000Z",
+                "path": "/api/v1/users/abc123"
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not found - Resource does not exist",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "500": {
+          "description": "Internal Server Error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

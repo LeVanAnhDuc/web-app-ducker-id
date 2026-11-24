@@ -4,7 +4,6 @@ import helmet from "helmet";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 // others
-import { setupSwagger } from "@/libs/swagger";
 import config from "@/constants/env";
 import { requestId, requestLogger } from "@/middlewares";
 import { i18nMiddleware } from "./i18n";
@@ -50,7 +49,5 @@ app.use(cookieParser());
 app.use(RequestContext.middleware());
 
 app.use(requestLogger);
-
-setupSwagger(app);
 
 export default app;

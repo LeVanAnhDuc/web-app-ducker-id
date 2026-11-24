@@ -1,0 +1,415 @@
+{
+  "/auth/unlock/request": {
+    "post": {
+      "summary": "Request a temporary password for a locked account",
+      "description": "Emails a temporary password to an account locked by failed sign-ins.\n\n- 400 `UNLOCK_ACCOUNT_NOT_LOCKED` / `UNLOCK_ACCOUNT_DISABLED` / `UNLOCK_COOLDOWN`\n- 429 `UNLOCK_RATE_LIMIT`",
+      "tags": ["Auth - Unlock"],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["email"],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "example": "user@example.com"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Unlock email sent",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-15T10:30:00.000Z"
+                      },
+                      "path": {
+                        "type": "string",
+                        "example": "/api/v1/auth/login"
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Operation successful"
+                      },
+                      "data": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "success": {
+                            "type": "boolean",
+                            "example": true
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Bad request - Business rule violation",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Too many requests - Rate limit exceeded",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "code": "TOO_MANY_REQUESTS",
+                "message": "Rate limit exceeded. Try again later.",
+                "timestamp": "2025-01-15T10:30:00.000Z",
+                "path": "/api/v1/auth/login"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/auth/unlock/verify": {
+    "post": {
+      "summary": "Unlock and sign in with the temporary password",
+      "description": "Unlocks the account and signs in; the refresh token is set as an HttpOnly\ncookie. The account must then change its password.\n\n- 401 `UNLOCK_INVALID_TEMP_PASSWORD` / `UNLOCK_AUTH_NOT_FOUND`\n- 429 shares the sign-in per-IP limit",
+      "tags": ["Auth - Unlock"],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["email", "tempPassword"],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "example": "user@example.com"
+                },
+                "tempPassword": {
+                  "type": "string",
+                  "minLength": 12,
+                  "description": "The temporary password emailed by /auth/unlock/request"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Account unlocked",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-15T10:30:00.000Z"
+                      },
+                      "path": {
+                        "type": "string",
+                        "example": "/api/v1/auth/login"
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Operation successful"
+                      },
+                      "data": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "description": "Signed in with the temporary password; the refresh token is set as an HttpOnly cookie, never in the body",
+                        "properties": {
+                          "accessToken": {
+                            "type": "string"
+                          },
+                          "idToken": {
+                            "type": "string"
+                          },
+                          "expiresIn": {
+                            "type": "integer",
+                            "example": 900
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Validation failed - Invalid input data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "VALIDATION_ERROR"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Validation failed"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized - Invalid credentials",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Too many requests - Rate limit exceeded",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "code": "TOO_MANY_REQUESTS",
+                "message": "Rate limit exceeded. Try again later.",
+                "timestamp": "2025-01-15T10:30:00.000Z",
+                "path": "/api/v1/auth/login"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

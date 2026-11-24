@@ -1,6 +1,5 @@
 // types
 import type { Schema } from "mongoose";
-import type { UserAppDto } from "@/modules/web-app/dtos";
 
 export interface UserAppUsageDocument {
   _id: Schema.Types.ObjectId;
@@ -16,10 +15,5 @@ export interface RecentAppUsage {
   id: string;
   webAppId: string;
   lastUsedAt: Date;
-  useCount: number;
-}
-
-export interface RecentAppDto extends UserAppDto {
-  lastUsedAt: string;
   useCount: number;
 }

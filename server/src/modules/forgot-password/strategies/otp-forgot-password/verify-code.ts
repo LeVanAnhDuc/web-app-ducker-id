@@ -1,5 +1,5 @@
 // types
-import type { OtpVerifyBodyDto } from "../../dtos/requests";
+import type { ForgotPasswordOtpVerifyBodyDto } from "../../dtos/requests";
 import type { VerifyOtpResponseDto } from "../../dtos";
 import type { OtpForgotPasswordRepository } from "../../repositories/otp-forgot-password.repository";
 import type { ResetTokenRepository } from "../../repositories/reset-token.repository";
@@ -54,7 +54,7 @@ export const verifyCode = async (
     authExistsGuard: AuthExistsGuard;
     audit: ForgotPasswordAuditService;
   },
-  body: OtpVerifyBodyDto
+  body: ForgotPasswordOtpVerifyBodyDto
 ): Promise<VerifyOtpResponseDto> => {
   const { email, otp } = body;
 

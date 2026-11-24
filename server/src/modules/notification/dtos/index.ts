@@ -1,1 +1,5 @@
-export { NotificationItemDto } from "./notification-item.dto";
+export {
+  MarkedReadCountDto,
+  NotificationItemDto,
+  UnreadCountDto
+} from "./notification-item.dto";

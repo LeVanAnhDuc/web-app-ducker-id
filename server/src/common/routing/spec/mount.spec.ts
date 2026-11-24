@@ -30,7 +30,13 @@ import {
   Respond,
   ValidBody
 } from "../decorators";
-import { findDisallowedRoutingImports, mountControllers } from "../mount";
+import {
+  findDisallowedJsonSchemaImports,
+  findBridgeOwnedOpenApiKeys,
+  findDisallowedOpenApiImports,
+  findDisallowedRoutingImports,
+  mountControllers
+} from "../mount";
 
 class FixtureBodyDto {
   @MaxLength(2, { message: "validation:fixture.max" })
@@ -537,6 +543,86 @@ describe("routing-controllers imports in modules", () => {
       .filter(({ names }) => names.length > 0);
 
     expect(files.length).toBeGreaterThan(0);
+    expect(offenders).toEqual([]);
+  });
+});
+
+// Spelled in two parts so this file is not itself a loader of it.
+const JSON_SCHEMA_LIB = ["class-validator", "jsonschema"].join("-");
+
+describe("OpenAPI imports", () => {
+  it("allows a module only OpenAPI, ApiErrors, ApiProperty, Paginated and Listed", () => {
+    const fixture = [
+      `import { OpenAPI, ResponseSchema } from "routing-controllers-openapi";`,
+      `import type { OpenAPIParam } from "routing-controllers-openapi";`,
+      `import { ApiErrors, ApiProperty, Listed, Paginated, routeOperation } from "@/common/openapi";`,
+      `import { isRequestDto } from "@/common/openapi/api-property";`,
+      `import { JSONSchema } from "${JSON_SCHEMA_LIB}";`,
+      `import "${JSON_SCHEMA_LIB}/build/defaultConverters";`
+    ].join("\n");
+
+    expect(findDisallowedOpenApiImports(fixture)).toEqual([
+      "ResponseSchema",
+      "routeOperation",
+      "@/common/openapi/…: isRequestDto",
+      "JSONSchema",
+      "import"
+    ]);
+  });
+
+  it("finds none in any src/modules/**/*.ts", () => {
+    const modulesDir = join(__dirname, "../../../modules");
+    const offenders = (readdirSync(modulesDir, { recursive: true }) as string[])
+      .filter((file) => file.endsWith(".ts"))
+      .map((file) => ({
+        file,
+        names: findDisallowedOpenApiImports(
+          readFileSync(join(modulesDir, file), "utf8")
+        )
+      }))
+      .filter(({ names }) => names.length > 0);
+
+    expect(offenders).toEqual([]);
+  });
+
+  it("finds a bridge-owned key in an @OpenAPI call, and none in the controllers", () => {
+    const fixture = [
+      `@OpenAPI({ summary: "ok", description: "security: none (prose)" })`,
+      `@OpenAPI({ summary: "x", responses: { "200": {} }, security: [] })`,
+      `@OpenAPI({ summary: "y", parameters: [], requestBody: {} })`
+    ].join("\n");
+    expect(findBridgeOwnedOpenApiKeys(fixture)).toEqual([
+      "responses",
+      "security",
+      "parameters",
+      "requestBody"
+    ]);
+
+    const modulesDir = join(__dirname, "../../../modules");
+    const offenders = (readdirSync(modulesDir, { recursive: true }) as string[])
+      .filter((file) => file.endsWith(".controller.ts"))
+      .map((file) => ({
+        file,
+        keys: findBridgeOwnedOpenApiKeys(
+          readFileSync(join(modulesDir, file), "utf8")
+        )
+      }))
+      .filter(({ keys }) => keys.length > 0);
+    expect(offenders).toEqual([]);
+  });
+
+  it("loads class-validator-jsonschema only in @/common/openapi and @/libs/swagger", () => {
+    const srcDir = join(__dirname, "../../..");
+    const allowed = /^(common[\\/]openapi|libs[\\/]swagger)[\\/]/;
+    const offenders = (readdirSync(srcDir, { recursive: true }) as string[])
+      .filter((file) => file.endsWith(".ts") && !allowed.test(file))
+      .filter(
+        (file) =>
+          findDisallowedJsonSchemaImports(
+            readFileSync(join(srcDir, file), "utf8")
+          ).length > 0
+      );
+
     expect(offenders).toEqual([]);
   });
 });

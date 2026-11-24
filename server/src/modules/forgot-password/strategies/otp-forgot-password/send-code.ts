@@ -1,5 +1,5 @@
 // types
-import type { OtpSendBodyDto } from "../../dtos/requests";
+import type { ForgotPasswordOtpSendBodyDto } from "../../dtos/requests";
 import type { SendOtpResponseDto } from "../../dtos";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { OtpForgotPasswordRepository } from "../../repositories/otp-forgot-password.repository";
@@ -25,7 +25,7 @@ export const sendCode = async (
     resendLimitGuard: OtpResendLimitGuard;
     authExistsGuard: AuthExistsGuard;
   },
-  body: OtpSendBodyDto
+  body: ForgotPasswordOtpSendBodyDto
 ): Promise<SendOtpResponseDto> => {
   const { email } = body;
   const { language } = RequestContext.getClient();

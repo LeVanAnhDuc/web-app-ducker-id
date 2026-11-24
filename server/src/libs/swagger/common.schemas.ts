@@ -3,15 +3,7 @@ import type { OpenAPIV3 } from "openapi-types";
 // others
 import { ERROR_CODES } from "@/constants/error-code";
 
-export const swaggerObjectId = (
-  description?: string
-): OpenAPIV3.SchemaObject => ({
-  type: "string",
-  pattern: "^[a-fA-F0-9]{24}$",
-  example: "507f1f77bcf86cd799439012",
-  ...(description && { description })
-});
-
+/** The envelope and error schemas every operation points at, and the response entries `@ApiErrors` and the bridge derive. */
 export const commonSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   SuccessResponse: {
     type: "object",
@@ -32,17 +24,6 @@ export const commonSchemas: Record<string, OpenAPIV3.SchemaObject> = {
       data: {
         type: "object"
       }
-    }
-  },
-
-  PaginationMeta: {
-    type: "object",
-    required: ["total", "page", "limit", "totalPages"],
-    properties: {
-      total: { type: "integer", example: 157 },
-      page: { type: "integer", example: 1 },
-      limit: { type: "integer", example: 20 },
-      totalPages: { type: "integer", example: 8 }
     }
   },
 
@@ -126,7 +107,7 @@ export const commonResponses: Record<
   OpenAPIV3.ResponseObject | OpenAPIV3.ReferenceObject
 > = {
   ValidationError: {
-    description: "Validation failed - Invalid input data",
+    description: "Validation failed or a business rule was violated",
     content: {
       "application/json": {
         schema: {
@@ -187,6 +168,16 @@ export const commonResponses: Record<
           message: "Email already registered",
           timestamp: "2025-01-15T10:30:00.000Z",
           path: "/api/v1/auth/signup/send-otp"
+        }
+      }
+    }
+  },
+  InternalError: {
+    description: "Internal server error - Unexpected failure",
+    content: {
+      "application/json": {
+        schema: {
+          $ref: "#/components/schemas/ErrorResponse"
         }
       }
     }

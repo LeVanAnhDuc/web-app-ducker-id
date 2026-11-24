@@ -1,7 +1,7 @@
 // types
 import type {
-  MagicLinkSendBodyDto,
-  MagicLinkVerifyBodyDto
+  ForgotPasswordMagicLinkSendBodyDto,
+  ForgotPasswordMagicLinkVerifyBodyDto
 } from "../../../dtos/requests";
 import type { MagicLinkForgotPasswordRepository } from "../../../repositories/magic-link-forgot-password.repository";
 import type { ResetTokenRepository } from "../../../repositories/reset-token.repository";
@@ -24,9 +24,9 @@ const EMAIL = "user@example.com";
 const EXPIRY = 900;
 const COOLDOWN = 60;
 
-const sendBody = (): MagicLinkSendBodyDto => ({ email: EMAIL });
+const sendBody = (): ForgotPasswordMagicLinkSendBodyDto => ({ email: EMAIL });
 
-const verifyBody = (): MagicLinkVerifyBodyDto => ({
+const verifyBody = (): ForgotPasswordMagicLinkVerifyBodyDto => ({
   email: EMAIL,
   token: "a-token"
 });

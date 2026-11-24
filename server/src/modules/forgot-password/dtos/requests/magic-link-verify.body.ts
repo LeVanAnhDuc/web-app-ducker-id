@@ -6,6 +6,8 @@ import {
   Length,
   Matches
 } from "class-validator";
+// common
+import { ApiProperty } from "@/common/openapi";
 // modules
 import { FORGOT_PASSWORD_MAGIC_LINK_CONFIG } from "@/modules/forgot-password/constants";
 // validators
@@ -13,7 +15,8 @@ import { IsAppEmail } from "@/validators/decorators";
 
 const TOKEN_LENGTH = FORGOT_PASSWORD_MAGIC_LINK_CONFIG.TOKEN_LENGTH * 2;
 
-export class MagicLinkVerifyBodyDto {
+export class ForgotPasswordMagicLinkVerifyBodyDto {
+  @ApiProperty({ example: "user@example.com" })
   @IsAppEmail()
   email!: string;
 

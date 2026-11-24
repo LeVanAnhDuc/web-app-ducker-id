@@ -13,7 +13,7 @@ RESTful API server for **Ducker ID (Identity Management System)** — a central 
 | Authentication  | JWT (access + refresh tokens) + bcrypt |
 | Validation      | class-validator + class-transformer    |
 | Email           | Nodemailer + React Email templates     |
-| Documentation   | Swagger UI (OpenAPI)                   |
+| Documentation   | Swagger UI (OpenAPI, generated from controller annotations) |
 | Logging         | Winston (daily rotate files)           |
 | Testing         | Jest 30 + ts-jest                      |
 | Package Manager | pnpm                                   |
@@ -179,8 +179,7 @@ modules/{feature}/
 ├── {feature}.service.ts       # Business logic
 ├── {feature}.helper.ts        # Module-specific helpers (optional)
 ├── dtos/                      # Response DTOs; requests/ holds the request DTO classes
-├── repositories/              # Data access layer (optional)
-└── swagger/                   # OpenAPI docs for the module (optional)
+└── repositories/              # Data access layer (optional)
 ```
 
 ## API Endpoints

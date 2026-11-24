@@ -1,6 +1,6 @@
-export { toRecentAppDto } from "./recent-app.dto";
+export { RecentAppDto, toRecentAppDto } from "./recent-app.dto";
 export { toRecentAppsStatsDto } from "./stats.dto";
-export type {
+export {
   RecentAppsStatsDto,
   TopAppDto,
   AppCategoryCountDto

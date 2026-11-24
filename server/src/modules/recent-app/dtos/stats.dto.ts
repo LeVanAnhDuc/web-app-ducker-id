@@ -3,6 +3,7 @@ import type { WebAppWithCategories } from "@/modules/web-app/types";
 import type { RecentAppUsage } from "../types";
 // common
 import { toDto } from "@/common/dto";
+import { ApiProperty } from "@/common/openapi";
 // modules
 import { PublicCategoryDto } from "@/modules/category/dtos";
 import { orderByCategoryIds } from "@/modules/web-app/helpers";
@@ -11,29 +12,83 @@ import { RECENT_APP_STATS } from "../constants";
 // others
 import { MILLISECONDS_PER_DAY } from "@/constants/time";
 
-export interface TopAppDto {
-  appId: string;
-  displayName: string;
-  iconUrl: string | null;
-  homeUrl: string;
+/** Plain data: `toRecentAppsStatsDto` builds object literals typed as these classes. */
+export class TopAppDto {
+  @ApiProperty({ type: "string", example: "507f1f77bcf86cd799439011" })
+  appId!: string;
+
+  @ApiProperty({ type: "string", example: "Satellite Monitor" })
+  displayName!: string;
+
+  @ApiProperty({
+    type: "string",
+    nullable: true,
+    example: "https://cdn.example.com/icons/monitor.png"
+  })
+  iconUrl!: string | null;
+
+  @ApiProperty({ type: "string", example: "https://monitor.example.com" })
+  homeUrl!: string;
+
   /** The app's primary category (first of its ordered categories). */
-  category: PublicCategoryDto | null;
-  useCount: number;
-  lastUsedAt: string;
+  @ApiProperty({
+    type: PublicCategoryDto,
+    nullable: true,
+    description: "The app's primary category (first of its ordered categories)"
+  })
+  category!: PublicCategoryDto | null;
+
+  @ApiProperty({ type: "integer", example: 12 })
+  useCount!: number;
+
+  @ApiProperty({
+    type: "string",
+    format: "date-time",
+    example: "2026-10-04T08:30:00.000Z"
+  })
+  lastUsedAt!: string;
 }
 
-export interface AppCategoryCountDto {
+export class AppCategoryCountDto {
   /** Grouped by primary category; null for an app whose categories are gone. */
-  category: PublicCategoryDto | null;
-  count: number;
+  @ApiProperty({
+    type: PublicCategoryDto,
+    nullable: true,
+    description:
+      "Grouped by primary category; null for an app whose categories are gone"
+  })
+  category!: PublicCategoryDto | null;
+
+  @ApiProperty({ type: "integer", example: 3 })
+  count!: number;
 }
 
-export interface RecentAppsStatsDto {
-  totalApps: number;
-  activeLast7Days: number;
-  activeLast30Days: number;
-  topApps: TopAppDto[];
-  byCategory: AppCategoryCountDto[];
+export class RecentAppsStatsDto {
+  @ApiProperty({ type: "integer", example: 8 })
+  totalApps!: number;
+
+  @ApiProperty({
+    type: "integer",
+    example: 5,
+    description: "Apps last used within 7 days"
+  })
+  activeLast7Days!: number;
+
+  @ApiProperty({
+    type: "integer",
+    example: 7,
+    description: "Apps last used within 30 days"
+  })
+  activeLast30Days!: number;
+
+  @ApiProperty({
+    type: [TopAppDto],
+    description: "Most opened apps, all-time use count"
+  })
+  topApps!: TopAppDto[];
+
+  @ApiProperty({ type: [AppCategoryCountDto] })
+  byCategory!: AppCategoryCountDto[];
 }
 
 const primaryCategory = (

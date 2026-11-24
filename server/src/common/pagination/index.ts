@@ -2,6 +2,7 @@
 import type { SortOrder } from "@/common/sort";
 import type { PaginationOptions } from "@/types/common";
 // common
+import { ApiProperty } from "@/common/openapi/api-property";
 import { resolveSortDirection } from "@/common/sort";
 
 export const PAGINATION = {
@@ -27,11 +28,19 @@ export interface ResolvedPaging extends PaginationOptions {
   page: number;
 }
 
-export interface PageMeta {
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
+/** A class so `/api-docs` can document it; built as a plain literal by `toPageMeta`. */
+export class PageMeta {
+  @ApiProperty({ type: "integer", example: 157 })
+  total!: number;
+
+  @ApiProperty({ type: "integer", example: 1 })
+  page!: number;
+
+  @ApiProperty({ type: "integer", example: 20 })
+  limit!: number;
+
+  @ApiProperty({ type: "integer", example: 8 })
+  totalPages!: number;
 }
 
 export interface PaginatedResult<T> {

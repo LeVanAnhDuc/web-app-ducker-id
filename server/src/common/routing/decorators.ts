@@ -92,6 +92,16 @@ const whole =
  * value of one action and source lands on that one class.
  */
 const synthesized = new WeakMap<object, Map<string, DtoClass<object>>>();
+const namedValueClasses = new WeakSet<Function>();
+
+/**
+ * Whether a class was built here for `@PathVariable(name, ...rules)` /
+ * `@RequestParam(name, ...rules)`. Such a class is named after its values
+ * (several are called `id`), so the API docs inline it as parameters and
+ * never treat it as a schema or a name clash.
+ */
+export const isNamedValueClass = (Ctor: unknown): boolean =>
+  typeof Ctor === "function" && namedValueClasses.has(Ctor);
 
 const classFor = (
   Ctor: object,
@@ -108,6 +118,7 @@ const classFor = (
     // `Dto = class {}` would otherwise be named "Dto".
     Object.defineProperty(Dto, "name", { value: "" });
     byAction.set(key, Dto);
+    namedValueClasses.add(Dto);
     recordPipe(Ctor, method, source, Dto);
   }
   return Dto;
@@ -124,12 +135,14 @@ const named =
       );
     }
     const Dto = classFor(target.constructor, String(method), source);
-    for (const rule of rules) rule(Dto.prototype, name);
 
     // Name the class after its values, so the route manifest reads
-    // `params:id` rather than an anonymous class.
+    // `params:id` rather than an anonymous class. Named before the rules
+    // run, so a rule that refuses (ApiProperty's misuse check) names it too.
     const names = new Set((Dto.name ? Dto.name.split(",") : []).concat(name));
     Object.defineProperty(Dto, "name", { value: [...names].join(",") });
+
+    for (const rule of rules) rule(Dto.prototype, name);
 
     handOver(
       target,

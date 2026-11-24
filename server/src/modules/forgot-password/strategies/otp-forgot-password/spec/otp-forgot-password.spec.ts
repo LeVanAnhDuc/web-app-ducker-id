@@ -1,5 +1,8 @@
 // types
-import type { OtpSendBodyDto, OtpVerifyBodyDto } from "../../../dtos/requests";
+import type {
+  ForgotPasswordOtpSendBodyDto,
+  ForgotPasswordOtpVerifyBodyDto
+} from "../../../dtos/requests";
 import type { OtpForgotPasswordRepository } from "../../../repositories/otp-forgot-password.repository";
 import type { ResetTokenRepository } from "../../../repositories/reset-token.repository";
 // common
@@ -23,9 +26,12 @@ const EMAIL = "user@example.com";
 const EXPIRY = 300;
 const COOLDOWN = 60;
 
-const sendBody = (): OtpSendBodyDto => ({ email: EMAIL });
+const sendBody = (): ForgotPasswordOtpSendBodyDto => ({ email: EMAIL });
 
-const verifyBody = (): OtpVerifyBodyDto => ({ email: EMAIL, otp: "123456" });
+const verifyBody = (): ForgotPasswordOtpVerifyBodyDto => ({
+  email: EMAIL,
+  otp: "123456"
+});
 
 const setup = () => {
   const otpRepo = {

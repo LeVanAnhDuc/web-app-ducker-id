@@ -1,0 +1,1769 @@
+{
+  "/contact/submit": {
+    "post": {
+      "summary": "Submit a contact request",
+      "description": "Submit a contact request to the admin.\n\n**Auth:** Optional — `Authorization: Bearer <token>` may be provided. When\npresent and valid, the created contact is attached to the caller (`userId`)\nso it later shows up in `GET /contacts`. Guests (no token) may still submit;\nthe contact is created with `userId = null`.\n\n**Rate Limits:**\n- 5 requests per IP per 15 minutes",
+      "tags": [
+        "Contact Admin"
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "subject",
+                "message"
+              ],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "example": "user@example.com",
+                  "description": "Optional contact email (auto-filled if logged in)"
+                },
+                "subject": {
+                  "type": "string",
+                  "minLength": 5,
+                  "maxLength": 200,
+                  "example": "Cannot access my account"
+                },
+                "message": {
+                  "type": "string",
+                  "minLength": 20,
+                  "maxLength": 5000,
+                  "example": "I have been unable to log in to my account for the past 2 days."
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "201": {
+          "description": "Contact request submitted successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-15T10:30:00.000Z"
+                      },
+                      "path": {
+                        "type": "string",
+                        "example": "/api/v1/auth/login"
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Operation successful"
+                      },
+                      "data": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "507f1f77bcf86cd799439011",
+                            "description": "MongoDB _id of the created contact"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Validation failed - Invalid input data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "VALIDATION_ERROR"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Validation failed"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Too many requests - Rate limit exceeded",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "code": "TOO_MANY_REQUESTS",
+                "message": "Rate limit exceeded. Try again later.",
+                "timestamp": "2025-01-15T10:30:00.000Z",
+                "path": "/api/v1/auth/login"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/contacts": {
+    "get": {
+      "summary": "List my contact requests (owner-scoped)",
+      "description": "List contact requests submitted by the authenticated caller. Only contacts\nwhose `userId` matches the caller are returned — never other users' or\nanonymous/guest contacts.",
+      "tags": [
+        "Contact Admin"
+      ],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "page",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        {
+          "name": "status",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "new",
+              "processing",
+              "resolved"
+            ]
+          }
+        },
+        {
+          "name": "search",
+          "in": "query",
+          "description": "Case-insensitive match on subject",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "sortBy",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "createdAt",
+              "priority",
+              "status"
+            ]
+          }
+        },
+        {
+          "name": "sortOrder",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "asc",
+              "desc"
+            ]
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Contacts retrieved successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-15T10:30:00.000Z"
+                      },
+                      "path": {
+                        "type": "string",
+                        "example": "/api/v1/auth/login"
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Operation successful"
+                      },
+                      "data": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "items": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "_id": {
+                                  "type": "string",
+                                  "example": "507f1f77bcf86cd799439011"
+                                },
+                                "email": {
+                                  "type": "string",
+                                  "nullable": true,
+                                  "example": "user@example.com"
+                                },
+                                "subject": {
+                                  "type": "string",
+                                  "example": "Cannot access my account"
+                                },
+                                "priority": {
+                                  "type": "string",
+                                  "enum": [
+                                    "low",
+                                    "medium",
+                                    "high"
+                                  ],
+                                  "example": "medium"
+                                },
+                                "status": {
+                                  "type": "string",
+                                  "enum": [
+                                    "new",
+                                    "processing",
+                                    "resolved"
+                                  ],
+                                  "example": "new"
+                                },
+                                "createdAt": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                },
+                                "updatedAt": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                }
+                              }
+                            }
+                          },
+                          "meta": {
+                            "type": "object",
+                            "required": [
+                              "total",
+                              "page",
+                              "limit",
+                              "totalPages"
+                            ],
+                            "properties": {
+                              "total": {
+                                "type": "integer",
+                                "example": 157
+                              },
+                              "page": {
+                                "type": "integer",
+                                "example": 1
+                              },
+                              "limit": {
+                                "type": "integer",
+                                "example": 20
+                              },
+                              "totalPages": {
+                                "type": "integer",
+                                "example": 8
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Validation failed - Invalid input data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "VALIDATION_ERROR"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Validation failed"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized - Invalid credentials",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/contacts/{id}": {
+    "get": {
+      "summary": "Get my contact detail (owner-scoped)",
+      "description": "Return the full detail of a contact request owned by the authenticated\ncaller. If the id does not exist, or belongs to a different user, the\nresponse is `404` — the API never reveals whether the resource exists for\nanother owner.",
+      "tags": [
+        "Contact Admin"
+      ],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string"
+          },
+          "example": "507f1f77bcf86cd799439011"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Contact detail retrieved successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-15T10:30:00.000Z"
+                      },
+                      "path": {
+                        "type": "string",
+                        "example": "/api/v1/auth/login"
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Operation successful"
+                      },
+                      "data": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "507f1f77bcf86cd799439011"
+                          },
+                          "email": {
+                            "type": "string",
+                            "nullable": true,
+                            "example": "user@example.com"
+                          },
+                          "subject": {
+                            "type": "string",
+                            "example": "Cannot access my account"
+                          },
+                          "message": {
+                            "type": "string",
+                            "example": "I have been unable to log in to my account for the past 2 days."
+                          },
+                          "priority": {
+                            "type": "string",
+                            "enum": [
+                              "low",
+                              "medium",
+                              "high"
+                            ],
+                            "example": "medium"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "new",
+                              "processing",
+                              "resolved"
+                            ],
+                            "example": "new"
+                          },
+                          "userId": {
+                            "type": "string",
+                            "nullable": true,
+                            "description": "Admin view only: the account that filed the request",
+                            "example": "507f1f77bcf86cd799439012"
+                          },
+                          "ipAddress": {
+                            "type": "string",
+                            "nullable": true,
+                            "description": "Admin view only: the IP the request was filed from",
+                            "example": "203.0.113.7"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Validation failed - Invalid input data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "VALIDATION_ERROR"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Validation failed"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized - Invalid credentials",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not found - Resource does not exist",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/admin/contacts": {
+    "get": {
+      "summary": "List every contact request (admin)",
+      "tags": [
+        "Contact Admin"
+      ],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "page",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "minimum": 1
+          }
+        },
+        {
+          "name": "limit",
+          "in": "query",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100
+          }
+        },
+        {
+          "name": "status",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "new",
+              "processing",
+              "resolved"
+            ]
+          }
+        },
+        {
+          "name": "priority",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        },
+        {
+          "name": "email",
+          "in": "query",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "search",
+          "in": "query",
+          "description": "Case-insensitive match on subject",
+          "schema": {
+            "type": "string"
+          }
+        },
+        {
+          "name": "fromDate",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "toDate",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "format": "date"
+          }
+        },
+        {
+          "name": "sortBy",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "createdAt",
+              "priority",
+              "status"
+            ]
+          }
+        },
+        {
+          "name": "sortOrder",
+          "in": "query",
+          "schema": {
+            "type": "string",
+            "enum": [
+              "asc",
+              "desc"
+            ]
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Contact requests retrieved successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-15T10:30:00.000Z"
+                      },
+                      "path": {
+                        "type": "string",
+                        "example": "/api/v1/auth/login"
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Operation successful"
+                      },
+                      "data": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "items": {
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "_id": {
+                                  "type": "string",
+                                  "example": "507f1f77bcf86cd799439011"
+                                },
+                                "email": {
+                                  "type": "string",
+                                  "nullable": true,
+                                  "example": "user@example.com"
+                                },
+                                "subject": {
+                                  "type": "string",
+                                  "example": "Cannot access my account"
+                                },
+                                "priority": {
+                                  "type": "string",
+                                  "enum": [
+                                    "low",
+                                    "medium",
+                                    "high"
+                                  ],
+                                  "example": "medium"
+                                },
+                                "status": {
+                                  "type": "string",
+                                  "enum": [
+                                    "new",
+                                    "processing",
+                                    "resolved"
+                                  ],
+                                  "example": "new"
+                                },
+                                "createdAt": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                },
+                                "updatedAt": {
+                                  "type": "string",
+                                  "format": "date-time"
+                                }
+                              }
+                            }
+                          },
+                          "meta": {
+                            "type": "object",
+                            "required": [
+                              "total",
+                              "page",
+                              "limit",
+                              "totalPages"
+                            ],
+                            "properties": {
+                              "total": {
+                                "type": "integer",
+                                "example": 157
+                              },
+                              "page": {
+                                "type": "integer",
+                                "example": 1
+                              },
+                              "limit": {
+                                "type": "integer",
+                                "example": 20
+                              },
+                              "totalPages": {
+                                "type": "integer",
+                                "example": 8
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Validation failed - Invalid input data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "VALIDATION_ERROR"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Validation failed"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized - Invalid credentials",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Forbidden - Access denied",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/admin/contacts/{id}": {
+    "get": {
+      "summary": "Get any contact request (admin)",
+      "tags": [
+        "Contact Admin"
+      ],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{24}$"
+          }
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Contact request retrieved successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-15T10:30:00.000Z"
+                      },
+                      "path": {
+                        "type": "string",
+                        "example": "/api/v1/auth/login"
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Operation successful"
+                      },
+                      "data": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "507f1f77bcf86cd799439011"
+                          },
+                          "email": {
+                            "type": "string",
+                            "nullable": true,
+                            "example": "user@example.com"
+                          },
+                          "subject": {
+                            "type": "string",
+                            "example": "Cannot access my account"
+                          },
+                          "message": {
+                            "type": "string",
+                            "example": "I have been unable to log in to my account for the past 2 days."
+                          },
+                          "priority": {
+                            "type": "string",
+                            "enum": [
+                              "low",
+                              "medium",
+                              "high"
+                            ],
+                            "example": "medium"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "new",
+                              "processing",
+                              "resolved"
+                            ],
+                            "example": "new"
+                          },
+                          "userId": {
+                            "type": "string",
+                            "nullable": true,
+                            "description": "Admin view only: the account that filed the request",
+                            "example": "507f1f77bcf86cd799439012"
+                          },
+                          "ipAddress": {
+                            "type": "string",
+                            "nullable": true,
+                            "description": "Admin view only: the IP the request was filed from",
+                            "example": "203.0.113.7"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Validation failed - Invalid input data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "VALIDATION_ERROR"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Validation failed"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized - Invalid credentials",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Forbidden - Access denied",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not found - Resource does not exist",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/admin/contacts/{id}/status": {
+    "patch": {
+      "summary": "Move a contact request to another status (admin)",
+      "tags": [
+        "Contact Admin"
+      ],
+      "security": [
+        {
+          "bearerAuth": []
+        }
+      ],
+      "parameters": [
+        {
+          "name": "id",
+          "in": "path",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "pattern": "^[a-fA-F0-9]{24}$"
+          }
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status"
+              ],
+              "properties": {
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "new",
+                    "processing",
+                    "resolved"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Contact status updated successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-15T10:30:00.000Z"
+                      },
+                      "path": {
+                        "type": "string",
+                        "example": "/api/v1/auth/login"
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Operation successful"
+                      },
+                      "data": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "_id": {
+                            "type": "string",
+                            "example": "507f1f77bcf86cd799439011"
+                          },
+                          "email": {
+                            "type": "string",
+                            "nullable": true,
+                            "example": "user@example.com"
+                          },
+                          "subject": {
+                            "type": "string",
+                            "example": "Cannot access my account"
+                          },
+                          "priority": {
+                            "type": "string",
+                            "enum": [
+                              "low",
+                              "medium",
+                              "high"
+                            ],
+                            "example": "medium"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "new",
+                              "processing",
+                              "resolved"
+                            ],
+                            "example": "new"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Validation failed - Invalid input data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "VALIDATION_ERROR"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Validation failed"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Unauthorized - Invalid credentials",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "403": {
+          "description": "Forbidden - Access denied",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "404": {
+          "description": "Not found - Resource does not exist",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

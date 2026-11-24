@@ -1,16 +1,20 @@
 // libs
 import { Type } from "class-transformer";
 import { IsDefined, IsObject, ValidateNested } from "class-validator";
+// common
+import { ApiProperty } from "@/common/openapi";
 // validators
 import { rule, UnlessMissing } from "@/validators/decorators";
 // others
 import { NameEnRules, NameViRules } from "./category-name";
 
 export class UpdateCategoryNameDto {
+  @ApiProperty({ example: "Dev Tools" })
   @NameEnRules()
   @UnlessMissing()
   en?: string;
 
+  @ApiProperty({ example: "Công cụ nội bộ" })
   @NameViRules()
   @UnlessMissing()
   vi?: string;
@@ -31,6 +35,10 @@ const HasCategoryName = (options: { message: string }): PropertyDecorator =>
   );
 
 export class UpdateCategoryBodyDto {
+  @ApiProperty({
+    description:
+      "At least one of en and vi. Changing en regenerates the slug; changing only vi keeps it"
+  })
   @ValidateNested({ message: "category:validation.body.empty" })
   @HasCategoryName({ message: "category:validation.body.empty" })
   @IsObject({ message: "category:validation.body.empty" })

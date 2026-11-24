@@ -1,9 +1,9 @@
 // types
 import type {
-  MagicLinkSendBodyDto,
-  MagicLinkVerifyBodyDto,
-  OtpSendBodyDto,
-  OtpVerifyBodyDto,
+  ForgotPasswordMagicLinkSendBodyDto,
+  ForgotPasswordMagicLinkVerifyBodyDto,
+  ForgotPasswordOtpSendBodyDto,
+  ForgotPasswordOtpVerifyBodyDto,
   ResetPasswordBodyDto
 } from "../../dtos/requests";
 import type {
@@ -40,20 +40,24 @@ export class ForgotPasswordService {
     private readonly audit: ForgotPasswordAuditService
   ) {}
 
-  sendOtp(body: OtpSendBodyDto): Promise<SendOtpResponseDto> {
+  sendOtp(body: ForgotPasswordOtpSendBodyDto): Promise<SendOtpResponseDto> {
     return this.otpStrategy.sendCode(body);
   }
 
-  verifyOtp(body: OtpVerifyBodyDto): Promise<VerifyOtpResponseDto> {
+  verifyOtp(
+    body: ForgotPasswordOtpVerifyBodyDto
+  ): Promise<VerifyOtpResponseDto> {
     return this.otpStrategy.verifyCode(body);
   }
 
-  sendMagicLink(body: MagicLinkSendBodyDto): Promise<SendMagicLinkResponseDto> {
+  sendMagicLink(
+    body: ForgotPasswordMagicLinkSendBodyDto
+  ): Promise<SendMagicLinkResponseDto> {
     return this.magicLinkStrategy.sendLink(body);
   }
 
   verifyMagicLink(
-    body: MagicLinkVerifyBodyDto
+    body: ForgotPasswordMagicLinkVerifyBodyDto
   ): Promise<VerifyMagicLinkResponseDto> {
     return this.magicLinkStrategy.verifyLink(body);
   }

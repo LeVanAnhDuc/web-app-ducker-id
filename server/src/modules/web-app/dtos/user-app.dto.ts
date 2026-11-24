@@ -1,6 +1,7 @@
 // types
 import type { WebAppWithCategories } from "../types";
 // common
+import { ApiProperty } from "@/common/openapi";
 import {
   Expose,
   ExposeFrom,
@@ -15,20 +16,47 @@ import { orderByCategoryIds } from "../helpers";
 
 /** Source: a web-app record with its categories (`WebAppWithCategories`). The launcher card, minus the per-user flag. */
 export class UserAppCardDto {
-  @ExposeId() _id!: string;
-  @Expose() displayName!: string;
-  @ExposeOrNull() description!: string | null;
-  @ExposeOrNull() iconUrl!: string | null;
-  @Expose() homeUrl!: string;
+  @ApiProperty({ example: "507f1f77bcf86cd799439011" })
+  @ExposeId()
+  _id!: string;
+
+  @ApiProperty({ example: "Satellite Monitor" })
+  @Expose()
+  displayName!: string;
+
+  @ApiProperty({
+    type: "string",
+    example: "Real-time constellation monitoring dashboard"
+  })
+  @ExposeOrNull()
+  description!: string | null;
+
+  @ApiProperty({
+    type: "string",
+    example: "https://cdn.example.com/icons/monitor.png"
+  })
+  @ExposeOrNull()
+  iconUrl!: string | null;
+
+  @ApiProperty({ example: "https://monitor.example.com" })
+  @Expose()
+  homeUrl!: string;
+
   /** In the order the admin chose; the first one is the primary category. */
+  @ApiProperty({
+    type: [PublicCategoryDto],
+    description: "In the order the admin chose; the first is the primary"
+  })
   @ExposeFrom<WebAppWithCategories>((doc) =>
     toDto(PublicCategoryDto, orderByCategoryIds(doc))
   )
   categories!: PublicCategoryDto[];
 }
 
-export interface UserAppDto extends UserAppCardDto {
-  isFavorite: boolean;
+/** The card plus the viewer's own flag. Plain data: `toUserAppDto` returns an object literal typed as it. */
+export class UserAppDto extends UserAppCardDto {
+  @ApiProperty({ description: "Whether the caller pinned the app" })
+  isFavorite!: boolean;
 }
 
 // Whether the app is a favourite depends on the viewer, not the record.

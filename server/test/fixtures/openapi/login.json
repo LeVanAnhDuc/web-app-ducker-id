@@ -1,0 +1,742 @@
+{
+  "/auth/login": {
+    "post": {
+      "summary": "Login with email and password",
+      "description": "Authenticate user with email and password.\n\n**Rate Limits:**\n- `30` attempts per IP per `15 minutes`\n\n**Security:**\n- Account locked after `5` failed attempts (progressive lockout)\n- Passwords are verified using bcrypt\n\n**Returns:**\n- Access token (`15 min` expiry)\n- Refresh token in HTTP-only cookie (`7 days` expiry)\n- ID token",
+      "tags": ["Auth - Login"],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["email", "password"],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "minLength": 3,
+                  "maxLength": 254,
+                  "example": "user@example.com"
+                },
+                "password": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Login successful",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "accessToken": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIs...",
+                    "description": "JWT access token"
+                  },
+                  "refreshToken": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIs...",
+                    "description": "JWT refresh token"
+                  },
+                  "idToken": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIs...",
+                    "description": "JWT ID token containing user info"
+                  },
+                  "expiresIn": {
+                    "type": "integer",
+                    "example": 900,
+                    "description": "Access token expiration in seconds"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Account locked due to too many failed attempts"
+        },
+        "401": {
+          "description": "Invalid credentials"
+        },
+        "422": {
+          "description": "Validation failed - Invalid input data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "VALIDATION_ERROR"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Validation failed"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Too many requests - Rate limit exceeded",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "code": "TOO_MANY_REQUESTS",
+                "message": "Rate limit exceeded. Try again later.",
+                "timestamp": "2025-01-15T10:30:00.000Z",
+                "path": "/api/v1/auth/login"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/auth/login/otp/send": {
+    "post": {
+      "summary": "Send OTP for passwordless login",
+      "description": "Send a `6-digit` OTP to the user's email for passwordless login.\n\n**Rate Limits:**\n- `10` requests per IP per `15 minutes`\n- `5` requests per email per `15 minutes`\n\n**Cooldown:** `60 seconds` between requests\n\n**OTP Expiry:** `5 minutes`",
+      "tags": ["Auth - Login"],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["email"],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "minLength": 3,
+                  "maxLength": 254,
+                  "example": "user@example.com"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OTP sent successfully"
+        },
+        "400": {
+          "description": "Cooldown not expired"
+        },
+        "422": {
+          "description": "Validation failed - Invalid input data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "VALIDATION_ERROR"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Validation failed"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Too many requests - Rate limit exceeded",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "code": "TOO_MANY_REQUESTS",
+                "message": "Rate limit exceeded. Try again later.",
+                "timestamp": "2025-01-15T10:30:00.000Z",
+                "path": "/api/v1/auth/login"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/auth/login/otp/verify": {
+    "post": {
+      "summary": "Verify OTP and login",
+      "description": "Verify the OTP code and authenticate the user.\n\n**Security:**\n- `5` failed attempts before lockout (`15 minutes`)\n\n**Returns:**\n- Access token (`15 min` expiry)\n- Refresh token in HTTP-only cookie (`7 days` expiry)\n- ID token",
+      "tags": ["Auth - Login"],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["email", "otp"],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "minLength": 3,
+                  "maxLength": 254,
+                  "example": "user@example.com"
+                },
+                "otp": {
+                  "type": "string",
+                  "minLength": 6,
+                  "maxLength": 6,
+                  "pattern": "^\\d+$",
+                  "example": "123456"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Login successful",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "accessToken": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIs...",
+                    "description": "JWT access token"
+                  },
+                  "refreshToken": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIs...",
+                    "description": "JWT refresh token"
+                  },
+                  "idToken": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIs...",
+                    "description": "JWT ID token containing user info"
+                  },
+                  "expiresIn": {
+                    "type": "integer",
+                    "example": 900,
+                    "description": "Access token expiration in seconds"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "OTP verification locked"
+        },
+        "401": {
+          "description": "Invalid or expired OTP"
+        },
+        "422": {
+          "description": "Validation failed - Invalid input data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "VALIDATION_ERROR"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Validation failed"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Too many requests - Rate limit exceeded",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "code": "TOO_MANY_REQUESTS",
+                "message": "Rate limit exceeded. Try again later.",
+                "timestamp": "2025-01-15T10:30:00.000Z",
+                "path": "/api/v1/auth/login"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/auth/login/magic-link/send": {
+    "post": {
+      "summary": "Send magic link for passwordless login",
+      "description": "Send a magic link to the user's email for passwordless login.\n\n**Rate Limits:**\n- `10` requests per IP per `15 minutes`\n- `5` requests per email per `15 minutes`\n\n**Cooldown:** `60 seconds` between requests\n\n**Link Expiry:** `15 minutes`",
+      "tags": ["Auth - Login"],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["email"],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "minLength": 3,
+                  "maxLength": 254,
+                  "example": "user@example.com"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Magic link sent successfully"
+        },
+        "400": {
+          "description": "Cooldown not expired"
+        },
+        "422": {
+          "description": "Validation failed - Invalid input data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "VALIDATION_ERROR"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Validation failed"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Too many requests - Rate limit exceeded",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "code": "TOO_MANY_REQUESTS",
+                "message": "Rate limit exceeded. Try again later.",
+                "timestamp": "2025-01-15T10:30:00.000Z",
+                "path": "/api/v1/auth/login"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/auth/login/magic-link/verify": {
+    "post": {
+      "summary": "Verify magic link and login",
+      "description": "Verify the magic link token and authenticate the user.\n\n**Returns:**\n- Access token (`15 min` expiry)\n- Refresh token in HTTP-only cookie (`7 days` expiry)\n- ID token",
+      "tags": ["Auth - Login"],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["email", "token"],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "minLength": 3,
+                  "maxLength": 254,
+                  "example": "user@example.com"
+                },
+                "token": {
+                  "type": "string",
+                  "minLength": 128,
+                  "maxLength": 128,
+                  "pattern": "^[a-f0-9]+$"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Login successful",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "accessToken": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIs...",
+                    "description": "JWT access token"
+                  },
+                  "refreshToken": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIs...",
+                    "description": "JWT refresh token"
+                  },
+                  "idToken": {
+                    "type": "string",
+                    "example": "eyJhbGciOiJIUzI1NiIs...",
+                    "description": "JWT ID token containing user info"
+                  },
+                  "expiresIn": {
+                    "type": "integer",
+                    "example": 900,
+                    "description": "Access token expiration in seconds"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "401": {
+          "description": "Invalid or expired magic link"
+        },
+        "422": {
+          "description": "Validation failed - Invalid input data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "VALIDATION_ERROR"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Validation failed"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

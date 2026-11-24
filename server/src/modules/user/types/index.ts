@@ -100,13 +100,3 @@ export interface AdminUserAggregateRow {
   isActive: boolean;
   lastLoginAt: Date | null;
 }
-
-export interface SetUserActiveResult {
-  _id: string;
-  isActive: boolean;
-}
-
-export interface AdminResetPasswordResult {
-  _id: string;
-  email: string;
-}

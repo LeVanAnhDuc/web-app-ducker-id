@@ -45,12 +45,20 @@ const toDate = (value: unknown): Date | null => {
 export const EachItem = (
   name: string,
   check: ItemCheck,
-  options?: ValidationOptions
+  options?: ValidationOptions,
+  // Documentation only: `/api-docs` reads them (`EachItem("isIn", …, [values])`
+  // becomes an array of that enum); the check itself never does.
+  constraints?: unknown[]
 ): PropertyDecorator =>
-  rule(name, (value) => !Array.isArray(value) || value.every(check), {
-    ...options,
-    context: { ...options?.context, [ITEM_CHECK]: check }
-  });
+  rule(
+    name,
+    (value) => !Array.isArray(value) || value.every(check),
+    {
+      ...options,
+      context: { ...options?.context, [ITEM_CHECK]: check }
+    },
+    constraints
+  );
 
 // A single-value rule that also takes `{ each: true }`, reported per item.
 const itemRule = (

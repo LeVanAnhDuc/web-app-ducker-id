@@ -1,0 +1,1109 @@
+{
+  "/auth/signup/send-otp": {
+    "post": {
+      "summary": "Send OTP to email",
+      "description": "Step 1 of signup flow. Sends a 6-digit OTP to the provided email address.\n\n**Rate Limits:**\n- 5 requests per IP per 15 minutes\n- 3 requests per email per 15 minutes\n\n**OTP Details:**\n- Valid for 5 minutes\n- 60 seconds cooldown between requests",
+      "tags": ["Auth - Signup"],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["email"],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "minLength": 3,
+                  "maxLength": 254,
+                  "example": "user@example.com"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OTP sent successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-15T10:30:00.000Z"
+                      },
+                      "path": {
+                        "type": "string",
+                        "example": "/api/v1/auth/login"
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Operation successful"
+                      },
+                      "data": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "success": {
+                            "type": "boolean",
+                            "example": true
+                          },
+                          "expiresIn": {
+                            "type": "integer",
+                            "example": 300,
+                            "description": "OTP expiration in seconds"
+                          },
+                          "cooldownSeconds": {
+                            "type": "integer",
+                            "example": 60,
+                            "description": "Cooldown before next OTP request"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Validation failed - Invalid input data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "VALIDATION_ERROR"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Validation failed"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Conflict - Resource already exists",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "code": "CONFLICT",
+                "message": "Email already registered",
+                "timestamp": "2025-01-15T10:30:00.000Z",
+                "path": "/api/v1/auth/signup/send-otp"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Too many requests - Rate limit exceeded",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "code": "TOO_MANY_REQUESTS",
+                "message": "Rate limit exceeded. Try again later.",
+                "timestamp": "2025-01-15T10:30:00.000Z",
+                "path": "/api/v1/auth/login"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/auth/signup/verify-otp": {
+    "post": {
+      "summary": "Verify OTP code",
+      "description": "Step 2 of signup flow. Verifies the OTP code submitted by user.\n\n**Security:**\n- Maximum 5 failed attempts before account lockout\n- Lockout duration: 15 minutes\n\n**On Success:**\n- Returns a session token valid for 5 minutes\n- Use this token in the complete-signup step",
+      "tags": ["Auth - Signup"],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["email", "otp"],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "minLength": 3,
+                  "maxLength": 254,
+                  "example": "user@example.com"
+                },
+                "otp": {
+                  "type": "string",
+                  "minLength": 6,
+                  "maxLength": 6,
+                  "pattern": "^\\d+$",
+                  "example": "123456"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OTP verified successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-15T10:30:00.000Z"
+                      },
+                      "path": {
+                        "type": "string",
+                        "example": "/api/v1/auth/login"
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Operation successful"
+                      },
+                      "data": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "success": {
+                            "type": "boolean",
+                            "example": true
+                          },
+                          "sessionToken": {
+                            "type": "string",
+                            "example": "a1b2c3d4e5f6...",
+                            "description": "Session token for complete signup step"
+                          },
+                          "expiresIn": {
+                            "type": "integer",
+                            "example": 300,
+                            "description": "Session token expiration in seconds"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Invalid OTP or account locked",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "examples": {
+                "invalidOtp": {
+                  "summary": "Invalid OTP",
+                  "value": {
+                    "code": "BAD_REQUEST",
+                    "message": "Invalid OTP. 4 attempts remaining.",
+                    "timestamp": "2025-01-15T10:30:00.000Z",
+                    "path": "/api/v1/auth/signup/verify-otp"
+                  }
+                },
+                "accountLocked": {
+                  "summary": "Account locked",
+                  "value": {
+                    "code": "BAD_REQUEST",
+                    "message": "Account locked. Try again in 15 minutes.",
+                    "timestamp": "2025-01-15T10:30:00.000Z",
+                    "path": "/api/v1/auth/signup/verify-otp"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/auth/signup/resend-otp": {
+    "post": {
+      "summary": "Resend OTP code",
+      "description": "Request a new OTP code. Tracks resend count.\n\n**Limits:**\n- Maximum 5 resends per signup session\n- 60 seconds cooldown between resends\n- Same rate limits as send-otp",
+      "tags": ["Auth - Signup"],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": ["email"],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "minLength": 3,
+                  "maxLength": 254,
+                  "example": "user@example.com"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "OTP resent successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-15T10:30:00.000Z"
+                      },
+                      "path": {
+                        "type": "string",
+                        "example": "/api/v1/auth/login"
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Operation successful"
+                      },
+                      "data": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "success": {
+                            "type": "boolean",
+                            "example": true
+                          },
+                          "expiresIn": {
+                            "type": "integer",
+                            "example": 300,
+                            "description": "OTP expiration in seconds"
+                          },
+                          "cooldownSeconds": {
+                            "type": "integer",
+                            "example": 60,
+                            "description": "Cooldown before next resend"
+                          },
+                          "resendCount": {
+                            "type": "integer",
+                            "example": 1,
+                            "description": "Current resend count"
+                          },
+                          "maxResends": {
+                            "type": "integer",
+                            "example": 5,
+                            "description": "Maximum allowed resends"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Cooldown active or resend limit exceeded",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Conflict - Resource already exists",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "code": "CONFLICT",
+                "message": "Email already registered",
+                "timestamp": "2025-01-15T10:30:00.000Z",
+                "path": "/api/v1/auth/signup/send-otp"
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Too many requests - Rate limit exceeded",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "code": "TOO_MANY_REQUESTS",
+                "message": "Rate limit exceeded. Try again later.",
+                "timestamp": "2025-01-15T10:30:00.000Z",
+                "path": "/api/v1/auth/login"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/auth/signup/complete": {
+    "post": {
+      "summary": "Complete signup",
+      "description": "Step 3 (final) of signup flow. Completes registration with user profile data.\n\n**Prerequisites:**\n- Must have a valid session token from verify-otp step\n- Session token expires after 5 minutes\n\n**Password Requirements:**\n- Minimum 8 characters\n- At least one uppercase letter\n- At least one lowercase letter\n- At least one number\n- At least one special character\n\n**On Success:**\n- User account is created\n- Returns access and refresh tokens",
+      "tags": ["Auth - Signup"],
+      "requestBody": {
+        "required": true,
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "email",
+                "password",
+                "confirmPassword",
+                "sessionToken",
+                "acceptTerms",
+                "fullName",
+                "gender",
+                "dateOfBirth"
+              ],
+              "properties": {
+                "email": {
+                  "type": "string",
+                  "format": "email",
+                  "minLength": 3,
+                  "maxLength": 254,
+                  "example": "user@example.com"
+                },
+                "password": {
+                  "type": "string",
+                  "minLength": 8,
+                  "maxLength": 128,
+                  "pattern": "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]+$"
+                },
+                "confirmPassword": {
+                  "type": "string",
+                  "description": "Must equal `password`"
+                },
+                "sessionToken": {
+                  "type": "string",
+                  "minLength": 64,
+                  "maxLength": 64,
+                  "description": "Returned by /auth/signup/verify-otp"
+                },
+                "acceptTerms": {
+                  "type": "boolean",
+                  "enum": [true]
+                },
+                "fullName": {
+                  "type": "string",
+                  "minLength": 2,
+                  "maxLength": 100,
+                  "pattern": "^[\\p{L}\\s\\-'.]+$",
+                  "example": "Nguyễn Văn A"
+                },
+                "gender": {
+                  "type": "string",
+                  "enum": ["male", "female", "other", "prefer_not_to_say"]
+                },
+                "dateOfBirth": {
+                  "type": "string",
+                  "format": "date",
+                  "example": "1995-05-15",
+                  "description": "Age between 13 and 120"
+                }
+              }
+            }
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Signup completed successfully",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-15T10:30:00.000Z"
+                      },
+                      "path": {
+                        "type": "string",
+                        "example": "/api/v1/auth/login"
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Operation successful"
+                      },
+                      "data": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "success": {
+                            "type": "boolean",
+                            "example": true
+                          },
+                          "user": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "example": "user_123"
+                              },
+                              "email": {
+                                "type": "string",
+                                "example": "user@example.com"
+                              },
+                              "fullName": {
+                                "type": "string",
+                                "example": "John Doe"
+                              }
+                            }
+                          },
+                          "tokens": {
+                            "type": "object",
+                            "properties": {
+                              "accessToken": {
+                                "type": "string",
+                                "example": "eyJhbGciOiJIUzI1NiIs..."
+                              },
+                              "idToken": {
+                                "type": "string",
+                                "example": "eyJhbGciOiJIUzI1NiIs..."
+                              },
+                              "expiresIn": {
+                                "type": "integer",
+                                "example": 900
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Invalid session or validation error",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "VALIDATION_ERROR"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Validation failed"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "409": {
+          "description": "Conflict - Resource already exists",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "code": "CONFLICT",
+                "message": "Email already registered",
+                "timestamp": "2025-01-15T10:30:00.000Z",
+                "path": "/api/v1/auth/signup/send-otp"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "/auth/signup/check-email/{email}": {
+    "get": {
+      "summary": "Check email availability",
+      "description": "Check if an email address is available for registration.\nUseful for real-time validation in signup forms.\n\n**Rate Limit:** 10 requests per IP per minute",
+      "tags": ["Auth - Signup"],
+      "parameters": [
+        {
+          "in": "path",
+          "name": "email",
+          "required": true,
+          "schema": {
+            "type": "string",
+            "format": "email"
+          },
+          "description": "Email address to check",
+          "example": "user@example.com"
+        }
+      ],
+      "responses": {
+        "200": {
+          "description": "Email availability status",
+          "content": {
+            "application/json": {
+              "schema": {
+                "allOf": [
+                  {
+                    "type": "object",
+                    "properties": {
+                      "timestamp": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2025-01-15T10:30:00.000Z"
+                      },
+                      "path": {
+                        "type": "string",
+                        "example": "/api/v1/auth/login"
+                      },
+                      "message": {
+                        "type": "string",
+                        "example": "Operation successful"
+                      },
+                      "data": {
+                        "type": "object"
+                      }
+                    }
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "data": {
+                        "type": "object",
+                        "properties": {
+                          "available": {
+                            "type": "boolean",
+                            "example": true,
+                            "description": "Whether email is available for registration"
+                          }
+                        }
+                      }
+                    }
+                  }
+                ]
+              },
+              "examples": {
+                "available": {
+                  "summary": "Email available",
+                  "value": {
+                    "timestamp": "2025-01-15T10:30:00.000Z",
+                    "path": "/api/v1/auth/signup/check-email/user@example.com",
+                    "data": {
+                      "available": true
+                    }
+                  }
+                },
+                "taken": {
+                  "summary": "Email taken",
+                  "value": {
+                    "timestamp": "2025-01-15T10:30:00.000Z",
+                    "path": "/api/v1/auth/signup/check-email/existing@example.com",
+                    "data": {
+                      "available": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "400": {
+          "description": "Validation failed - Invalid input data",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "VALIDATION_ERROR"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Validation failed"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "429": {
+          "description": "Too many requests - Rate limit exceeded",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "code": {
+                    "type": "string",
+                    "example": "BAD_REQUEST"
+                  },
+                  "message": {
+                    "type": "string",
+                    "example": "Error message"
+                  },
+                  "timestamp": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2025-01-15T10:30:00.000Z"
+                  },
+                  "path": {
+                    "type": "string",
+                    "example": "/api/v1/auth/login"
+                  },
+                  "errors": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "field": {
+                          "type": "string",
+                          "example": "email"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "any.required"
+                        },
+                        "message": {
+                          "type": "string",
+                          "example": "Email is required"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              "example": {
+                "code": "TOO_MANY_REQUESTS",
+                "message": "Rate limit exceeded. Try again later.",
+                "timestamp": "2025-01-15T10:30:00.000Z",
+                "path": "/api/v1/auth/login"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

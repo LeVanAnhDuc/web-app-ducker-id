@@ -6,13 +6,28 @@ import type {
 } from "@/modules/login-history/types";
 // common
 import { ExposeFrom } from "@/common/dto";
+import { ApiProperty } from "@/common/openapi";
 // modules
 import { LOGIN_SOURCES } from "@/modules/login-history/constants";
 
-export interface LoginAppDto {
-  id: string | null;
-  name: string;
-  iconUrl: string | null;
+/** The satellite app a sign-in was for. Plain data: `appOf` builds object literals typed as it. */
+export class LoginAppDto {
+  @ApiProperty({
+    type: "string",
+    nullable: true,
+    example: "507f1f77bcf86cd799439011"
+  })
+  id!: string | null;
+
+  @ApiProperty({ type: "string", example: "Satellite Monitor" })
+  name!: string;
+
+  @ApiProperty({
+    type: "string",
+    nullable: true,
+    example: "https://cdn.example.com/icons/monitor.png"
+  })
+  iconUrl!: string | null;
 }
 
 const isPopulated = (
@@ -47,8 +62,23 @@ const appOf = (doc: LoginHistoryDocument): LoginAppDto | null => {
 
 /** Which app a sign-in was for — the base of every login-history item DTO. */
 export class LoginAppFieldsDto {
-  @ExposeFrom(sourceOf) source!: LoginSource;
-  @ExposeFrom(appOf) app!: LoginAppDto | null;
+  @ApiProperty({
+    type: "string",
+    enum: Object.values(LOGIN_SOURCES),
+    example: LOGIN_SOURCES.IDP
+  })
+  @ExposeFrom(sourceOf)
+  source!: LoginSource;
+
+  @ApiProperty({
+    type: LoginAppDto,
+    nullable: true,
+    description: "The satellite app signed in to; null for an IdP sign-in"
+  })
+  @ExposeFrom(appOf)
+  app!: LoginAppDto | null;
+
+  @ApiProperty({ example: true })
   @ExposeFrom<LoginHistoryDocument>((doc) => doc.interactive ?? true)
   interactive!: boolean;
 }

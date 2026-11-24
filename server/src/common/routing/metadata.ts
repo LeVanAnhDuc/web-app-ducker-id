@@ -11,9 +11,14 @@ export type GuardName =
   | "optionalAuth"
   | "passwordChangeAuth";
 
+/** A response DTO class, or `[Class]` for an array of them. Documentation only. */
+export type RespondType = Function | [Function];
+
 export interface RespondOptions {
   status?: number;
   message?: I18n.Key;
+  /** What `data` holds, for `/api-docs`. Omitted: the envelope carries no `data`. */
+  type?: RespondType;
 }
 
 /** Everything `orderMiddlewares` needs to build one action's chain. */
@@ -24,7 +29,9 @@ export interface RouteMeta {
   methodGuards: GuardName[];
   rateLimits: RateLimitName[];
   pipes: Partial<Record<ValidationSource, DtoClass<object>>>;
-  respond: { status: number; message?: I18n.Key };
+  respond: { status: number; message?: I18n.Key; type?: RespondType };
+  /** Route-specific error statuses from `@ApiErrors`, for `/api-docs`. */
+  errors: number[];
 }
 
 interface MethodMeta {
@@ -32,6 +39,7 @@ interface MethodMeta {
   rateLimits: RateLimitName[];
   pipes: Partial<Record<ValidationSource, DtoClass<object>>>;
   respond?: RespondOptions;
+  errors: number[];
 }
 
 interface ClassMeta {
@@ -56,7 +64,7 @@ const methodMeta = (Ctor: object, method: string): MethodMeta => {
   const { methods } = classMeta(Ctor);
   let meta = methods.get(method);
   if (!meta) {
-    meta = { guards: [], rateLimits: [], pipes: {} };
+    meta = { guards: [], rateLimits: [], pipes: {}, errors: [] };
     methods.set(method, meta);
   }
   return meta;
@@ -109,6 +117,14 @@ export const recordRespond = (
   methodMeta(Ctor, method).respond = options;
 };
 
+export const recordApiErrors = (
+  Ctor: object,
+  method: string,
+  statuses: number[]
+): void => {
+  methodMeta(Ctor, method).errors.unshift(...statuses);
+};
+
 const nameOf = (Ctor: object): string =>
   (Ctor as { name?: string }).name ?? "<anonymous>";
 
@@ -124,7 +140,9 @@ export const readRouteMeta = (Ctor: object, method: string): RouteMeta => {
     pipes: { ...meta?.pipes },
     respond: {
       status: meta?.respond?.status ?? StatusCodes.OK,
-      message: meta?.respond?.message
-    }
+      message: meta?.respond?.message,
+      type: meta?.respond?.type
+    },
+    errors: [...(meta?.errors ?? [])]
   };
 };

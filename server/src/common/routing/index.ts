@@ -1,6 +1,7 @@
 export {
   Admin,
   Auth,
+  isNamedValueClass,
   OptionalAuth,
   PasswordChangeAuth,
   RateLimit,
@@ -14,6 +15,9 @@ export type { GuardName, RespondOptions, RouteMeta } from "./metadata";
 export { readRouteMeta } from "./metadata";
 export {
   describeRoutes,
+  findDisallowedJsonSchemaImports,
+  findBridgeOwnedOpenApiKeys,
+  findDisallowedOpenApiImports,
   findDisallowedRoutingImports,
   mountControllers,
   ROUTE_PREFIX

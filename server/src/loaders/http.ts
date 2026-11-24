@@ -1,11 +1,14 @@
 // types
 import type { Express, Router } from "express";
+import type { OpenAPIV3 } from "openapi-types";
 import type { RedisClientType } from "redis";
 import type { RateLimiters } from "@/middlewares/common/rate-limiter.middleware";
 // common
 import { mountControllers } from "@/common/routing";
 // services
 import { BULL_BOARD_PATH } from "@/services/queue/queue.module";
+// libs
+import { buildOpenApiSpec, setupSwagger } from "@/libs/swagger";
 // middlewares
 import { adminGuard, handleError, handleNotFound } from "@/middlewares";
 // others
@@ -20,6 +23,15 @@ interface HttpParts {
 }
 
 export const mountHttp = (app: Express, parts: HttpParts): void => {
+  // /api-docs goes first: below mountControllers the /api/v1 stop step, the
+  // 404 and the error handler are all registered. The document is built once
+  // the controllers are mounted, and served by reference from then on.
+  const docs: { spec?: OpenAPIV3.Document } = {};
+  setupSwagger(app, () => {
+    if (!docs.spec) throw new Error("The OpenAPI document is not built yet");
+    return docs.spec;
+  });
+
   app.use(BULL_BOARD_PATH, adminGuard, parts.bullBoardRouter);
 
   // OIDC discovery must sit at the origin root and `/oauth/*` is a public
@@ -32,6 +44,7 @@ export const mountHttp = (app: Express, parts: HttpParts): void => {
   // request after a controller answers, because routing-controllers calls
   // next() once it has sent a response.
   mountControllers(app, parts.controllers, parts.rateLimiters);
+  docs.spec = buildOpenApiSpec(parts.controllers);
 
   app.use("/health", createHealthRouter(parts.redis));
 

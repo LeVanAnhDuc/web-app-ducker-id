@@ -155,7 +155,7 @@ const EXPECTED: Row[] = [
   [
     "POST",
     "/api/v1/auth/forgot-password/otp/send",
-    "rl:forgotPasswordOtpByIp > rl:forgotPasswordOtpByEmail > body:OtpSendBodyDto",
+    "rl:forgotPasswordOtpByIp > rl:forgotPasswordOtpByEmail > body:ForgotPasswordOtpSendBodyDto",
     "OK",
     "forgotPassword:success.otpSent",
     "sendOtp"
@@ -163,7 +163,7 @@ const EXPECTED: Row[] = [
   [
     "POST",
     "/api/v1/auth/forgot-password/otp/verify",
-    "rl:forgotPasswordOtpByIp > body:OtpVerifyBodyDto",
+    "rl:forgotPasswordOtpByIp > body:ForgotPasswordOtpVerifyBodyDto",
     "OK",
     "forgotPassword:success.otpVerified",
     "verifyOtp"
@@ -171,7 +171,7 @@ const EXPECTED: Row[] = [
   [
     "POST",
     "/api/v1/auth/forgot-password/magic-link/send",
-    "rl:forgotPasswordMagicLinkByIp > rl:forgotPasswordMagicLinkByEmail > body:MagicLinkSendBodyDto",
+    "rl:forgotPasswordMagicLinkByIp > rl:forgotPasswordMagicLinkByEmail > body:ForgotPasswordMagicLinkSendBodyDto",
     "OK",
     "forgotPassword:success.magicLinkSent",
     "sendMagicLink"
@@ -179,7 +179,7 @@ const EXPECTED: Row[] = [
   [
     "POST",
     "/api/v1/auth/forgot-password/magic-link/verify",
-    "rl:forgotPasswordMagicLinkByIp > body:MagicLinkVerifyBodyDto",
+    "rl:forgotPasswordMagicLinkByIp > body:ForgotPasswordMagicLinkVerifyBodyDto",
     "OK",
     "forgotPassword:success.magicLinkVerified",
     "verifyMagicLink"

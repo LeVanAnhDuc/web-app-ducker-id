@@ -1,5 +1,5 @@
 // types
-import type { MagicLinkSendBodyDto } from "../../dtos/requests";
+import type { ForgotPasswordMagicLinkSendBodyDto } from "../../dtos/requests";
 import type { SendMagicLinkResponseDto } from "../../dtos";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
 import type { MagicLinkForgotPasswordRepository } from "../../repositories/magic-link-forgot-password.repository";
@@ -43,7 +43,7 @@ export const sendLink = async (
     resendLimitGuard: MagicLinkResendLimitGuard;
     authExistsGuard: AuthExistsGuard;
   },
-  body: MagicLinkSendBodyDto
+  body: ForgotPasswordMagicLinkSendBodyDto
 ): Promise<SendMagicLinkResponseDto> => {
   const { email } = body;
   const { language } = RequestContext.getClient();

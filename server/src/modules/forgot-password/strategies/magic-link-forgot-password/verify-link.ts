@@ -1,5 +1,5 @@
 // types
-import type { MagicLinkVerifyBodyDto } from "../../dtos/requests";
+import type { ForgotPasswordMagicLinkVerifyBodyDto } from "../../dtos/requests";
 import type { VerifyMagicLinkResponseDto } from "../../dtos";
 import type { MagicLinkForgotPasswordRepository } from "../../repositories/magic-link-forgot-password.repository";
 import type { ResetTokenRepository } from "../../repositories/reset-token.repository";
@@ -21,7 +21,7 @@ export const verifyLink = async (
     authExistsGuard: AuthExistsGuard;
     audit: ForgotPasswordAuditService;
   },
-  body: MagicLinkVerifyBodyDto
+  body: ForgotPasswordMagicLinkVerifyBodyDto
 ): Promise<VerifyMagicLinkResponseDto> => {
   const { email, token } = body;
 

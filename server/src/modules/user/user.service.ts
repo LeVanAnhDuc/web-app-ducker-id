@@ -1,15 +1,17 @@
 // types
 import type { PageMeta } from "@/common/pagination";
 import type {
-  AdminResetPasswordResult,
   AdminUsersFilter,
   CreateUserData,
-  SetUserActiveResult,
   UpdateProfileData,
   UserDocument,
   UserRecord,
   UserWithAuth
 } from "@/modules/user/types";
+import type {
+  AdminResetPasswordResultDto,
+  SetUserActiveResultDto
+} from "./dtos";
 import type { AdminUsersQueryDto } from "./dtos/requests";
 import type { AuthenticationService } from "@/modules/authentication/authentication.service";
 import type { EmailDispatcher } from "@/services/email/email.dispatcher";
@@ -136,7 +138,7 @@ export class UserService {
   async setUserActive(
     id: string,
     isActive: boolean
-  ): Promise<SetUserActiveResult> {
+  ): Promise<SetUserActiveResultDto> {
     const target = await this.userRepo.findAuthIdById(id);
     if (!target) {
       throw new NotFoundError({
@@ -173,7 +175,7 @@ export class UserService {
     return { _id: id, isActive };
   }
 
-  async adminResetPassword(id: string): Promise<AdminResetPasswordResult> {
+  async adminResetPassword(id: string): Promise<AdminResetPasswordResultDto> {
     const target = await this.userRepo.findAuthIdById(id);
     if (!target) {
       throw new NotFoundError({
